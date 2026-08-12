@@ -11,13 +11,14 @@ refactor does not replace.
 
 ## sqlite-cpp libraries
 
-Per the SRS's [phased delivery plan](../SRS.md#12-phased-delivery-plan), only
-phase 1 exists so far:
+Per the SRS's [phased delivery plan](../SRS.md#12-phased-delivery-plan), phases
+1-2 exist so far:
 
 | Library | Status | Docs |
 |---|---|---|
 | `sqlite-utils` | Implemented (phase 1) | [libraries/libsqlite-utils/docs/index.md](../libraries/libsqlite-utils/docs/index.md) |
-| `sqlite-backend-os` / `-pager` / `-tree` | Not yet started (phase 2) | -- |
+| `sqlite-backend-os` | Implemented (phase 2, part 1) | [libraries/libsqlite-backend-os/docs/index.md](../libraries/libsqlite-backend-os/docs/index.md) |
+| `sqlite-backend-pager` / `-tree` | Not yet started (phase 2, remainder) | -- |
 | `sqlite-core-virtual-machine` | Not yet started (phase 3) | -- |
 | `sqlite-compiler-*` / `sqlite-core-command-processor` / `-interface` | Not yet started (phase 4-5) | -- |
 | Extensions (`fts5`, `rtree`, ...) | Not yet started (phase 6) | -- |

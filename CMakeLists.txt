@@ -12,6 +12,7 @@ option(SQLITE_BUILD_TESTS "Build testfixture and register the TCL test suite wit
 option(SQLITE_BUILD_BENCHMARKS "Build speedtest1" ON)
 option(SQLITE_BUILD_APPLICATIONS "Build sqldiff and sqlite3-rsync" ON)
 option(SQLITE_CPP_BUILD_UTILS "Build the sqlite-cpp sqlite::utils library (SRS phase 1)" ON)
+option(SQLITE_CPP_BUILD_BACKEND_OS "Build the sqlite-cpp sqlite::backend::os library (SRS phase 2)" ON)
 
 # Called unconditionally (rather than only under SQLITE_BUILD_TESTS below) so
 # that libraries/libsqlite-utils's own tests/CMakeLists.txt -- added via
@@ -30,6 +31,13 @@ add_subdirectory(libraries/libsqlite3)
 # library, added alongside (not replacing) the legacy libsqlite3 target above.
 if(SQLITE_CPP_BUILD_UTILS)
     sqlite_cpp_require_utils()
+endif()
+
+# SRS phase 2 (S12): sqlite-backend-os, the FR-6 paradigm case (unix/Windows
+# selected structurally -- see libraries/libsqlite-backend-os/docs/index.md
+# for how that adapts to a header-only library).
+if(SQLITE_CPP_BUILD_BACKEND_OS)
+    sqlite_cpp_require_backend_os()
 endif()
 
 if(SQLITE_BUILD_SHELL)
