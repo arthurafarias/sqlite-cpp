@@ -64,3 +64,20 @@ function(sqlite_cpp_require_core_virtual_machine)
         ${CMAKE_BINARY_DIR}/libsqlite-core-virtual-machine
     )
 endfunction()
+
+# Resolves the sqlite::compiler::tokenizer target. Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_compiler_tokenizer)
+    if(TARGET sqlite::compiler::tokenizer)
+        return()
+    endif()
+
+    find_package(sqlite-compiler-tokenizer CONFIG QUIET)
+    if(TARGET sqlite::compiler::tokenizer)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite-compiler-tokenizer
+        ${CMAKE_BINARY_DIR}/libsqlite-compiler-tokenizer
+    )
+endfunction()

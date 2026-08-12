@@ -12,7 +12,7 @@ refactor does not replace.
 ## sqlite-cpp libraries
 
 Per the SRS's [phased delivery plan](../SRS.md#12-phased-delivery-plan), phases
-1-3 exist so far:
+1-4 (partial) exist so far:
 
 | Library | Status | Docs |
 |---|---|---|
@@ -20,7 +20,8 @@ Per the SRS's [phased delivery plan](../SRS.md#12-phased-delivery-plan), phases
 | `sqlite-backend-os` | Implemented (phase 2, part 1) | [libraries/libsqlite-backend-os/docs/index.md](../libraries/libsqlite-backend-os/docs/index.md) |
 | `sqlite-backend-pager` / `-tree` | Not yet started (phase 2, remainder) | -- |
 | `sqlite-core-virtual-machine` | Implemented (phase 3, scope renegotiated -- see its docs) | [libraries/libsqlite-core-virtual-machine/docs/index.md](../libraries/libsqlite-core-virtual-machine/docs/index.md) |
-| `sqlite-compiler-*` / `sqlite-core-command-processor` / `-interface` | Not yet started (phase 4-5) | -- |
+| `sqlite-compiler-tokenizer` | Implemented (phase 4, part 1) | [libraries/libsqlite-compiler-tokenizer/docs/index.md](../libraries/libsqlite-compiler-tokenizer/docs/index.md) |
+| `sqlite-compiler-parser` / `-code-generator` / `sqlite-core-command-processor` / `-interface` | Not yet started (phase 4 remainder / 5) | -- |
 | Extensions (`fts5`, `rtree`, ...) | Not yet started (phase 6) | -- |
 
 ## Existing project documentation

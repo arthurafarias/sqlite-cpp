@@ -14,6 +14,7 @@ option(SQLITE_BUILD_APPLICATIONS "Build sqldiff and sqlite3-rsync" ON)
 option(SQLITE_CPP_BUILD_UTILS "Build the sqlite-cpp sqlite::utils library (SRS phase 1)" ON)
 option(SQLITE_CPP_BUILD_BACKEND_OS "Build the sqlite-cpp sqlite::backend::os library (SRS phase 2)" ON)
 option(SQLITE_CPP_BUILD_CORE_VIRTUAL_MACHINE "Build the sqlite-cpp sqlite::core::virtual_machine library (SRS phase 3)" ON)
+option(SQLITE_CPP_BUILD_COMPILER_TOKENIZER "Build the sqlite-cpp sqlite::compiler::tokenizer library (SRS phase 4, part 1)" ON)
 
 # Called unconditionally (rather than only under SQLITE_BUILD_TESTS below) so
 # that libraries/libsqlite-utils's own tests/CMakeLists.txt -- added via
@@ -48,6 +49,15 @@ endif()
 # yet).
 if(SQLITE_CPP_BUILD_CORE_VIRTUAL_MACHINE)
     sqlite_cpp_require_core_virtual_machine()
+endif()
+
+# SRS phase 4, part 1 (S12): sqlite-compiler-tokenizer -- "tokenizer and
+# parser first (lower risk)", per the SRS's own note that phase 4's
+# code-generator/command-processor half needs its own separate design
+# review before starting (S11.2). Parser, code-generator, and
+# command-processor remain unstarted.
+if(SQLITE_CPP_BUILD_COMPILER_TOKENIZER)
+    sqlite_cpp_require_compiler_tokenizer()
 endif()
 
 if(SQLITE_BUILD_SHELL)
