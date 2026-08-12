@@ -47,3 +47,20 @@ function(sqlite_cpp_require_backend_os)
         ${CMAKE_BINARY_DIR}/libsqlite-backend-os
     )
 endfunction()
+
+# Resolves the sqlite::core::virtual_machine target. Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_core_virtual_machine)
+    if(TARGET sqlite::core::virtual_machine)
+        return()
+    endif()
+
+    find_package(sqlite-core-virtual-machine CONFIG QUIET)
+    if(TARGET sqlite::core::virtual_machine)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite-core-virtual-machine
+        ${CMAKE_BINARY_DIR}/libsqlite-core-virtual-machine
+    )
+endfunction()

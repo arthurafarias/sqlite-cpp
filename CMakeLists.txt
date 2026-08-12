@@ -13,6 +13,7 @@ option(SQLITE_BUILD_BENCHMARKS "Build speedtest1" ON)
 option(SQLITE_BUILD_APPLICATIONS "Build sqldiff and sqlite3-rsync" ON)
 option(SQLITE_CPP_BUILD_UTILS "Build the sqlite-cpp sqlite::utils library (SRS phase 1)" ON)
 option(SQLITE_CPP_BUILD_BACKEND_OS "Build the sqlite-cpp sqlite::backend::os library (SRS phase 2)" ON)
+option(SQLITE_CPP_BUILD_CORE_VIRTUAL_MACHINE "Build the sqlite-cpp sqlite::core::virtual_machine library (SRS phase 3)" ON)
 
 # Called unconditionally (rather than only under SQLITE_BUILD_TESTS below) so
 # that libraries/libsqlite-utils's own tests/CMakeLists.txt -- added via
@@ -38,6 +39,15 @@ endif()
 # for how that adapts to a header-only library).
 if(SQLITE_CPP_BUILD_BACKEND_OS)
     sqlite_cpp_require_backend_os()
+endif()
+
+# SRS phase 3 (S12): sqlite-core-virtual-machine, the runtime half of the VDBE
+# only -- see libraries/libsqlite-core-virtual-machine/docs/index.md for this
+# phase's scoping (a self-contained VM exercised by hand-assembled programs,
+# since the compiler that would otherwise generate its bytecode doesn't exist
+# yet).
+if(SQLITE_CPP_BUILD_CORE_VIRTUAL_MACHINE)
+    sqlite_cpp_require_core_virtual_machine()
 endif()
 
 if(SQLITE_BUILD_SHELL)
