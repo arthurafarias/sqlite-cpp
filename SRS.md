@@ -9,7 +9,6 @@
 | **Target system** | A C++ reimplementation of the same functionality, decomposed into namespaced, header-only libraries |
 
 ---
-
 ## 1. Introduction
 
 ### 1.1 Purpose
