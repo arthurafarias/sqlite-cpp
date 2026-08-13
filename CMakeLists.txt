@@ -12,11 +12,6 @@ option(SQLITE_BUILD_TESTS "Build testfixture and register the TCL test suite wit
 option(SQLITE_BUILD_BENCHMARKS "Build speedtest1-legacy" ON)
 option(SQLITE_BUILD_APPLICATIONS "Build sqldiff-legacy and sqlite3-rsync-legacy" ON)
 
-# Called unconditionally (rather than only under SQLITE_BUILD_TESTS below) so
-# that libraries/libsqlite-utils's own tests/CMakeLists.txt -- added via
-# sqlite_cpp_require_utils() before the SQLITE_BUILD_TESTS block runs -- gets
-# a root CTestTestfile.cmake to register into; enable_testing() is otherwise
-# a no-op declaration and calling it twice is harmless.
 enable_testing()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SqliteFeatures.cmake)
@@ -24,10 +19,23 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SqliteCodegen.cmake)
 
 add_subdirectory(libraries/libsqlite3-legacy)
 
-# SRS 001 FR-2-FR-6 (legacy consolidation, per-library split, dynamic
-# linking, legacy executables, rewiring) are not yet done -- see
-# srs/001-legacy-restructure-and-dynamic-linking.md S6. Nothing under
-# libraries/ besides libsqlite3-legacy exists yet.
+# SRS 001 FR-4: each library builds as its own SHARED object over the
+# csrc/ FR-3 populated, with no target_link_libraries() between siblings
+# (see cmake/SqliteCppLibrary.cmake for why -- the real C symbol graph is
+# cyclic, and CMake refuses target-level cycles between SHARED libraries).
+add_subdirectory(libraries/libsqlite-utils)
+add_subdirectory(libraries/libsqlite-backend-os)
+add_subdirectory(libraries/libsqlite-backend-pager)
+add_subdirectory(libraries/libsqlite-backend-tree)
+add_subdirectory(libraries/libsqlite-core-virtual-machine)
+add_subdirectory(libraries/libsqlite-core-command-processor)
+add_subdirectory(libraries/libsqlite-core-interface)
+add_subdirectory(libraries/libsqlite-compiler-tokenizer)
+add_subdirectory(libraries/libsqlite-compiler-parser)
+add_subdirectory(libraries/libsqlite-compiler-code-generator)
+
+# SRS 001 FR-5-FR-6 (legacy executables, final rewiring) are not yet done --
+# see srs/001-legacy-restructure-and-dynamic-linking.md S6.
 
 if(SQLITE_BUILD_SHELL)
     add_subdirectory(applications/sqlite3-shell-legacy)

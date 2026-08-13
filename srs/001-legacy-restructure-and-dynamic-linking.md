@@ -56,16 +56,25 @@ starts:
 
 | Library | Legacy source (originals, see §4.2) | Responsibility |
 |---|---|---|
-| `sqlite-utils` | `mem0.c`,`mem1.c`,`mem2.c`,`mem3.c`,`mem5.c`,`malloc.c`,`util.c`,`printf.c`,`utf.c`,`hash.c`,`hash.h`,`mutex.c`,`mutex.h`,`random.c`,`status.c`,`fault.c` | Allocator, string/number formatting, hash table, mutex dispatch, PRNG, status counters |
-| `sqlite-backend-os` | `os.c`,`os.h`,`os_common.h`,`os_setup.h`,`os_unix.c`,`mutex_unix.c`,`os_win.c`,`os_win.h`,`mutex_w32.c`,`os_kv.c`,`memdb.c` | VFS interface + platform implementations |
+| `sqlite-utils` | `mem0.c`,`mem1.c`,`mem2.c`,`mem3.c`,`mem5.c`,`malloc.c`,`util.c`,`printf.c`,`utf.c`,`hash.c`,`hash.h`,`mutex.c`,`mutex.h`,`random.c`,`status.c`,`fault.c`,`global.c`† | Allocator, string/number formatting, hash table, mutex dispatch, PRNG, status counters, global config/constant tables |
+| `sqlite-backend-os` | `os.c`,`os.h`,`os_common.h`,`os_setup.h`,`os_unix.c`,`mutex_unix.c`,`os_win.c`,`os_win.h`,`mutex_w32.c`,`mutex_noop.c`†,`os_kv.c`,`memdb.c` | VFS interface + platform implementations |
 | `sqlite-backend-pager` | `pager.c`,`pager.h`,`wal.c`,`wal.h`,`pcache.c`,`pcache.h`,`pcache1.c`,`memjournal.c`,`bitvec.c` | Page cache, WAL, rollback journal |
-| `sqlite-backend-tree` | `btree.c`,`btree.h`,`btreeInt.h`,`dbpage.c`,`dbstat.c` | B-tree, page-level introspection |
+| `sqlite-backend-tree` | `btree.c`,`btree.h`,`btreeInt.h`,`btmutex.c`†,`dbpage.c`,`dbstat.c` | B-tree, page-level introspection |
 | `sqlite-core-virtual-machine` | `vdbe.c`,`vdbe.h`,`vdbeInt.h`,`opcodes.h`/`.c`(generated),`vdbeapi.c`,`vdbeaux.c`,`vdbemem.c`,`vdbesort.c`,`vdbeblob.c`,`vdbetrace.c`,`vdbevtab.c` | Bytecode interpreter, program construction, `Mem` handling |
-| `sqlite-core-command-processor` | `prepare.c`,`pragma.c`,`pragma.h`,`insert.c`,`update.c`,`delete.c`,`upsert.c`,`select.c`,`where.c`,`wherecode.c`,`whereexpr.c`,`whereInt.h`,`expr.c`,`resolve.c`,`walker.c`,`attach.c`,`alter.c`,`analyze.c`,`vacuum.c`,`table.c`,`rowset.c`,`build.c`,`trigger.c`,`window.c`,`fkey.c`,`auth.c`,`callback.c`,`treeview.c` | Statement orchestration: prepare, planning, schema mutation, triggers |
+| `sqlite-core-command-processor` | `prepare.c`,`pragma.c`,`pragma.h`,`insert.c`,`update.c`,`delete.c`,`upsert.c`,`select.c`,`where.c`,`wherecode.c`,`whereexpr.c`,`whereInt.h`,`expr.c`,`resolve.c`,`walker.c`,`attach.c`,`alter.c`,`analyze.c`,`vacuum.c`,`table.c`,`rowset.c`,`build.c`,`trigger.c`,`window.c`,`fkey.c`,`auth.c`,`callback.c`,`treeview.c`,`func.c`†,`json.c`†,`date.c`† | Statement orchestration: prepare, planning, schema mutation, triggers, built-in SQL functions |
 | `sqlite-core-interface` | `main.c`,`legacy.c`,`loadext.c`,`sqlite3ext.h`,`vtab.c`,`backup.c`,`notify.c`,`threads.c`,`complete.c` | Public API surface, object lifecycle, extension loading |
 | `sqlite-compiler-tokenizer` | `tokenize.c`,`keywordhash.h`(generated) | Tokenizer |
 | `sqlite-compiler-parser` | `parse.y`/`parse.c`/`parse.h`(generated) | Grammar/parser |
 | `sqlite-compiler-code-generator` | Opcode-emission portions of `select.c`,`expr.c`,`insert.c`,`update.c`,`delete.c`,`trigger.c`,`where.c`/`wherecode.c` | AST → VDBE bytecode |
+
+† Added during FR-4 (§6): missing from this table's original draft, discovered only when
+the corresponding library failed to resolve against the rest of the set at link time — see
+§6's FR-4 note for how they were found. `global.c` in particular holds cross-cutting state
+(the `sqlite3Config` struct, `sqlite3CtypeMap`, the opcode-property table, the built-in
+function hash `sqlite3BuiltinFunctions`) that doesn't cleanly belong to any one library;
+it's placed in `sqlite-utils` pragmatically, as the lowest-level library, not because its
+contents are "generic, SQL-unaware utilities" in the sense §3.2 of the old SRS 001 used
+that phrase — some of it (the opcode table, the function hash) plainly isn't.
 
 Extensions (`fts3`, `fts4`, `fts5`, `rtree`, `geopoly`, `session`, `rbu`, `icu`,
 `dbstat`/`dbpage`) are deferred — they stay built directly from `legacy/ext` for now and
@@ -222,11 +231,52 @@ from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-
     C++ conversion starts, not something FR-3's mechanical copy can do.
   97 files copied in total (88 unique, 8 duplicated per the code-generator note above,
   1 grammar source).
-- **FR-4–FR-6: open, not yet started.** Converting each library to dynamic linking,
-  redoing the legacy executables, and the final rewiring are each substantial, separate
-  pieces of work, tracked here as the next steps once this pass is picked back up.
-  `libraries/libsqlite3-legacy` and `applications/*-legacy` are untouched by FR-2/FR-3 —
-  they're CLI/build-tool executables, in scope for FR-5, not source-consolidation.
+- **FR-4 (Dynamic linking): done, with a discovered constraint.** Before writing any
+  CMake, a quick manual link test on `sqlite-utils` (§1.3's designated bottom-of-stack
+  library) surfaced 52 undefined symbols reaching into `Btree*`/`Pager*`/`Vdbe*` — layers
+  §1.3 places *above* it. SQLite's C implementation was never written with per-subsystem
+  link boundaries: every file shares one `sqliteInt.h` and calls freely across what §1.3
+  treats as layers. CMake also refuses genuine target-level cycles between `SHARED`
+  library targets ("Cyclic dependencies are allowed only among static libraries"), which
+  a literal reading of FR-4 (acyclic per §1.3) can't satisfy given the real symbol graph
+  is cyclic. Presented to the requester with the evidence; decision: build all 9 as real
+  `.so`s anyway, with **no `target_link_libraries()` between sibling sqlite-cpp
+  libraries** — each compiles independently (`cmake/SqliteCppLibrary.cmake`), left with
+  unresolved symbols by design (normal for a Linux `.so`), resolved at process load time
+  once something links against the whole set together (validated: a throwaway
+  executable linked with `-Wl,--no-as-needed` against all 9 `.so`s plus `opcodes.c`/
+  `ctime.c` as extra per-library generated sources resolves with zero undefined symbols
+  and runs). This is a temporary, deliberately imperfect bridge — real, encapsulated
+  per-library link boundaries are SRS 002's job, once each library has its own
+  namespaced C++ API instead of free functions sharing global state. Windows DLLs do not
+  support this kind of load-time resolution the same way ELF `.so`s do; that gap is
+  unaddressed and would need real work if Windows becomes a target platform.
+
+  That same link test also surfaced **six files missing from §1.3's original table**
+  entirely (`global.c`, `btmutex.c`, `func.c`, `json.c`, `mutex_noop.c`, `date.c`) — not
+  a circularity issue, a genuine gap in FR-3's file-to-library mapping. §1.3's table is
+  corrected in place (marked †) and the six files copied into the right library's
+  `csrc/` retroactively. `opcodes.c` and `ctime.c` (generated, like `compiler-parser`'s
+  `parse.c`) are wired as extra sources for `core-virtual-machine` and `core-interface`
+  respectively.
+
+  Also fixed as a byproduct: `cmake/SqliteCodegen.cmake`'s include-guard used
+  `CACHE INTERNAL`, which persists across separate `cmake` invocations on the same build
+  directory — so a CMakeLists.txt edit that triggers CMake's automatic reconfigure would
+  see the guard already `TRUE` from the *previous* run and return before `SQLITE_GENDIR`
+  and friends were (re-)defined, breaking every target that depends on them. Changed to
+  a plain variable (still correctly inherited by every `add_subdirectory()` scope within
+  one configure run, just not across separate runs). Pre-existing bug, not introduced by
+  this pass, but only exposed once nine libraries started including that file.
+
+  Verified: clean `cmake` configure, full workspace build (all 9 `.so`s plus
+  `libsqlite3-legacy` and every `-legacy` application), the smoke-link/run above, and
+  `ctest -R sqlite_veryquick` at the same pre-existing `zipfile-25.0`-only baseline.
+- **FR-5–FR-6: open, not yet started.** Redoing the legacy executables and the final
+  rewiring are each substantial, separate pieces of work, tracked here as the next steps
+  once this pass is picked back up. `libraries/libsqlite3-legacy` and
+  `applications/*-legacy` are untouched by FR-2/FR-3/FR-4 — they're CLI/build-tool
+  executables, in scope for FR-5, not source-consolidation or per-library linking.
 
 ---
 

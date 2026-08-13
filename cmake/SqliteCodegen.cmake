@@ -18,12 +18,18 @@
 
 # Target names created below (lemon-legacy, sqlite3_amalgamation, ...) are
 # global to the whole build, so this guard must survive across
-# add_subdirectory() scopes (each of which otherwise gets its own copy of a
-# plain variable) - hence CACHE INTERNAL.
+# add_subdirectory() scopes -- a plain variable set here, before any
+# add_subdirectory() call in the including scope, is inherited correctly by
+# every descendant scope for the rest of that configure run. It must NOT be
+# CACHE: a cache variable persists across separate `cmake` invocations on the
+# same build directory, so a later CMakeLists.txt edit that triggers CMake's
+# automatic reconfigure would see the guard already TRUE from the previous
+# run and return() before SQLITE_GENDIR and friends are (re-)defined in the
+# new run's scope, breaking every target that depends on them.
 if(SQLITE_CODEGEN_INCLUDED)
     return()
 endif()
-set(SQLITE_CODEGEN_INCLUDED TRUE CACHE INTERNAL "")
+set(SQLITE_CODEGEN_INCLUDED TRUE)
 
 find_program(TCLSH_EXECUTABLE NAMES tclsh tclsh8.6 tclsh8.7)
 if(NOT TCLSH_EXECUTABLE)
