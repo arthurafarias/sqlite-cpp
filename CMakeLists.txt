@@ -18,6 +18,7 @@ option(SQLITE_CPP_BUILD_COMPILER_TOKENIZER "Build the sqlite-cpp sqlite::compile
 option(SQLITE_CPP_BUILD_COMPILER_PARSER "Build the sqlite-cpp sqlite::compiler::parser library (SRS phase 4, part 1)" ON)
 option(SQLITE_CPP_BUILD_COMPILER_CODE_GENERATOR "Build the sqlite-cpp sqlite::compiler::code_generator library (SRS phase 4, code-generator slice)" ON)
 option(SQLITE_CPP_BUILD_BACKEND_TREE "Build the sqlite-cpp sqlite::backend::tree library (SRS phase 2, tree slice)" ON)
+option(SQLITE_CPP_BUILD_COMMAND_PROCESSOR "Build the sqlite-cpp sqlite::core::command_processor library (SRS phase 5, query slice: single-table SELECT orchestration only)" ON)
 
 # Called unconditionally (rather than only under SQLITE_BUILD_TESTS below) so
 # that libraries/libsqlite-utils's own tests/CMakeLists.txt -- added via
@@ -91,6 +92,32 @@ endif()
 if(SQLITE_CPP_BUILD_BACKEND_TREE)
     sqlite_cpp_require_backend_tree()
 endif()
+
+# SRS phase 5, query slice (S12): sqlite-core-command-processor --
+# single-table SELECT orchestration only (WHERE/result columns/DISTINCT/
+# ORDER BY/LIMIT/OFFSET), against a caller-supplied in-memory
+# table_descriptor rather than a real sqlite-backend-tree-backed catalog
+# (see libraries/libsqlite-core-command-processor/docs/index.md for why:
+# real storage integration needs an on-disk row-record format that doesn't
+# exist anywhere in this workspace yet). prepare/pragma/dml/schema/trigger/
+# window/fkey/auth/debug are not built this pass.
+if(SQLITE_CPP_BUILD_COMMAND_PROCESSOR)
+    sqlite_cpp_require_command_processor()
+    # A REPL demonstrating single-table SELECT execution end-to-end against
+    # a hardcoded in-memory demo table. Not applications/sqlite3-shell --
+    # see applications/sqlite-cpp-repl/docs/index.md and SRS 002 RR-3.
+    add_subdirectory(applications/sqlite-cpp-repl)
+endif()
+
+# SRS 002 RR-5/BR-2: the generator applications' complete C++ replacements
+# (RR-11: on by default, no gating option, matching the *-legacy generator
+# tools they're compared against -- see RR-7's generator_parity_* CTest
+# entries in tests/CMakeLists.txt). lemon's own replacement (the largest of
+# the four, a full LALR(1) engine) is deferred follow-up work; see
+# docs/index.md's legacy-track table.
+add_subdirectory(applications/mkkeywordhash)
+add_subdirectory(applications/mkopcodec)
+add_subdirectory(applications/mkopcodeh)
 
 if(SQLITE_BUILD_SHELL)
     add_subdirectory(applications/sqlite3-shell-legacy)

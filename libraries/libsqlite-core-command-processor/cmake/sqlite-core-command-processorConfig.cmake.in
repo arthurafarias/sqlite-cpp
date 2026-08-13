@@ -1,0 +1,4 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+include("${CMAKE_CURRENT_LIST_DIR}/sqlite-core-command-processorTargets.cmake")
+check_required_components(sqlite-core-command-processor)

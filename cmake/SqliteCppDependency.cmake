@@ -138,6 +138,23 @@ function(sqlite_cpp_require_compiler_code_generator)
     )
 endfunction()
 
+# Resolves the sqlite::core::command_processor target. Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_command_processor)
+    if(TARGET sqlite::core::command_processor)
+        return()
+    endif()
+
+    find_package(sqlite-core-command-processor CONFIG QUIET)
+    if(TARGET sqlite::core::command_processor)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite-core-command-processor
+        ${CMAKE_BINARY_DIR}/libsqlite-core-command-processor
+    )
+endfunction()
+
 # Resolves the sqlite::backend::tree target. Mirrors sqlite_cpp_require_utils().
 function(sqlite_cpp_require_backend_tree)
     if(TARGET sqlite::backend::tree)

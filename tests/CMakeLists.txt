@@ -124,3 +124,37 @@ add_test(
     WORKING_DIRECTORY ${SQLITE_TOP}
 )
 set_tests_properties(legacy_freeze_check PROPERTIES LABELS "comparison")
+
+# SRS 002 RR-7/TR-1: generator-output parity between each *-legacy
+# generator and its complete C++ replacement (RR-5), via
+# tool/check-generator-parity.sh. mkopcodec-legacy/mkopcodeh-legacy are TCL
+# scripts (no compiled binary, see their CMakeLists.txt), invoked directly
+# via TCLSH_EXECUTABLE; mkkeywordhash-legacy and the three new-track
+# executables are real targets, referenced via $<TARGET_FILE:...>.
+# mkopcodeh/mkopcodec are fed the same already-generated parse.h/vdbe.c and
+# opcodes.h the main codegen pipeline (cmake/SqliteCodegen.cmake) already
+# produces for libsqlite3-legacy/testfixture -- no separate generation step
+# needed.
+add_test(
+    NAME generator_parity_mkkeywordhash
+    COMMAND ${SQLITE_TOP}/tool/check-generator-parity.sh
+            "$<TARGET_FILE:mkkeywordhash-legacy>"
+            "$<TARGET_FILE:mkkeywordhash>"
+)
+set_tests_properties(generator_parity_mkkeywordhash PROPERTIES LABELS "comparison")
+
+add_test(
+    NAME generator_parity_mkopcodec
+    COMMAND ${SQLITE_TOP}/tool/check-generator-parity.sh
+            "${TCLSH_EXECUTABLE} ${SQLITE_TOP}/applications/mkopcodec-legacy/mkopcodec.tcl ${SQLITE_GENDIR}/opcodes.h"
+            "$<TARGET_FILE:mkopcodec> ${SQLITE_GENDIR}/opcodes.h"
+)
+set_tests_properties(generator_parity_mkopcodec PROPERTIES LABELS "comparison")
+
+add_test(
+    NAME generator_parity_mkopcodeh
+    COMMAND ${SQLITE_TOP}/tool/check-generator-parity.sh
+            "cat ${SQLITE_GENDIR}/parse.h ${SQLITE_TOP}/src/vdbe.c | ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/applications/mkopcodeh-legacy/mkopcodeh.tcl"
+            "cat ${SQLITE_GENDIR}/parse.h ${SQLITE_TOP}/src/vdbe.c | $<TARGET_FILE:mkopcodeh>"
+)
+set_tests_properties(generator_parity_mkopcodeh PROPERTIES LABELS "comparison")
