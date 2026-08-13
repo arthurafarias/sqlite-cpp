@@ -1,4 +1,0 @@
-@PACKAGE_INIT@
-include(CMakeFindDependencyMacro)
-include("${CMAKE_CURRENT_LIST_DIR}/sqlite-compiler-tokenizerTargets.cmake")
-check_required_components(sqlite-compiler-tokenizer)

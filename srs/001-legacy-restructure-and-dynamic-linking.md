@@ -1,0 +1,210 @@
+# Software Requirements Specification
+
+## Legacy Restructure & Dynamic Library Split
+
+*SRS 001 — see the [SRS index](index.md) for the full list of SRS documents.*
+
+| | |
+|---|---|
+| **Document status** | Draft v0.1 — requirements capture, not yet reviewed or approved |
+| **Subject system** | `sqlite-src-3530400` (SQLite 3.53.4)'s original C sources |
+| **Target system** | The same functionality, split into per-purpose C libraries, still plain C, but compiled and dynamically linked instead of amalgamated |
+
+---
+
+## 1. Introduction
+
+### 1.1 Purpose
+
+This document supersedes the previous `srs/001-sqlite-cpp-modularization.md`,
+`srs/002-full-c-retirement.md`, and `srs/003-sil4-safety-integrity-validation.md`
+outright. Those documents specified a header-only, fully-inlined C++ rewrite done in one
+pass, a permanent legacy-vs-new comparison track kept in lockstep forever, and SIL4
+safety-integrity validation on top. That direction is abandoned. All C++-derived work
+produced under it (nine header-only libraries under `libraries/`, `sqlite-cpp-repl`, three
+ported generator tools, and the legacy-freeze/parity-testing apparatus) has been removed
+from the tree per this document's own FR-1.
+
+The new direction is incremental and mechanical-first: get the existing C source
+physically reorganized into per-purpose libraries and building as real, dynamically
+linked shared objects — still plain C — *before* any C++ conversion is attempted. C++
+conversion is [SRS 002](002-cpp-conversion.md)'s job, once a library builds this way.
+STL-based internals are [SRS 003](003-stl-based-architecture.md)'s job, once a library
+is converted. The three documents are now a strict linear pipeline, applied library by
+library, not three independent additive layers as before.
+
+### 1.2 Scope
+
+**In scope:** relocating the untouched original SQLite source into a single reference
+copy (§4.2), reasoning about and copying the relevant files into per-library source
+trees (§4.3), converting every library and every legacy executable to build as a
+dynamically linked target (§4.4–§4.5), and rewiring the CMake workspace so it builds
+end-to-end again (§4.6).
+
+**Out of scope:** any C→C++ conversion (SRS 002), any STL-based redesign (SRS 003), any
+change to the on-disk format, SQL semantics, or the existing TCL test suite. No
+permanent legacy-vs-new comparison track is established this time — `./legacy` (§4.2)
+is a one-time source origin the libraries are populated from, not a target kept in
+lockstep going forward.
+
+### 1.3 Library Decomposition
+
+The library boundaries from the previous SRS 001 are reused unchanged — they were sound
+independent of the header-only-C++ delivery mechanism that document also specified, and
+[SRS 002](002-cpp-conversion.md) depends on the same namespace names once conversion
+starts:
+
+| Library | Legacy source (originals, see §4.2) | Responsibility |
+|---|---|---|
+| `sqlite-utils` | `mem0.c`,`mem1.c`,`mem2.c`,`mem3.c`,`mem5.c`,`malloc.c`,`util.c`,`printf.c`,`utf.c`,`hash.c`,`hash.h`,`mutex.c`,`mutex.h`,`random.c`,`status.c`,`fault.c` | Allocator, string/number formatting, hash table, mutex dispatch, PRNG, status counters |
+| `sqlite-backend-os` | `os.c`,`os.h`,`os_common.h`,`os_setup.h`,`os_unix.c`,`mutex_unix.c`,`os_win.c`,`os_win.h`,`mutex_w32.c`,`os_kv.c`,`memdb.c` | VFS interface + platform implementations |
+| `sqlite-backend-pager` | `pager.c`,`pager.h`,`wal.c`,`wal.h`,`pcache.c`,`pcache.h`,`pcache1.c`,`memjournal.c`,`bitvec.c` | Page cache, WAL, rollback journal |
+| `sqlite-backend-tree` | `btree.c`,`btree.h`,`btreeInt.h`,`dbpage.c`,`dbstat.c` | B-tree, page-level introspection |
+| `sqlite-core-virtual-machine` | `vdbe.c`,`vdbe.h`,`vdbeInt.h`,`opcodes.h`/`.c`(generated),`vdbeapi.c`,`vdbeaux.c`,`vdbemem.c`,`vdbesort.c`,`vdbeblob.c`,`vdbetrace.c`,`vdbevtab.c` | Bytecode interpreter, program construction, `Mem` handling |
+| `sqlite-core-command-processor` | `prepare.c`,`pragma.c`,`pragma.h`,`insert.c`,`update.c`,`delete.c`,`upsert.c`,`select.c`,`where.c`,`wherecode.c`,`whereexpr.c`,`whereInt.h`,`expr.c`,`resolve.c`,`walker.c`,`attach.c`,`alter.c`,`analyze.c`,`vacuum.c`,`table.c`,`rowset.c`,`build.c`,`trigger.c`,`window.c`,`fkey.c`,`auth.c`,`callback.c`,`treeview.c` | Statement orchestration: prepare, planning, schema mutation, triggers |
+| `sqlite-core-interface` | `main.c`,`legacy.c`,`loadext.c`,`sqlite3ext.h`,`vtab.c`,`backup.c`,`notify.c`,`threads.c`,`complete.c` | Public API surface, object lifecycle, extension loading |
+| `sqlite-compiler-tokenizer` | `tokenize.c`,`keywordhash.h`(generated) | Tokenizer |
+| `sqlite-compiler-parser` | `parse.y`/`parse.c`/`parse.h`(generated) | Grammar/parser |
+| `sqlite-compiler-code-generator` | Opcode-emission portions of `select.c`,`expr.c`,`insert.c`,`update.c`,`delete.c`,`trigger.c`,`where.c`/`wherecode.c` | AST → VDBE bytecode |
+
+Extensions (`fts3`, `fts4`, `fts5`, `rtree`, `geopoly`, `session`, `rbu`, `icu`,
+`dbstat`/`dbpage`) are deferred — they stay built directly from `legacy/ext` for now and
+are not split into their own libraries by this document.
+
+### 1.4 References
+
+- [SRS 002](002-cpp-conversion.md) — the C→C++ conversion applied to each library once
+  it builds per this document.
+- [SRS 003](003-stl-based-architecture.md) — the STL-based internals conversion applied
+  once SRS 002 has landed for a library.
+- [srs/index.md](index.md) — the SRS index and document relationship.
+
+---
+
+## 2. Overall Description
+
+### 2.1 Product Perspective
+
+The target of this document alone is *not* a drop-in `sqlite3` replacement — it's a
+build-system and source-tree restructuring milestone: the same C code that already
+exists, split along the library boundaries in §1.3, each compiled to its own shared
+object, with the legacy CLI tools linking against those `.so`s dynamically instead of
+against a single statically-embedded amalgamation. Behavior, SQL dialect, and on-disk
+format are unchanged, since no line of implementation logic is edited by this document
+— only where each file lives and how it's compiled.
+
+### 2.2 Design and Implementation Constraints
+
+- Must not modify `test/`, `test/testrunner.tcl`, or any `.test` file — those remain the
+  acceptance oracle.
+- Must build with the toolchain already validated for this repository (GCC 16.2, CMake
+  4.4.2).
+- No behavioral change is in scope; this document is purely about physical source
+  organization and link mode.
+
+---
+
+## 3. Prior State (What FR-1 Removes)
+
+Before this document's FR-1, the tree held:
+- Nine header-only C++ libraries under `libraries/` (`libsqlite-utils`,
+  `libsqlite-backend-{os,pager,tree}`, `libsqlite-core-{virtual-machine,
+  command-processor}`, `libsqlite-compiler-{tokenizer,parser,code-generator}`).
+- `applications/sqlite-cpp-repl` and three ported C++ generator tools
+  (`applications/{mkkeywordhash,mkopcodec,mkopcodeh}`, unsuffixed).
+- A legacy-freeze/parity-testing apparatus (`tests/legacy-freeze/`,
+  `tool/check-legacy-freeze.sh`, `tool/check-generator-parity.sh`,
+  `tool/update-legacy-freeze-manifest.sh`, `tool/legacy-freeze-common.sh`,
+  `cmake/SqliteCppDependency.cmake`).
+
+All of the above is removed by FR-1. `libraries/libsqlite3-legacy` and the
+`applications/*-legacy` directories (plain, unmodified original source, already renamed
+from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-2 instead.
+
+---
+
+## 4. Functional Requirements
+
+- **FR-1 (Cleanup).** Remove everything listed in §3 as removed, preserving the
+  top-level directory layout (`libraries/`, `applications/`, `cmake/`, `tests/`,
+  `docs/`, `srs/` continue to exist; their old-plan-specific contents don't). CMake
+  files referencing removed targets/paths (root `CMakeLists.txt`, `tests/CMakeLists.txt`)
+  are updated in the same pass so the tree stays valid CMake, even though full
+  buildability isn't restored until FR-6.
+
+- **FR-2 (Legacy consolidation).** Relocate the untouched original SQLite source —
+  `src/`, `ext/`, `tool/` (minus the parity/freeze scripts FR-1 removes), `compat/` —
+  into a single top-level `legacy/` tree (`legacy/src`, `legacy/ext`, `legacy/tool`,
+  `legacy/compat`), preserving internal structure. Update every `SQLITE_TOP`-based
+  reference in the codegen/build pipeline accordingly. `test/`, `mptest/`, `doc/` stay
+  at the repository root — they are the behavioral oracle and reference documentation,
+  not implementation source being restructured, and this document does not move them.
+  `libraries/libsqlite3-legacy` and `applications/*-legacy` fold into this consolidated
+  tree as part of the same move (their content is exactly this original source, already
+  isolated from the old header-only-C++ libraries).
+
+- **FR-3 (Per-library population).** For each library in §1.3's table, copy (not move)
+  its listed files from `legacy/src` / `legacy/ext` into `libraries/<name>/csrc` (plain
+  C, unrenamed, unmodified). `legacy/` remains the single untouched source of truth;
+  every `libraries/<name>/csrc` file is a copy, so a library's later edits (SRS 002,
+  SRS 003) never risk drifting the reference copy. A file needed by more than one
+  library (there are a few boundary cases, e.g. `vdbeaux.c`'s program-construction API
+  consumed by both the VM and the compiler) is copied into each consuming library rather
+  than shared, since each library must build independently.
+
+- **FR-4 (Dynamic linking).** Each `libraries/<name>` becomes a real compiled target —
+  `add_library(<name> SHARED ...)` over its `csrc/` — replacing the header-only/
+  `INTERFACE`-library pattern entirely. Each library ships a public header set, its own
+  `CMakeLists.txt` + `cmake/<Name>Config.cmake.in` + `CMakePackageConfigHelpers` export
+  (mirroring the existing `libsqlite3-legacy` pattern), and a versioned `SONAME`.
+  Cross-library dependencies (§1.3's ordering: utils → backend → core → compiler) are
+  expressed as `target_link_libraries(... PUBLIC ...)` against the dependency's shared
+  object, not by re-including its sources.
+
+- **FR-5 (Legacy executables).** The CLI tools — `sqlite3` shell, `sqldiff`,
+  `sqlite3-rsync`, `speedtest1`, and the generator tools `lemon`, `mkkeywordhash`,
+  `mkopcodeh`, `mkopcodec` — get the same treatment: their sources come from `legacy/`
+  (via FR-2/FR-3's copy pattern), and they link dynamically against the FR-4 shared
+  objects instead of statically embedding the amalgamation or a private copy of their
+  source.
+
+- **FR-6 (Rewiring).** Root `CMakeLists.txt` and `cmake/*.cmake` are updated so the
+  whole workspace configures and builds end-to-end again, and the existing TCL oracle
+  (`sqlite_veryquick`/`sqlite_fulltest` via `testfixture`) passes unmodified against the
+  result.
+
+---
+
+## 5. Acceptance Criteria
+
+1. `cmake --build` succeeds for the full workspace: every `libraries/<name>` produces a
+   `.so`, every application in FR-5 links against them dynamically (verify with `ldd`),
+   and no target still compiles a copy of the full amalgamation into itself.
+2. `ctest` — `sqlite_veryquick` — passes with the same pre-existing `zipfile-25.0` flake
+   as the only permitted failure.
+3. `legacy/` contains a complete, untouched copy of the original `src/`, `ext/`,
+   `tool/`, `compat/` trees; nothing under `legacy/` is ever edited by a later library
+   pass.
+
+---
+
+## 6. Status
+
+- **FR-1 (Cleanup): done.** The old-plan artifacts listed in §3 have been removed and
+  the CMake files fixed up to stay valid.
+- **FR-2–FR-6: open, not yet started.** Populating `legacy/`, reasoning the per-library
+  file copy, converting to dynamic linking, redoing the legacy executables, and the
+  final rewiring are each substantial, separate pieces of work, tracked here as the next
+  steps once this pass is picked back up. Until FR-6 lands, the workspace is not
+  expected to fully build — FR-1 alone intentionally leaves it in a transitional,
+  partially-wired state.
+
+---
+
+## 7. Glossary
+
+| Term | Meaning |
+|---|---|
+| `legacy/` | The single, untouched reference copy of the original SQLite C source (§4.2), not a comparison target — see §1.1 |
+| `csrc/` | Per-library plain-C source directory populated by FR-3, copied from `legacy/` |
+| SONAME | The shared-object version name embedded in a `.so`, used by the dynamic linker |
