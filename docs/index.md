@@ -21,7 +21,9 @@ Per the SRS's [phased delivery plan](../SRS.md#12-phased-delivery-plan), phases
 | `sqlite-backend-pager` / `-tree` | Not yet started (phase 2, remainder) | -- |
 | `sqlite-core-virtual-machine` | Implemented (phase 3, scope renegotiated -- see its docs) | [libraries/libsqlite-core-virtual-machine/docs/index.md](../libraries/libsqlite-core-virtual-machine/docs/index.md) |
 | `sqlite-compiler-tokenizer` | Implemented (phase 4, part 1) | [libraries/libsqlite-compiler-tokenizer/docs/index.md](../libraries/libsqlite-compiler-tokenizer/docs/index.md) |
-| `sqlite-compiler-parser` / `-code-generator` / `sqlite-core-command-processor` / `-interface` | Not yet started (phase 4 remainder / 5) | -- |
+| `sqlite-compiler-parser` | Implemented (phase 4, part 1, scope: expressions + single SELECT -- see its docs) | [libraries/libsqlite-compiler-parser/docs/index.md](../libraries/libsqlite-compiler-parser/docs/index.md) |
+| `sqlite-compiler-code-generator` | Implemented (phase 4, S11.2's highest-risk seam, scope: expressions only -- see its docs) | [libraries/libsqlite-compiler-code-generator/docs/index.md](../libraries/libsqlite-compiler-code-generator/docs/index.md) |
+| `sqlite-core-command-processor` / `sqlite-core-interface` | Not yet started (phase 5) | -- |
 | Extensions (`fts5`, `rtree`, ...) | Not yet started (phase 6) | -- |
 
 ## Existing project documentation

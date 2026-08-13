@@ -15,6 +15,8 @@ option(SQLITE_CPP_BUILD_UTILS "Build the sqlite-cpp sqlite::utils library (SRS p
 option(SQLITE_CPP_BUILD_BACKEND_OS "Build the sqlite-cpp sqlite::backend::os library (SRS phase 2)" ON)
 option(SQLITE_CPP_BUILD_CORE_VIRTUAL_MACHINE "Build the sqlite-cpp sqlite::core::virtual_machine library (SRS phase 3)" ON)
 option(SQLITE_CPP_BUILD_COMPILER_TOKENIZER "Build the sqlite-cpp sqlite::compiler::tokenizer library (SRS phase 4, part 1)" ON)
+option(SQLITE_CPP_BUILD_COMPILER_PARSER "Build the sqlite-cpp sqlite::compiler::parser library (SRS phase 4, part 1)" ON)
+option(SQLITE_CPP_BUILD_COMPILER_CODE_GENERATOR "Build the sqlite-cpp sqlite::compiler::code_generator library (SRS phase 4, code-generator slice)" ON)
 
 # Called unconditionally (rather than only under SQLITE_BUILD_TESTS below) so
 # that libraries/libsqlite-utils's own tests/CMakeLists.txt -- added via
@@ -58,6 +60,25 @@ endif()
 # command-processor remain unstarted.
 if(SQLITE_CPP_BUILD_COMPILER_TOKENIZER)
     sqlite_cpp_require_compiler_tokenizer()
+endif()
+
+# SRS phase 4, part 1 (S12): sqlite-compiler-parser -- a hand-written
+# recursive-descent/precedence-climbing parser (not a port of the generated
+# LALR tables) for expressions and single SELECT statements. See
+# libraries/libsqlite-compiler-parser/docs/index.md for what's deferred
+# (INSERT/UPDATE/DELETE, CREATE TABLE/INDEX/VIEW/TRIGGER, ALTER, compound
+# SELECT, CTEs, subqueries, window functions) and why.
+if(SQLITE_CPP_BUILD_COMPILER_PARSER)
+    sqlite_cpp_require_compiler_parser()
+endif()
+
+# SRS phase 4, code-generator slice (S12, S11.2): sqlite-compiler-code-generator
+# -- the AST-to-bytecode seam S11.2 flags as the refactor's highest-risk
+# piece. Scoped to compiling expressions (not full statements -- see
+# libraries/libsqlite-compiler-code-generator/docs/index.md) using the
+# opcode set sqlite-core-virtual-machine currently implements.
+if(SQLITE_CPP_BUILD_COMPILER_CODE_GENERATOR)
+    sqlite_cpp_require_compiler_code_generator()
 endif()
 
 if(SQLITE_BUILD_SHELL)

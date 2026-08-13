@@ -81,3 +81,37 @@ function(sqlite_cpp_require_compiler_tokenizer)
         ${CMAKE_BINARY_DIR}/libsqlite-compiler-tokenizer
     )
 endfunction()
+
+# Resolves the sqlite::compiler::parser target. Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_compiler_parser)
+    if(TARGET sqlite::compiler::parser)
+        return()
+    endif()
+
+    find_package(sqlite-compiler-parser CONFIG QUIET)
+    if(TARGET sqlite::compiler::parser)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite-compiler-parser
+        ${CMAKE_BINARY_DIR}/libsqlite-compiler-parser
+    )
+endfunction()
+
+# Resolves the sqlite::compiler::code_generator target. Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_compiler_code_generator)
+    if(TARGET sqlite::compiler::code_generator)
+        return()
+    endif()
+
+    find_package(sqlite-compiler-code-generator CONFIG QUIET)
+    if(TARGET sqlite::compiler::code_generator)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite-compiler-code-generator
+        ${CMAKE_BINARY_DIR}/libsqlite-compiler-code-generator
+    )
+endfunction()
