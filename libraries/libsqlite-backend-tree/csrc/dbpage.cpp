@@ -129,7 +129,8 @@ static int dbpageBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** unavailable
   */
   for(i=0; i<pIdxInfo->nConstraint; i++){
-    struct sqlite3_index_constraint *p = &pIdxInfo->aConstraint[i];
+    sqlite3_index_info::sqlite3_index_constraint *p =
+        &pIdxInfo->aConstraint[i];
     if( p->iColumn!=DBPAGE_COLUMN_SCHEMA ) continue;
     if( p->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
     if( !p->usable ){
@@ -150,7 +151,8 @@ static int dbpageBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 
   /* Check for constraints against pgno */
   for(i=0; i<pIdxInfo->nConstraint; i++){
-    struct sqlite3_index_constraint *p = &pIdxInfo->aConstraint[i];
+    sqlite3_index_info::sqlite3_index_constraint *p =
+        &pIdxInfo->aConstraint[i];
     if( p->usable && p->iColumn<=0 && p->op==SQLITE_INDEX_CONSTRAINT_EQ ){
       pIdxInfo->estimatedRows = 1;
       pIdxInfo->idxFlags = SQLITE_INDEX_SCAN_UNIQUE;

@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| **Document status** | Draft v0.1 — requirements capture, not yet reviewed or approved |
+| **Document status** | **In progress — four dependency leaves implemented** |
 | **Subject system** | A `libraries/<name>` library built per [SRS 001](001-legacy-restructure-and-dynamic-linking.md): plain C, dynamically linked, populated from `legacy/` |
 | **Target system** | The same library, same shared-object boundary, converted to namespaced C++ |
 
@@ -20,8 +20,9 @@ This document specifies how a library is converted from the plain-C form
 [SRS 001](001-legacy-restructure-and-dynamic-linking.md) produces into C++. It applies
 **per library**, once that library builds and links dynamically per SRS 001 FR-4 — it is
 not a whole-workspace big-bang conversion. A library may be at SRS 001's end state while
-its siblings are already through this document, or vice versa; §1.3's dependency order
-determines a sensible sequence but this document does not mandate one.
+its siblings are already through this document, or vice versa. Conversion advances from
+the leaves of §1.3's dependency graph; the first conversion is therefore the
+`sqlite-utils` leaf.
 
 ### 1.2 Scope
 
@@ -30,18 +31,20 @@ determines a sensible sequence but this document does not mandate one.
 that owns the state it mutates (a "state container"), namespacing the result, and
 re-wiring that library's CMake target so it still builds and links dynamically.
 
-**Out of scope:** replacing internal data structures with STL equivalents — that's
-[SRS 003](003-stl-based-architecture.md), applied only after this document's conversion
-lands for a library. This document changes *language and organization*, not
-*implementation strategy*.
+**Out of scope:** splitting a library's files one-state-container-per-file along
+namespace lines — that's [SRS 003](003-file-organization-based-on-cpp-namespacing.md).
+Replacing internal data structures with STL equivalents — that's
+[SRS 004](004-stl-based-architecture.md), applied only after SRS 003 lands for a
+library. This document changes *language*, not *file organization* or *implementation
+strategy*.
 
 ### 1.3 References
 
 - [SRS 001](001-legacy-restructure-and-dynamic-linking.md) — produces this document's
   starting point (a dynamically linked, plain-C library) and defines the namespace-name
   mapping (§1.3 of that document) reused here unchanged.
-- [SRS 003](003-stl-based-architecture.md) — the next pass, applied to this document's
-  output.
+- [SRS 003](003-file-organization-based-on-cpp-namespacing.md) — the next pass, applied
+  to this document's output.
 
 ---
 
@@ -103,3 +106,32 @@ lands for a library. This document changes *language and organization*, not
 | Term | Meaning |
 |---|---|
 | State container | A class/struct grouping a set of functions with the state they mutate, replacing a C handle-plus-free-functions pattern (§2 FR-3) |
+
+---
+
+## 5. Implementation Status
+
+SRS 002 is implemented through the first four dependency leaves, ending with
+`sqlite-backend-tree`:
+
+- Every static file in all four libraries' `csrc` directories is now `.cpp` or
+  `.hpp`, and all four shared targets require C++17. The other six split
+  libraries remain C targets at the SRS 001 end state.
+- `sqlite::utils::RuntimeState` is the installed namespaced state-container API
+  for a runtime-status operation and its current/high-water values.
+- `sqlite::backend::os::VfsState` is the installed namespaced state-container
+  API for finding, registering, and unregistering VFS state.
+- `sqlite::backend::pager::WalCheckpointState` is the installed namespaced
+  state-container API for running a WAL checkpoint and retaining its frame
+  counts.
+- `sqlite::backend::tree::SharedCacheState` is the installed namespaced
+  state-container API for applying and tracking the process-wide shared-cache
+  setting owned by the B-tree layer.
+- The unconverted C dependents temporarily consume their existing symbols
+  through the single external `cmake/SqliteConvertedCFacade.hpp` compatibility
+  boundary. No converted library declares `extern "C"` in owned source.
+- Dedicated smoke tests exercise all four namespaced APIs while linking the
+  mixed C/C++ ten-library graph.
+
+The next dependency leaf is `sqlite-core-virtual-machine`; the remaining
+libraries are not yet claimed as converted.

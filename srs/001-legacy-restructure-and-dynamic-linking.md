@@ -29,9 +29,11 @@ The new direction is incremental and mechanical-first: get the existing C source
 physically reorganized into per-purpose libraries and building as real, dynamically
 linked shared objects — still plain C — *before* any C++ conversion is attempted. C++
 conversion is [SRS 002](002-cpp-conversion.md)'s job, once a library builds this way.
-STL-based internals are [SRS 003](003-stl-based-architecture.md)'s job, once a library
-is converted. The three documents are now a strict linear pipeline, applied library by
-library, not three independent additive layers as before.
+Namespace-mirrored file organization is
+[SRS 003](003-file-organization-based-on-cpp-namespacing.md)'s job, once a library is
+converted. STL-based internals are [SRS 004](004-stl-based-architecture.md)'s job, once
+a library is reorganized. These documents are now a strict linear pipeline, applied
+library by library, not independent additive layers as before.
 
 ### 1.2 Scope
 
@@ -41,8 +43,9 @@ trees (§4.3), converting every library and every legacy executable to build as 
 dynamically linked target (§4.4–§4.5), and rewiring the CMake workspace so it builds
 end-to-end again (§4.6).
 
-**Out of scope:** any C→C++ conversion (SRS 002), any STL-based redesign (SRS 003), any
-change to the on-disk format, SQL semantics, or the existing TCL test suite. No
+**Out of scope:** any C→C++ conversion (SRS 002), any namespace-mirrored file
+reorganization (SRS 003), any STL-based redesign (SRS 004), any change to the on-disk
+format, SQL semantics, or the existing TCL test suite. No
 permanent legacy-vs-new comparison track is established this time — `./legacy` (§4.2)
 is a one-time source origin the libraries are populated from, not a target kept in
 lockstep going forward.
@@ -84,8 +87,10 @@ are not split into their own libraries by this document.
 
 - [SRS 002](002-cpp-conversion.md) — the C→C++ conversion applied to each library once
   it builds per this document.
-- [SRS 003](003-stl-based-architecture.md) — the STL-based internals conversion applied
-  once SRS 002 has landed for a library.
+- [SRS 003](003-file-organization-based-on-cpp-namespacing.md) — the namespace-mirrored
+  file reorganization applied once SRS 002 has landed for a library.
+- [SRS 004](004-stl-based-architecture.md) — the STL-based internals conversion applied
+  once SRS 003 has landed for a library.
 - [srs/index.md](index.md) — the SRS index and document relationship.
 
 ---
@@ -156,7 +161,8 @@ from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-
   its listed files from `legacy/src` / `legacy/ext` into `libraries/<name>/csrc` (plain
   C, unrenamed, unmodified). `legacy/` remains the single untouched source of truth;
   every `libraries/<name>/csrc` file is a copy, so a library's later edits (SRS 002,
-  SRS 003) never risk drifting the reference copy. A file needed by more than one
+  SRS 003, SRS 004) never risk drifting the reference copy. A file needed by more than
+  one
   library (there are a few boundary cases, e.g. `vdbeaux.c`'s program-construction API
   consumed by both the VM and the compiler) is copied into each consuming library rather
   than shared, since each library must build independently.

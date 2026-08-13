@@ -49,7 +49,9 @@ set(SQLITE_CPP_LIBRARY_NAMES
     compiler-tokenizer compiler-parser compiler-code-generator
 )
 
-# Each library compiles its own csrc/*.c into a SHARED object. No
+# Each library compiles the C or C++ sources currently present in csrc/ into a
+# SHARED object. This mixed-source discovery is what allows SRS 002 to advance
+# one dependency leaf at a time. No
 # target_link_libraries() is declared between sibling sqlite-cpp libraries --
 # CMake refuses genuine target-level cycles between SHARED_LIBRARY targets
 # ("Cyclic dependencies are allowed only among static libraries"), and the
@@ -59,13 +61,10 @@ set(SQLITE_CPP_LIBRARY_NAMES
 # with unresolved symbols by design -- normal for a Linux .so, resolved at
 # process load time once something (a test binary, an application) links
 # against the whole set together. Real, encapsulated per-library link
-# boundaries are SRS 002's job, once each library has its own namespaced
-# C++ API instead of free functions sharing one global sqliteInt.h.
+# boundaries remain a private implementation constraint during the conversion.
 include_guard(GLOBAL)
 
-# Extra arguments are additional generated source files (e.g. compiler-parser's
-# ${SQLITE_GENDIR}/parse.c, produced by lemon -- there's no static parse.c to
-# glob, only the parse.y grammar source csrc/ actually holds).
+# Extra arguments are generated sources (for example compiler-parser's parse.c).
 function(sqlite_cpp_add_library name)
     file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION SQLITE_CPP_VERSION_STRING LIMIT_COUNT 1)
     string(STRIP "${SQLITE_CPP_VERSION_STRING}" SQLITE_CPP_VERSION_STRING)
@@ -73,25 +72,57 @@ function(sqlite_cpp_add_library name)
     include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteFeatures.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCodegen.cmake)
 
-    file(GLOB _sqlite_cpp_sources ${CMAKE_CURRENT_SOURCE_DIR}/csrc/*.c)
-    list(APPEND _sqlite_cpp_sources ${ARGN})
+    file(GLOB _sqlite_c_sources CONFIGURE_DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/csrc/*.c
+    )
+    file(GLOB _sqlite_cxx_sources CONFIGURE_DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/csrc/*.cpp
+    )
+    set(_sqlite_cpp_sources ${_sqlite_c_sources} ${_sqlite_cxx_sources} ${ARGN})
 
     add_library(sqlite-${name} SHARED ${_sqlite_cpp_sources})
     add_library(sqlite::${name} ALIAS sqlite-${name})
 
     set_target_properties(sqlite-${name} PROPERTIES
         OUTPUT_NAME sqlite-${name}
-        C_STANDARD 11
         POSITION_INDEPENDENT_CODE ON
         VERSION ${SQLITE_CPP_VERSION_STRING}
     )
+    if(_sqlite_cxx_sources)
+        set_target_properties(sqlite-${name} PROPERTIES
+            CXX_STANDARD 17
+            CXX_STANDARD_REQUIRED ON
+            CXX_EXTENSIONS ON
+        )
+    else()
+        set_target_properties(sqlite-${name} PROPERTIES C_STANDARD 11)
+    endif()
     target_compile_definitions(sqlite-${name} PRIVATE ${SQLITE_FEATURE_DEFS} ${SQLITE_CPP_EXTRA_FEATURE_DEFS})
+    if(_sqlite_cxx_sources)
+        # The SRS 003 pass replaces SQLite's C allocation/data-structure
+        # idioms. Until then, GNU C++ needs its permissive conversion mode.
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            target_compile_options(sqlite-${name} PRIVATE -fpermissive)
+        endif()
+        # Unconverted C dependents still consume converted leaves' legacy
+        # symbols. Keep that transitional linkage in one façade outside the
+        # converted libraries; no converted source declares extern "C" itself.
+        target_compile_options(sqlite-${name} PRIVATE
+            "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteConvertedCFacade.hpp"
+        )
+    endif()
     target_include_directories(sqlite-${name} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../legacy/src
         ${SQLITE_GENDIR}
     )
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        target_include_directories(sqlite-${name} PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+        )
+    endif()
     # Build-order only (generated headers like parse.h/opcodes.h/keywordhash.h
-    # must exist before csrc/*.c can be compiled) -- not a link dependency.
+    # must exist before csrc files can be compiled) -- not a link dependency.
     add_dependencies(sqlite-${name} sqlite3_amalgamation)
 
     target_link_libraries(sqlite-${name} PRIVATE m ${CMAKE_DL_LIBS})
@@ -101,9 +132,14 @@ function(sqlite_cpp_add_library name)
     endif()
 
     install(TARGETS sqlite-${name})
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+            DESTINATION include
+        )
+    endif()
 endfunction()
 
-# SRS 001 FR-5: links an application against the full 9-library split instead
+# SRS 001 FR-5: links an application against the full 10-library split instead
 # of embedding the amalgamation or linking libsqlite3-legacy. -Wl,--no-as-needed
 # is required, not cosmetic: an application typically only calls directly into
 # sqlite-core-interface (e.g. sqlite3_open/sqlite3_exec), never referencing

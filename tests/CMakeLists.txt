@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
-project(sqlite3-tests LANGUAGES C)
+project(sqlite3-tests LANGUAGES C CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/SqliteFeatures.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/SqliteCodegen.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/SqliteCppLibrary.cmake)
 
 find_package(TCL REQUIRED)
 
@@ -101,6 +102,42 @@ add_test(
     COMMAND testfixture ${SQLITE_TOP}/test/veryquick.test
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+add_executable(srs002-utils-smoke srs002_utils_smoke.cpp)
+set_target_properties(srs002-utils-smoke PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+target_link_libraries(srs002-utils-smoke PRIVATE sqlite::utils)
+sqlite_cpp_link_full_split(srs002-utils-smoke)
+add_test(NAME srs002_utils_namespaced_api COMMAND srs002-utils-smoke)
+
+add_executable(srs002-backend-os-smoke srs002_backend_os_smoke.cpp)
+set_target_properties(srs002-backend-os-smoke PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+target_link_libraries(srs002-backend-os-smoke PRIVATE sqlite::backend-os)
+sqlite_cpp_link_full_split(srs002-backend-os-smoke)
+add_test(NAME srs002_backend_os_namespaced_api COMMAND srs002-backend-os-smoke)
+
+add_executable(srs002-backend-pager-smoke srs002_backend_pager_smoke.cpp)
+set_target_properties(srs002-backend-pager-smoke PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+target_link_libraries(srs002-backend-pager-smoke PRIVATE sqlite::backend-pager)
+sqlite_cpp_link_full_split(srs002-backend-pager-smoke)
+add_test(NAME srs002_backend_pager_namespaced_api COMMAND srs002-backend-pager-smoke)
+
+add_executable(srs002-backend-tree-smoke srs002_backend_tree_smoke.cpp)
+set_target_properties(srs002-backend-tree-smoke PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+target_link_libraries(srs002-backend-tree-smoke PRIVATE sqlite::backend-tree)
+sqlite_cpp_link_full_split(srs002-backend-tree-smoke)
+add_test(NAME srs002_backend_tree_namespaced_api COMMAND srs002-backend-tree-smoke)
 
 # The full suite (main.mk's `testrunner`/`fulltest` targets): not registered as a
 # ctest test because, like in the pre-existing build, it is slow (1000+ .test

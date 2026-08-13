@@ -2,12 +2,12 @@
 
 ## STL-Based Architecture Conversion
 
-*SRS 003 — see the [SRS index](index.md) for the full list of SRS documents.*
+*SRS 004 — see the [SRS index](index.md) for the full list of SRS documents.*
 
 | | |
 |---|---|
 | **Document status** | Draft v0.1 — requirements capture, not yet reviewed or approved |
-| **Subject system** | A `libraries/<name>` library converted per [SRS 002](002-cpp-conversion.md): namespaced C++, state containers, dynamically linked |
+| **Subject system** | A `libraries/<name>` library converted per [SRS 002](002-cpp-conversion.md) and reorganized per [SRS 003](003-file-organization-based-on-cpp-namespacing.md): namespaced C++, state containers, one file per container, dynamically linked |
 | **Target system** | The same library, its state containers' internals rebuilt on the C++ Standard Library instead of SQLite's own hand-rolled data structures |
 
 ---
@@ -18,8 +18,9 @@
 
 This document specifies converting each [SRS 002](002-cpp-conversion.md) state
 container's internal representation, and its mutators, to a purely C++/STL-based
-architecture. It applies **per library**, once that library has landed SRS 002's
-conversion — same incremental, library-at-a-time application as SRS 002 itself.
+architecture. It applies **per library**, once that library has landed
+[SRS 003](003-file-organization-based-on-cpp-namespacing.md)'s reorganization — same
+incremental, library-at-a-time application as SRS 002 and SRS 003 themselves.
 
 #### TODO: Interpret and make changes in this SRS to accomplish with this design goal.
 
@@ -45,7 +46,11 @@ specific library, not something this document decides in advance for all of them
 
 ### 1.3 References
 
-- [SRS 002](002-cpp-conversion.md) — produces this document's starting point.
+- [SRS 002](002-cpp-conversion.md) — the C→C++ conversion this document's target
+  system builds on.
+- [SRS 003](003-file-organization-based-on-cpp-namespacing.md) — produces this
+  document's immediate starting point (namespace-mirrored, one-container-per-file
+  layout).
 
 ---
 

@@ -249,7 +249,7 @@
 */
 #ifndef SQLITE_OMIT_WAL
 
-#include "wal.h"
+#include "wal.hpp"
 
 /*
 ** Trace output macros
@@ -602,7 +602,7 @@ struct WalIterator {
 
 /* Size (in bytes) of a WalIterator object suitable for N or fewer segments */
 #define SZ_WALITERATOR(N)  \
-     (offsetof(WalIterator,aSegment)+(N)*sizeof(struct WalSegment))
+     (offsetof(WalIterator,aSegment)+(N)*sizeof(WalIterator::WalSegment))
 
 /*
 ** Define the parameters of the hash tables in the wal-index file. There
@@ -1773,7 +1773,7 @@ static int walIteratorNext(
   iMin = p->iPrior;
   assert( iMin<0xffffffff );
   for(i=p->nSegment-1; i>=0; i--){
-    struct WalSegment *pSegment = &p->aSegment[i];
+    WalIterator::WalSegment *pSegment = &p->aSegment[i];
     while( pSegment->iNext<pSegment->nEntry ){
       u32 iPg = pSegment->aPgno[pSegment->aIndex[pSegment->iNext]];
       if( iPg>iMin ){

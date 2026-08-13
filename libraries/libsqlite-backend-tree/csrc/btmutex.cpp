@@ -15,7 +15,7 @@
 ** big and we want to break it down some.  This packaged seemed like
 ** a good breakout.
 */
-#include "btreeInt.h"
+#include "btreeInt.hpp"
 #ifndef SQLITE_OMIT_SHARED_CACHE
 #if SQLITE_THREADSAFE
 

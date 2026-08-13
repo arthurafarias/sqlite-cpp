@@ -20,7 +20,7 @@
 */
 #ifndef SQLITE_OMIT_DISKIO
 #include "sqliteInt.h"
-#include "wal.h"
+#include "wal.hpp"
 
 
 /******************* NOTES ON THE DESIGN OF THE PAGER ************************

@@ -24,7 +24,7 @@
 ** Attempt to automatically detect the operating system and setup the
 ** necessary pre-processor macros for it.
 */
-#include "os_setup.h"
+#include "os_setup.hpp"
 
 /* If the SET_FULLSYNC macro is not defined above, then make it
 ** a no-op

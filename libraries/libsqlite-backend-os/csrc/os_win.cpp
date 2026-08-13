@@ -18,12 +18,12 @@
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#include "os_common.hpp"
 
 /*
 ** Include the header file for the Windows VFS.
 */
-#include "os_win.h"
+#include "os_win.hpp"
 
 /*
 ** Compiling and using WAL mode requires several APIs that are only

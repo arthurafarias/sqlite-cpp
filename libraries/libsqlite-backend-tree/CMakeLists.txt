@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(sqlite-backend-tree LANGUAGES C)
+project(sqlite-backend-tree LANGUAGES CXX)
 
 # SRS 001 FR-4: see cmake/SqliteCppLibrary.cmake for what this does and why
 # no sibling sqlite-cpp library is linked against here.

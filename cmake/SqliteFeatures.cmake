@@ -11,10 +11,7 @@
 #
 # Included once; defines, in the caller's scope: SQLITE_FEATURE_DEFS, SQLITE_FEATURE_LIBS.
 
-if(SQLITE_FEATURES_INCLUDED)
-    return()
-endif()
-set(SQLITE_FEATURES_INCLUDED TRUE CACHE INTERNAL "")
+include_guard(GLOBAL)
 
 option(SQLITE_ENABLE_FTS3 "Enable the FTS3 full-text-search extension" OFF)
 option(SQLITE_ENABLE_FTS4 "Enable the FTS4 full-text-search extension" OFF)

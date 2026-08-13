@@ -78,7 +78,7 @@ static unsigned int strHash(const char *z){
 */
 static void insertElement(
   Hash *pH,              /* The complete hash table */
-  struct _ht *pEntry,    /* The entry into which pNew is inserted */
+  Hash::_ht *pEntry,     /* The entry into which pNew is inserted */
   HashElem *pNew         /* The element to be inserted */
 ){
   HashElem *pHead;       /* First element already in pEntry */
@@ -111,12 +111,12 @@ static void insertElement(
 ** Return TRUE if the resize occurs and false if not.
 */
 static int rehash(Hash *pH, unsigned int new_size){
-  struct _ht *new_ht;            /* The new hash table */
+  Hash::_ht *new_ht;              /* The new hash table */
   HashElem *elem, *next_elem;    /* For looping over existing elements */
 
 #if SQLITE_MALLOC_SOFT_LIMIT>0
-  if( new_size*sizeof(struct _ht)>SQLITE_MALLOC_SOFT_LIMIT ){
-    new_size = SQLITE_MALLOC_SOFT_LIMIT/sizeof(struct _ht);
+  if( new_size*sizeof(Hash::_ht)>SQLITE_MALLOC_SOFT_LIMIT ){
+    new_size = SQLITE_MALLOC_SOFT_LIMIT/sizeof(Hash::_ht);
   }
   if( new_size==pH->htsize ) return 0;
 #endif
@@ -130,14 +130,14 @@ static int rehash(Hash *pH, unsigned int new_size){
   ** may be larger than the requested amount).
   */
   sqlite3BeginBenignMalloc();
-  new_ht = (struct _ht *)sqlite3Malloc( new_size*sizeof(struct _ht) );
+  new_ht = (Hash::_ht *)sqlite3Malloc( new_size*sizeof(Hash::_ht) );
   sqlite3EndBenignMalloc();
 
   if( new_ht==0 ) return 0;
   sqlite3_free(pH->ht);
   pH->ht = new_ht;
-  pH->htsize = new_size = sqlite3MallocSize(new_ht)/sizeof(struct _ht);
-  memset(new_ht, 0, new_size*sizeof(struct _ht));
+  pH->htsize = new_size = sqlite3MallocSize(new_ht)/sizeof(Hash::_ht);
+  memset(new_ht, 0, new_size*sizeof(Hash::_ht));
   for(elem=pH->first, pH->first=0; elem; elem = next_elem){
     next_elem = elem->next;
     insertElement(pH, &new_ht[elem->h % new_size], elem);
@@ -162,7 +162,7 @@ static HashElem *findElementWithHash(
 
   h = strHash(pKey);
   if( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
-    struct _ht *pEntry;
+    Hash::_ht *pEntry;
     pEntry = &pH->ht[h % pH->htsize];
     elem = pEntry->chain;
     count = pEntry->count;
@@ -189,7 +189,7 @@ static void removeElement(
   Hash *pH,         /* The pH containing "elem" */
   HashElem *elem    /* The element to be removed from the pH */
 ){
-  struct _ht *pEntry;
+  Hash::_ht *pEntry;
   if( elem->prev ){
     elem->prev->next = elem->next; 
   }else{
@@ -270,4 +270,3 @@ void *sqlite3HashInsert(Hash *pH, const char *pKey, void *data){
   insertElement(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
   return 0;
 }
-

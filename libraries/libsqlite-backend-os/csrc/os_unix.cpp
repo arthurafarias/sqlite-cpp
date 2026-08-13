@@ -336,7 +336,7 @@ static pid_t randomnessPid = 0;
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#include "os_common.hpp"
 
 /*
 ** Define various macros that are missing from some systems.
