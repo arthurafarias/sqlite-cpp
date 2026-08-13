@@ -10,37 +10,28 @@ project(sqlite3-shell-legacy VERSION ${SQLITE_SHELL_VERSION_STRING} LANGUAGES C)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteFeatures.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCodegen.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCppLibrary.cmake)
 
-# The shell embeds sqlite3.c directly instead of linking libsqlite3-legacy
-# (matching upstream main.mk, see the comment on its `sqlite3$(T.exe):` rule):
-# this lets the CLI enable compile-time-only features, some with real
-# performance cost, that the canonical library build does not carry. In the
-# real build this compiles shell.c + sqlite3.c with $(T.link), which already
-# carries the same $(OPT_FEATURE_FLAGS) as libsqlite3-legacy
-# (SQLITE_FEATURE_DEFS here), plus $(SHELL_OPT) - the fixed extra list below
-# - appended on top. So the shell gets both, not just the fixed list alone.
+# SRS 001 FR-5: previously the shell embedded its own compile of sqlite3.c
+# (matching upstream main.mk) to get compile-time-only features the
+# canonical library build didn't carry. Those features are now baked into
+# the shared libraries themselves (SQLITE_CPP_EXTRA_FEATURE_DEFS in
+# cmake/SqliteCppLibrary.cmake) and the shell links against them (below)
+# instead of compiling its own copy of the amalgamation.
 option(SQLITE_SHELL_ENABLE_READLINE "Link the shell against GNU readline for line editing" ON)
 
-add_executable(sqlite3-shell-legacy ${SQLITE_SHELL_C} ${SQLITE_AMALGAMATION_C})
+add_executable(sqlite3-shell-legacy ${SQLITE_SHELL_C})
 add_dependencies(sqlite3-shell-legacy sqlite3_shell_c sqlite3_amalgamation)
 set_target_properties(sqlite3-shell-legacy PROPERTIES OUTPUT_NAME sqlite3-legacy C_STANDARD 11)
 target_include_directories(sqlite3-shell-legacy PRIVATE ${SQLITE_GENDIR})
+# shell.c itself branches on these macros (not just the library it calls into),
+# so they still need to be defined for its own translation unit.
 target_compile_definitions(sqlite3-shell-legacy PRIVATE
     ${SQLITE_FEATURE_DEFS}
-    SQLITE_DQS=0
-    SQLITE_ENABLE_FTS4
-    SQLITE_ENABLE_RTREE
-    SQLITE_ENABLE_EXPLAIN_COMMENTS
-    SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-    SQLITE_ENABLE_STMTVTAB
-    SQLITE_ENABLE_DBPAGE_VTAB
-    SQLITE_ENABLE_DBSTAT_VTAB
-    SQLITE_ENABLE_BYTECODE_VTAB
-    SQLITE_ENABLE_OFFSET_SQL_FUNC
-    SQLITE_ENABLE_PERCENTILE
-    SQLITE_STRICT_SUBTYPE=1
+    ${SQLITE_CPP_EXTRA_FEATURE_DEFS}
 )
 target_link_libraries(sqlite3-shell-legacy PRIVATE m ${CMAKE_DL_LIBS} ${SQLITE_FEATURE_LIBS})
+sqlite_cpp_link_full_split(sqlite3-shell-legacy)
 find_package(Threads REQUIRED)
 target_link_libraries(sqlite3-shell-legacy PRIVATE Threads::Threads)
 

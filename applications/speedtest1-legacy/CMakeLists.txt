@@ -10,12 +10,16 @@ project(speedtest1-legacy LANGUAGES C)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteFeatures.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCodegen.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCppLibrary.cmake)
 
-add_executable(speedtest1-legacy ${CMAKE_CURRENT_SOURCE_DIR}/../../test/speedtest1.c ${SQLITE_AMALGAMATION_C})
+# SRS 001 FR-5: links against the shared libraries instead of embedding its
+# own compile of the amalgamation.
+add_executable(speedtest1-legacy ${CMAKE_CURRENT_SOURCE_DIR}/../../test/speedtest1.c)
 add_dependencies(speedtest1-legacy sqlite3_amalgamation)
 target_include_directories(speedtest1-legacy PRIVATE ${SQLITE_GENDIR})
-target_compile_definitions(speedtest1-legacy PRIVATE ${SQLITE_FEATURE_DEFS} SQLITE_OS_KV_OPTIONAL)
+target_compile_definitions(speedtest1-legacy PRIVATE ${SQLITE_FEATURE_DEFS} ${SQLITE_CPP_EXTRA_FEATURE_DEFS} SQLITE_OS_KV_OPTIONAL)
 target_link_libraries(speedtest1-legacy PRIVATE m ${CMAKE_DL_LIBS} ${SQLITE_FEATURE_LIBS})
+sqlite_cpp_link_full_split(speedtest1-legacy)
 find_package(Threads REQUIRED)
 target_link_libraries(speedtest1-legacy PRIVATE Threads::Threads)
 

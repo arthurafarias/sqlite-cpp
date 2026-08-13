@@ -1,5 +1,54 @@
-# SRS 001 FR-4: shared setup for every libraries/<name>/csrc-based library.
+# SRS 001 FR-4/FR-5: shared setup for every libraries/<name>/csrc-based library,
+# and for linking an application against the full split.
 #
+# SQLITE_CPP_EXTRA_FEATURE_DEFS is the union of every FR-5 consumer's
+# compile-time feature needs beyond the base SQLITE_FEATURE_DEFS: previously
+# sqlite3-shell-legacy and sqlite3-rsync-legacy each got these by compiling
+# their own private copy of the amalgamation with their own extra defines
+# (see their CMakeLists.txt history); now that they link against the shared
+# libraries instead (FR-5), those defines have to be baked into the shared
+# libraries themselves, since a .so's behavior is fixed at its own compile
+# time, not per-consumer. Applied only here, not to SQLITE_FEATURE_DEFS
+# itself, so libsqlite3-legacy/testfixture (and the TCL suite's baseline)
+# are unaffected. sqlite3-rsync-legacy's SQLITE_THREADSAFE=0 override does
+# NOT appear here -- it directly conflicts with the workspace default
+# (SQLITE_THREADSAFE=1) that every other consumer needs, and a single .so
+# can't be both; per the requester's explicit choice (SRS 001 S6's FR-5
+# note), rsync loses that single-threaded optimization rather than the
+# shared libraries losing threading for everyone else. Its
+# SQLITE_OMIT_LOAD_EXTENSION/SQLITE_OMIT_DEPRECATED overrides are dropped
+# too, for the same reason, but harmlessly -- they only ever restricted
+# what rsync's own translation unit could call, and the workspace default
+# already permits both.
+#
+# SQLITE_ENABLE_FTS4 (which implies FTS3), SQLITE_ENABLE_RTREE, and
+# SQLITE_ENABLE_STMTVTAB are deliberately NOT included, unlike the shell's
+# original flag set: main.c references sqlite3Fts3Init/sqlite3RtreeInit/
+# sqlite3StmtVtabInit unconditionally once those macros are defined (a
+# static per-connection init-function array), and those functions live in
+# ext/fts3/fts3.c, ext/rtree/rtree.c, and ext/misc/stmt.c respectively --
+# extensions SRS 001 S3.6 explicitly defers, not part of any of the 9
+# libraries. Defining the macro without the implementation is an unresolved
+# symbol, not a missing feature toggle; shell/rsync lose FTS4/RTree/stmt-vtab
+# support until extensions get their own pass, on top of the SQLITE_THREADSAFE
+# tradeoff above.
+set(SQLITE_CPP_EXTRA_FEATURE_DEFS
+    SQLITE_DQS=0
+    SQLITE_ENABLE_EXPLAIN_COMMENTS
+    SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
+    SQLITE_ENABLE_DBPAGE_VTAB
+    SQLITE_ENABLE_DBSTAT_VTAB
+    SQLITE_ENABLE_BYTECODE_VTAB
+    SQLITE_ENABLE_OFFSET_SQL_FUNC
+    SQLITE_STRICT_SUBTYPE=1
+)
+
+set(SQLITE_CPP_LIBRARY_NAMES
+    utils backend-os backend-pager backend-tree
+    core-virtual-machine core-command-processor core-interface
+    compiler-tokenizer compiler-parser compiler-code-generator
+)
+
 # Each library compiles its own csrc/*.c into a SHARED object. No
 # target_link_libraries() is declared between sibling sqlite-cpp libraries --
 # CMake refuses genuine target-level cycles between SHARED_LIBRARY targets
@@ -36,7 +85,7 @@ function(sqlite_cpp_add_library name)
         POSITION_INDEPENDENT_CODE ON
         VERSION ${SQLITE_CPP_VERSION_STRING}
     )
-    target_compile_definitions(sqlite-${name} PRIVATE ${SQLITE_FEATURE_DEFS})
+    target_compile_definitions(sqlite-${name} PRIVATE ${SQLITE_FEATURE_DEFS} ${SQLITE_CPP_EXTRA_FEATURE_DEFS})
     target_include_directories(sqlite-${name} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../legacy/src
         ${SQLITE_GENDIR}
@@ -52,4 +101,20 @@ function(sqlite_cpp_add_library name)
     endif()
 
     install(TARGETS sqlite-${name})
+endfunction()
+
+# SRS 001 FR-5: links an application against the full 9-library split instead
+# of embedding the amalgamation or linking libsqlite3-legacy. -Wl,--no-as-needed
+# is required, not cosmetic: an application typically only calls directly into
+# sqlite-core-interface (e.g. sqlite3_open/sqlite3_exec), never referencing
+# symbols from e.g. sqlite-compiler-tokenizer directly -- without this flag the
+# linker would drop that .so's DT_NEEDED entry as unreferenced, and the
+# process would fail to resolve it at load time even though core-interface's
+# own code calls into it transitively (same load-time resolution FR-4 relies
+# on, see cmake/SqliteCppLibrary.cmake's top comment).
+function(sqlite_cpp_link_full_split target)
+    foreach(_lib IN LISTS SQLITE_CPP_LIBRARY_NAMES)
+        target_link_libraries(${target} PRIVATE sqlite::${_lib})
+    endforeach()
+    target_link_options(${target} PRIVATE "-Wl,--no-as-needed")
 endfunction()

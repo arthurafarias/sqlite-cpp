@@ -272,11 +272,49 @@ from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-
   Verified: clean `cmake` configure, full workspace build (all 9 `.so`s plus
   `libsqlite3-legacy` and every `-legacy` application), the smoke-link/run above, and
   `ctest -R sqlite_veryquick` at the same pre-existing `zipfile-25.0`-only baseline.
-- **FR-5–FR-6: open, not yet started.** Redoing the legacy executables and the final
-  rewiring are each substantial, separate pieces of work, tracked here as the next steps
-  once this pass is picked back up. `libraries/libsqlite3-legacy` and
-  `applications/*-legacy` are untouched by FR-2/FR-3/FR-4 — they're CLI/build-tool
-  executables, in scope for FR-5, not source-consolidation or per-library linking.
+- **FR-5 (Legacy executables): done, with a discovered constraint and a scope
+  correction.** Of the four `sqlite3`-dependent applications, `sqldiff-legacy` already
+  linked dynamically (against `libsqlite3-legacy`) and `speedtest1-legacy` embedded the
+  amalgamation with no special per-consumer flags — both switch cleanly to the FR-4
+  split. `sqlite3-shell-legacy` and `sqlite3-rsync-legacy` deliberately embedded the
+  amalgamation instead, each compiled with its own extra feature defines (documented in
+  their own `CMakeLists.txt`) that a single shared `.so` can't provide per-consumer;
+  `sqlite3-rsync-legacy`'s `SQLITE_THREADSAFE=0` in particular directly conflicts with
+  the threaded build every other consumer needs. Presented to the requester with the
+  evidence; decision: force all four onto the shared libraries anyway, accepting the
+  tradeoff (`sqlite3-rsync-legacy` loses its single-threaded build — see
+  `cmake/SqliteCppLibrary.cmake`'s `SQLITE_CPP_EXTRA_FEATURE_DEFS` comment).
+
+  That same change surfaced a second, sharper constraint while wiring it up: three of
+  the shell's original extra flags — `SQLITE_ENABLE_FTS4` (which implies FTS3),
+  `SQLITE_ENABLE_RTREE`, `SQLITE_ENABLE_STMTVTAB` — aren't just missing headers, they're
+  **unresolvable symbols**: `main.c` references `sqlite3Fts3Init`/`sqlite3RtreeInit`/
+  `sqlite3StmtVtabInit` unconditionally once those macros are defined, and those
+  functions live in `ext/fts3/fts3.c`, `ext/rtree/rtree.c`, `ext/misc/stmt.c` —
+  extensions §1.2/§3.6 (via the old SRS 001 this document's table is reused from)
+  explicitly defer, not part of any of the 9 libraries. Unlike FR-4's circularity (a
+  process-load-time resolution problem with a workaround), this has no workaround short
+  of building the deferred extensions: those three flags are dropped from
+  `SQLITE_CPP_EXTRA_FEATURE_DEFS` entirely. `sqlite3-shell-legacy` and
+  `sqlite3-rsync-legacy` therefore lose FTS4/RTree/stmt-vtab support until extensions get
+  their own pass — a real, user-visible feature reduction versus their previous
+  amalgamation-embedding build, on top of the threading tradeoff above.
+
+  The four generator tools (`lemon`, `mkkeywordhash`, `mkopcodeh`, `mkopcodec`) call
+  into no `sqlite3` API at all — they're standalone host build tools with zero
+  dependency on the split libraries — so FR-5 doesn't apply to them; nothing changed.
+
+  Verified: clean build, and each of the four applications actually **run** correctly
+  against the shared libraries, not just link — `sqlite3-legacy` (the shell) executes
+  real SQL (`CREATE TABLE`/`INSERT`/`SELECT`) against an in-memory database,
+  `sqldiff-legacy` diffs two real on-disk databases and produces correct `UPDATE` SQL,
+  `sqlite3-rsync-legacy --help` runs, `speedtest1-legacy` completes a full benchmark run.
+  `ctest -R sqlite_veryquick` (unaffected — `testfixture` builds its own amalgamation
+  copy, untouched by this pass) stays at the same pre-existing `zipfile-25.0`-only
+  baseline.
+- **FR-6: open, not yet started.** Final rewiring/verification across the whole
+  workspace — mostly bookkeeping at this point, since FR-2 through FR-5 already leave
+  the workspace building and passing end-to-end; tracked here as the next step.
 
 ---
 
