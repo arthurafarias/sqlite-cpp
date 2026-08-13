@@ -2,8 +2,8 @@
 
 `sqlite::backend::os` -- the VFS/file abstraction layer: platform file I/O
 and the byte-range locking protocol that gives SQLite its cross-process
-concurrency guarantees. Phase 2 of the [phased delivery plan](../../../SRS.md#12-phased-delivery-plan)
-in [SRS.md](../../../SRS.md), and the FR-6 "paradigm case" -- the one place
+concurrency guarantees. Phase 2 of the [phased delivery plan](../../../srs/001-sqlite-cpp-modularization.md#12-phased-delivery-plan)
+in [SRS 001](../../../srs/001-sqlite-cpp-modularization.md), and the FR-6 "paradigm case" -- the one place
 in the whole refactor where a real, load-bearing platform fork (unix vs.
 Windows) exists, as opposed to a feature flag.
 

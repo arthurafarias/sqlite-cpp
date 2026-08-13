@@ -2,6 +2,8 @@
 
 ## SQLite C++ Modularization ("sqlite-cpp")
 
+*SRS 001 — see the [SRS index](index.md) for the full list of SRS documents.*
+
 | | |
 |---|---|
 | **Document status** | Draft v0.1 — requirements capture, not yet reviewed or approved |
@@ -48,6 +50,18 @@ and are not themselves refactored.
 
 ### 1.4 References
 
+- [SRS 002](002-full-c-retirement.md) — an additive SRS specifying how the
+  legacy C implementation this document keeps running as an oracle (§1.2,
+  FR-10) is eventually retired, per library, once its `sqlite-cpp`
+  replacement is accepted — not required reading for the functional
+  requirements below, but necessary before treating any coexistence here as
+  permanent rather than transitional.
+- [SRS 003](003-sil4-safety-integrity-validation.md) — an additive SRS
+  layering SIL4 safety-integrity validation requirements (per IEC 61508) on
+  top of this document's library decomposition; not required reading for
+  the functional requirements below, but the two should be read together
+  before any library here is proposed for use in a safety-related system.
+  See the [SRS index](index.md) for the full list of SRS documents.
 - `CMakeLists.txt`, `cmake/SqliteFeatures.cmake`, `cmake/SqliteCodegen.cmake`,
   `libraries/libsqlite3/` — the existing CMake conversion of the original C build;
   this refactor's build system should extend that structure, not replace it.

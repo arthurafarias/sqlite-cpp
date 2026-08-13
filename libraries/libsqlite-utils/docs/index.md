@@ -2,8 +2,8 @@
 
 `sqlite::utils` -- generic, SQL-unaware utilities used across every other
 sqlite-cpp library. No dependency on any other `sqlite-*` library (SRS S3.1,
-S3.2). This is phase 1 of the [phased delivery plan](../../../SRS.md#12-phased-delivery-plan)
-in [SRS.md](../../../SRS.md): the lowest-dependency library, built first as
+S3.2). This is phase 1 of the [phased delivery plan](../../../srs/001-sqlite-cpp-modularization.md#12-phased-delivery-plan)
+in [SRS 001](../../../srs/001-sqlite-cpp-modularization.md): the lowest-dependency library, built first as
 the template every later phase's library, testing, and documentation
 conventions follow.
 

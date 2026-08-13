@@ -3,8 +3,8 @@
 `sqlite::compiler::tokenizer` -- the SQL lexer: turns raw SQL text into a
 stream of typed tokens (keywords, identifiers, literals, operators,
 punctuation). The first, lower-risk half of phase 4 of the
-[phased delivery plan](../../../SRS.md#12-phased-delivery-plan) in
-[SRS.md](../../../SRS.md); per the SRS's own §12 note, phase 4's
+[phased delivery plan](../../../srs/001-sqlite-cpp-modularization.md#12-phased-delivery-plan) in
+[SRS 001](../../../srs/001-sqlite-cpp-modularization.md); per the SRS's own §12 note, phase 4's
 code-generator/command-processor half is deliberately deferred as its own
 reviewed sub-phase ("the phase most likely to need its timeline revisited"),
 and this pass implements only the tokenizer.

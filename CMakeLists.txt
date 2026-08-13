@@ -17,6 +17,7 @@ option(SQLITE_CPP_BUILD_CORE_VIRTUAL_MACHINE "Build the sqlite-cpp sqlite::core:
 option(SQLITE_CPP_BUILD_COMPILER_TOKENIZER "Build the sqlite-cpp sqlite::compiler::tokenizer library (SRS phase 4, part 1)" ON)
 option(SQLITE_CPP_BUILD_COMPILER_PARSER "Build the sqlite-cpp sqlite::compiler::parser library (SRS phase 4, part 1)" ON)
 option(SQLITE_CPP_BUILD_COMPILER_CODE_GENERATOR "Build the sqlite-cpp sqlite::compiler::code_generator library (SRS phase 4, code-generator slice)" ON)
+option(SQLITE_CPP_BUILD_BACKEND_TREE "Build the sqlite-cpp sqlite::backend::tree library (SRS phase 2, tree slice)" ON)
 
 # Called unconditionally (rather than only under SQLITE_BUILD_TESTS below) so
 # that libraries/libsqlite-utils's own tests/CMakeLists.txt -- added via
@@ -79,6 +80,16 @@ endif()
 # opcode set sqlite-core-virtual-machine currently implements.
 if(SQLITE_CPP_BUILD_COMPILER_CODE_GENERATOR)
     sqlite_cpp_require_compiler_code_generator()
+endif()
+
+# SRS phase 2, tree slice (S12): sqlite-backend-tree -- a real table B-tree
+# over the actual SQLite on-disk page format, with real multi-page
+# split-based balancing (see libraries/libsqlite-backend-tree/docs/index.md
+# for the deliberate simplifications: 2-way splits rather than
+# balance_nonroot()'s 3-sibling redistribution, no merge-on-delete, and a
+# minimal page_store standing in for the not-yet-built sqlite-backend-pager).
+if(SQLITE_CPP_BUILD_BACKEND_TREE)
+    sqlite_cpp_require_backend_tree()
 endif()
 
 if(SQLITE_BUILD_SHELL)

@@ -115,3 +115,37 @@ function(sqlite_cpp_require_compiler_code_generator)
         ${CMAKE_BINARY_DIR}/libsqlite-compiler-code-generator
     )
 endfunction()
+
+# Resolves the sqlite::backend::tree target. Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_backend_tree)
+    if(TARGET sqlite::backend::tree)
+        return()
+    endif()
+
+    find_package(sqlite-backend-tree CONFIG QUIET)
+    if(TARGET sqlite::backend::tree)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite-backend-tree
+        ${CMAKE_BINARY_DIR}/libsqlite-backend-tree
+    )
+endfunction()
+
+# Resolves the sqlite::backend::pager target. Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_backend_pager)
+    if(TARGET sqlite::backend::pager)
+        return()
+    endif()
+
+    find_package(sqlite-backend-pager CONFIG QUIET)
+    if(TARGET sqlite::backend::pager)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite-backend-pager
+        ${CMAKE_BINARY_DIR}/libsqlite-backend-pager
+    )
+endfunction()

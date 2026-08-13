@@ -3,8 +3,8 @@
 `sqlite::compiler::parser` -- turns a token stream into an AST: SQL
 expressions (full operator precedence) and single SELECT statements. The
 second piece of phase 4's "lower risk" half in the
-[phased delivery plan](../../../SRS.md#12-phased-delivery-plan)
-([SRS.md](../../../SRS.md)), scoped down from the full SQL grammar to
+[phased delivery plan](../../../srs/001-sqlite-cpp-modularization.md#12-phased-delivery-plan)
+([SRS 001](../../../srs/001-sqlite-cpp-modularization.md)), scoped down from the full SQL grammar to
 expressions + SELECT by explicit agreement before implementation started --
 see "What this phase covers" below.
 

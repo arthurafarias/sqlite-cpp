@@ -2,7 +2,7 @@
 
 `sqlite::compiler::code_generator` -- compiles `sqlite-compiler-parser`'s
 expression AST into `sqlite-core-virtual-machine` bytecode. This is the
-seam [SRS.md](../../../SRS.md) S11.2 names explicitly as the refactor's
+seam [SRS 001](../../../srs/001-sqlite-cpp-modularization.md) S11.2 names explicitly as the refactor's
 highest-risk piece: legacy interleaves "decide what to do" and "emit the
 opcodes to do it" statement-by-statement in the same functions
 (`select.c`/`expr.c`/`where.c`), and separating them cleanly needs a real
