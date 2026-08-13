@@ -13,12 +13,15 @@ sqlite_cpp_require_compiler_tokenizer()
 sqlite_cpp_require_compiler_parser()
 sqlite_cpp_require_compiler_code_generator()
 sqlite_cpp_require_core_virtual_machine()
+sqlite_cpp_require_backend_tree()
 
 # Header-only (SRS FR-3), same INTERFACE-library shape as the other
 # sqlite-cpp libraries. SRS S3.1's dependency graph:
 # sqlite-core-command-processor depends on sqlite-compiler (it drives the
-# parser's AST and the code generator) -- this phase covers only the
-# `query` namespace (single-table SELECT orchestration); see docs/index.md
+# parser's AST and the code generator) and on sqlite-backend ("it drives
+# execution") -- this phase covers only the `query` namespace (single-table
+# SELECT orchestration, against either an in-memory table_descriptor or a
+# real sqlite-backend-tree-backed btree_table_descriptor); see docs/index.md
 # for exactly what's in scope and what's deferred.
 add_library(sqlite-core-command-processor INTERFACE)
 add_library(sqlite::core::command_processor ALIAS sqlite-core-command-processor)
@@ -36,6 +39,7 @@ target_link_libraries(sqlite-core-command-processor
         sqlite::compiler::parser
         sqlite::compiler::code_generator
         sqlite::core::virtual_machine
+        sqlite::backend::tree
 )
 
 include(GNUInstallDirs)

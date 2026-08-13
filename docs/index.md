@@ -24,7 +24,7 @@ Per the SRS's [phased delivery plan](../srs/001-sqlite-cpp-modularization.md#12-
 | `sqlite-compiler-tokenizer` | Implemented (phase 4, part 1) | [libraries/libsqlite-compiler-tokenizer/docs/index.md](../libraries/libsqlite-compiler-tokenizer/docs/index.md) |
 | `sqlite-compiler-parser` | Implemented (phase 4, part 1, scope: expressions + single SELECT -- see its docs) | [libraries/libsqlite-compiler-parser/docs/index.md](../libraries/libsqlite-compiler-parser/docs/index.md) |
 | `sqlite-compiler-code-generator` | Implemented (phase 4, S11.2's highest-risk seam, scope: expressions only -- see its docs) | [libraries/libsqlite-compiler-code-generator/docs/index.md](../libraries/libsqlite-compiler-code-generator/docs/index.md) |
-| `sqlite-core-command-processor` | Implemented (phase 5, `query` namespace only: single-table SELECT orchestration against an in-memory `table_descriptor` -- no VM/code-generator changes needed, see its docs for how) | [libraries/libsqlite-core-command-processor/docs/index.md](../libraries/libsqlite-core-command-processor/docs/index.md) |
+| `sqlite-core-command-processor` | Implemented (phase 5, `query` namespace only: single-table SELECT orchestration against either an in-memory `table_descriptor` or a real, on-disk `sqlite-backend-tree`-backed `btree_table_descriptor` -- via a real row-record format, `record.hpp`, and no VM/code-generator changes; see its docs for how) | [libraries/libsqlite-core-command-processor/docs/index.md](../libraries/libsqlite-core-command-processor/docs/index.md) |
 | `sqlite-core-interface` | Not yet started (phase 5, remainder) | -- |
 | Extensions (`fts5`, `rtree`, ...) | Not yet started (phase 6) | -- |
 

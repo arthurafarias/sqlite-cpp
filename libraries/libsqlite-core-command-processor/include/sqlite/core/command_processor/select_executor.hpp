@@ -1,9 +1,12 @@
 #pragma once
 
+#include "btree_table_descriptor.hpp"
 #include "query_error.hpp"
 #include "query_result.hpp"
+#include "record.hpp"
 #include "table_descriptor.hpp"
 
+#include <sqlite/backend/tree/cursor.hpp>
 #include <sqlite/compiler/code_generator/code_generator.hpp>
 #include <sqlite/compiler/code_generator/code_generator_error.hpp>
 #include <sqlite/compiler/parser/ast/select_stmt.hpp>
@@ -13,6 +16,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -22,13 +26,20 @@
 // path -- turning a validated AST into a runnable program and executing it
 // (SRS S3.4.2, sqlite::core::command_processor::query). This is command
 // processor "phase 1": single-table SELECT only. See docs/index.md for the
-// exact scope and, critically, *why* no new VM opcode or on-disk record
-// format was needed to build this: sqlite-compiler-code-generator's
-// column_resolver already returns a register index rather than a value
-// (this library decides that mapping and binds each row's values into
-// those exact registers via interpreter::reg() before every run()), and
+// exact scope and, critically, *why* no new VM opcode was needed to build
+// this: sqlite-compiler-code-generator's column_resolver already returns a
+// register index rather than a value (this library decides that mapping
+// and binds each row's values into those exact registers via
+// interpreter::reg() before every run()), and
 // sqlite::core::virtual_machine::interpreter::reset() already supports
 // cheaply rerunning one compiled program per row.
+//
+// Two row sources share the same compiled-program/execution core below,
+// via the detail::row_source callback: table_descriptor's in-memory rows,
+// and btree_table_descriptor's real sqlite::backend::tree::cursor, decoded
+// through record.hpp. Everything downstream of "get the next row" --
+// WHERE evaluation, DISTINCT, ORDER BY, LIMIT/OFFSET -- is identical
+// either way.
 //
 // Everything genuinely out of scope for *expressions* (function calls,
 // CASE, IN, BETWEEN, LIKE, IS [NOT] NULL, bitwise operators, blob
@@ -36,7 +47,7 @@
 // (code_generator_error, caught and rewrapped as query_error below) --
 // this library only adds the validation specific to statement-level scope
 // that code_generator has no way to know about: JOIN, GROUP BY/HAVING, and
-// table/column name resolution against table_descriptor.
+// table/column name resolution.
 namespace sqlite::core::command_processor {
 
 namespace ast = sqlite::compiler::parser::ast;
@@ -53,50 +64,102 @@ inline bool iequals(std::string_view a, std::string_view b) {
     return true;
 }
 
+// Returns std::nullopt once every row has been produced. The in-memory
+// path captures a vector index; the real-btree path captures a
+// tree::cursor and decodes each payload on demand.
+using row_source = std::function<std::optional<std::vector<vm::aux::mem>>()>;
+
+inline row_source single_empty_row_source() {
+    return [done = false]() mutable -> std::optional<std::vector<vm::aux::mem>> {
+        if (done) return std::nullopt;
+        done = true;
+        return std::vector<vm::aux::mem>{};
+    };
+}
+
 } // namespace detail
 
 class select_executor {
 public:
+    // In-memory table_descriptor (see that header's docs for why it's an
+    // explicit schema/storage stand-in).
     query_result execute(const ast::select_stmt& stmt, const table_descriptor& table) const {
-        if (!stmt.joins.empty()) throw query_error("JOIN is not supported by this command-processor pass");
-        if (!stmt.group_by.empty() || stmt.having) {
-            throw query_error("GROUP BY/HAVING is not supported by this command-processor pass");
-        }
-        if (stmt.columns.empty()) throw query_error("SELECT with no result columns");
+        validate_statement_scope(stmt);
 
-        // No FROM ("SELECT 1+1") is a single implicit row with no columns
-        // of its own, evaluated once -- real SQL, and a natural thing to
-        // type first in a REPL.
         std::vector<std::string> columns;
-        std::vector<std::vector<vm::aux::mem>> source_rows{{}};
         std::optional<std::string> table_alias;
+        detail::row_source next_row = detail::single_empty_row_source();
         if (stmt.from) {
             if (!detail::iequals(stmt.from->name, table.name)) {
                 throw query_error("no such table: " + stmt.from->name);
             }
             columns = table.columns;
-            source_rows = table.rows;
             if (!stmt.from->alias.empty()) table_alias = stmt.from->alias;
+
+            next_row = [&table, i = std::size_t{0}]() mutable -> std::optional<std::vector<vm::aux::mem>> {
+                if (i >= table.rows.size()) return std::nullopt;
+                return table.rows[i++];
+            };
         }
 
         try {
-            return execute_impl(stmt, table, columns, source_rows, table_alias);
+            return execute_impl(stmt, table.name, columns, next_row, table_alias);
+        } catch (const cg::code_generator_error& e) {
+            throw query_error(e.what());
+        }
+    }
+
+    // Real, on-disk-backed table via sqlite::backend::tree -- see
+    // btree_table_descriptor.hpp and record.hpp.
+    query_result execute(const ast::select_stmt& stmt, const btree_table_descriptor& table) const {
+        validate_statement_scope(stmt);
+
+        std::vector<std::string> columns;
+        std::optional<std::string> table_alias;
+        std::optional<tree::cursor> cur;
+        detail::row_source next_row = detail::single_empty_row_source();
+        if (stmt.from) {
+            if (!detail::iequals(stmt.from->name, table.name)) {
+                throw query_error("no such table: " + stmt.from->name);
+            }
+            columns = table.columns;
+            if (!stmt.from->alias.empty()) table_alias = stmt.from->alias;
+
+            cur.emplace(table.tree_ref);
+            next_row = [&cur]() mutable -> std::optional<std::vector<vm::aux::mem>> {
+                if (cur->eof()) return std::nullopt;
+                std::vector<vm::aux::mem> row = record::decode_record(cur->payload());
+                cur->next();
+                return row;
+            };
+        }
+
+        try {
+            return execute_impl(stmt, table.name, columns, next_row, table_alias);
         } catch (const cg::code_generator_error& e) {
             throw query_error(e.what());
         }
     }
 
 private:
-    static bool qualifier_matches(std::string_view qualifier, const table_descriptor& table,
+    static void validate_statement_scope(const ast::select_stmt& stmt) {
+        if (!stmt.joins.empty()) throw query_error("JOIN is not supported by this command-processor pass");
+        if (!stmt.group_by.empty() || stmt.having) {
+            throw query_error("GROUP BY/HAVING is not supported by this command-processor pass");
+        }
+        if (stmt.columns.empty()) throw query_error("SELECT with no result columns");
+    }
+
+    static bool qualifier_matches(std::string_view qualifier, const std::string& table_name,
                                    const std::optional<std::string>& alias) {
         if (alias) return detail::iequals(qualifier, *alias);
-        return detail::iequals(qualifier, table.name);
+        return detail::iequals(qualifier, table_name);
     }
 
     static std::int64_t resolve_column(std::string_view qualifier, std::string_view column,
-                                        const std::vector<std::string>& columns, const table_descriptor& table,
+                                        const std::vector<std::string>& columns, const std::string& table_name,
                                         const std::optional<std::string>& alias) {
-        if (!qualifier.empty() && !qualifier_matches(qualifier, table, alias)) {
+        if (!qualifier.empty() && !qualifier_matches(qualifier, table_name, alias)) {
             throw query_error("no such table: " + std::string(qualifier));
         }
         for (std::size_t i = 0; i < columns.size(); ++i) {
@@ -110,14 +173,13 @@ private:
         return "column";
     }
 
-    query_result execute_impl(const ast::select_stmt& stmt, const table_descriptor& table,
-                               const std::vector<std::string>& columns,
-                               const std::vector<std::vector<vm::aux::mem>>& source_rows,
+    query_result execute_impl(const ast::select_stmt& stmt, const std::string& table_name,
+                               const std::vector<std::string>& columns, detail::row_source next_row,
                                const std::optional<std::string>& table_alias) const {
         vm::aux::program_builder builder;
         cg::code_generator gen(builder, static_cast<std::int64_t>(columns.size()),
             [&](std::string_view qualifier, std::string_view column) {
-                return resolve_column(qualifier, column, columns, table, table_alias);
+                return resolve_column(qualifier, column, columns, table_name, table_alias);
             });
 
         std::int64_t where_jump_idx = -1;
@@ -131,7 +193,7 @@ private:
         std::vector<std::int64_t> output_regs;
         for (const auto& rc : stmt.columns) {
             if (rc.star) {
-                if (!rc.star_table.empty() && !qualifier_matches(rc.star_table, table, table_alias)) {
+                if (!rc.star_table.empty() && !qualifier_matches(rc.star_table, table_name, table_alias)) {
                     throw query_error("no such table: " + rc.star_table);
                 }
                 for (std::size_t i = 0; i < columns.size(); ++i) {
@@ -176,10 +238,10 @@ private:
         };
         std::vector<collected_row> collected;
 
-        for (const auto& row : source_rows) {
+        while (std::optional<std::vector<vm::aux::mem>> row = next_row()) {
             interp.reset();
-            for (std::size_t i = 0; i < columns.size() && i < row.size(); ++i) {
-                interp.reg(static_cast<std::int64_t>(i)) = row[i];
+            for (std::size_t i = 0; i < columns.size() && i < row->size(); ++i) {
+                interp.reg(static_cast<std::int64_t>(i)) = (*row)[i];
             }
             vm::run_status status = interp.run();
             if (status == vm::run_status::error) {
