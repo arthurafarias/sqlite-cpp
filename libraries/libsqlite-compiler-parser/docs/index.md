@@ -32,7 +32,7 @@ Links `sqlite::compiler::tokenizer` (consumes its `token`/`token_type`/
 
 `parse.y` is a LEMON grammar source: LEMON compiles it into `parse.c`, a
 table-driven LALR(1) automaton (state-transition tables plus a byte-code-like
-action dispatcher), the same relationship `tool/mkkeywordhash.c` has to
+action dispatcher), the same relationship `applications/mkkeywordhash-legacy/mkkeywordhash.c` has to
 `keywordhash.h`. Hand-transcribing generated parser tables isn't a
 meaningful "port" the way porting `sqlite3GetToken()`'s character-by-character
 logic was for the tokenizer -- there's no hand-writable equivalent of an

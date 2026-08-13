@@ -4,7 +4,7 @@
 // the %token declarations in parse.y; SRS S3.5.1, sqlite::compiler::tokenizer).
 // FR-5: replaced by a scoped enumeration. Covers every token
 // sqlite3GetToken() (tokenize.c) can produce: the 148 SQL keywords
-// (tool/mkkeywordhash.c's keyword table) plus operators, punctuation, and
+// (applications/mkkeywordhash-legacy/mkkeywordhash.c's keyword table) plus operators, punctuation, and
 // literal classes. A handful of members carry a trailing underscore
 // (`and_`, `case_`, `default_`, `delete_`, `do_`, `else_`, `for_`, `if_`,
 // `not_`, `or_`, `union_`, `using_`, `virtual_`) because the bare SQL

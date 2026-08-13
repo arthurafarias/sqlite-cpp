@@ -35,7 +35,7 @@ purely a string-in, tokens-out operation with no I/O or VM involvement.
 
 | Namespace | Header(s) | Legacy source |
 |---|---|---|
-| `sqlite::compiler::tokenizer` | `token_type.hpp`, `token.hpp`, `keyword_table.hpp`, `tokenizer.hpp` | `tokenize.c`'s `sqlite3GetToken()`, `parse.h`'s generated `TK_*` constants, `tool/mkkeywordhash.c`'s generated `keywordhash.h` |
+| `sqlite::compiler::tokenizer` | `token_type.hpp`, `token.hpp`, `keyword_table.hpp`, `tokenizer.hpp` | `tokenize.c`'s `sqlite3GetToken()`, `parse.h`'s generated `TK_*` constants, `applications/mkkeywordhash-legacy/mkkeywordhash.c`'s generated `keywordhash.h` |
 
 ## What's real here
 
@@ -52,7 +52,7 @@ float/hex-integer literals with SQLite's `_`-digit-separator extension
 (`TK_QNUMBER`), blob literals (`x'...'`), numbered and named bind variables
 (`?`, `?5`, `:name`, `@name`, `$name`, `#name`, including the TCL-variable
 `$name(...)` extension), and the full 148-keyword table from
-`tool/mkkeywordhash.c`, matched case-insensitively.
+`applications/mkkeywordhash-legacy/mkkeywordhash.c`, matched case-insensitively.
 
 `token_type.hpp`'s enum has one member per SQL keyword (not collapsed into
 legacy's `TK_JOIN_KW`/`TK_LIKE_KW`/`TK_CTIME_KW` fallback classes -- see that

@@ -1,8 +1,13 @@
-# Reproduces main.mk's code-generation pipeline (lemon -> parse.c/h, mkkeywordhash ->
-# keywordhash.h, mkopcodeh.tcl/mkopcodec.tcl -> opcodes.h/c, mksqlite3h.tcl/mksqlite3c.tcl
-# -> sqlite3.h/c, mkfts5c.tcl -> fts5.c, mkshellc.tcl -> shell.c) so that
-# libraries/libsqlite3, applications/sqlite3-shell and tests/ can all consume the same
+# Reproduces main.mk's code-generation pipeline (lemon-legacy -> parse.c/h,
+# mkkeywordhash-legacy -> keywordhash.h, mkopcodeh-legacy/mkopcodec-legacy ->
+# opcodes.h/c, mksqlite3h.tcl/mksqlite3c.tcl -> sqlite3.h/c, mkfts5c.tcl ->
+# fts5.c, mkshellc.tcl -> shell.c) so that libraries/libsqlite3-legacy,
+# applications/sqlite3-shell-legacy and tests/ can all consume the same
 # generated sqlite3.{h,c}/shell.c without regenerating them.
+#
+# SRS 002 RR-4: the four generator applications (lemon, mkkeywordhash,
+# mkopcodeh, mkopcodec) live under applications/*-legacy now, relocated from
+# tool/ -- see the "Host tools" section below for how they're pulled in.
 #
 # Included once from the root CMakeLists.txt. Defines, in the caller's scope:
 #   SQLITE_GENDIR             - directory holding every generated file below
@@ -11,9 +16,10 @@
 #   SQLITE_AMALGAMATION_EXT_H - path to generated sqlite3ext.h
 #   SQLITE_SHELL_C            - path to generated shell.c
 
-# Target names created below (lemon, sqlite3_amalgamation, ...) are global to the
-# whole build, so this guard must survive across add_subdirectory() scopes (each of
-# which otherwise gets its own copy of a plain variable) - hence CACHE INTERNAL.
+# Target names created below (lemon-legacy, sqlite3_amalgamation, ...) are
+# global to the whole build, so this guard must survive across
+# add_subdirectory() scopes (each of which otherwise gets its own copy of a
+# plain variable) - hence CACHE INTERNAL.
 if(SQLITE_CODEGEN_INCLUDED)
     return()
 endif()
@@ -33,33 +39,46 @@ set(SQLITE_GENDIR ${CMAKE_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY ${SQLITE_GENDIR})
 
 # ---------------------------------------------------------------------------
-# Host tools: lemon (parser generator), mksourceid, mkkeywordhash.
+# Host tools: lemon-legacy (parser generator), mksourceid, mkkeywordhash-legacy.
 # Built straight into SQLITE_GENDIR so the scripts below (which look for e.g.
 # "$PWD/mksourceid") find them, exactly mirroring main.mk running everything
 # from a single object directory.
+#
+# SRS 002 RR-4: lemon.c/mkkeywordhash.c themselves live under
+# applications/lemon-legacy and applications/mkkeywordhash-legacy now (moved
+# from tool/), each with its own standalone-buildable CMakeLists.txt. They're
+# pulled in here via the same target-reuse-then-add_subdirectory-fallback
+# idiom cmake/Sqlite(Cpp)Dependency.cmake uses elsewhere, so this file keeps
+# working correctly regardless of which scope include()s it first (workspace
+# root, or a standalone application build via sqlite_require_core()'s own
+# fallback).
 # ---------------------------------------------------------------------------
-add_executable(lemon ${SQLITE_TOP}/tool/lemon.c)
+if(NOT TARGET lemon-legacy)
+    add_subdirectory(${SQLITE_TOP}/applications/lemon-legacy ${CMAKE_BINARY_DIR}/lemon-legacy)
+endif()
+if(NOT TARGET mkkeywordhash-legacy)
+    add_subdirectory(${SQLITE_TOP}/applications/mkkeywordhash-legacy ${CMAKE_BINARY_DIR}/mkkeywordhash-legacy)
+endif()
 add_executable(mksourceid ${SQLITE_TOP}/tool/mksourceid.c)
-add_executable(mkkeywordhash ${SQLITE_TOP}/tool/mkkeywordhash.c)
-set_target_properties(lemon mksourceid mkkeywordhash PROPERTIES
+set_target_properties(lemon-legacy mksourceid mkkeywordhash-legacy PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${SQLITE_GENDIR}
 )
 
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/lempar.c
-    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/tool/lempar.c ${SQLITE_GENDIR}/lempar.c
-    DEPENDS ${SQLITE_TOP}/tool/lempar.c
+    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/applications/lemon-legacy/lempar.c ${SQLITE_GENDIR}/lempar.c
+    DEPENDS ${SQLITE_TOP}/applications/lemon-legacy/lempar.c
 )
 
 # ---------------------------------------------------------------------------
-# parse.c / parse.h  (lemon over src/parse.y)
+# parse.c / parse.h  (lemon-legacy over src/parse.y)
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/parse.c ${SQLITE_GENDIR}/parse.h
     COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/src/parse.y ${SQLITE_GENDIR}/parse.y
-    COMMAND lemon -S parse.y
+    COMMAND lemon-legacy -S parse.y
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS lemon ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/src/parse.y
+    DEPENDS lemon-legacy ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/src/parse.y
     VERBATIM
 )
 
@@ -68,16 +87,16 @@ add_custom_command(
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/opcodes.h
-    COMMAND /bin/sh -c "cat parse.h '${SQLITE_TOP}/src/vdbe.c' | '${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/tool/mkopcodeh.tcl' > opcodes.h"
+    COMMAND /bin/sh -c "cat parse.h '${SQLITE_TOP}/src/vdbe.c' | '${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/applications/mkopcodeh-legacy/mkopcodeh.tcl' > opcodes.h"
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_GENDIR}/parse.h ${SQLITE_TOP}/src/vdbe.c ${SQLITE_TOP}/tool/mkopcodeh.tcl
+    DEPENDS ${SQLITE_GENDIR}/parse.h ${SQLITE_TOP}/src/vdbe.c ${SQLITE_TOP}/applications/mkopcodeh-legacy/mkopcodeh.tcl
     VERBATIM
 )
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/opcodes.c
-    COMMAND /bin/sh -c "'${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/tool/mkopcodec.tcl' opcodes.h > opcodes.c"
+    COMMAND /bin/sh -c "'${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/applications/mkopcodec-legacy/mkopcodec.tcl' opcodes.h > opcodes.c"
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_GENDIR}/opcodes.h ${SQLITE_TOP}/tool/mkopcodec.tcl
+    DEPENDS ${SQLITE_GENDIR}/opcodes.h ${SQLITE_TOP}/applications/mkopcodec-legacy/mkopcodec.tcl
     VERBATIM
 )
 
@@ -86,9 +105,9 @@ add_custom_command(
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/keywordhash.h
-    COMMAND /bin/sh -c "./mkkeywordhash > keywordhash.h"
+    COMMAND /bin/sh -c "./mkkeywordhash-legacy > keywordhash.h"
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS mkkeywordhash
+    DEPENDS mkkeywordhash-legacy
     VERBATIM
 )
 
@@ -132,9 +151,9 @@ add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/fts5parse.c ${SQLITE_GENDIR}/fts5parse.h
     COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/ext/fts5/fts5parse.y ${SQLITE_GENDIR}/fts5parse.y
     COMMAND ${CMAKE_COMMAND} -E remove -f fts5parse.h
-    COMMAND lemon -S fts5parse.y
+    COMMAND lemon-legacy -S fts5parse.y
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS lemon ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/ext/fts5/fts5parse.y
+    DEPENDS lemon-legacy ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/ext/fts5/fts5parse.y
     VERBATIM
 )
 

@@ -7,7 +7,7 @@
 #include <optional>
 #include <string_view>
 
-// Legacy source: tool/mkkeywordhash.c's generated output (keywordhash.h,
+// Legacy source: applications/mkkeywordhash-legacy/mkkeywordhash.c's generated output (keywordhash.h,
 // sqlite3KeywordCode() -- an ASCII-case-insensitive perfect hash over the
 // 148 SQL keywords; SRS S3.5.1). This port doesn't hand-replicate the
 // generated perfect-hash function itself (that's tooling output, not

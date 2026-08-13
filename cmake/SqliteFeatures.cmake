@@ -2,11 +2,11 @@
 # allFlags) and computes the resulting SQLITE_FEATURE_DEFS / SQLITE_FEATURE_LIBS lists.
 #
 # In the real build these flags land in $(OPT_FEATURE_FLAGS), which folds into $(T.cc)
-# globally - so they apply not only to libsqlite3 but to the sqlite3 CLI shell's own
-# build too (shell.c + sqlite3.c are compiled with $(T.link), which already carries
+# globally - so they apply not only to libsqlite3-legacy but to the sqlite3 CLI shell's
+# own build too (shell.c + sqlite3.c are compiled with $(T.link), which already carries
 # $(OPT_FEATURE_FLAGS), plus $(SHELL_OPT) appended on top). Sharing this list between
-# libraries/libsqlite3 and applications/sqlite3-shell (each still adds its own
-# shell-only/library-only extras) reproduces that, instead of the shell only getting
+# libraries/libsqlite3-legacy and applications/sqlite3-shell-legacy (each still adds its
+# own shell-only/library-only extras) reproduces that, instead of the shell only getting
 # its fixed OPT_SHELL set and silently missing e.g. math functions.
 #
 # Included once; defines, in the caller's scope: SQLITE_FEATURE_DEFS, SQLITE_FEATURE_LIBS.

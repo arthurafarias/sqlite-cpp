@@ -113,3 +113,14 @@ if(TCLSH_TEST_EXECUTABLE)
         COMMENT "Running the full SQLite TCL test suite via test/testrunner.tcl (slow)"
     )
 endif()
+
+# SRS 002 TR-4/BR-5: RR-6's freeze check, wired as its own CTest target
+# (`ctest -R legacy_freeze_check` or `-L comparison`) separate from the
+# ordinary oracle/unit tests above, so a freeze violation is distinguishable
+# in CI output from a functional regression.
+add_test(
+    NAME legacy_freeze_check
+    COMMAND ${SQLITE_TOP}/tool/check-legacy-freeze.sh
+    WORKING_DIRECTORY ${SQLITE_TOP}
+)
+set_tests_properties(legacy_freeze_check PROPERTIES LABELS "comparison")

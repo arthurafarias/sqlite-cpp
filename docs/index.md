@@ -27,6 +27,46 @@ Per the SRS's [phased delivery plan](../srs/001-sqlite-cpp-modularization.md#12-
 | `sqlite-core-command-processor` / `sqlite-core-interface` | Not yet started (phase 5) | -- |
 | Extensions (`fts5`, `rtree`, ...) | Not yet started (phase 6) | -- |
 
+## Legacy track (SRS 002)
+
+[SRS 002](../srs/002-full-c-retirement.md) restructures the legacy C
+implementation into a permanent, structurally parallel track standing next
+to the `sqlite-cpp` libraries above, rather than something deleted
+piecemeal as each library lands. This pass implements §10 Phase 1 (legacy
+rename and packaging) and the relocation half of Phase 2
+(generator-application relocation); the complete C++ replacements RR-5
+requires for the four generator applications are deferred follow-up work,
+tracked the same way each `sqlite-cpp` library above was delivered as its
+own separate piece of work.
+
+| Component | Legacy target | Status |
+|---|---|---|
+| Core C library | `libsqlite3-legacy` (`libraries/libsqlite3-legacy`) | Renamed and repackaged per RR-1 (own CMake package, `sqlite_cpp_require_legacy()`) |
+| `sqlite3` shell | `applications/sqlite3-shell-legacy` | Renamed per RR-2; unsuffixed `sqlite3-shell` reserved (RR-3), façade-gated |
+| `sqldiff` | `applications/sqldiff-legacy` | Renamed per RR-2; unsuffixed `sqldiff` reserved (RR-3), façade-gated |
+| `sqlite3-rsync` | `applications/sqlite3-rsync-legacy` | Renamed per RR-2; unsuffixed `sqlite3-rsync` reserved (RR-3), façade-gated |
+| `speedtest1` | `applications/speedtest1-legacy` | Relocated from `benchmarks/` (closing a pre-existing SRS 001 FR-20 gap) and renamed per RR-2; unsuffixed `speedtest1` reserved (RR-3), meant to coexist permanently once it exists (SRS 002 S5.4.1) |
+| `lemon` | `applications/lemon-legacy` | Relocated from `tool/lemon.c` per RR-4. Complete C++ replacement (RR-5, `applications/lemon`) **not yet started** -- deferred |
+| `mkkeywordhash` | `applications/mkkeywordhash-legacy` | Relocated from `tool/mkkeywordhash.c` per RR-4. Complete C++ replacement (RR-5) **not yet started** -- deferred |
+| `mkopcodeh` | `applications/mkopcodeh-legacy` | Relocated from `tool/mkopcodeh.tcl` per RR-4. Complete C++ replacement (RR-5) **not yet started** -- deferred, sequenced with `sqlite-core-virtual-machine` |
+| `mkopcodec` | `applications/mkopcodec-legacy` | Relocated from `tool/mkopcodec.tcl` per RR-4. Complete C++ replacement (RR-5) **not yet started** -- deferred, sequenced with `sqlite-core-virtual-machine` |
+
+RR-6's freeze guarantee is enforced mechanically (TR-4): `tests/legacy-freeze/manifest.sha256`
+records a checksum of every file under `libraries/libsqlite3-legacy/` and
+`applications/*-legacy/` except each directory's own `CMakeLists.txt`/`cmake/*`
+build glue (the carve-out RR-6 itself permits); `ctest -R legacy_freeze_check`
+(or `-L comparison`) verifies nothing else has drifted. `tool/update-legacy-freeze-manifest.sh`
+regenerates the manifest -- running it is the mechanical form of "an
+explicitly reviewed, documented exception."
+
+**Not yet done, left for follow-up work:** RR-5 (the four generators' complete
+C++ replacements), RR-7 (generator-output parity -- nothing to diff against
+until RR-5 lands), RR-8 (sqlite3-dependent application comparison -- blocked
+on the `sqlite-core-interface` facade, phase 5 above), and RR-9 (per-library
+comparison against `libsqlite3-legacy`, within each library's declared
+scope -- substantial work deserving its own pass). Final deletion of the
+legacy track (S9.1) remains an open, unmade decision, as SRS 002 requires.
+
 ## Existing project documentation
 
 - [SRS 001](../srs/001-sqlite-cpp-modularization.md) -- the requirements this refactor implements.

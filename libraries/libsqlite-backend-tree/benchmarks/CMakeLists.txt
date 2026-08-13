@@ -1,14 +1,14 @@
 # Test-only support (not part of the SRS FR-11/FR-12 unit-test surface):
-# a comparative benchmark against legacy libsqlite3, not registered as a
-# pass/fail ctest case (throughput comparisons are inherently noisy across
-# machines/CI runners) except for one loose scaling-shape sanity check --
-# see main.cpp and docs/index.md's "Benchmark: algorithm-preservation check
-# against libsqlite3" section.
+# a comparative benchmark against legacy libsqlite3-legacy (SRS 002 RR-1),
+# not registered as a pass/fail ctest case (throughput comparisons are
+# inherently noisy across machines/CI runners) except for one loose
+# scaling-shape sanity check -- see main.cpp and docs/index.md's "Benchmark:
+# algorithm-preservation check against libsqlite3" section.
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake/SqliteDependency.cmake)
 sqlite_require_core()
 
 add_executable(sqlite_backend_tree_benchmark main.cpp)
-target_link_libraries(sqlite_backend_tree_benchmark PRIVATE sqlite::backend::tree sqlite3::sqlite3)
+target_link_libraries(sqlite_backend_tree_benchmark PRIVATE sqlite::backend::tree libsqlite3-legacy::libsqlite3-legacy)
 target_compile_features(sqlite_backend_tree_benchmark PRIVATE cxx_std_20)
 
 # Registered with ctest (unlike the raw comparative numbers, which are just

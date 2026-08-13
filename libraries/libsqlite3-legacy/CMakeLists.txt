@@ -3,10 +3,14 @@ cmake_minimum_required(VERSION 3.24)
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../../VERSION SQLITE_VERSION_STRING LIMIT_COUNT 1)
 string(STRIP "${SQLITE_VERSION_STRING}" SQLITE_VERSION_STRING)
 
-project(sqlite3 VERSION ${SQLITE_VERSION_STRING} LANGUAGES C)
+# SRS 002 RR-1: renamed from the plain `sqlite3` project this was before --
+# this is now the frozen legacy comparison baseline (RR-6), not the
+# project's primary library. Its unsuffixed name is reserved (RR-3) for the
+# eventual sqlite-cpp-linked replacement.
+project(libsqlite3-legacy VERSION ${SQLITE_VERSION_STRING} LANGUAGES C)
 
-option(SQLITE_BUILD_SHARED_LIBS "Build libsqlite3 as a shared library" ON)
-option(SQLITE_BUILD_STATIC_LIBS "Build libsqlite3 as a static library" ON)
+option(SQLITE_BUILD_SHARED_LIBS "Build libsqlite3-legacy as a shared library" ON)
+option(SQLITE_BUILD_STATIC_LIBS "Build libsqlite3-legacy as a static library" ON)
 
 if(NOT SQLITE_BUILD_SHARED_LIBS AND NOT SQLITE_BUILD_STATIC_LIBS)
     message(FATAL_ERROR "At least one of SQLITE_BUILD_SHARED_LIBS / SQLITE_BUILD_STATIC_LIBS must be ON")
@@ -18,23 +22,23 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCodegen.cmake)
 set(SQLITE_TARGETS)
 
 if(SQLITE_BUILD_SHARED_LIBS)
-    add_library(sqlite3 SHARED ${SQLITE_AMALGAMATION_C})
-    add_library(sqlite3::sqlite3 ALIAS sqlite3)
-    list(APPEND SQLITE_TARGETS sqlite3)
+    add_library(libsqlite3-legacy SHARED ${SQLITE_AMALGAMATION_C})
+    add_library(libsqlite3-legacy::libsqlite3-legacy ALIAS libsqlite3-legacy)
+    list(APPEND SQLITE_TARGETS libsqlite3-legacy)
 endif()
 if(SQLITE_BUILD_STATIC_LIBS)
-    add_library(sqlite3-static STATIC ${SQLITE_AMALGAMATION_C})
-    add_library(sqlite3::sqlite3-static ALIAS sqlite3-static)
-    list(APPEND SQLITE_TARGETS sqlite3-static)
+    add_library(libsqlite3-legacy-static STATIC ${SQLITE_AMALGAMATION_C})
+    add_library(libsqlite3-legacy::libsqlite3-legacy-static ALIAS libsqlite3-legacy-static)
+    list(APPEND SQLITE_TARGETS libsqlite3-legacy-static)
     if(NOT SQLITE_BUILD_SHARED_LIBS)
-        add_library(sqlite3::sqlite3 ALIAS sqlite3-static)
+        add_library(libsqlite3-legacy::libsqlite3-legacy ALIAS libsqlite3-legacy-static)
     endif()
 endif()
 
 foreach(_target IN LISTS SQLITE_TARGETS)
     add_dependencies(${_target} sqlite3_amalgamation)
     set_target_properties(${_target} PROPERTIES
-        OUTPUT_NAME sqlite3
+        OUTPUT_NAME sqlite3-legacy
         C_STANDARD 11
         POSITION_INDEPENDENT_CODE ON
     )
@@ -53,29 +57,30 @@ endforeach()
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-install(TARGETS ${SQLITE_TARGETS} EXPORT sqlite3Targets)
+install(TARGETS ${SQLITE_TARGETS} EXPORT libsqlite3-legacyTargets)
 install(FILES ${SQLITE_GENDIR}/sqlite3.h ${SQLITE_GENDIR}/sqlite3ext.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-install(EXPORT sqlite3Targets NAMESPACE sqlite3:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3)
+install(EXPORT libsqlite3-legacyTargets NAMESPACE libsqlite3-legacy:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libsqlite3-legacy)
 configure_package_config_file(
-    cmake/sqlite3Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/sqlite3Config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
+    cmake/Libsqlite3LegacyConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/libsqlite3-legacyConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libsqlite3-legacy
 )
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/sqlite3ConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/libsqlite3-legacyConfigVersion.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/sqlite3Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/sqlite3ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
+    ${CMAKE_CURRENT_BINARY_DIR}/libsqlite3-legacyConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/libsqlite3-legacyConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libsqlite3-legacy
 )
 
-# pkg-config file: mirrors sqlite3.pc.in, but built from CMake's own install
-# layout/link-library knowledge instead of autoconf substitution variables.
+# pkg-config file: mirrors sqlite3-legacy.pc.in, but built from CMake's own
+# install layout/link-library knowledge instead of autoconf substitution
+# variables.
 set(SQLITE_PC_LIBDIR ${CMAKE_INSTALL_FULL_LIBDIR})
 set(SQLITE_PC_INCLUDEDIR ${CMAKE_INSTALL_FULL_INCLUDEDIR})
 set(SQLITE_PC_LIBS_PRIVATE "-lm")
@@ -88,11 +93,11 @@ if(CMAKE_DL_LIBS)
 endif()
 string(APPEND SQLITE_PC_LIBS_PRIVATE " -lpthread")
 configure_file(
-    cmake/sqlite3.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/sqlite3.pc
+    cmake/sqlite3-legacy.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/sqlite3-legacy.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sqlite3.pc
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sqlite3-legacy.pc
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 

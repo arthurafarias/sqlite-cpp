@@ -6,6 +6,28 @@
 # applies, e.g. this library is being used completely standalone -- pulled in
 # via an add_subdirectory() fallback.
 
+# Resolves the libsqlite3-legacy::libsqlite3-legacy target -- SRS 002 BR-4:
+# the legacy library gets a sqlite_cpp_require_<name>() resolver too,
+# following this file's own FR-15 pattern, alongside
+# cmake/SqliteDependency.cmake's sqlite_require_core() (kept for the
+# pre-existing plain-C applications that already called it before the
+# rename). Mirrors sqlite_cpp_require_utils().
+function(sqlite_cpp_require_legacy)
+    if(TARGET libsqlite3-legacy::libsqlite3-legacy)
+        return()
+    endif()
+
+    find_package(libsqlite3-legacy CONFIG QUIET)
+    if(TARGET libsqlite3-legacy::libsqlite3-legacy)
+        return()
+    endif()
+
+    add_subdirectory(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../libraries/libsqlite3-legacy
+        ${CMAKE_BINARY_DIR}/libsqlite3-legacy
+    )
+endfunction()
+
 # Resolves the sqlite::utils target.
 #
 # Resolution order:
