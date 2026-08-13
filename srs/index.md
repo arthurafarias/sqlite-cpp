@@ -8,7 +8,7 @@ adopted, and how they relate to one another.
 
 | # | Document | Status | Subject |
 |---|---|---|---|
-| 1 | [SRS 001 — Legacy Restructure & Dynamic Library Split](001-legacy-restructure-and-dynamic-linking.md) | Draft v0.1 — FR-1 (cleanup) done, FR-2–FR-6 open | Reorganizes the original SQLite C source into a single `legacy/` reference copy, splits it into per-purpose libraries (still plain C), and converts the whole workspace — libraries and legacy executables alike — to dynamic linking. |
+| 1 | [SRS 001 — Legacy Restructure & Dynamic Library Split](001-legacy-restructure-and-dynamic-linking.md) | **Complete** (FR-1–FR-6 all done) | Reorganizes the original SQLite C source into a single `legacy/` reference copy, splits it into per-purpose libraries (still plain C), and converts the whole workspace — libraries and legacy executables alike — to dynamic linking. |
 | 2 | [SRS 002 — C to C++ Conversion](002-cpp-conversion.md) | Draft v0.1 — requirements capture, not yet reviewed or approved | Converts a library, once it builds per SRS 001, from plain C to namespaced C++: `.c`/`.h` renamed to `.cpp`/`.hpp`, no `extern "C"`, each function grouped with the state it mutates into a state-container type. |
 | 3 | [SRS 003 — STL-Based Architecture Conversion](003-stl-based-architecture.md) | Draft v0.1 — requirements capture, not yet reviewed or approved | Rebuilds a library's state containers, once converted per SRS 002, on the C++ Standard Library — STL containers, RAII ownership, STL algorithms — in place of SQLite's hand-rolled data structures and manual memory management. |
 

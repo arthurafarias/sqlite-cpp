@@ -186,14 +186,24 @@ from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-
 
 ## 5. Acceptance Criteria
 
-1. `cmake --build` succeeds for the full workspace: every `libraries/<name>` produces a
-   `.so`, every application in FR-5 links against them dynamically (verify with `ldd`),
-   and no target still compiles a copy of the full amalgamation into itself.
+1. `cmake --build` succeeds for the full workspace, from a clean build directory: every
+   `libraries/<name>` produces a `.so`, and every FR-5 application links against them
+   dynamically (verify with `ldd`) rather than compiling its own copy of the
+   amalgamation. `libraries/libsqlite3-legacy` and `tests/testfixture` are explicitly
+   exempt — they're the original monolithic build and the TCL oracle respectively,
+   neither touched by this document (§2.1).
 2. `ctest` — `sqlite_veryquick` — passes with the same pre-existing `zipfile-25.0` flake
    as the only permitted failure.
 3. `legacy/` contains a complete, untouched copy of the original `src/`, `ext/`,
    `tool/`, `compat/` trees; nothing under `legacy/` is ever edited by a later library
    pass.
+4. Every FR-5 application is verified to actually *run* correctly against the split
+   libraries (real SQL executed, not just a successful link) — see §6's FR-5 note for
+   what was checked.
+
+**Status: all four criteria met**, verified on a fresh clean-room build (empty build
+directory, `CMAKE_BUILD_TYPE=Release`) as the final FR-6 check, in addition to every
+per-FR verification recorded in §6.
 
 ---
 
@@ -312,9 +322,20 @@ from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-
   `ctest -R sqlite_veryquick` (unaffected — `testfixture` builds its own amalgamation
   copy, untouched by this pass) stays at the same pre-existing `zipfile-25.0`-only
   baseline.
-- **FR-6: open, not yet started.** Final rewiring/verification across the whole
-  workspace — mostly bookkeeping at this point, since FR-2 through FR-5 already leave
-  the workspace building and passing end-to-end; tracked here as the next step.
+- **FR-6 (Rewiring): done.** Mostly bookkeeping at this point — FR-2 through FR-5 already
+  left the workspace building and passing end-to-end after each pass. Remaining work:
+  stale comments in root `CMakeLists.txt` referencing the old, superseded SRS numbering
+  (e.g. "SRS S3") corrected; `docs/index.md` rewritten to describe the now-fully-buildable
+  state instead of FR-1's transitional one; §5's acceptance criteria corrected (criterion
+  1 originally said no target may embed the amalgamation, which contradicted keeping
+  `libsqlite3-legacy`/`testfixture` deliberately unchanged — narrowed to FR-5's
+  applications specifically) and verified.
+
+  Final verification, from a genuinely clean build directory (not reusing any
+  incrementally-modified one from FR-2 through FR-5), `CMAKE_BUILD_TYPE=Release`: full
+  workspace build succeeds, all 9 `.so`s and all 4 FR-5 applications present, and
+  `ctest -R sqlite_veryquick` passes at the same pre-existing `zipfile-25.0`-only
+  baseline every prior check in this document found. **SRS 001 is complete.**
 
 ---
 
