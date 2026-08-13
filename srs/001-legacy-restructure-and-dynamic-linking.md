@@ -192,12 +192,25 @@ from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-
 
 - **FR-1 (Cleanup): done.** The old-plan artifacts listed in §3 have been removed and
   the CMake files fixed up to stay valid.
-- **FR-2–FR-6: open, not yet started.** Populating `legacy/`, reasoning the per-library
-  file copy, converting to dynamic linking, redoing the legacy executables, and the
-  final rewiring are each substantial, separate pieces of work, tracked here as the next
-  steps once this pass is picked back up. Until FR-6 lands, the workspace is not
-  expected to fully build — FR-1 alone intentionally leaves it in a transitional,
-  partially-wired state.
+- **FR-2 (Legacy consolidation): done.** `src/`, `ext/`, `tool/` are relocated to
+  `legacy/src`, `legacy/ext`, `legacy/tool` (`compat/` was already empty and untracked,
+  nothing to move). `cmake/SqliteCodegen.cmake`, `tests/CMakeLists.txt`, and the two
+  application `CMakeLists.txt` files with relative `tool/` references
+  (`applications/sqldiff-legacy`, `applications/sqlite3-rsync-legacy`) are updated
+  accordingly. `VERSION`, `manifest`, `manifest.tags`, and `manifest.uuid` are also
+  *copied* (not moved — every other `CMakeLists.txt` still reads the workspace-root
+  copies by relative path) into `legacy/`, discovered necessary during implementation:
+  `tool/mksqlite3h.tcl` and `ext/fts5/tool/mkfts5c.tcl` both expect these metadata files
+  colocated with `src/`/`ext/`, since they self-locate their own root from their own
+  script path (now under `legacy/`) or take a single `$TOP` argument used for both
+  metadata and source lookups. Verified: clean `cmake` configure, full workspace build,
+  and `ctest -R sqlite_veryquick` at the same pre-existing `zipfile-25.0`-only baseline.
+- **FR-3–FR-6: open, not yet started.** Reasoning the per-library file copy, converting
+  to dynamic linking, redoing the legacy executables, and the final rewiring are each
+  substantial, separate pieces of work, tracked here as the next steps once this pass is
+  picked back up. `libraries/libsqlite3-legacy` and `applications/*-legacy` are
+  untouched by FR-2 — they're CLI/build-tool executables, in scope for FR-5, not FR-2's
+  source-consolidation step.
 
 ---
 

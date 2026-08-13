@@ -6,8 +6,8 @@ project(sqldiff-legacy LANGUAGES C)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteDependency.cmake)
 sqlite_require_core()
 
-add_executable(sqldiff-legacy ${CMAKE_CURRENT_SOURCE_DIR}/../../tool/sqldiff.c)
-target_include_directories(sqldiff-legacy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/misc)
+add_executable(sqldiff-legacy ${CMAKE_CURRENT_SOURCE_DIR}/../../legacy/tool/sqldiff.c)
+target_include_directories(sqldiff-legacy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../legacy/ext/misc)
 target_link_libraries(sqldiff-legacy PRIVATE libsqlite3-legacy::libsqlite3-legacy)
 
 include(GNUInstallDirs)

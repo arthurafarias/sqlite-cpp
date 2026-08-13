@@ -59,7 +59,7 @@ endif()
 if(NOT TARGET mkkeywordhash-legacy)
     add_subdirectory(${SQLITE_TOP}/applications/mkkeywordhash-legacy ${CMAKE_BINARY_DIR}/mkkeywordhash-legacy)
 endif()
-add_executable(mksourceid ${SQLITE_TOP}/tool/mksourceid.c)
+add_executable(mksourceid ${SQLITE_TOP}/legacy/tool/mksourceid.c)
 set_target_properties(lemon-legacy mksourceid mkkeywordhash-legacy PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${SQLITE_GENDIR}
 )
@@ -75,10 +75,10 @@ add_custom_command(
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/parse.c ${SQLITE_GENDIR}/parse.h
-    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/src/parse.y ${SQLITE_GENDIR}/parse.y
+    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/legacy/src/parse.y ${SQLITE_GENDIR}/parse.y
     COMMAND lemon-legacy -S parse.y
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS lemon-legacy ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/src/parse.y
+    DEPENDS lemon-legacy ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/legacy/src/parse.y
     VERBATIM
 )
 
@@ -87,9 +87,9 @@ add_custom_command(
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/opcodes.h
-    COMMAND /bin/sh -c "cat parse.h '${SQLITE_TOP}/src/vdbe.c' | '${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/applications/mkopcodeh-legacy/mkopcodeh.tcl' > opcodes.h"
+    COMMAND /bin/sh -c "cat parse.h '${SQLITE_TOP}/legacy/src/vdbe.c' | '${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/applications/mkopcodeh-legacy/mkopcodeh.tcl' > opcodes.h"
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_GENDIR}/parse.h ${SQLITE_TOP}/src/vdbe.c ${SQLITE_TOP}/applications/mkopcodeh-legacy/mkopcodeh.tcl
+    DEPENDS ${SQLITE_GENDIR}/parse.h ${SQLITE_TOP}/legacy/src/vdbe.c ${SQLITE_TOP}/applications/mkopcodeh-legacy/mkopcodeh.tcl
     VERBATIM
 )
 add_custom_command(
@@ -117,30 +117,35 @@ add_custom_command(
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/pragma.h
-    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/tool/mkpragmatab.tcl
+    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/legacy/tool/mkpragmatab.tcl
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_TOP}/tool/mkpragmatab.tcl ${SQLITE_TOP}/src/pragma.c
+    DEPENDS ${SQLITE_TOP}/legacy/tool/mkpragmatab.tcl ${SQLITE_TOP}/legacy/src/pragma.c
     VERBATIM
 )
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/ctime.c
-    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/tool/mkctimec.tcl
+    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/legacy/tool/mkctimec.tcl
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_TOP}/tool/mkctimec.tcl
+    DEPENDS ${SQLITE_TOP}/legacy/tool/mkctimec.tcl
     VERBATIM
 )
 
 # ---------------------------------------------------------------------------
 # sqlite3.h - mksqlite3h.tcl cd's into $TOP to run "$PWD/mksourceid manifest",
 # where $PWD is captured before the cd, so mksourceid must already live in
-# the working directory this command runs from (SQLITE_GENDIR).
+# the working directory this command runs from (SQLITE_GENDIR). $TOP is
+# passed as legacy/ (not the workspace root) because the script expects
+# VERSION/manifest/manifest.tags colocated with src/ext -- SRS 001 FR-2
+# copies those three small metadata files into legacy/ alongside src/ext/tool
+# for exactly this reason; the workspace-root copies remain the ones every
+# other CMakeLists.txt reads by relative path.
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/sqlite3.h
-    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/tool/mksqlite3h.tcl ${SQLITE_TOP} -o sqlite3.h
+    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/legacy/tool/mksqlite3h.tcl ${SQLITE_TOP}/legacy -o sqlite3.h
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS mksourceid ${SQLITE_TOP}/src/sqlite.h.in ${SQLITE_TOP}/manifest
-            ${SQLITE_TOP}/VERSION ${SQLITE_TOP}/tool/mksqlite3h.tcl
+    DEPENDS mksourceid ${SQLITE_TOP}/legacy/src/sqlite.h.in ${SQLITE_TOP}/legacy/manifest
+            ${SQLITE_TOP}/legacy/VERSION ${SQLITE_TOP}/legacy/tool/mksqlite3h.tcl
     VERBATIM
 )
 
@@ -149,25 +154,25 @@ add_custom_command(
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/fts5parse.c ${SQLITE_GENDIR}/fts5parse.h
-    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/ext/fts5/fts5parse.y ${SQLITE_GENDIR}/fts5parse.y
+    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/legacy/ext/fts5/fts5parse.y ${SQLITE_GENDIR}/fts5parse.y
     COMMAND ${CMAKE_COMMAND} -E remove -f fts5parse.h
     COMMAND lemon-legacy -S fts5parse.y
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS lemon-legacy ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/ext/fts5/fts5parse.y
+    DEPENDS lemon-legacy ${SQLITE_GENDIR}/lempar.c ${SQLITE_TOP}/legacy/ext/fts5/fts5parse.y
     VERBATIM
 )
 
 file(GLOB SQLITE_FTS5_SRC_FILES
-    ${SQLITE_TOP}/ext/fts5/*.c
-    ${SQLITE_TOP}/ext/fts5/*.h
+    ${SQLITE_TOP}/legacy/ext/fts5/*.c
+    ${SQLITE_TOP}/legacy/ext/fts5/*.h
 )
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/fts5.c ${SQLITE_GENDIR}/fts5.h
-    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/ext/fts5/tool/mkfts5c.tcl
-    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/ext/fts5/fts5.h ${SQLITE_GENDIR}/fts5.h
+    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/legacy/ext/fts5/tool/mkfts5c.tcl
+    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/legacy/ext/fts5/fts5.h ${SQLITE_GENDIR}/fts5.h
     WORKING_DIRECTORY ${SQLITE_GENDIR}
     DEPENDS ${SQLITE_GENDIR}/fts5parse.c ${SQLITE_GENDIR}/fts5parse.h
-            ${SQLITE_TOP}/ext/fts5/tool/mkfts5c.tcl ${SQLITE_FTS5_SRC_FILES}
+            ${SQLITE_TOP}/legacy/ext/fts5/tool/mkfts5c.tcl ${SQLITE_FTS5_SRC_FILES}
     VERBATIM
 )
 
@@ -193,7 +198,7 @@ set(SQLITE_CORE_SRC_FILES
     vdbemem.c vdbesort.c vdbetrace.c vdbevtab.c vdbeInt.h vtab.c vxworks.h
     wal.c wal.h walker.c where.c wherecode.c whereexpr.c whereInt.h window.c
 )
-list(TRANSFORM SQLITE_CORE_SRC_FILES PREPEND ${SQLITE_TOP}/src/ OUTPUT_VARIABLE SQLITE_CORE_SRC_PATHS)
+list(TRANSFORM SQLITE_CORE_SRC_FILES PREPEND ${SQLITE_TOP}/legacy/src/ OUTPUT_VARIABLE SQLITE_CORE_SRC_PATHS)
 
 set(SQLITE_EXT_SRC_FILES
     fts3/fts3.c fts3/fts3.h fts3/fts3Int.h fts3/fts3_aux.c fts3/fts3_expr.c
@@ -207,7 +212,7 @@ set(SQLITE_EXT_SRC_FILES
     rbu/sqlite3rbu.h rbu/sqlite3rbu.c
     misc/stmt.c
 )
-list(TRANSFORM SQLITE_EXT_SRC_FILES PREPEND ${SQLITE_TOP}/ext/ OUTPUT_VARIABLE SQLITE_EXT_SRC_PATHS)
+list(TRANSFORM SQLITE_EXT_SRC_FILES PREPEND ${SQLITE_TOP}/legacy/ext/ OUTPUT_VARIABLE SQLITE_EXT_SRC_PATHS)
 
 set(SQLITE_GENERATED_FLAT_FILES
     ${SQLITE_GENDIR}/ctime.c
@@ -229,16 +234,16 @@ add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/tsrc/.stamp
     COMMAND ${CMAKE_COMMAND} -E rm -rf ${SQLITE_GENDIR}/tsrc
     COMMAND ${CMAKE_COMMAND} -E make_directory ${SQLITE_GENDIR}/tsrc
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SQLITE_TOP}/src/vdbe.c ${SQLITE_GENDIR}/tsrc/vdbe.c
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SQLITE_TOP}/legacy/src/vdbe.c ${SQLITE_GENDIR}/tsrc/vdbe.c
     ${SQLITE_TSRC_COPY_COMMANDS}
-    COMMAND /bin/sh -c "'${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/tool/vdbe-compress.tcl' < '${SQLITE_GENDIR}/tsrc/vdbe.c' > '${SQLITE_GENDIR}/tsrc/vdbe.c.new'"
+    COMMAND /bin/sh -c "'${TCLSH_EXECUTABLE}' '${SQLITE_TOP}/legacy/tool/vdbe-compress.tcl' < '${SQLITE_GENDIR}/tsrc/vdbe.c' > '${SQLITE_GENDIR}/tsrc/vdbe.c.new'"
     COMMAND ${CMAKE_COMMAND} -E rename ${SQLITE_GENDIR}/tsrc/vdbe.c.new ${SQLITE_GENDIR}/tsrc/vdbe.c
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SQLITE_GENDIR}/fts5.c ${SQLITE_GENDIR}/tsrc/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SQLITE_GENDIR}/fts5.h ${SQLITE_GENDIR}/tsrc/
     COMMAND ${CMAKE_COMMAND} -E touch ${SQLITE_GENDIR}/tsrc/.stamp
     DEPENDS ${SQLITE_CORE_SRC_PATHS} ${SQLITE_EXT_SRC_PATHS} ${SQLITE_GENERATED_FLAT_FILES}
             ${SQLITE_GENDIR}/fts5.c ${SQLITE_GENDIR}/fts5.h
-            ${SQLITE_TOP}/tool/vdbe-compress.tcl ${SQLITE_TOP}/src/vdbe.c
+            ${SQLITE_TOP}/legacy/tool/vdbe-compress.tcl ${SQLITE_TOP}/legacy/src/vdbe.c
     VERBATIM
 )
 
@@ -247,11 +252,11 @@ add_custom_command(
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/sqlite3.c ${SQLITE_GENDIR}/sqlite3ext.h
-    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/tool/mksqlite3c.tcl --linemacros=0
+    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/legacy/tool/mksqlite3c.tcl --linemacros=0
     COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_GENDIR}/tsrc/sqlite3ext.h ${SQLITE_GENDIR}/sqlite3ext.h
-    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/ext/session/sqlite3session.h ${SQLITE_GENDIR}/sqlite3session.h
+    COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE_TOP}/legacy/ext/session/sqlite3session.h ${SQLITE_GENDIR}/sqlite3session.h
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_GENDIR}/tsrc/.stamp ${SQLITE_TOP}/tool/mksqlite3c.tcl
+    DEPENDS ${SQLITE_GENDIR}/tsrc/.stamp ${SQLITE_TOP}/legacy/tool/mksqlite3c.tcl
     VERBATIM
 )
 
@@ -273,13 +278,13 @@ set(SQLITE_SHELL_DEP_FILES
     ext/misc/windirent.h ext/misc/zipfile.c
     ext/recover/dbdata.c ext/recover/sqlite3recover.c ext/recover/sqlite3recover.h
 )
-list(TRANSFORM SQLITE_SHELL_DEP_FILES PREPEND ${SQLITE_TOP}/ OUTPUT_VARIABLE SQLITE_SHELL_DEP_PATHS)
+list(TRANSFORM SQLITE_SHELL_DEP_FILES PREPEND ${SQLITE_TOP}/legacy/ OUTPUT_VARIABLE SQLITE_SHELL_DEP_PATHS)
 
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/shell.c
-    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/tool/mkshellc.tcl shell.c
+    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/legacy/tool/mkshellc.tcl shell.c
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_TOP}/tool/mkshellc.tcl ${SQLITE_SHELL_DEP_PATHS}
+    DEPENDS ${SQLITE_TOP}/legacy/tool/mkshellc.tcl ${SQLITE_SHELL_DEP_PATHS}
     VERBATIM
 )
 add_custom_target(sqlite3_shell_c DEPENDS ${SQLITE_GENDIR}/shell.c)
@@ -290,12 +295,12 @@ add_custom_target(sqlite3_shell_c DEPENDS ${SQLITE_GENDIR}/shell.c)
 # ---------------------------------------------------------------------------
 add_custom_command(
     OUTPUT ${SQLITE_GENDIR}/tclsqlite-ex.c
-    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/tool/mkcombo.tcl
-            ${SQLITE_TOP}/ext/qrf/qrf.h ${SQLITE_TOP}/ext/qrf/qrf.c ${SQLITE_TOP}/src/tclsqlite.c
+    COMMAND ${TCLSH_EXECUTABLE} ${SQLITE_TOP}/legacy/tool/mkcombo.tcl
+            ${SQLITE_TOP}/legacy/ext/qrf/qrf.h ${SQLITE_TOP}/legacy/ext/qrf/qrf.c ${SQLITE_TOP}/legacy/src/tclsqlite.c
             -o tclsqlite-ex.c
     WORKING_DIRECTORY ${SQLITE_GENDIR}
-    DEPENDS ${SQLITE_TOP}/tool/mkcombo.tcl ${SQLITE_TOP}/ext/qrf/qrf.h
-            ${SQLITE_TOP}/ext/qrf/qrf.c ${SQLITE_TOP}/src/tclsqlite.c
+    DEPENDS ${SQLITE_TOP}/legacy/tool/mkcombo.tcl ${SQLITE_TOP}/legacy/ext/qrf/qrf.h
+            ${SQLITE_TOP}/legacy/ext/qrf/qrf.c ${SQLITE_TOP}/legacy/src/tclsqlite.c
     VERBATIM
 )
 add_custom_target(sqlite3_tclsqlite_ex_c DEPENDS ${SQLITE_GENDIR}/tclsqlite-ex.c)

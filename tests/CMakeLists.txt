@@ -37,7 +37,7 @@ set(SQLITE_TESTFIXTURE_SRC_FILES
     ext/misc/unionvtab.c ext/misc/wholenumber.c ext/misc/zipfile.c
     ext/rtree/test_rtreedoc.c
 )
-list(TRANSFORM SQLITE_TESTFIXTURE_SRC_FILES PREPEND ${SQLITE_TOP}/ OUTPUT_VARIABLE SQLITE_TESTFIXTURE_SRC_PATHS)
+list(TRANSFORM SQLITE_TESTFIXTURE_SRC_FILES PREPEND ${SQLITE_TOP}/legacy/ OUTPUT_VARIABLE SQLITE_TESTFIXTURE_SRC_PATHS)
 
 add_executable(testfixture
     ${SQLITE_TESTFIXTURE_SRC_PATHS}
@@ -49,18 +49,18 @@ add_dependencies(testfixture sqlite3_tclsqlite_ex_c sqlite3_amalgamation)
 target_include_directories(testfixture PRIVATE
     ${SQLITE_GENDIR}
     ${TCL_INCLUDE_PATH}
-    ${SQLITE_TOP}/src
-    ${SQLITE_TOP}/ext/rtree
-    ${SQLITE_TOP}/ext/icu
-    ${SQLITE_TOP}/ext/fts3
-    ${SQLITE_TOP}/ext/fts5
-    ${SQLITE_TOP}/ext/session
-    ${SQLITE_TOP}/ext/misc
-    ${SQLITE_TOP}/ext/expert
-    ${SQLITE_TOP}/ext/intck
-    ${SQLITE_TOP}/ext/recover
-    ${SQLITE_TOP}/ext/rbu
-    ${SQLITE_TOP}/ext/qrf
+    ${SQLITE_TOP}/legacy/src
+    ${SQLITE_TOP}/legacy/ext/rtree
+    ${SQLITE_TOP}/legacy/ext/icu
+    ${SQLITE_TOP}/legacy/ext/fts3
+    ${SQLITE_TOP}/legacy/ext/fts5
+    ${SQLITE_TOP}/legacy/ext/session
+    ${SQLITE_TOP}/legacy/ext/misc
+    ${SQLITE_TOP}/legacy/ext/expert
+    ${SQLITE_TOP}/legacy/ext/intck
+    ${SQLITE_TOP}/legacy/ext/recover
+    ${SQLITE_TOP}/legacy/ext/rbu
+    ${SQLITE_TOP}/legacy/ext/qrf
 )
 
 # Mirrors main.mk's $(TESTFIXTURE_FLAGS): testfixture inherits the same

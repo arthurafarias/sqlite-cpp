@@ -13,7 +13,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCodegen.cmake)
 # definitions list below - for a macro defined multiple times via -D, the
 # compiler uses the last one, matching main.mk's -USQLITE_THREADSAFE
 # -DSQLITE_THREADSAFE=0 undef-then-redefine.
-add_executable(sqlite3-rsync-legacy ${CMAKE_CURRENT_SOURCE_DIR}/../../tool/sqlite3_rsync.c ${SQLITE_AMALGAMATION_C})
+add_executable(sqlite3-rsync-legacy ${CMAKE_CURRENT_SOURCE_DIR}/../../legacy/tool/sqlite3_rsync.c ${SQLITE_AMALGAMATION_C})
 add_dependencies(sqlite3-rsync-legacy sqlite3_amalgamation)
 target_include_directories(sqlite3-rsync-legacy PRIVATE ${SQLITE_GENDIR})
 target_compile_definitions(sqlite3-rsync-legacy PRIVATE

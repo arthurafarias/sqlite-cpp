@@ -21,6 +21,14 @@ container's internal representation, and its mutators, to a purely C++/STL-based
 architecture. It applies **per library**, once that library has landed SRS 002's
 conversion — same incremental, library-at-a-time application as SRS 002 itself.
 
+#### TODO: Interpret and make changes in this SRS to accomplish with this design goal.
+
+The implementation should begin from the repl application. It is necessary to begin for the external design to the internal. Because if the utilities library changes, all C code will stop working or it is necessary maintain two interfaces of utilities and down libraries. What is not necessary at this moment. So, the OS library will be the last one to be converted. Including, some core features are already supperseded by stl itself and the aren't necessary.
+
+#### TODO: Remove all code that belongs to sqlite3 library once this repository were converted directly from the source tree from the library
+
+All sqlite3 library code should be in the legacy folder, everything else that belongs to the sqlite3 legacy library should be removed.
+
 ### 1.2 Scope
 
 **In scope:** replacing SQLite's own hand-rolled data structures and manual memory
