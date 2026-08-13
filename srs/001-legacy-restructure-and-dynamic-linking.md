@@ -205,12 +205,28 @@ from a still-earlier pass) are *not* removed by FR-1 — they're consumed by FR-
   script path (now under `legacy/`) or take a single `$TOP` argument used for both
   metadata and source lookups. Verified: clean `cmake` configure, full workspace build,
   and `ctest -R sqlite_veryquick` at the same pre-existing `zipfile-25.0`-only baseline.
-- **FR-3–FR-6: open, not yet started.** Reasoning the per-library file copy, converting
-  to dynamic linking, redoing the legacy executables, and the final rewiring are each
-  substantial, separate pieces of work, tracked here as the next steps once this pass is
-  picked back up. `libraries/libsqlite3-legacy` and `applications/*-legacy` are
-  untouched by FR-2 — they're CLI/build-tool executables, in scope for FR-5, not FR-2's
-  source-consolidation step.
+- **FR-3 (Per-library population): done.** Each `libraries/<name>/csrc` per §1.3's table
+  is populated from `legacy/src` (every listed file lives there; none needed from
+  `legacy/ext`). `libraries/libsqlite-core-interface` is a new directory, not present
+  before this pass. Two deliberate departures from a literal one-file-one-library
+  reading:
+  - Generated files (`opcodes.h`/`.c`, `keywordhash.h`, `pragma.h`, `parse.c`/`.h`) are
+    **not** copied — they don't exist as static source, only as build output (§4 FR-6
+    wires each library's own generation step later); `sqlite-compiler-parser/csrc`
+    holds `parse.y` (the actual static grammar source) instead.
+  - `sqlite-compiler-code-generator`'s eight files (`select.c`, `expr.c`, `insert.c`,
+    `update.c`, `delete.c`, `trigger.c`, `where.c`, `wherecode.c`) are duplicated from
+    `sqlite-core-command-processor`'s copies rather than split — per §3.5.3, the
+    opcode-emission logic these files hold isn't separable from command-processor's
+    planning logic at the file level yet; that separation is SRS 002's job once real
+    C++ conversion starts, not something FR-3's mechanical copy can do.
+  97 files copied in total (88 unique, 8 duplicated per the code-generator note above,
+  1 grammar source).
+- **FR-4–FR-6: open, not yet started.** Converting each library to dynamic linking,
+  redoing the legacy executables, and the final rewiring are each substantial, separate
+  pieces of work, tracked here as the next steps once this pass is picked back up.
+  `libraries/libsqlite3-legacy` and `applications/*-legacy` are untouched by FR-2/FR-3 —
+  they're CLI/build-tool executables, in scope for FR-5, not source-consolidation.
 
 ---
 
