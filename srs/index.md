@@ -9,7 +9,7 @@ adopted, and how they relate to one another.
 | # | Document | Status | Subject |
 |---|---|---|---|
 | 1 | [SRS 001 — SQLite C++ Modularization](001-sqlite-cpp-modularization.md) | Draft v0.1 — requirements capture, not yet reviewed or approved | Functional/architectural requirements for refactoring the SQLite C core into namespaced, header-only C++ libraries (`sqlite::utils`, `sqlite::backend::*`, `sqlite::core::*`, `sqlite::compiler::*`) while preserving the existing public C API and on-disk format exactly. |
-| 2 | [SRS 002 — Complete C Implementation Retirement](002-full-c-retirement.md) | Draft v0.1 — requirements capture, not yet reviewed or approved | The process, gates, and build-system requirements for fully retiring the legacy C implementation (`src/`, `ext/*.c`) once each library's `sqlite-cpp` replacement is accepted — so the strangler-fig coexistence SRS 001 sets up has a defined endpoint rather than continuing indefinitely. Uses SRS 001's own library decomposition; adds no new architecture. |
+| 2 | [SRS 002 — Complete C Implementation Retirement](002-full-c-retirement.md) | Draft v0.3 — requirements capture, not yet reviewed or approved | Restructures the legacy C implementation into a permanent track under `libraries/`/`applications/`, compared directly against `sqlite-cpp` via a differential-testing harness: `libsqlite3` → `libsqlite3-legacy`; sqlite3-dependent applications (shell, sqldiff, rsync, speedtest1) → `*-legacy`, façade-gated new builds; and generator applications (lemon, mkkeywordhash, mkopcodeh, mkopcodec), which don't depend on `sqlite3`, → `*-legacy` plus an immediate, complete C++ replacement. Final deletion of the legacy track is left an explicit, later, system-wide decision, not a per-component gate. |
 | 3 | [SRS 003 — SIL4 Safety Integrity Validation](003-sil4-safety-integrity-validation.md) | Draft v0.1 — requirements capture, not yet reviewed or approved | Safety-integrity (IEC 61508, SIL4) validation requirements applied on top of SRS 001's library decomposition: the verification, evidence, and assessment steps needed to qualify each library component, and then the applications built on them, for use as SIL4-rated software. |
 
 ## How the documents relate
@@ -17,18 +17,20 @@ adopted, and how they relate to one another.
 All three documents are additive, not alternatives: SRS 001 defines *what*
 the `sqlite-cpp` libraries are and *what functionality* they must preserve.
 SRS 002 defines how the legacy C implementation SRS 001 keeps running
-alongside it is eventually deleted, once each library's replacement is
-accepted. SRS 003 defines the additional *safety-integrity process and
-evidence* required before any of that functionality can be claimed to meet
-SIL4. SRS 002 and SRS 003 both key their library-level sections directly to
-SRS 001 §3's library table, so all three should be read together — SRS 001
-first, for the architecture; then SRS 002 and SRS 003, which apply to that
-same architecture independently of each other but are not independent of
-*each other's timing*: SRS 003 §1.5/§9.4 requires that, for a library in
-SIL4 scope, SRS 002's retirement of that library's legacy C waits until
-SRS 003's differential-testing evidence has been captured. Neither document
-overrides the other; SRS 002 is written to defer to SRS 003 on this point
-explicitly (SRS 002 §1.5).
+alongside it is renamed, re-packaged, and permanently compared against its
+`sqlite-cpp` replacement — deletion, if it ever happens, is a single,
+later, explicit, system-wide decision, not a per-library gate. SRS 003
+defines the additional *safety-integrity process and evidence* required
+before any of that functionality can be claimed to meet SIL4. SRS 002 and
+SRS 003 both key their library-level sections directly to SRS 001 §3's
+library table, so all three should be read together — SRS 001 first, for
+the architecture; then SRS 002 and SRS 003, which apply to that same
+architecture largely independently of each other: SRS 003's SR-12 relies on
+the legacy implementation staying live for differential testing, which SRS
+002's default (retain the legacy track until an explicit deletion decision)
+already provides without SRS 002 needing library-by-library gating on SRS
+003's evidence, unlike SRS 002's earlier draft (see SRS 002 §9.2's
+design-history note and SRS 003 §1.5).
 
 Numbering is stable once a document is adopted (moved out of Draft status).
 Before adoption, numbers may still be adjusted to keep related documents

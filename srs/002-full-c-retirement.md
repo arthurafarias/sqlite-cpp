@@ -4,14 +4,14 @@
 
 *SRS 002 — see the [SRS index](index.md) for the full list of SRS documents.
 This document is additive to, and assumes, [SRS 001](001-sqlite-cpp-modularization.md),
-and its retirement timing is constrained by [SRS 003](003-sil4-safety-integrity-validation.md)
-§1.5/§9.4 wherever a library is also in SIL4 scope.*
+and interacts with [SRS 003](003-sil4-safety-integrity-validation.md)'s
+diversity-evidence requirement — see §1.5.*
 
 | | |
 |---|---|
-| **Document status** | Draft v0.1 — requirements capture, not yet reviewed or approved |
-| **Subject system** | The legacy C implementation (`src/`, `ext/*.c`) SRS 001 requires to keep working, unmodified, as the acceptance oracle for as long as it coexists with its C++ replacement |
-| **Target** | A repository in which every in-scope library and application has fully cut over to its `sqlite-cpp` implementation, and the legacy C source it replaced no longer exists in the build graph |
+| **Document status** | Draft v0.3 — requirements capture, not yet reviewed or approved. v0.2 revised v0.1's delete-per-library-as-you-go model (see §9.2) with a rename-and-compare model; v0.3 unifies every application — including the code generators — under `applications/`, split by whether it depends on the legacy `sqlite3` C API (§1.1). |
+| **Subject system** | The legacy C implementation (`src/`, `ext/*.c`, and the `tool/` code generators) SRS 001 requires to keep working, unmodified, as the acceptance oracle for as long as it coexists with its C++ replacement |
+| **Target** | A repository in which the legacy implementation — the core library, every application, and every code generator — is restructured into a clearly named, equally well-packaged `-legacy` track under `applications/`/`libraries/`, standing permanently alongside the `sqlite-cpp` track for direct comparison, with full deletion left as an explicit, later, system-wide decision rather than assumed |
 
 ---
 ## 1. Introduction
@@ -22,518 +22,629 @@ SRS 001 builds `sqlite-cpp` as a **strangler-fig migration** (SRS 001 §1.3):
 the legacy C implementation and its new C++ replacement coexist, with the
 legacy code retained, unmodified, as both the running implementation for
 not-yet-migrated pieces and the behavioral oracle for pieces that have
-already migrated (SRS 001 §1.2, FR-10). SRS 001 never says the coexistence
-ends — its phased plan (§12) describes each phase "retiring" that phase's C
-sources but does not specify what retirement actually requires: what gate a
-library must pass before its C files can be deleted, what happens to the
-build system's references to them, what happens to consumers (applications,
-the amalgamation) still compiled against the legacy target, and how this is
-sequenced against SRS 003's safety-integrity evidence, which explicitly
-depends on the legacy code staying alive longer than a naive reading of
-"retire per phase" would allow. This document specifies that retirement
-process, so that `sqlite-cpp` has a defined endpoint — a single implementation,
-not a permanent fork — rather than an open-ended coexistence that never
-actually concludes.
+already migrated (SRS 001 §1.2, FR-10). This document specifies how that
+coexistence is made **structurally explicit and permanently comparable**,
+rather than left as an implicit, temporary arrangement with an assumed
+delete-it-later endpoint:
 
-This document uses **the same design approach as SRS 001**: it does not
-redefine the library decomposition, namespaces, or dependency order (SRS 001
-§3); it does not reopen SRS 001's API-compatibility requirements (SRS 001
-§5); it adds retirement-specific requirements (**RR-**) on top of an
-SRS 001-conformant, already-accepted library, in the same additive style
-SRS 003 uses for safety requirements (**SR-**).
+- The legacy build target (`libsqlite3`) is renamed to `libsqlite3-legacy`
+  and given the same per-library CMake packaging SRS 001 already requires
+  of every new library (FR-14/FR-15) — legacy becomes a first-class,
+  equally well-structured target, not an unmarked leftover.
+- **Every application lives under `applications/`** — including the four
+  code generators SRS 001's compiler libraries depend on at build time
+  (`lemon`, `mkkeywordhash`, `mkopcodeh`, `mkopcodec`), which move there
+  from `tool/`. This document splits applications into two categories,
+  because they are blocked on different things and their legacy/new
+  relationship is not the same shape:
+  - **Sqlite3-dependent applications** (`sqlite3-shell`, `sqldiff`,
+    `sqlite3-rsync`, `speedtest1`) link the legacy public C API. Each is
+    renamed with a `-legacy` suffix, reserving its original, unsuffixed
+    name for the eventual `sqlite-cpp`-linked replacement — which cannot
+    exist until the interface façade (SRS 001 FR-7) covers that
+    application's dependency surface (§5.4.1). Their C++ replacement is
+    necessarily gradual and façade-gated.
+  - **Generator applications** (`lemon`, `mkkeywordhash`, `mkopcodeh`,
+    `mkopcodec`) do not depend on `sqlite3` at all — they process grammar,
+    keyword-list, and opcode-table text at build time. Each is likewise
+    renamed with a `-legacy` suffix, but because nothing blocks them (no
+    façade dependency, no engine dependency beyond a stable input format),
+    each gets a **complete** C++ replacement — full functional parity, not
+    a partial or indefinitely-deferred one — built immediately rather than
+    gated on any other component's progress (§5.4.2). This revises this
+    document's own v0.1 draft, which argued these tools didn't need
+    porting at all — see §9.2.
+
+Deleting any of this legacy material outright is **not** a requirement this
+document imposes per-component as each replacement lands. It is instead an
+explicit, later, system-wide decision (§9.1), made once comparison evidence
+(§4, §7) shows the `sqlite-cpp` track has reached parity across everything
+the legacy track does — not before, and not piecemeal. The generator
+applications are the one place this document requires *complete* parity
+rather than merely tracking toward it, precisely because nothing external
+blocks them from reaching it.
 
 ### 1.2 Scope
 
-**In scope:** the process, gates, and build-system requirements for deleting
-each piece of legacy C source (`src/*.c`/`.h`, `ext/*.c` for the extensions
-listed in SRS 001 §3.6, the generated artifacts in SRS 001's compiler
-libraries' legacy form) once its `sqlite-cpp` replacement has been accepted;
-updating the CMake build (`CMakeLists.txt`, `cmake/SqliteFeatures.cmake`,
-`cmake/SqliteCodegen.cmake`, `libraries/libsqlite3/`) to stop building what
-is retired; cutting the applications (SRS 001 FR-20) over to depend solely on
-the `sqlite-cpp` implementation; and deciding the fate of the single-file
-amalgamation (`sqlite3.c`) distribution, which today is generated directly
-from the legacy C sources this document retires (§9.1).
+**In scope:** renaming and re-packaging `libraries/libsqlite3` as
+`libraries/libsqlite3-legacy`; unifying every application — sqlite3-dependent
+and generator alike — under `applications/`, with the sqlite3-dependent ones
+renamed `-legacy` and their original names reserved for a future,
+façade-gated `sqlite-cpp`-linked build, and the generator applications
+(`lemon`, `mkkeywordhash`, `mkopcodeh`, `mkopcodec`) renamed `-legacy`
+alongside an immediate, complete C++ replacement; and establishing the
+comparison infrastructure (differential testing, generator-output diffing)
+that makes the legacy and new tracks mechanically comparable rather than
+comparable in principle only.
 
 **Out of scope:** re-deciding SRS 001's library boundaries or API-
 compatibility guarantees (both stand as-is); performing the SIL4 safety-case
-work SRS 003 specifies (this document only constrains *when* retirement may
-happen relative to that work, per §1.5); rewriting the code generators
-themselves (`lemon`, `mkkeywordhash`, `mkopcodeh`/`mkopcodec`) — §9.2 states
-explicitly that retiring "the C code" means retiring **generated C as a
-shipped implementation**, not retiring the C-producing generator tools SRS
-001's compiler libraries still depend on as build-time codegen.
+work SRS 003 specifies (this document only ensures the legacy track SRS 003
+SR-12 relies on stays available, per §1.5); and the final system-wide
+deletion decision itself (§9.1) — this document builds the state that
+decision would act on, it does not make the decision.
 
 ### 1.3 Definitions, Acronyms, Abbreviations
 
 | Term | Meaning |
 |---|---|
-| Retirement | Deleting a legacy C source file (or generated-C artifact) from the build graph because a functionally-equivalent, accepted `sqlite-cpp` replacement exists |
-| Cutover | The point at which a consumer (an application, another library, the amalgamation) switches from linking/compiling the legacy C implementation to linking/compiling the `sqlite-cpp` implementation |
-| Parity gate | The specific, checkable condition (RR-1) a library's C++ replacement must satisfy before its legacy C may be retired |
-| Amalgamation | SQLite's traditional single-file (`sqlite3.c`) distribution, historically hand-assembled from `src/`; see §9.1 for its status under this SRS |
-| Dead reference | A build-system reference (`target_sources`, `add_subdirectory`, `#include`) to a file this document has retired, left behind by mistake |
-| Diversity evidence | SRS 003 SR-12's differential-testing evidence, captured by running legacy C and new C++ against the same inputs while both are live |
+| Legacy track | `libsqlite3-legacy` and every `applications/*-legacy` target (both sqlite3-dependent and generator applications) — collectively, everything renamed and frozen under this document |
+| New track | The `sqlite-cpp` libraries (SRS 001 §3), the unsuffixed sqlite3-dependent applications once they exist, and the unsuffixed generator applications (which exist immediately, §5.4.2) |
+| Sqlite3-dependent application | An application linking the legacy public C API: `sqlite3-shell`, `sqldiff`, `sqlite3-rsync`, `speedtest1`. Its new-track replacement is façade-gated (§5.4.1) |
+| Generator application | An application that generates build-time source artifacts and has no `sqlite3` dependency: `lemon`, `mkkeywordhash`, `mkopcodeh`, `mkopcodec`. Its new-track replacement is a complete, unblocked C++ port (§5.4.2) |
+| Dual-track | The state of having both a legacy and a new implementation of the same component built, by default, side by side |
+| Comparison harness | The differential-testing infrastructure (§4 RR-8/RR-9, §7) that runs both tracks against the same input and reports divergence |
+| Generator parity | Byte-for-byte or semantically-equivalent agreement between a legacy generator application's output and its C++ replacement's output on the same input (RR-7) |
+| Frozen | A legacy-track component whose sources are not modified except for the rename/build-glue changes this document requires (RR-6) |
+| Diversity evidence | SRS 003 SR-12's differential-testing evidence, which this document's comparison harness (RR-8/RR-9) is the concrete mechanism for producing |
 
 ### 1.4 References
 
 - [SRS 001](001-sqlite-cpp-modularization.md) — defines the library
   decomposition, namespaces, API-compatibility requirements, and phased plan
-  this document's retirement schedule is gated on. This document changes
-  none of it.
+  this document's dual-track restructuring is built on top of. This
+  document changes none of it.
 - [SRS 003](003-sil4-safety-integrity-validation.md) — its SR-12
-  ("regression-as-diversity") requires the legacy C implementation to remain
-  live, for a library in SIL4 scope, until that library's differential
-  evidence has been captured. This document's RR-2 and §10 are written to
-  be gated on that evidence for any library so scoped (§9.4).
+  ("regression-as-diversity") requires the legacy implementation to remain
+  live for differential testing; this document's default posture (keep the
+  legacy track permanently, until an explicit deletion decision, §9.1) is,
+  if anything, more generous to that requirement than v0.1's per-library
+  deletion model was (§9.4).
 - `CMakeLists.txt`, `cmake/SqliteFeatures.cmake`, `cmake/SqliteCodegen.cmake`,
   `libraries/libsqlite3/` — the existing CMake conversion this document's
-  build-system requirements (§6) modify by removing entries, not by adding a
-  new build system.
+  build-system requirements (§6) rename and re-package, not replace.
+- `tool/lemon.c`, `tool/mkkeywordhash.c`, `tool/mkopcodeh.tcl`,
+  `tool/mkopcodec.tcl` — the existing generator applications §4 RR-4/RR-5
+  require relocating to `applications/` and completely replacing in C++,
+  respectively. (`mkopcodeh`/`mkopcodec` are TCL scripts, not C — "complete
+  C++ replacement" means re-implementing their generation logic, not a
+  literal C-to-C++ translation of an already-C source, which is what
+  applies to `lemon.c` and `mkkeywordhash.c` specifically.)
 - `test/` (1,190 `.test` files) and `test/testrunner.tcl` — SRS 001's
-  unmodified acceptance oracle; this document's parity gate (RR-1) is
-  defined in terms of this suite continuing to pass with the legacy code
-  path physically removed, not merely disabled.
+  unmodified acceptance oracle; §4 RR-8's sqlite3-dependent application
+  comparison harness reuses this suite's inputs where applicable (e.g.,
+  driving both `sqlite3-shell` and `sqlite3-shell-legacy` the same way
+  `testfixture` drives the legacy shell today).
 
 ### 1.5 Relationship to SRS 001 and SRS 003
 
 This document is a third, additive layer: SRS 001 says what `sqlite-cpp` is;
 SRS 003 says what qualifying it at SIL4 requires; this document says how the
-legacy C implementation SRS 001 builds *alongside* stops being necessary. A
-library is eligible for retirement under this document only once it has met
-SRS 001's acceptance criteria (SRS 001 §10) — retirement is a step that
-follows functional acceptance, never precedes or substitutes for it. Where a
-library is also in SIL4 scope under SRS 003, this document's RR-2 defers to
-SRS 003 SR-12: retirement for that library waits on SRS 003's differential
-evidence being captured, not just on SRS 001 acceptance. This is not a
-conflict between the two documents — SRS 003 §1.5 states the same
-constraint from its own side, so the two are mutually consistent by
-construction, not by coincidence.
+legacy C implementation SRS 001 builds *alongside* it is structured so the
+two can be told apart, built together, and compared — on purpose, not by
+accident of an unfinished migration. A sqlite3-dependent component's
+dual-track comparison (RR-8/RR-9) becomes meaningful once its `sqlite-cpp`
+replacement has met SRS 001's acceptance criteria (SRS 001 §10) for its
+declared scope (§9.3 — many replacements today cover a deliberately
+narrower scope than the legacy code, e.g. the parser's "expressions + single
+SELECT," and comparison results outside that declared scope are not
+evidence of anything); a generator application's comparison (RR-7) is held
+to a stricter, complete-parity bar instead, since RR-5 requires it. Where a
+library is also in SIL4 scope under SRS 003, this document's
+permanent-by-default retention of the legacy track (§2.1) is what SRS 003
+SR-12's differential evidence actually runs against — this document does
+not need a special case for SIL4-scoped libraries the way v0.1's
+deletion-gated model did, because nothing here is deleted by default in the
+first place.
 
 ### 1.6 Overview
 
-§2 gives the end state this document works toward and the constraints on
-getting there. §3 restates SRS 001 §3's library table as a retirement map —
-which legacy files retire when each library is retired. §4 gives general
-retirement requirements (RR-1–RR-10) applying to every library. §5 gives
-per-library retirement notes where a library has a wrinkle general
-requirements do not cover. §6 gives build-system requirements. §7 gives
-testing requirements. §8 gives acceptance criteria. §9 gives constraints,
-risks, and open issues — most importantly the amalgamation's fate (§9.1) and
-this document's single highest-risk item, premature retirement (§9.3). §10
-gives a phased plan gated on SRS 001 §12. §11 gives a traceability skeleton.
-§12 is a glossary.
+§2 gives the end state and design goals of the dual-track restructuring. §3
+maps every legacy component to its renamed and new-track counterparts. §4
+gives general restructuring requirements (RR-1–RR-11). §5 gives
+per-component notes, including the applications section split into
+sqlite3-dependent (§5.4.1) and generator (§5.4.2) subsections. §6 gives
+build-system requirements. §7 gives testing/comparison requirements. §8
+gives acceptance criteria. §9 gives constraints, risks, and open issues —
+including the still-open amalgamation question and this draft's revision of
+its own v0.1 stance on the code generators. §10 gives a phased plan — note
+that several phases here do not wait on SRS 001's phased delivery, because
+renaming, packaging, and generator-application replacement do not require
+the rest of the new implementation to exist yet. §11 gives a traceability
+skeleton. §12 is a glossary.
 
 ---
 ## 2. Overall Description
 
 ### 2.1 Product Perspective — End State
 
-Once every library and application in scope has been retired under this
-document: `src/` and the retired portions of `ext/` no longer exist in the
-repository's build graph (§1.3's "dead reference" is explicitly disallowed,
-RR-3); `libraries/libsqlite3` (the legacy CMake C target, SRS 001 §1.4) is
-removed or repurposed as a thin re-export of the `sqlite-cpp` façade, never
-as an independent build of legacy sources; every application (SRS 001
-FR-20) links against the `sqlite-cpp` `extern "C"` façade (SRS 001 FR-7) or
-a namespaced library directly; and, per §9.1's resolution, the amalgamation
-distribution — if retained at all — is generated from the C++ implementation,
-never hand-maintained or generated from now-deleted C.
+Two structurally parallel, equally well-packaged sets of targets exist side
+by side, by default, in every build: the **legacy track**
+(`libsqlite3-legacy` and every `applications/*-legacy` target) and the **new
+track** (the `sqlite-cpp` libraries; the unsuffixed sqlite3-dependent
+applications, as each gains sufficient façade coverage; and the unsuffixed
+generator applications, which exist immediately and completely). Nothing is
+deleted as individual components reach parity — that was v0.1's model, and
+§9.2 explains why it is superseded. Instead, reaching parity makes a
+component's entry in the comparison harness (§4 RR-8/RR-9) start passing
+instead of diverging. Full deletion of the legacy track, if and when it
+happens, is a single, explicit, system-wide decision (§9.1), made once —
+not an accumulation of per-component deletions.
 
 ### 2.2 Design Goals
 
-This document deliberately introduces **no new architecture**. It uses the
-same library decomposition, namespace scheme, header-only convention, and
-per-library testing/documentation pattern SRS 001 already establishes (SRS
-001 §2.2, §3, §4). The only thing this document adds is a *removal* process:
-when it is safe to delete legacy C for a library, what has to happen to the
-build system and consumers when that occurs, and how that is sequenced
-against SRS 001's phased delivery and SRS 003's safety evidence. Where SRS
-003 introduces a new requirement-ID namespace (`SR-`) for the same reason —
-extending SRS 001 without redesigning it — this document does the same with
-`RR-` (Retirement Requirement).
+This document uses **the same design approach as SRS 001** for the legacy
+track itself, not just for the new one: `libsqlite3-legacy` gets the
+identical per-library CMake packaging pattern (`cmake/<Name>Config.cmake.in`,
+`CMakePackageConfigHelpers` export, a `sqlite_cpp_require_<name>()` resolver
+function in `cmake/SqliteCppDependency.cmake`) that SRS 001 FR-14/FR-15
+already mandates for every new library — legacy is packaged as well as new,
+not worse. The sqlite3-dependent `-legacy` applications keep their existing
+build wiring, relinked to `libsqlite3-legacy` under their new names and
+relocated to `applications/` (already their home). The generator
+applications relocate from `tool/` into `applications/` as well (RR-4), and
+their C++ replacements (RR-5) follow SRS 001's own conventions —
+namespaced, header-only, one file per function/type, with their own test
+group and documentation — precisely so that, like every other legacy
+component, their C originals can be named and treated as legacy rather than
+silently assumed permanent.
 
 ### 2.3 User Classes
 
-- **Library implementers** — perform retirement once their library's parity
-  gate (RR-1) is met; the same audience as SRS 001's "Contributors."
-- **Build maintainers** — own `CMakeLists.txt` and the `cmake/*.cmake`
-  files this document's RR-3/§6 require updating in lockstep with file
-  deletion.
-- **Application integrators** — cut applications over per RR-8 once the
-  façade covers their full dependency surface.
-- **Downstream consumers of the amalgamation** — a user class SRS 001 does
-  not separately name, introduced here because §9.1's open item concerns
-  them specifically: people who vendor `sqlite3.c` directly rather than
-  linking a library.
+- **Library implementers** — SRS 001's "Contributors," additionally
+  responsible for wiring their library's comparison-harness entry (RR-9)
+  once their library reaches its declared scope.
+- **Build maintainers** — own `CMakeLists.txt` and `cmake/*.cmake`; this
+  document's RR-1/RR-2/RR-4 are primarily their responsibility to execute.
+- **Sqlite3-dependent application integrators** — own the `-legacy`/
+  unsuffixed application pairs (§5.4.1) and the differential harness that
+  compares them (RR-8).
+- **Generator application maintainers** — a class this document
+  introduces: owners of `lemon`/`mkkeywordhash`/`mkopcodeh`/`mkopcodec`'s
+  complete C++ replacements (RR-5) and the generator-parity comparison
+  (RR-7) between old and new output.
+- **Whoever makes the final deletion decision (§9.1)** — not a role this
+  document assigns; flagged as an open item for whoever approves this SRS.
 
 ### 2.4 Design and Implementation Constraints
 
-- No behavioral or ABI change may result from retirement (RR-6); retirement
-  is a build-graph and source-tree change, never a functional one — if a
-  functional gap surfaces during retirement, that is evidence the parity
-  gate (RR-1) was not actually met, not a license to accept a regression.
-- Legacy source history is never deleted from git (RR-9), even once removed
-  from the working tree, since SRS 003 SR-12's diversity evidence needs to
-  remain reconstructable after cutover.
-- Retirement for a library in SIL4 scope (SRS 003) may not occur before
-  that library's SRS 003 differential evidence is captured (§1.5, §9.4).
-- The code-generation toolchain (`lemon`, `mkkeywordhash`,
-  `mkopcodeh`/`mkopcodec`) is retained as a build dependency for as long as
-  any `sqlite-cpp` library still consumes its output as an input to a C++
-  build step (§9.2) — this document retires generated-C-as-shipped-
-  implementation, not the generators themselves.
+- Legacy-track sources are **frozen** (RR-6) once renamed: no behavioral
+  change, ever, except the rename and the minimal build-glue changes
+  RR-1/RR-2/RR-4 require — a frozen legacy track is what makes the
+  comparison harness's results meaningful over time.
+- Both tracks build by default wherever both exist (RR-11) — comparison
+  evidence must be a normal build-time by-product, not an opt-in extra step
+  someone has to remember to run.
+- No change to SRS 001's public API/ABI guarantees (FR-7–FR-9) results from
+  any renaming in this document — renaming build targets and directories is
+  not renaming the C API surface those targets expose.
+- Generator applications' C++ replacements (RR-5) follow SRS 001 §4's
+  naming/namespacing/header-only conventions exactly, even though the
+  generators themselves are build-time tools rather than runtime libraries
+  — consistency of convention matters more here than any argument that
+  build tools are a special case. Unlike sqlite3-dependent applications,
+  their replacement is required to reach full, not partial, parity (RR-5).
 
 ### 2.5 Assumptions and Dependencies
 
-- Every SRS 001 §12 phase this document schedules retirement against has
-  independently reached SRS 001's acceptance criteria (SRS 001 §10) before
-  this document's RR-1 gate is even evaluated for that phase's libraries.
-- SRS 003, where applicable to a library, has stated (or explicitly waived)
-  a differential-evidence requirement for that library before RR-2 permits
-  its retirement.
-- A decision on the amalgamation's fate (§9.1) will be made by whoever
-  approves this SRS before the phase in which it would first become
-  relevant (§10 phase 5, once `sqlite-core-interface` — the composition
-  root — is retirement-eligible).
+- Renaming and re-packaging the legacy track (RR-1/RR-2/RR-4) does **not**
+  require any `sqlite-cpp` library or the interface façade to exist first —
+  this is a key difference from v0.1's model, which was entirely blocked on
+  the façade (§9.2). §10's phased plan reflects that this work, and the
+  generator-application replacements (RR-5), can start immediately.
+- The comparison harness (RR-8/RR-9) produces meaningful results only
+  within each new-track component's declared scope (§9.3) — this document
+  assumes each library's own documentation continues to state that scope
+  accurately (SRS 001 FR-19), since the harness has no independent way to
+  know it. Generator-application parity (RR-7) is held to full agreement
+  instead, since RR-5 does not permit a declared partial scope for those.
+- A decision on final legacy-track deletion (§9.1) is explicitly deferred;
+  this document does not assume it will ever happen, only that if it does,
+  it happens system-wide and is recorded as a deliberate decision.
 
 ---
-## 3. Legacy Retirement Map
+## 3. Legacy → New Component Map
 
-Restates SRS 001 §3's library table as a retirement map: for each library,
-the legacy files that are deleted once that library is retired. This is not
-a new mapping — it is SRS 001 §3's existing "Legacy source" columns, read as
-a deletion list rather than a migration-source list.
+| Component | Category | Legacy (renamed) target | New-track target | New-track status |
+|---|---|---|---|---|
+| Core C library | — | `libsqlite3-legacy` (was `libsqlite3`) | The ten `sqlite-cpp` libraries (SRS 001 §3) collectively, plus the FR-7 façade once built | Partial — see SRS 001 §3 per-library status |
+| `sqlite3` shell | Sqlite3-dependent | `applications/sqlite3-shell-legacy` (was `applications/sqlite3-shell`) | `applications/sqlite3-shell` (reserved name, not yet built) | Not started — blocked on façade coverage (§5.4.1) |
+| `sqldiff` | Sqlite3-dependent | `applications/sqldiff-legacy` (was `applications/sqldiff`) | `applications/sqldiff` (reserved name, not yet built) | Not started |
+| `sqlite3-rsync` | Sqlite3-dependent | `applications/sqlite3-rsync-legacy` (was `applications/sqlite3-rsync`) | `applications/sqlite3-rsync` (reserved name, not yet built) | Not started |
+| `speedtest1` | Sqlite3-dependent | `applications/speedtest1-legacy` (was `applications/speedtest1`) | `applications/speedtest1` (reserved name, not yet built) | Not started; also the ongoing performance-comparison tool between tracks (§5.4.1) |
+| LALR parser generator | Generator | `applications/lemon-legacy` (moved from `tool/lemon.c`) | `applications/lemon` — complete C++ replacement, unblocked (§5.4.2) | Not started |
+| Keyword-hash generator | Generator | `applications/mkkeywordhash-legacy` (moved from `tool/mkkeywordhash.c`) | `applications/mkkeywordhash` — complete C++ replacement, unblocked | Not started |
+| Opcode-header generator | Generator | `applications/mkopcodeh-legacy` (moved from `tool/mkopcodeh.tcl`) | `applications/mkopcodeh` — complete C++ replacement, sequenced with VM work (§5.4.2) | Not started |
+| Opcode-code generator | Generator | `applications/mkopcodec-legacy` (moved from `tool/mkopcodec.tcl`) | `applications/mkopcodec` — complete C++ replacement, sequenced with VM work | Not started |
+| Extensions (SRS 001 §3.6) | — | Remain inside `libsqlite3-legacy` until ported | Namespaced per extension, per SRS 001 §3.6 | Not started |
 
-| Library (SRS 001 §3) | Legacy files retired | Notes |
-|---|---|---|
-| `sqlite-utils` | `mem0.c`–`mem5.c`, `malloc.c`, `util.c`, `printf.c`, `utf.c`, `hash.c`/`.h`, `mutex.c`/`.h`, `random.c`, `status.c`, `fault.c` | Lowest-risk, first-retired set (§10 phase 1) |
-| `sqlite-backend-os` | `os.c`/`.h`, `os_common.h`, `os_setup.h`, `os_unix.c`, `mutex_unix.c`, `os_win.c`/`.h`, `mutex_w32.c`, `os_kv.c`, `memdb.c` | Both platform variants (FR-6) retire together — see §5.1 |
-| `sqlite-backend-pager` | `pager.c`/`.h`, `wal.c`/`.h`, `pcache.c`/`.h`, `pcache1.c`, `memjournal.c`, `bitvec.c` | Gated on SRS 003 SR-3(a)'s formal evidence where in SIL4 scope |
-| `sqlite-backend-tree` | `btree.c`/`.h`, `btreeInt.h`, `dbpage.c`, `dbstat.c` | Gated on SRS 003 SR-3(b) where in SIL4 scope |
-| `sqlite-core-virtual-machine` | `vdbe.c`/`.h`, `vdbeInt.h`, generated `opcodes.h`/`.c`, `vdbeapi.c`, `vdbeaux.c`, `vdbemem.c`, `vdbesort.c`, `vdbeblob.c`, `vdbetrace.c`, `vdbevtab.c` | `opcodes.h`/`.c` generation (`mkopcodeh`/`mkopcodec`) retained per §9.2 even after `.c` output retires — see §5.2 |
-| `sqlite-core-command-processor` | `prepare.c`, `pragma.c`/`.h`, `insert.c`, `update.c`, `delete.c`, `upsert.c`, `select.c`, `where.c`, `wherecode.c`, `whereexpr.c`, `whereInt.h`, `expr.c`, `resolve.c`, `walker.c`, `attach.c`, `alter.c`, `analyze.c`, `vacuum.c`, `table.c`, `rowset.c`, `build.c` (schema-mutation portions), `trigger.c`, `window.c`, `fkey.c`, `auth.c`, `callback.c`, `treeview.c` | Not retirement-eligible until SRS 001 §11.2's IR design lands and the command-processor/code-generator split is implemented — see §5.3 |
-| `sqlite-core-interface` | `main.c`, `legacy.c`, `loadext.c`, `sqlite3ext.h` (implementation, not the ABI header itself — see §5.4), `vtab.c`, `backup.c`, `notify.c`, `threads.c`, `complete.c` | Composition root; retires last among the core libraries, since every other library's façade routes through it |
-| `sqlite-compiler-tokenizer` | `tokenize.c`, generated `keywordhash.h` | `mkkeywordhash` generation retained per §9.2 |
-| `sqlite-compiler-parser` | `parse.y`/`parse.c`/`.h` (generated), AST-construction portions of `build.c` | `lemon` retained per §9.2; see §5.3 for the `build.c` split with command-processor |
-| `sqlite-compiler-code-generator` | Opcode-emission portions of `select.c`, `expr.c`, `insert.c`, `update.c`, `delete.c`, `trigger.c`, `where.c`/`wherecode.c` | Same IR-design gate as command-processor (§5.3) |
-| Extensions (SRS 001 §3.6) | `ext/fts3`, `ext/fts4`, `ext/fts5`, `ext/rtree`, `ext/geopoly`, `ext/session`, `ext/rbu`, `ext/icu` C sources | Retire independently, per extension, once that extension's C++ port is accepted (RR-7) |
-
----
-## 4. General Retirement Requirements
-
-Apply to every library in §3 unless a §5 per-library note states otherwise.
-
-- **RR-1. Parity gate.** A library's legacy C files may be deleted only
-  after: (a) the library has met SRS 001's acceptance criteria (SRS 001
-  §10); and (b) the full oracle suite (SRS 001 FR-10, `sqlite_fulltest`)
-  passes with that library's legacy code path **physically removed** from
-  the build — not merely disabled behind a flag — so the pass result is
-  evidence about the C++ replacement alone, not about a fallback path that
-  happens not to have been exercised.
-- **RR-2. No indefinite dual-maintenance.** Strangler-fig coexistence (SRS
-  001 §12) for a given library ends at that library's own phase boundary
-  once RR-1 is met, except where SRS 003 SR-12 requires holding retirement
-  open longer for differential-evidence capture (§1.5, §9.4) — in which
-  case retirement waits on that evidence explicitly, not indefinitely.
-  Coexistence continuing past either gate is a defect to be scheduled for
-  cleanup, not a stable end state.
-- **RR-3. Build system deletion in the same change.** Every `target_sources()`
-  entry, file glob, and `add_subdirectory` reference to a retired file is
-  removed in the same change that deletes the file — `cmake/SqliteFeatures.cmake`
-  and `cmake/SqliteCodegen.cmake` updated accordingly. A retirement change
-  that deletes source files but leaves a dead build reference is incomplete
-  (§7's CI gate catches this).
-- **RR-4. Codegen dependency decision recorded per artifact.** For every
-  generated-C artifact in §3 (`parse.c`, `keywordhash.h`, `opcodes.h`/`.c`),
-  the retirement change states explicitly whether the generator
-  (`lemon`/`mkkeywordhash`/`mkopcodeh`/`mkopcodec`) is retained as a
-  build-time dependency of the `sqlite-cpp` replacement (the default, per
-  §9.2) or whether the C++ library has fully subsumed that generation step
-  itself — this is a per-artifact decision, not a blanket assumption either
-  way.
-- **RR-5. Amalgamation regeneration, not hand-maintenance.** If the
-  amalgamation (`sqlite3.c`) is retained as a deliverable at all (§9.1, an
-  open item), it is produced by a build step that assembles it from the
-  `sqlite-cpp` header-only libraries plus the `extern "C"` façade — never
-  hand-edited, and never generated from a retired legacy source tree.
-- **RR-6. No behavior or ABI change during cutover.** Restates SRS 001
-  FR-7–FR-9: retirement changes source location and build wiring, never
-  observable behavior, the on-disk format, or the public C API/ABI. This is
-  restated here, not just inherited, because retirement is precisely where
-  a silent regression is easiest to introduce (deleted code produces no
-  compiler diagnostic for a missing behavior — only a test gap does) and
-  hardest to notice after the fact.
-- **RR-7. Extensions retire independently.** Each extension in SRS 001 §3.6
-  retires on its own schedule once its own C++ port is accepted; extension
-  retirement is not blocked on core retirement completing, nor does core
-  retirement wait on any extension.
-- **RR-8. Applications cut over per-dependency, not all at once.** An
-  application (SRS 001 FR-20) moves from the legacy `libsqlite3` C target
-  to the `sqlite-cpp` façade once the façade's coverage reaches that
-  application's actual dependency surface — a shell command that only needs
-  functionality already retired-and-replaced can cut over before every
-  library is retired; §5.5 gives the concrete case (the `sqlite3` shell).
-- **RR-9. Historical retention.** Retired legacy files remain in git
-  history unconditionally; a tagged pre-retirement reference (branch or
-  release tag) is created before a library's first retirement change lands,
-  so SRS 003 SR-12's diversity evidence and any later audit can reconstruct
-  exactly what was retired and when.
-- **RR-10. Documentation updated, not left stale.** Every place SRS 001 §3,
-  this document's §3, `docs/index.md`, or a library's own docs names a
-  legacy `.c` file as "the" current implementation is updated, at
-  retirement time, to say it has been retired and by what it was replaced
-  — a stale "implemented in `pager.c`" note after `pager.c` no longer exists
-  in the tree is exactly the kind of silent drift RR-6's spirit is meant to
-  prevent, applied to documentation rather than code.
+Every application-category row now lives under `applications/`, split by
+whether it depends on `sqlite3` — that dependency is exactly what
+determines whether its new-track counterpart is façade-gated
+(sqlite3-dependent) or immediate and complete (generator). This table is
+the retirement map's successor: where v0.1 listed "legacy files retired,"
+this lists "legacy target renamed to" and "new-track target this component
+is compared against," since deletion is no longer the per-row event.
 
 ---
-## 5. Per-Library Retirement Notes
+## 4. Restructuring Requirements
 
-Only libraries with a wrinkle beyond §4's general requirements are covered
-here; every other library in §3 retires under §4 alone.
+- **RR-1. Legacy library rename and packaging.** `libraries/libsqlite3` is
+  renamed to `libraries/libsqlite3-legacy`; its CMake target becomes
+  `libsqlite3-legacy`. It receives the same packaging SRS 001 FR-14/FR-15
+  requires of new libraries: `cmake/Libsqlite3LegacyConfig.cmake.in`,
+  `CMakePackageConfigHelpers`-based export, and a `sqlite_cpp_require_legacy()`
+  function in `cmake/SqliteCppDependency.cmake` alongside the existing
+  `sqlite_cpp_require_<library>()` functions.
+- **RR-2. Sqlite3-dependent application rename.** `applications/sqlite3-shell`,
+  `applications/sqldiff`, `applications/sqlite3-rsync`, and
+  `applications/speedtest1` are renamed to `applications/sqlite3-shell-legacy`,
+  `applications/sqldiff-legacy`, `applications/sqlite3-rsync-legacy`, and
+  `applications/speedtest1-legacy` respectively (CMake targets renamed to
+  match), each continuing to depend on `libsqlite3-legacy` (RR-1),
+  unmodified in behavior.
+- **RR-3. Reserved new-track names for sqlite3-dependent applications.**
+  The unsuffixed names (`sqlite3-shell`, `sqldiff`, `sqlite3-rsync`,
+  `speedtest1`) are reserved for the eventual `sqlite-cpp`-linked
+  application and must not be reused for anything else; they do not exist
+  as build targets until §5.4.1's façade-coverage condition is met for that
+  application.
+- **RR-4. Generator application rename and relocation.** `tool/lemon.c`,
+  `tool/mkkeywordhash.c`, `tool/mkopcodeh.tcl`, and `tool/mkopcodec.tcl`
+  move into `applications/lemon-legacy`, `applications/mkkeywordhash-legacy`,
+  `applications/mkopcodeh-legacy`, and `applications/mkopcodec-legacy`
+  respectively, each becoming a proper `applications/` target per SRS 001
+  FR-20's own convention, unmodified in behavior — this is a relocation and
+  rename, not a rewrite (contrast with RR-5).
+- **RR-5. Generator applications get a complete C++ replacement,
+  unblocked.** Unlike RR-3's sqlite3-dependent applications, each generator
+  application's unsuffixed new-track counterpart (`applications/lemon`,
+  `applications/mkkeywordhash`, `applications/mkopcodeh`,
+  `applications/mkopcodec`) is built immediately, as a **complete** C++
+  port — full functional parity with its legacy counterpart, not a
+  scoped-down or partial one — since a generator application has no
+  `sqlite3` dependency and nothing else in this document blocks it. See
+  §5.4.2 for per-tool detail.
+- **RR-6. Legacy track is frozen.** Once renamed, no source file under
+  `libraries/libsqlite3-legacy/` or any `applications/*-legacy/` directory
+  is modified except for the rename and the minimal build-glue changes
+  RR-1/RR-2/RR-4 themselves require. This is what keeps the comparison
+  harness (RR-8/RR-9) meaningful over time — a legacy track that drifts is
+  not a fixed baseline.
+- **RR-7. Generator-output parity.** For each generator application, a
+  comparison step runs both the legacy tool and its complete C++
+  replacement (RR-5) on the same input (the `parse.y` grammar for `lemon`,
+  the keyword list for `mkkeywordhash`, the opcode table for
+  `mkopcodeh`/`mkopcodec`) and diffs the output. This is a cheaper, more
+  tractable parity signal than full-engine differential testing, since
+  generator output is deterministic text — it should be wired as an early,
+  high-confidence comparison, not deferred to the same timeline as
+  engine-level comparisons, and because RR-5 requires completeness here
+  (unlike the gradual sqlite3-dependent applications), this comparison
+  should reach full, unqualified agreement, not a partial one.
+- **RR-8. Sqlite3-dependent application comparison harness.** For each
+  sqlite3-dependent application pair where both `X` and `X-legacy` exist, a
+  differential-testing harness runs both against the same input corpus and
+  reports divergence; wired into CTest as its own target(s) so it runs on
+  every build, not as a manual step.
+- **RR-9. Library-level comparison.** For each of SRS 001 §3's ten
+  libraries, a comparison between `libsqlite3-legacy`'s relevant internal
+  behavior and the corresponding `sqlite-cpp` library's public behavior, to
+  the extent both can be exercised with equivalent inputs within the new
+  library's declared scope (§9.3). This is the concrete mechanism behind
+  SRS 003 SR-12's "regression-as-diversity" requirement, made an explicit,
+  checkable requirement here rather than left implicit.
+- **RR-10. Deletion is a single, later, explicit, system-wide decision.**
+  This document does not require deleting any `-legacy` component,
+  including generator applications despite RR-5's completeness requirement
+  — reaching complete parity makes deletion *possible*, not automatic. If
+  and when the legacy track is deleted, it is deleted as a whole (§9.1),
+  never as a series of per-component deletions — a partial deletion would
+  remove exactly the baseline the still-remaining comparisons depend on.
+- **RR-11. Both tracks build by default.** Wherever both a legacy and a
+  new-track target exist for a component, both are built by default
+  (`ON` in CMake) so comparison evidence (RR-7/RR-8/RR-9) is a routine
+  build by-product, not something a developer has to opt into remembering
+  to generate.
 
-### 5.1 `sqlite-backend-os`
+---
+## 5. Per-Component Notes
 
-The two platform variants (`os_unix.c`/`mutex_unix.c` and
-`os_win.c`/`mutex_w32.c`, SRS 001 FR-6's paradigm case) retire **together**,
-as a single retirement event covering both `sqlite::backend::os::unix` and
-`::windows`, even though only one variant is exercised on any given build
-host — RR-1's oracle-suite parity gate must be satisfied on both platforms
-independently (via CI on each) before either variant's legacy C is deleted,
-since deleting one without cross-platform confidence in the other leaves an
-asymmetric, unverified state.
+### 5.1 `libsqlite3-legacy`
 
-### 5.2 `sqlite-core-virtual-machine`
+Beyond RR-1's rename/packaging: this target's build **must not** be
+weakened or feature-reduced relative to today's `libsqlite3` — it remains
+the full legacy implementation, since its entire purpose going forward is
+serving as an unmodified comparison baseline (RR-6) and, for as long as
+needed, SRS 003 SR-12's diversity-evidence source.
 
-`opcodes.h`/`.c` are generated from `vdbe.c`'s opcode comment annotations by
-`mkopcodeh`/`mkopcodec`. Once the C++ opcode-dispatch implementation (SRS
-001 §3.4.1) exists, this document requires (RR-4) an explicit decision:
-either the C++ library defines its own opcode enumeration directly (per SRS
-001 FR-5, as a scoped `enum class`) and the legacy generator retires along
-with `vdbe.c`, or the generator's output is retained as an input the C++
-enum is generated from, to avoid the two implementations drifting during
-any remaining coexistence. The former is the expected default once
-`sqlite-compiler-code-generator` (which emits against this enum) has also
-migrated; the latter is acceptable only as an explicitly time-boxed interim
-state.
+### 5.2 `sqlite-backend-os`'s two platform variants
+
+Unaffected by this document directly (`libsqlite3-legacy` still compiles
+both `os_unix.c` and `os_win.c` internally, selected the same way it is
+today); this note exists only to point out that RR-9's comparison for
+`sqlite-backend-os` must be run on both platforms independently, mirroring
+SRS 001 FR-6's paradigm-case treatment.
 
 ### 5.3 `sqlite-core-command-processor` and `sqlite-compiler-code-generator`
 
-Per SRS 001 §11.2/§3.5.3, these two libraries are not retirement-eligible
-independently: the legacy `select.c`/`insert.c`/`update.c`/`delete.c`/
-`where.c`/`wherecode.c` files simultaneously implement both "decide" and
-"emit," so their legacy C cannot be partially retired without leaving a
-functional gap. RR-1's parity gate for either library is only met once
-**both** C++ replacements exist, cover the same statement forms, and pass
-the full oracle suite with the corresponding legacy files removed together.
-The same joint-retirement treatment applies to `build.c`'s split between
-`sqlite-compiler-parser::ast` and `command_processor::schema` (SRS 001
-§3.5.2): `build.c` retires once both halves' C++ replacements exist, not
-when either alone does.
+Per SRS 001 §11.2, these two libraries' replacements land together, not
+independently. RR-9's comparison for either is only meaningful once **both**
+exist and cover the same statement forms — a partial comparison (new
+code-generator against legacy `select.c`, say, without the corresponding
+command-processor replacement) is not evidence of anything and should not
+be reported as if it were.
 
-### 5.4 `sqlite-core-interface`
+### 5.4 Applications
 
-`sqlite3ext.h` is retired here only as a *legacy implementation detail*
-(whatever `loadext.c` does internally); the header itself, as the public
-extension ABI, is permanently preserved per SRS 001 FR-8 and is never a
-retirement target under this document — RR-6 already forbids any ABI
-change, and this note exists so "retire `sqlite-core-interface`'s legacy
-files" is not misread as touching the ABI header.
+Every application lives under `applications/`, split into two categories
+that are blocked on different things (§1.1) and therefore have a different
+relationship between their `-legacy` and unsuffixed builds.
 
-### 5.5 Applications
+#### 5.4.1 Sqlite3-dependent applications
 
-The `sqlite3` shell, `sqldiff`, and `sqlite3-rsync` are, per SRS 001 §11.5,
-written against the public C API rather than the namespaced libraries
-directly; each cuts over (RR-8) from linking `libraries/libsqlite3` to
-linking the `sqlite-cpp` `extern "C"` façade once the façade's functional
-coverage reaches that specific tool's usage of the API — the shell, using
-the broadest surface, is realistically the last of the three to cut over.
-`speedtest1` cuts over last of all, since its purpose is comparing
-performance against the legacy build, which requires the legacy build to
-keep existing as a comparison target for as long as any performance
-question (SRS 001 acceptance criterion 4) remains open — `speedtest1`'s own
-cutover is therefore an explicit, separate decision, not implied by every
-library it benchmarks having retired.
+The unsuffixed application names (RR-3) become real build targets once
+SRS 001's `sqlite-core-interface` façade (FR-7) covers that application's
+actual dependency surface: the shell, using the broadest API surface, is
+realistically the last to gain its unsuffixed counterpart; `sqldiff` and
+`sqlite3-rsync` likely gain theirs earlier, once the façade covers their
+narrower surfaces. `speedtest1` is a special case: **both** `speedtest1`
+and `speedtest1-legacy` existing simultaneously is the actual point, since
+their comparison is SRS 001 acceptance criterion 4's performance check —
+`speedtest1-legacy` is not a stepping stone to be superseded, it is a
+permanent comparison fixture for as long as performance comparisons matter.
+
+#### 5.4.2 Generator applications
+
+Unlike §5.4.1, these are **not blocked on the façade or any engine
+library** — they can be relocated (RR-4), completely replaced (RR-5), and
+compared (RR-7) as soon as someone implements them, which is why §10
+schedules them early:
+
+- **`lemon` → complete C++ replacement.** `lemon.c` is a self-contained
+  LALR(1) parser generator; its C++ replacement lives at
+  `applications/lemon` (internal namespacing, e.g. under
+  `sqlite::compiler::tooling::lemon`, is an implementation detail for
+  whoever builds this, not fixed by this SRS) and must consume the same
+  `parse.y` grammar file unmodified, producing `parse.c`/`parse.h` output
+  diffable against `applications/lemon-legacy`'s output (RR-7) — with full
+  agreement required, not a declared partial scope.
+- **`mkkeywordhash` → complete C++ replacement.** Consumes the same
+  keyword list; produces `keywordhash.h`; same full-agreement requirement.
+- **`mkopcodeh`/`mkopcodec` → complete C++ replacements.** These are TCL
+  scripts today, not C — "complete C++ replacement" means re-implementing
+  their generation logic (reading `vdbe.c`'s opcode comment annotations and
+  producing `opcodes.h`/`.c`) in C++, not translating existing C syntax.
+  Functionally, this is the smallest of the four replacements in terms of
+  input complexity, but it is tightly coupled to
+  `sqlite-core-virtual-machine`'s opcode enumeration (SRS 001 §3.4.1) and
+  should be sequenced alongside that library's own work, not treated as
+  fully independent of it — "unblocked" (RR-5) means unblocked by the
+  façade and by `sqlite3`, not unblocked by every other consideration.
 
 ---
 ## 6. Build System Requirements
 
-- **BR-1.** `CMakeLists.txt`'s `SQLITE_CPP_BUILD_*` options (one per
-  library, e.g. `SQLITE_CPP_BUILD_BACKEND_TREE`) exist, per SRS 001, to let
-  a library be built optionally during coexistence. Once a library retires
-  (RR-1) and its legacy alternative no longer exists, that option is
-  removed entirely — there is no longer a choice to gate, and leaving a
-  no-op toggle in place misrepresents the build as still offering a legacy
-  path.
-- **BR-2.** `libraries/libsqlite3` (the legacy C CMake target) is removed
-  once every library in §3 has retired, or repurposed as a thin
-  compatibility target that simply depends on the `sqlite-cpp` façade, if a
-  consumer needs the exact target name `libsqlite3` to keep resolving.
-  Which of the two is chosen is recorded as part of §10 phase 5's exit
-  criteria, not left implicit.
-- **BR-3.** `cmake/SqliteCodegen.cmake`'s generator invocations
-  (`lemon`, `mkkeywordhash`, `mkopcodeh`/`mkopcodec`) are retained exactly
-  where §5.2/§9.2 require them and removed exactly where a library has
-  fully subsumed its own generation — this file's contents after full
-  retirement are not "empty," they are "exactly what RR-4's per-artifact
-  decisions require," which may be nonzero.
+- **BR-1.** `CMakeLists.txt` is updated so `add_subdirectory(libraries/libsqlite3)`
+  becomes `add_subdirectory(libraries/libsqlite3-legacy)`, and the
+  `applications/sqlite3-shell` / `sqldiff` / `sqlite3-rsync` / `speedtest1`
+  subdirectory references become their `-legacy` equivalents (RR-1/RR-2).
+- **BR-2.** `CMakeLists.txt` gains `add_subdirectory` entries for
+  `applications/lemon-legacy`, `applications/mkkeywordhash-legacy`,
+  `applications/mkopcodeh-legacy`, and `applications/mkopcodec-legacy`
+  (RR-4), and, as each complete C++ replacement lands, for
+  `applications/lemon`, `applications/mkkeywordhash`,
+  `applications/mkopcodeh`, `applications/mkopcodec` (RR-5) — both on by
+  default (RR-11).
+- **BR-3.** New `SQLITE_CPP_BUILD_*` options are added for each new-track
+  sqlite3-dependent application once it exists (RR-3), following the same
+  on-by-default pattern (RR-11) already used for the libraries (e.g.
+  `option(SQLITE_CPP_BUILD_SHELL "..." ON)` alongside a
+  `SQLITE_CPP_BUILD_SHELL_LEGACY` option that stays on by default too).
+- **BR-4.** `cmake/SqliteCppDependency.cmake` gains `sqlite_cpp_require_legacy()`
+  (RR-1) and, once the generator-application replacements exist, resolver
+  functions for them following the same naming pattern as every other
+  `sqlite_cpp_require_<name>()` function.
+- **BR-5.** The comparison harness (RR-7/RR-8/RR-9) is wired as its own
+  CTest target(s) (e.g. `ctest -R comparison`), separate from each track's
+  own unit/oracle tests, so comparison failures are distinguishable from
+  ordinary test failures in CI output.
 
 ---
 ## 7. Testing Requirements
 
-- **TR-1.** RR-1's parity gate is itself the primary test requirement: the
-  full `sqlite_fulltest` TCL suite must pass with the legacy path physically
-  absent, not disabled, before a retirement change is accepted.
-- **TR-2.** A CI check greps the build graph (not just the source tree) for
-  references to any file this document has retired; the build fails if a
-  `target_sources()`, `add_subdirectory`, or generated-file dependency still
-  names a retired file, catching RR-3 violations mechanically rather than
-  relying on manual review.
-- **TR-3.** Where a library is in SIL4 scope (SRS 003), that library's
-  differential-testing evidence (SRS 003 SR-12) is captured and archived
-  **before** its retirement change is merged, not concurrently with it —
-  once the legacy file is deleted, capturing that evidence is no longer
-  possible.
+- **TR-1. Generator parity (RR-7).** Runs both the legacy and complete C++
+  replacement of each generator application on identical input and fails if
+  output diverges outside an explicitly documented, reviewed set of
+  accepted differences (e.g., a timestamp comment the legacy tool emits
+  that is deliberately omitted by the replacement) — since RR-5 requires
+  completeness, this check should trend toward zero accepted differences,
+  not stabilize around a permanent list of them.
+- **TR-2. Sqlite3-dependent application differential testing (RR-8).** Runs
+  both applications in each existing pair against a shared input corpus
+  (reusing SRS 001's TCL suite inputs where the harness can drive an
+  application the same way `testfixture` drives `sqlite3-shell-legacy`
+  today) and reports divergence.
+- **TR-3. Library-level comparison (RR-9).** For each library with a
+  new-track replacement reaching its declared scope, a differential test
+  exercises both the legacy internal behavior and the new library's public
+  behavior on shared inputs restricted to that declared scope (§9.3) — the
+  harness must not silently run inputs outside that scope and report the
+  resulting divergence as a defect.
+- **TR-4. Legacy freeze check.** A CI check verifies no file under
+  `libraries/libsqlite3-legacy/` or any `applications/*-legacy/` directory
+  has changed since its renaming commit, other than through an explicitly
+  reviewed, documented exception — enforcing RR-6 mechanically rather than
+  by convention alone.
 
 ---
 ## 8. Acceptance Criteria
 
-1. For every library in §3 marked retired, its legacy C files (per that
-   row) no longer exist in the working tree, and TR-2's CI check finds no
-   dead build reference to them.
-2. `sqlite_fulltest` (SRS 001's full 1,190-file TCL suite) passes against a
-   build containing only the `sqlite-cpp` implementation for every retired
-   library, with no new failures relative to the pre-retirement baseline.
-3. Every application in §5.5 that has cut over links and runs against the
-   `sqlite-cpp` façade exclusively, with no remaining dependency on
-   `libraries/libsqlite3`'s legacy build.
-4. RR-9's historical-retention requirement is met: retired files are
-   present in git history and reachable from a pre-retirement tag for each
-   library's retirement event.
-5. For every library also in SRS 003 scope, that library's differential
-   evidence (SRS 003 SR-12) was captured and archived before its
-   retirement change merged (TR-3).
-6. The amalgamation's fate (§9.1) has been explicitly decided (not left
-   ambiguous) by the time `sqlite-core-interface` retires (§10 phase 5).
+1. `libraries/libsqlite3-legacy` exists, builds, is packaged per RR-1, and
+   is bit-for-bit behaviorally identical to today's `libsqlite3` (a rename,
+   not a rewrite).
+2. `applications/sqlite3-shell-legacy`, `sqldiff-legacy`,
+   `sqlite3-rsync-legacy`, and `speedtest1-legacy` exist, build, and are
+   behaviorally identical to their pre-rename counterparts.
+3. `applications/lemon-legacy`, `mkkeywordhash-legacy`, `mkopcodeh-legacy`,
+   and `mkopcodec-legacy` exist under `applications/` (relocated from
+   `tool/`, RR-4), and their complete C++ replacements
+   (`applications/lemon`, `mkkeywordhash`, `mkopcodeh`, `mkopcodec`, RR-5)
+   exist and pass TR-1's generator-parity check with full agreement (or
+   only explicitly-reviewed, documented divergences pending closure).
+4. The comparison harness (RR-7/RR-8/RR-9, TR-1/TR-2/TR-3) is wired into
+   CTest and runs by default, reporting results — generator parity (TR-1)
+   expected to trend toward fully passing per RR-5's completeness bar;
+   sqlite3-dependent and library-level comparisons (TR-2/TR-3) not
+   necessarily all passing yet, since those new-track components' declared
+   scopes are still partial, but running and reporting.
+5. TR-4's freeze check passes: no unreviewed legacy-track modification has
+   occurred since renaming.
+6. No decision to delete any part of the legacy track has been made
+   implicitly — §9.1 remains an open, explicitly-flagged item, not a
+   silently-assumed outcome.
 
 ---
 ## 9. Constraints, Risks, and Open Issues
 
-### 9.1 The amalgamation's fate is an open decision, not resolved here
+### 9.1 Final deletion is an open decision, not resolved here
 
-Many real-world SQLite consumers vendor the single-file `sqlite3.c`
-amalgamation directly, compiling it into their own build rather than
-linking a library. Today that file is produced from `src/` — the very
-sources this document retires. Whoever approves this SRS must decide, before
-§10 phase 5: (a) keep offering an amalgamation, mechanically regenerated
-from the `sqlite-cpp` header-only libraries plus the `extern "C"` façade
-(RR-5), accepting the build-step complexity that requires; or (b) declare
-amalgamation-based consumption unsupported once retirement completes,
-accepting that this breaks a real, currently-working consumption pattern for
-existing users. This document does not choose between them — exactly the
-kind of explicit, flagged-not-assumed open item SRS 001 §11.6 models for its
-own performance-threshold question.
+This document deliberately does not require deleting the legacy track,
+including the generator applications despite their completeness
+requirement (RR-5/RR-10). If and when whoever owns this SRS decides
+comparison evidence (§4, §7) shows system-wide parity sufficient to retire
+the legacy track, that deletion applies to the whole track at once (RR-10)
+and should itself be recorded as an explicit decision — this document only
+builds the state that decision would act on. The amalgamation (`sqlite3.c`)
+question v0.1 raised in its own §9.1 is subsumed here: `libsqlite3-legacy`
+can continue producing it for as long as the legacy track exists, and the
+same system-wide-decision logic applies to discontinuing it.
 
-### 9.2 Retiring "the C code" does not mean retiring the code generators
+### 9.2 Design history: this revises v0.1's stance on the code generators
 
-`lemon` (the LALR parser generator producing `parse.c` from `parse.y`),
-`mkkeywordhash`, and `mkopcodeh`/`mkopcodec` are themselves C programs that
-*produce* C, but their role is generating build-time input, not shipping as
-part of the running implementation. This document's scope is retiring
-generated C **as a shipped implementation** (§1.2); it does not require
-rewriting these generator tools, and a reader who takes "complete C
-retirement" to mean the generators must also disappear has misread this
-document's scope. §5.2 and RR-4 make the per-artifact decision explicit
-specifically to prevent that misreading from becoming a build break.
+v0.1 of this document argued that "retiring the C code" did not require
+retiring `lemon`/`mkkeywordhash`/`mkopcodeh`/`mkopcodec`, treating them as
+acceptable permanent build-time dependencies distinct from the shipped
+implementation. That call is **reversed** in this revision, per explicit
+instruction: these generator applications are relocated to `applications/`
+and completely replaced in C++ (RR-4/RR-5), and their originals are marked
+legacy rather than left as an unexamined exception. This turned out to be a
+good trade even independent of the instruction that prompted it: generator
+output is deterministic and cheaply diffable (RR-7), so generator parity is
+some of the earliest, highest-confidence, and — uniquely among this
+document's comparisons — *complete* evidence this whole document can
+produce, cheaper than anything in §4 RR-8/RR-9, and available before any
+engine library reaches parity.
 
-### 9.3 Premature retirement is this document's single highest risk
+### 9.3 Comparison evidence is only meaningful within declared scope
 
-RR-1's parity gate is the only safeguard against deleting legacy C before
-its replacement is actually equivalent. Because retirement removes code
-rather than adding it, a functional gap introduced by premature retirement
-shows up as *silence* — a missing error, a subtly wrong result, a behavior
-nobody wrote a test for because nobody knew it existed — not as a build
-failure. This should be treated with at least the rigor SRS 001 §11.7 gives
-the refactor's overall effort, and arguably more: SRS 001's risk is scope
-and schedule; this document's risk, done wrong, is a shipped regression with
-no compiler diagnostic pointing at it.
+Several `sqlite-cpp` libraries currently cover a deliberately narrower
+scope than their legacy counterpart (per `docs/index.md`: the parser
+handles "expressions + single SELECT," the code generator handles
+"expressions only"). RR-9's library-level comparison, and RR-8's
+sqlite3-dependent application comparison by extension, must be restricted
+to each component's declared scope — running it against out-of-scope input
+and reporting the resulting (expected) divergence as a defect would be
+noise, not evidence, and risks the comparison harness being distrusted or
+ignored once it does matter. This caveat does **not** apply to RR-7's
+generator-application parity, which is required to reach full agreement
+(§1.5).
 
 ### 9.4 Interaction with SRS 003's diversity evidence
 
-SRS 003 SR-12 explicitly requires the legacy C implementation to remain live
-for differential testing during a library's SIL4 qualification. This
-document's RR-2 is written to defer to that requirement rather than override
-it (§1.5): for any library in SIL4 scope, "retirement-eligible per RR-1"
-and "retirement-permitted per RR-2" are not the same moment, and treating
-them as interchangeable would silently remove SRS 003's evidence source
-before that evidence exists.
+Because this document's default is to retain the legacy track indefinitely
+(§2.1), rather than v0.1's per-library deletion-once-ready model, it is, if
+anything, more accommodating of SRS 003 SR-12's requirement that legacy
+code remain live for differential testing — there is no timing race between
+"library retirement" and "evidence capture" the way there was in v0.1,
+because retirement (in the deletion sense) does not happen per-library at
+all under this revision. SRS 003 §1.5 should be read accordingly: its
+constraint on this document's timing is now automatically satisfied by
+default, and becomes actively relevant only if/when §9.1's system-wide
+deletion decision is ever made.
 
 ### 9.5 Effort and schedule reality check
 
-Retirement touches every one of the ten libraries in §3 plus up to eight
-extensions plus four applications, each requiring its own parity-gate
-verification (RR-1), build-system change (RR-3/§6), and — for a subset —
-coordination with SRS 003's evidence capture (§9.4). This is a real,
-non-trivial tail of work after SRS 001's functional delivery completes, not
-a mechanical cleanup pass; §10's phasing reflects that it should be
-scheduled with the same seriousness SRS 001 §12 gives the migration itself.
+Beyond the ten-library, eight-extension, four-sqlite3-dependent-application
+effort v0.1 already flagged, this revision adds four generator-application
+relocations plus complete C++ replacements (§5.4.2) and a comparison
+harness (RR-7/RR-8/RR-9) that has to be built and maintained alongside
+every other track. The harness itself is new, ongoing infrastructure — not
+a one-time gate — and should be resourced as such. RR-5's completeness bar
+for generator applications is a real, non-deferrable scope commitment, not
+a "when convenient" item, precisely because this document argues nothing
+blocks it.
+
+### 9.6 Dual-track build cost is a real, accepted cost
+
+RR-11's "both tracks build by default" means CI and local build times
+roughly double for every component with both a legacy and new-track target.
+This is an accepted, deliberate cost of keeping comparison evidence current
+without requiring an opt-in step — it should be stated as such rather than
+discovered as a surprise the first time someone notices the build got
+slower.
 
 ---
 ## 10. Phased Plan
 
-Gated 1:1 on SRS 001 §12's phases, one step behind: a phase's legacy C
-retires only once that phase's `sqlite-cpp` library has met SRS 001's
-acceptance criteria **and** (where applicable) SRS 003's differential
-evidence for that phase has been captured (§9.4).
+Unlike v0.1's plan, several phases here do **not** wait on SRS 001's phased
+delivery, because renaming/packaging the legacy track and replacing the
+generator applications require nothing from the rest of the new track to
+exist first.
 
-1. **Scaffolding retirement.** `sqlite-utils`'s legacy files retire once
-   SRS 001 phase 1 is accepted — lowest risk, and the template retirement
-   change every later phase's retirement follows.
-2. **Backend retirement.** `sqlite-backend-os` (both variants together,
-   §5.1), then `-pager`, then `-tree`, each once its SRS 001 phase 2
-   milestone is accepted and, where in SIL4 scope, its SRS 003 evidence is
-   captured.
-3. **Virtual machine retirement.** `sqlite-core-virtual-machine`'s legacy
-   files retire once SRS 001 phase 3 is accepted; §5.2's opcode-generation
-   decision is made explicitly as part of this phase, not deferred.
-4. **Compiler and command-processor retirement, together.** Tokenizer and
-   parser retire once SRS 001 phase 4's first half is accepted; the
-   code-generator/command-processor pair retires jointly (§5.3) once SRS
-   001 §11.2's IR design has landed and both replacements are accepted
-   together — never one without the other.
-5. **Interface façade retirement.** `sqlite-core-interface` retires once
-   SRS 001 phase 5 is accepted; BR-2's `libraries/libsqlite3` decision and
-   §9.1's amalgamation decision are both made explicitly by the end of this
-   phase, since every later phase assumes an answer to both.
-6. **Extension retirement.** Each extension retires independently (RR-7)
-   once its SRS 001 phase 6 port is accepted; not blocked on, and does not
-   block, core retirement.
-7. **Application cutover.** Per RR-8/§5.5, each application cuts over once
-   the façade's coverage reaches its dependency surface; `speedtest1` cuts
-   over last, and only once its comparison purpose no longer requires the
-   legacy build to exist (§5.5).
+1. **Immediate: legacy rename and packaging.** RR-1/RR-2/BR-1: rename
+   `libsqlite3` → `libsqlite3-legacy` and the four sqlite3-dependent
+   applications to their `-legacy` names, with full CMake packaging.
+   Blocked on nothing.
+2. **Immediate: generator-application relocation and replacement.**
+   RR-4/RR-5/RR-7/§5.4.2: move `lemon`, `mkkeywordhash`, `mkopcodeh`,
+   `mkopcodec` from `tool/` into `applications/*-legacy`, build their
+   complete C++ replacements, and stand up generator-parity comparison.
+   Blocked only on implementer availability — though `mkopcodeh`/
+   `mkopcodec` benefit from being sequenced alongside
+   `sqlite-core-virtual-machine` work (§5.4.2).
+3. **Library-level comparison, per SRS 001 §12 phase.** As each library
+   reaches its SRS 001 acceptance criteria for its declared scope, RR-9's
+   comparison harness entry for it is activated (§9.3's scope caveat
+   applies throughout).
+4. **Interface façade and sqlite3-dependent application cutover.** Once
+   SRS 001's `sqlite-core-interface` (phase 5) covers a given application's
+   dependency surface, that application's unsuffixed, new-track target is
+   built for the first time (RR-3), and RR-8's differential harness
+   activates for that pair.
+5. **Extensions.** Ported per SRS 001 §3.6's own schedule; RR-9-style
+   comparison extended to each as it lands.
+6. **System-wide parity review and deletion decision (§9.1).** Once every
+   comparison entry passes within its (by then, hopefully full) scope —
+   with generator-application parity (RR-7) expected to lead, having no
+   scope caveat to wait out — whoever owns this SRS makes the explicit,
+   system-wide decision on whether and when to delete the legacy track.
+   Not scheduled against a specific date by this document.
 
 ---
 ## 11. Traceability Matrix Skeleton
 
-| SRS 001 library (§3) | This document's retirement row (§3) | RR-1 gate additionally requires SRS 003 evidence? |
-|---|---|---|
-| `sqlite-utils` | §3 row 1 | No |
-| `sqlite-backend-os` | §3 row 2, §5.1 | No (environment-bounded per SRS 003 §8.5, not a formal-methods target) |
-| `sqlite-backend-pager` | §3 row 3 | Yes — SRS 003 SR-3(a) |
-| `sqlite-backend-tree` | §3 row 4 | Yes — SRS 003 SR-3(b) |
-| `sqlite-core-virtual-machine` | §3 row 5, §5.2 | No (WCET/SR-7 instead, not gated as differential evidence) |
-| `sqlite-core-command-processor` | §3 row 6, §5.3 | Yes — SRS 003 SR-3(c), joint with code-generator |
-| `sqlite-core-interface` | §3 row 7, §5.4 | No |
-| `sqlite-compiler-tokenizer` | §3 row 8 | No |
-| `sqlite-compiler-parser` | §3 row 9, §5.3 | No |
-| `sqlite-compiler-code-generator` | §3 row 10, §5.3 | Yes — shared gate with command-processor |
-| Extensions | §3 row 11 | Only if individually brought into SRS 003 scope (SRS 003 §5) |
-
-The full RTM is a generated, evidence-linked artifact (consistent with SRS
-003 §11's approach to its own traceability matrix), keyed to this skeleton's
-row correspondence.
+| Component | This document's section | Comparison mechanism | Blocked on façade? |
+|---|---|---|---|
+| `libsqlite3-legacy` | §3, §5.1 | RR-9, per-library | No (rename itself); yes (comparison activation, per library) |
+| `sqlite3-shell` / `-legacy` | §5.4.1 | RR-8 | Yes — broadest API surface |
+| `sqldiff` / `-legacy` | §5.4.1 | RR-8 | Yes — narrower surface, likely earlier |
+| `sqlite3-rsync` / `-legacy` | §5.4.1 | RR-8 | Yes |
+| `speedtest1` / `-legacy` | §5.4.1 | RR-8 (performance) | Yes, but both intended to coexist permanently |
+| `lemon` / `-legacy` | §5.4.2 | RR-7 (generator parity, complete) | No |
+| `mkkeywordhash` / `-legacy` | §5.4.2 | RR-7 (complete) | No |
+| `mkopcodeh` / `-legacy`, `mkopcodec` / `-legacy` | §5.4.2 | RR-7 (complete) | No (but sequenced with VM work) |
+| Extensions | §3 | RR-9, per extension | No (independent per SRS 001 §3.6) |
 
 ---
 ## 12. Glossary

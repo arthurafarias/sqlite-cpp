@@ -76,9 +76,10 @@ external dependency this document cannot discharge on its own.
 - [SRS 001](001-sqlite-cpp-modularization.md) — the functional/architectural
   SRS this document extends; every library, namespace, and file mapping this
   document refers to is defined there, not repeated here.
-- [SRS 002](002-full-c-retirement.md) — the plan for retiring the legacy C
-  implementation once each library's C++ replacement is accepted; this
-  document's SR-12 constrains that plan's timing (§1.5).
+- [SRS 002](002-full-c-retirement.md) — restructures the legacy C
+  implementation into a permanently-retained, clearly-named `-legacy` track
+  compared against the new `sqlite-cpp` track; its comparison harness is the
+  concrete mechanism behind this document's SR-12 (§1.5).
 - IEC 61508:2010, parts 1–7 — generic functional safety of
   electrical/electronic/programmable electronic safety-related systems; part
   3 (software) is this document's primary normative reference. Used as the
@@ -112,14 +113,22 @@ document until it has met SRS 001's own acceptance criteria (SRS 001 §10) —
 safety qualification is a second pass over a functionally-complete,
 already-tested library, not a parallel track that could finish first.
 
-SRS 003 also **constrains** SRS 002 (the complete C-implementation
-retirement plan): this document's SR-12 ("regression-as-diversity") relies
-on the legacy C implementation remaining live, for a given library, until
-that library's differential evidence has been captured. SRS 002's RR-2 and
-§10 phased plan are written to be gated on that evidence, not the other way
-around — where SRS 002 and this document could be read as giving different
-retirement timing for a library in SIL4 scope, this document's evidence
-requirement is the binding one, per SRS 002 §9.4.
+SRS 003 also **interacts** with SRS 002 (the legacy/new dual-track
+restructuring plan): this document's SR-12 ("regression-as-diversity")
+relies on the legacy C implementation remaining live, for a given library,
+until that library's differential evidence has been captured. As of SRS
+002 v0.2+, this is no longer a source of tension the way it was under that
+document's earlier, per-library-deletion draft: SRS 002 now keeps the
+entire legacy track (`libsqlite3-legacy` and every `applications/*-legacy`
+target) alive by default, with full deletion deferred to a single, later,
+explicit, system-wide decision (SRS 002 §9.1) rather than made per library
+as each replacement lands. SR-12's evidence is therefore captured against
+SRS 002's library-level comparison harness (SRS 002 RR-9) as a matter of
+course; the only remaining constraint this document places on SRS 002 is
+that its §9.1 system-wide deletion decision, if and when made, must not
+occur for any library still relying on this document's SR-12 evidence — a
+constraint on that one future decision, not on SRS 002's ordinary phased
+plan.
 
 ### 1.6 Overview
 

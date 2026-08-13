@@ -30,9 +30,10 @@ Per the SRS's [phased delivery plan](../srs/001-sqlite-cpp-modularization.md#12-
 ## Existing project documentation
 
 - [SRS 001](../srs/001-sqlite-cpp-modularization.md) -- the requirements this refactor implements.
-- [SRS 002](../srs/002-full-c-retirement.md) -- the plan for fully retiring
-  the legacy C implementation, per library, once each `sqlite-cpp`
-  replacement is accepted.
+- [SRS 002](../srs/002-full-c-retirement.md) -- restructures the legacy C
+  implementation (`libsqlite3-legacy`, `*-legacy` applications, C++-ported
+  code generators) into a permanent track compared directly against
+  `sqlite-cpp`; final deletion is left an explicit, later decision.
 - [SRS 003](../srs/003-sil4-safety-integrity-validation.md) -- SIL4 safety-integrity
   validation requirements layered on top of SRS 001, per library and then per
   application.
