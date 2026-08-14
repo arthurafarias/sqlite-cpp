@@ -16,10 +16,10 @@ dynamically instead of embedding the amalgamation. The whole workspace configure
 builds, and passes the existing TCL oracle (`ctest -R sqlite_veryquick`) at the same
 pre-existing `zipfile-25.0`-only baseline it always has.
 
-[SRS 002](../srs/002-cpp-conversion.md) has been applied to the first four
-dependency leaves, through `sqlite-backend-tree`. They are C++17 shared
-libraries with namespaced state-container APIs. The other six libraries remain
-plain C at the SRS 001 end state; `sqlite-core-virtual-machine` is next.
+[SRS 002](../srs/002-cpp-conversion.md) has been applied to the first five
+dependency leaves, through `sqlite-core-virtual-machine`. They are C++17 shared
+libraries with namespaced state-container APIs. The other five libraries remain
+plain C at the SRS 001 end state; the next dependency leaf is not yet claimed.
 
 | Library | `.so` | SRS stage |
 |---|---|---|
@@ -27,7 +27,7 @@ plain C at the SRS 001 end state; `sqlite-core-virtual-machine` is next.
 | `sqlite-backend-os` | `libsqlite-backend-os.so` | SRS 002 — C++17 (`sqlite::backend::os`) |
 | `sqlite-backend-pager` | `libsqlite-backend-pager.so` | SRS 002 — C++17 (`sqlite::backend::pager`) |
 | `sqlite-backend-tree` | `libsqlite-backend-tree.so` | SRS 002 — C++17 (`sqlite::backend::tree`) |
-| `sqlite-core-virtual-machine` | `libsqlite-core-virtual-machine.so` | SRS 001 — C |
+| `sqlite-core-virtual-machine` | `libsqlite-core-virtual-machine.so` | SRS 002 — C++17 (`sqlite::core::virtual_machine`) |
 | `sqlite-core-command-processor` | `libsqlite-core-command-processor.so` | SRS 001 — C |
 | `sqlite-core-interface` | `libsqlite-core-interface.so` | SRS 001 — C |
 | `sqlite-compiler-tokenizer` | `libsqlite-compiler-tokenizer.so` | SRS 001 — C |
@@ -66,8 +66,8 @@ exists unchanged, alongside the split — nothing in SRS 001 removes it.
   consolidation, per-library C source split, and the dynamic-linking conversion.
   **Complete.**
 - [SRS 002](../srs/002-cpp-conversion.md) — C to C++ conversion, applied per library
-  once SRS 001 lands for it. **In progress: the first four dependency leaves,
-  through `sqlite-backend-tree`, are complete.**
+  once SRS 001 lands for it. **In progress: the first five dependency leaves,
+  through `sqlite-core-virtual-machine`, are complete.**
 - [SRS 003](../srs/003-file-organization-based-on-cpp-namespacing.md) — namespace-mirrored
   file organization, applied per library once SRS 002 lands for it. **Not started.**
 - [SRS 004](../srs/004-stl-based-architecture.md) — STL-based internals, applied per

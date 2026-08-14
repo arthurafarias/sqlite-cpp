@@ -13,7 +13,7 @@
 ** a VDBE (or an "sqlite3_stmt" as it is known to the outside world.)
 */
 #include "sqliteInt.h"
-#include "vdbeInt.h"
+#include "vdbeInt.hpp"
 
 /* Forward references */
 static void freeEphemeralFunction(sqlite3 *db, FuncDef *pDef);

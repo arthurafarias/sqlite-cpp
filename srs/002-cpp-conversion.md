@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| **Document status** | **In progress — four dependency leaves implemented** |
+| **Document status** | **In progress — five dependency leaves implemented** |
 | **Subject system** | A `libraries/<name>` library built per [SRS 001](001-legacy-restructure-and-dynamic-linking.md): plain C, dynamically linked, populated from `legacy/` |
 | **Target system** | The same library, same shared-object boundary, converted to namespaced C++ |
 
@@ -111,12 +111,14 @@ strategy*.
 
 ## 5. Implementation Status
 
-SRS 002 is implemented through the first four dependency leaves, ending with
-`sqlite-backend-tree`:
+SRS 002 is implemented through the first five dependency leaves, ending with
+`sqlite-core-virtual-machine`:
 
-- Every static file in all four libraries' `csrc` directories is now `.cpp` or
-  `.hpp`, and all four shared targets require C++17. The other six split
-  libraries remain C targets at the SRS 001 end state.
+- Every static file in all five libraries' `csrc` directories is now `.cpp` or
+  `.hpp` (`sqlite-core-virtual-machine`'s generated `opcodes.c` stays plain C,
+  compiled separately from the facade -- see below), and all five shared
+  targets require C++17. The other five split libraries remain C targets at
+  the SRS 001 end state.
 - `sqlite::utils::RuntimeState` is the installed namespaced state-container API
   for a runtime-status operation and its current/high-water values.
 - `sqlite::backend::os::VfsState` is the installed namespaced state-container
@@ -127,11 +129,23 @@ SRS 002 is implemented through the first four dependency leaves, ending with
 - `sqlite::backend::tree::SharedCacheState` is the installed namespaced
   state-container API for applying and tracking the process-wide shared-cache
   setting owned by the B-tree layer.
+- `sqlite::core::virtual_machine::ExpandedSqlState` is the installed namespaced
+  state-container API for expanding a prepared statement's bound SQL text
+  (`sqlite3_expanded_sql()`).
+- `sqlite::core::virtual_machine::utils::find_next_host_parameter` is this
+  leaf's first example of FR-3's other case: a free function namespaced per
+  FR-4 but not a container method, because it's a pure computation over its
+  arguments rather than a mutator of shared state.
 - The unconverted C dependents temporarily consume their existing symbols
   through the single external `cmake/SqliteConvertedCFacade.hpp` compatibility
   boundary. No converted library declares `extern "C"` in owned source.
-- Dedicated smoke tests exercise all four namespaced APIs while linking the
+  `cmake/SqliteCppLibrary.cmake`'s facade `-include` and `-fpermissive` are
+  now scoped to `$<COMPILE_LANGUAGE:CXX>` specifically, so a library's
+  remaining/generated plain-C sources (like `opcodes.c`) keep compiling
+  alongside its newly converted `.cpp` files without seeing C++-only syntax
+  they can't parse -- a latent gap the first four (all-`.cpp`, no leftover
+  `.c`) never exercised.
+- Dedicated smoke tests exercise all five namespaced APIs while linking the
   mixed C/C++ ten-library graph.
 
-The next dependency leaf is `sqlite-core-virtual-machine`; the remaining
-libraries are not yet claimed as converted.
+The next dependency leaf is not yet claimed as converted.

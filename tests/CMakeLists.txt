@@ -139,6 +139,15 @@ target_link_libraries(srs002-backend-tree-smoke PRIVATE sqlite::backend-tree)
 sqlite_cpp_link_full_split(srs002-backend-tree-smoke)
 add_test(NAME srs002_backend_tree_namespaced_api COMMAND srs002-backend-tree-smoke)
 
+add_executable(srs002-core-virtual-machine-smoke srs002_core_virtual_machine_smoke.cpp)
+set_target_properties(srs002-core-virtual-machine-smoke PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+target_link_libraries(srs002-core-virtual-machine-smoke PRIVATE sqlite::core-virtual-machine)
+sqlite_cpp_link_full_split(srs002-core-virtual-machine-smoke)
+add_test(NAME srs002_core_virtual_machine_namespaced_api COMMAND srs002-core-virtual-machine-smoke)
+
 # The full suite (main.mk's `testrunner`/`fulltest` targets): not registered as a
 # ctest test because, like in the pre-existing build, it is slow (1000+ .test
 # files) - run manually via `cmake --build <dir> --target sqlite_fulltest`.

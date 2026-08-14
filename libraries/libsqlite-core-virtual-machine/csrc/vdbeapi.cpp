@@ -14,7 +14,7 @@
 ** VDBE.
 */
 #include "sqliteInt.h"
-#include "vdbeInt.h"
+#include "vdbeInt.hpp"
 #include "opcodes.h"
 
 #ifndef SQLITE_OMIT_DEPRECATED

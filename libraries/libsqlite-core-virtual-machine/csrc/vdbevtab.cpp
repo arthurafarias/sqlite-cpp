@@ -15,7 +15,7 @@
 */
 #include "sqliteInt.h"
 #if defined(SQLITE_ENABLE_BYTECODE_VTAB) && !defined(SQLITE_OMIT_VIRTUALTABLE)
-#include "vdbeInt.h"
+#include "vdbeInt.hpp"
 
 /* An instance of the bytecode() table-valued function.
 */
@@ -379,7 +379,7 @@ static int bytecodevtabBestIndex(
 ){
   int i;
   int rc = SQLITE_CONSTRAINT;
-  struct sqlite3_index_constraint *p;
+  struct sqlite3_index_info::sqlite3_index_constraint *p;
   bytecodevtab *pVTab = (bytecodevtab*)tab;
   int iBaseCol = pVTab->bTablesUsed ? 4 : 10;
   pIdxInfo->estimatedCost = (double)100;

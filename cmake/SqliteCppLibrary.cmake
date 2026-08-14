@@ -101,14 +101,22 @@ function(sqlite_cpp_add_library name)
     if(_sqlite_cxx_sources)
         # The SRS 003 pass replaces SQLite's C allocation/data-structure
         # idioms. Until then, GNU C++ needs its permissive conversion mode.
+        # Guarded to CXX only: a library mid-conversion (SRS 002 applies per
+        # library, but a generated source like opcodes.c/parse.c stays plain
+        # C alongside the newly renamed .cpp files) still compiles its
+        # remaining/generated .c sources with the C compiler, which doesn't
+        # understand this flag's C++-specific effect and, more importantly,
+        # can't parse the facade's extern "C" block below.
         if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            target_compile_options(sqlite-${name} PRIVATE -fpermissive)
+            target_compile_options(sqlite-${name} PRIVATE
+                $<$<COMPILE_LANGUAGE:CXX>:-fpermissive>
+            )
         endif()
         # Unconverted C dependents still consume converted leaves' legacy
         # symbols. Keep that transitional linkage in one façade outside the
         # converted libraries; no converted source declares extern "C" itself.
         target_compile_options(sqlite-${name} PRIVATE
-            "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteConvertedCFacade.hpp"
+            "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteConvertedCFacade.hpp>"
         )
     endif()
     target_include_directories(sqlite-${name} PRIVATE

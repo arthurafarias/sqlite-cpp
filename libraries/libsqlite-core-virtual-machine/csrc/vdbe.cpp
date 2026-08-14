@@ -19,7 +19,7 @@
 ** commenting and indentation practices when changing or adding code.
 */
 #include "sqliteInt.h"
-#include "vdbeInt.h"
+#include "vdbeInt.hpp"
 
 /*
 ** High-resolution hardware timer used for debugging and testing only.

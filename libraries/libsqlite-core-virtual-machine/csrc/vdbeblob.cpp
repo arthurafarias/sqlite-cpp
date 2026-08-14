@@ -14,7 +14,7 @@
 */
 
 #include "sqliteInt.h"
-#include "vdbeInt.h"
+#include "vdbeInt.hpp"
 
 #ifndef SQLITE_OMIT_INCRBLOB
 

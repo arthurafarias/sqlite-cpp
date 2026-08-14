@@ -16,17 +16,23 @@
 ** The Vdbe parse-tree explainer is also found here.
 */
 #include "sqliteInt.h"
-#include "vdbeInt.h"
+#include "vdbeInt.hpp"
 
 #ifndef SQLITE_OMIT_TRACE
+
+namespace sqlite::core::virtual_machine::utils {
 
 /*
 ** zSql is a zero-terminated string of UTF-8 SQL text.  Return the number of
 ** bytes in this text up to but excluding the first character in
 ** a host parameter.  If the text contains no host parameters, return
 ** the total number of bytes in the text.
+**
+** Pure computation over its arguments, not a container method (SRS 002
+** FR-3) -- nested under `utils` rather than living at the library's own
+** namespace level.
 */
-static i64 findNextHostParameter(const char *zSql, i64 *pnToken){
+static i64 find_next_host_parameter(const char *zSql, i64 *pnToken){
   int tokenType;
   i64 nTotal = 0;
   i64 n;
@@ -44,6 +50,8 @@ static i64 findNextHostParameter(const char *zSql, i64 *pnToken){
   }
   return nTotal;
 }
+
+} // namespace sqlite::core::virtual_machine::utils
 
 /*
 ** This function returns a pointer to a nul-terminated string in memory
@@ -99,7 +107,7 @@ char *sqlite3VdbeExpandSql(
     sqlite3_str_append(&out, zRawSql, sqlite3Strlen30(zRawSql));
   }else{
     while( zRawSql[0] ){
-      n = findNextHostParameter(zRawSql, &nToken);
+      n = sqlite::core::virtual_machine::utils::find_next_host_parameter(zRawSql, &nToken);
       assert( n>0 );
       sqlite3_str_append(&out, zRawSql, n);
       zRawSql += n;
