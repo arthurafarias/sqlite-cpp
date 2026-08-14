@@ -4,9 +4,9 @@
 extern C {
 #endif
 
-#include <sqlite3_int64.h>
-#include <sqlite3_uint64.h>
-#include <sqlite3_value.h>
+#include "sqlite3_int64.h"
+#include "sqlite3_uint64.h"
+#include "sqlite3_value.h"
 
   typedef struct sqlite3_context sqlite3_context;
   typedef struct sqlite3 sqlite3;

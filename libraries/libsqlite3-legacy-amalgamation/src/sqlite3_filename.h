@@ -5,7 +5,7 @@ extern C {
 #endif
 typedef const char* sqlite3_filename;
 
-#include <sqlite3_int64.h>
+#include "sqlite3_int64.h"
 
 const char *sqlite3_uri_parameter(sqlite3_filename z, const char *zParam);
 int sqlite3_uri_boolean(sqlite3_filename z, const char *zParam, int bDefault);

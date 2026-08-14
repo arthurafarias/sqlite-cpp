@@ -4,20 +4,20 @@
 extern "C" {
 #endif
 
-#include <CollSeq.h>
-#include <FuncDef.h>
-#include <Index.h>
-#include <KeyInfo.h>
-#include <Mem.h>
-#include <SubProgram.h>
-#include <SubrtnSig.h>
-#include <Table.h>
-#include <VTable.h>
-#include <i64.h>
-#include <sqlite3_context.h>
-#include <u16.h>
-#include <u32.h>
-#include <u8.h>
+#include "CollSeq.h"
+#include "FuncDef.h"
+#include "Index.h"
+#include "KeyInfo.h"
+#include "Mem.h"
+#include "SubProgram.h"
+#include "SubrtnSig.h"
+#include "Table.h"
+#include "VTable.h"
+#include "i64.h"
+#include "sqlite3_context.h"
+#include "u16.h"
+#include "u32.h"
+#include "u8.h"
 
 typedef struct VdbeOp VdbeOp;
 

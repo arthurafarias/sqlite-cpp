@@ -4,7 +4,7 @@
 extern C {
 #endif
 
-#include <sqlite3_int64.h>
+#include "sqlite3_int64.h"
 
   typedef struct sqlite3_blob sqlite3_blob;
 

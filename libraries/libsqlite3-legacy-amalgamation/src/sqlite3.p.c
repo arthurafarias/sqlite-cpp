@@ -1,23 +1,23 @@
 #define _GNU_SOURCE /* See feature_test_macros(7) */
 
-#include "sqlite3.h"
-
-#include "pthread.h"
-#include "stdlib.h"
-#include "string.h"
-
-#include <fcntl.h> /* Definition of AT_* constants */
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include <errno.h>
 #include <sys/time.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/mman.h>
+
+#include "sqlite3.h"
 
 typedef __builtin_va_list __gnuc_va_list;
 typedef __gnuc_va_list va_list;
 
-#include <sqlite3_version.h>
+#include "sqlite3_version.h"
 
 const char *sqlite3_libversion(void);
 const char *sqlite3_sourceid(void);
@@ -25,10 +25,10 @@ int sqlite3_libversion_number(void);
 int sqlite3_compileoption_used(const char *zOptName);
 const char *sqlite3_compileoption_get(int N);
 int sqlite3_threadsafe(void);
-#include <sqlite3_callback.h>
+#include "sqlite3_callback.h"
 
-#include <sqlite3_file.h>
-#include <sqlite3_io_methods.h>
+#include "sqlite3_file.h"
+#include "sqlite3_io_methods.h"
 
 typedef struct sqlite3_api_routines sqlite3_api_routines;
 
@@ -100,8 +100,9 @@ sqlite3_file *sqlite3_database_file_object(const char *);
 
 const char *sqlite3_errstr(int);
 
-#include <sqlite3_stmt.h>
-#include <sqlite3_value.h>
+#include "sqlite3_stmt.h"
+#include "sqlite3_value.h"
+
 
 int sqlite3_global_recover(void);
 void sqlite3_thread_cleanup(void);
@@ -179,7 +180,7 @@ typedef struct sqlite3_vtab sqlite3_vtab;
 typedef struct sqlite3_index_info sqlite3_index_info;
 typedef struct sqlite3_vtab_cursor sqlite3_vtab_cursor;
 
-#include <sqlite3_module.h>
+#include "sqlite3_module.h"
 
 struct sqlite3_index_info {
 
@@ -3285,131 +3286,6 @@ int sqlite3_db_status(sqlite3 *db, int op, int *pCurrent, int *pHighwtr, int res
   return rc;
 }
 
-struct timex {
-  unsigned int modes;
-  __syscall_slong_t offset;
-  __syscall_slong_t freq;
-  __syscall_slong_t maxerror;
-  __syscall_slong_t esterror;
-  int status;
-  __syscall_slong_t constant;
-  __syscall_slong_t precision;
-  __syscall_slong_t tolerance;
-  struct timeval time;
-  __syscall_slong_t tick;
-  __syscall_slong_t ppsfreq;
-  __syscall_slong_t jitter;
-  int shift;
-  __syscall_slong_t stabil;
-  __syscall_slong_t jitcnt;
-  __syscall_slong_t calcnt;
-  __syscall_slong_t errcnt;
-  __syscall_slong_t stbcnt;
-
-  int tai;
-
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-  int : 32;
-};
-
-extern int clock_adjtime(__clockid_t __clock_id, struct timex *__utx) __attribute__((__nothrow__, __leaf__)) __attribute__((__nonnull__(2)));
-
-struct tm {
-  int tm_sec;
-  int tm_min;
-  int tm_hour;
-  int tm_mday;
-  int tm_mon;
-  int tm_year;
-  int tm_wday;
-  int tm_yday;
-  int tm_isdst;
-
-  long int tm_gmtoff;
-  const char *tm_zone;
-};
-
-struct itimerspec {
-  struct timespec it_interval;
-  struct timespec it_value;
-};
-struct sigevent;
-
-extern clock_t clock(void) __attribute__((__nothrow__, __leaf__));
-
-extern time_t time(time_t *__timer) __attribute__((__nothrow__, __leaf__));
-
-extern double difftime(time_t __time1, time_t __time0);
-
-extern time_t mktime(struct tm *__tp) __attribute__((__nothrow__, __leaf__));
-extern size_t strftime(char *__restrict __s, size_t __maxsize, const char *__restrict __format, const struct tm *__restrict __tp) __attribute__((__nothrow__, __leaf__)) __attribute__((__nonnull__(1, 3, 4)));
-
-extern char *strptime(const char *__restrict __s, const char *__restrict __fmt, struct tm *__tp) __attribute__((__nothrow__, __leaf__));
-
-extern size_t strftime_l(char *__restrict __s, size_t __maxsize, const char *__restrict __format, const struct tm *__restrict __tp, locale_t __loc) __attribute__((__nothrow__, __leaf__));
-
-extern char *strptime_l(const char *__restrict __s, const char *__restrict __fmt, struct tm *__tp, locale_t __loc) __attribute__((__nothrow__, __leaf__));
-
-extern struct tm *gmtime(const time_t *__timer) __attribute__((__nothrow__, __leaf__));
-
-extern struct tm *localtime(const time_t *__timer) __attribute__((__nothrow__, __leaf__));
-extern struct tm *gmtime_r(const time_t *__restrict __timer, struct tm *__restrict __tp) __attribute__((__nothrow__, __leaf__));
-
-extern struct tm *localtime_r(const time_t *__restrict __timer, struct tm *__restrict __tp) __attribute__((__nothrow__, __leaf__));
-extern char *asctime(const struct tm *__tp) __attribute__((__nothrow__, __leaf__));
-
-extern char *ctime(const time_t *__timer) __attribute__((__nothrow__, __leaf__));
-extern char *asctime_r(const struct tm *__restrict __tp, char *__restrict __buf) __attribute__((__nothrow__, __leaf__));
-
-extern char *ctime_r(const time_t *__restrict __timer, char *__restrict __buf) __attribute__((__nothrow__, __leaf__));
-extern char *__tzname[2];
-extern int __daylight;
-extern long int __timezone;
-
-extern char *tzname[2];
-
-extern void tzset(void) __attribute__((__nothrow__, __leaf__));
-
-extern int daylight;
-extern long int timezone;
-extern time_t timegm(struct tm *__tp) __attribute__((__nothrow__, __leaf__));
-extern time_t timelocal(struct tm *__tp) __attribute__((__nothrow__, __leaf__));
-
-extern int dysize(int __year) __attribute__((__nothrow__, __leaf__)) __attribute__((__const__));
-extern int nanosleep(const struct timespec *__requested_time, struct timespec *__remaining);
-
-extern int clock_getres(clockid_t __clock_id, struct timespec *__res) __attribute__((__nothrow__, __leaf__));
-
-extern int clock_gettime(clockid_t __clock_id, struct timespec *__tp) __attribute__((__nothrow__, __leaf__)) __attribute__((__nonnull__(2)));
-
-extern int clock_settime(clockid_t __clock_id, const struct timespec *__tp) __attribute__((__nothrow__, __leaf__)) __attribute__((__nonnull__(2)));
-extern int clock_nanosleep(clockid_t __clock_id, int __flags, const struct timespec *__req, struct timespec *__rem);
-extern int clock_getcpuclockid(pid_t __pid, clockid_t *__clock_id) __attribute__((__nothrow__, __leaf__));
-
-extern int timer_create(clockid_t __clock_id, struct sigevent *__restrict __evp, timer_t *__restrict __timerid) __attribute__((__nothrow__, __leaf__));
-
-extern int timer_delete(timer_t __timerid) __attribute__((__nothrow__, __leaf__));
-
-extern int timer_settime(timer_t __timerid, int __flags, const struct itimerspec *__restrict __value, struct itimerspec *__restrict __ovalue) __attribute__((__nothrow__, __leaf__));
-
-extern int timer_gettime(timer_t __timerid, struct itimerspec *__value) __attribute__((__nothrow__, __leaf__));
-extern int timer_getoverrun(timer_t __timerid) __attribute__((__nothrow__, __leaf__));
-
-extern int timespec_get(struct timespec *__ts, int __base) __attribute__((__nothrow__, __leaf__)) __attribute__((__nonnull__(1)));
-extern int timespec_getres(struct timespec *__ts, int __base) __attribute__((__nothrow__, __leaf__));
-extern int getdate_err;
-extern struct tm *getdate(const char *__string);
-extern int getdate_r(const char *__restrict __string, struct tm *__restrict __resbufp);
-
 typedef struct DateTime DateTime;
 struct DateTime {
   sqlite3_int64 iJD;
@@ -3434,7 +3310,7 @@ static int getDigits(const char *zDate, const char *zFormat, ...) {
   int cnt = 0;
   char nextC;
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   do {
     char N = zFormat[0] - '0';
     char min = zFormat[1] - '0';
@@ -3455,14 +3331,14 @@ static int getDigits(const char *zDate, const char *zFormat, ...) {
     if (val < (int)min || val > (int)max || (nextC != 0 && nextC != *zDate)) {
       goto end_getDigits;
     }
-    *__builtin_va_arg(ap, int *) = val;
+    *va_arg(ap, int *) = val;
     zDate++;
     cnt++;
     zFormat += 4;
   } while (nextC);
 end_getDigits:
 
-  __builtin_va_end(ap);
+  va_end(ap);
   return cnt;
 }
 static int parseTimezone(const char *zDate, DateTime *p) {
@@ -5902,7 +5778,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
 
   bufpt = 0;
   if ((pAccum->printfFlags & 0x02) != 0) {
-    pArgList = __builtin_va_arg(ap, PrintfArguments *);
+    pArgList = va_arg(ap, PrintfArguments *);
     bArgList = 1;
   } else {
     bArgList = 0;
@@ -5992,7 +5868,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
         if (bArgList) {
           width = (int)getIntArg(pArgList);
         } else {
-          width = __builtin_va_arg(ap, int);
+          width = va_arg(ap, int);
         }
         if (width < 0) {
           flag_leftjustify = 1;
@@ -6011,7 +5887,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           if (bArgList) {
             precision = (int)getIntArg(pArgList);
           } else {
-            precision = __builtin_va_arg(ap, int);
+            precision = va_arg(ap, int);
           }
           if (precision < 0) {
             precision = precision >= -2147483647 ? -precision : -1;
@@ -6064,12 +5940,12 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           v = getIntArg(pArgList);
         } else if (flag_long) {
           if (flag_long == 2) {
-            v = __builtin_va_arg(ap, i64);
+            v = va_arg(ap, i64);
           } else {
-            v = __builtin_va_arg(ap, long int);
+            v = va_arg(ap, long int);
           }
         } else {
-          v = __builtin_va_arg(ap, int);
+          v = va_arg(ap, int);
         }
         if (v < 0) {
           ;
@@ -6086,12 +5962,12 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           longvalue = (u64)getIntArg(pArgList);
         } else if (flag_long) {
           if (flag_long == 2) {
-            longvalue = __builtin_va_arg(ap, u64);
+            longvalue = va_arg(ap, u64);
           } else {
-            longvalue = __builtin_va_arg(ap, unsigned long int);
+            longvalue = va_arg(ap, unsigned long int);
           }
         } else {
-          longvalue = __builtin_va_arg(ap, unsigned int);
+          longvalue = va_arg(ap, unsigned int);
         }
         prefix = 0;
       }
@@ -6174,7 +6050,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       if (bArgList) {
         realvalue = getDoubleArg(pArgList);
       } else {
-        realvalue = __builtin_va_arg(ap, double);
+        realvalue = va_arg(ap, double);
       }
       if (precision < 0)
         precision = 6;
@@ -6394,7 +6270,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
     }
     case 4:
       if (!bArgList) {
-        *(__builtin_va_arg(ap, int *)) = pAccum->nChar;
+        *(va_arg(ap, int *)) = pAccum->nChar;
       }
       length = width = 0;
       break;
@@ -6418,7 +6294,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           buf[0] = 0;
         }
       } else {
-        unsigned int ch = __builtin_va_arg(ap, unsigned int);
+        unsigned int ch = va_arg(ap, unsigned int);
         length = sqlite3AppendOneUtf8Character(buf, ch);
       }
       if (precision > 1) {
@@ -6452,7 +6328,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
         bufpt = getTextArg(pArgList);
         xtype = 5;
       } else {
-        bufpt = __builtin_va_arg(ap, char *);
+        bufpt = va_arg(ap, char *);
       }
       if (bufpt == 0) {
         bufpt = "";
@@ -6511,7 +6387,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       if (bArgList) {
         escarg = getTextArg(pArgList);
       } else {
-        escarg = __builtin_va_arg(ap, char *);
+        escarg = va_arg(ap, char *);
       }
       if (escarg == 0) {
         escarg = (xtype == 10 ? "NULL" : "(NULL)");
@@ -6611,14 +6487,14 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
         return;
       if (flag_alternateform) {
 
-        Expr *pExpr = __builtin_va_arg(ap, Expr *);
+        Expr *pExpr = va_arg(ap, Expr *);
         if ((pExpr) && (!(((pExpr)->flags & (u32)(0x000800)) != 0))) {
           sqlite3_str_appendall(pAccum, (const char *)pExpr->u.zToken);
           sqlite3RecordErrorOffsetOfExpr(pAccum->db, pExpr);
         }
       } else {
 
-        Token *pToken = __builtin_va_arg(ap, Token *);
+        Token *pToken = va_arg(ap, Token *);
 
         ((void)(0));
         if (pToken && pToken->n) {
@@ -6633,7 +6509,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       SrcItem *pItem;
       if ((pAccum->printfFlags & 0x01) == 0)
         return;
-      pItem = __builtin_va_arg(ap, SrcItem *);
+      pItem = va_arg(ap, SrcItem *);
 
       ((void)(0));
       if (pItem->zAlias && !flag_altform2) {
@@ -6935,10 +6811,10 @@ static char *sqlite3MPrintf(sqlite3 *db, const char *zFormat, ...) {
   va_list ap;
   char *z;
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   z = sqlite3VMPrintf(db, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   return z;
 }
 
@@ -6962,10 +6838,10 @@ char *sqlite3_mprintf(const char *zFormat, ...) {
   if (sqlite3_initialize())
     return 0;
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   z = sqlite3_vmprintf(zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   return z;
 }
 char *sqlite3_vsnprintf(int n, char *zBuf, const char *zFormat, va_list ap) {
@@ -6986,10 +6862,10 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...) {
 
   sqlite3StrAccumInit(&acc, 0, zBuf, n, 0);
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   sqlite3_str_vappendf(&acc, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   zBuf[acc.nChar] = 0;
   return zBuf;
 }
@@ -7006,19 +6882,19 @@ void sqlite3_log(int iErrCode, const char *zFormat, ...) {
   va_list ap;
   if (sqlite3Config.xLog) {
 
-    __builtin_c23_va_start(ap, zFormat);
+    va_start(ap, zFormat);
     renderLogMsg(iErrCode, zFormat, ap);
 
-    __builtin_va_end(ap);
+    va_end(ap);
   }
 }
 void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...) {
   va_list ap;
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   sqlite3_str_vappendf(p, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
 }
 static char *sqlite3RCStrRef(char *z) {
   RCStr *p = (RCStr *)z;
@@ -10288,10 +10164,10 @@ static void sqlite3ErrorWithMsg(sqlite3 *db, int err_code, const char *zFormat, 
     char *z;
     va_list ap;
 
-    __builtin_c23_va_start(ap, zFormat);
+    va_start(ap, zFormat);
     z = sqlite3VMPrintf(db, zFormat, ap);
 
-    __builtin_va_end(ap);
+    va_end(ap);
     sqlite3ValueSetStr(db->pErr, -1, z, 1, ((sqlite3_destructor_type)sqlite3RowSetClear));
   }
 }
@@ -10325,10 +10201,10 @@ static void sqlite3ErrorMsg(Parse *pParse, const char *zFormat, ...) {
   ((void)(0));
   db->errByteOffset = -2;
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   zMsg = sqlite3VMPrintf(db, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   if (db->errByteOffset < -1)
     db->errByteOffset = -1;
   if (db->suppressErr) {
@@ -29925,7 +29801,7 @@ static void checkAppendMsg(IntegrityCk *pCheck, const char *zFormat, ...) {
   pCheck->mxErr--;
   pCheck->nErr++;
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   if (pCheck->errMsg.nChar) {
     sqlite3_str_append(&pCheck->errMsg, "\n", 1);
   }
@@ -29934,7 +29810,7 @@ static void checkAppendMsg(IntegrityCk *pCheck, const char *zFormat, ...) {
   }
   sqlite3_str_vappendf(&pCheck->errMsg, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   if (pCheck->errMsg.accError == 7) {
     checkOom(pCheck);
   }
@@ -32352,10 +32228,10 @@ static void sqlite3VdbeError(Vdbe *p, const char *zFormat, ...) {
   va_list ap;
   sqlite3DbFree(p->db, p->zErrMsg);
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   p->zErrMsg = sqlite3VMPrintf(p->db, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
 }
 
 static void sqlite3VdbeSetSql(Vdbe *p, const char *z, int n, u8 prepFlags) {
@@ -32492,13 +32368,13 @@ static void sqlite3VdbeMultiLoad(Vdbe *p, int iDest, const char *zTypes, ...) {
   int i;
   char c;
 
-  __builtin_c23_va_start(ap, zTypes);
+  va_start(ap, zTypes);
   for (i = 0; (c = zTypes[i]) != 0; i++) {
     if (c == 's') {
-      const char *z = __builtin_va_arg(ap, const char *);
+      const char *z = va_arg(ap, const char *);
       sqlite3VdbeAddOp4(p, z == 0 ? 77 : 118, 0, iDest + i, 0, z, 0);
     } else if (c == 'i') {
-      sqlite3VdbeAddOp2(p, 73, __builtin_va_arg(ap, int), iDest + i);
+      sqlite3VdbeAddOp2(p, 73, va_arg(ap, int), iDest + i);
     } else {
       goto skip_op_resultrow;
     }
@@ -32506,7 +32382,7 @@ static void sqlite3VdbeMultiLoad(Vdbe *p, int iDest, const char *zTypes, ...) {
   sqlite3VdbeAddOp2(p, 86, iDest, i);
 skip_op_resultrow:
 
-  __builtin_va_end(ap);
+  va_end(ap);
 }
 
 static int sqlite3VdbeAddOp4(Vdbe *p, int op, int p1, int p2, int p3, const char *zP4, int p4type) {
@@ -32564,10 +32440,10 @@ static int sqlite3VdbeExplain(Parse *pParse, u8 bPush, const char *zFmt, ...) {
     va_list ap;
     int iThis;
 
-    __builtin_c23_va_start(ap, zFmt);
+    va_start(ap, zFmt);
     zMsg = sqlite3VMPrintf(pParse->db, zFmt, ap);
 
-    __builtin_va_end(ap);
+    va_end(ap);
     v = pParse->pVdbe;
     iThis = v->nOp;
     addr = sqlite3VdbeAddOp4(v, 190, iThis, pParse->addrExplain, 0, zMsg, (-7));
@@ -52704,10 +52580,10 @@ static void errorMPrintf(sqlite3_context *pCtx, const char *zFmt, ...) {
   char *zErr = 0;
   va_list ap;
 
-  __builtin_c23_va_start(ap, zFmt);
+  va_start(ap, zFmt);
   zErr = sqlite3VMPrintf(db, zFmt, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   if (zErr) {
     sqlite3_result_error(pCtx, zErr, -1);
     sqlite3DbFree(db, zErr);
@@ -55511,10 +55387,10 @@ static void sqlite3NestedParse(Parse *pParse, const char *zFormat, ...) {
 
   ((void)(0));
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   zSql = sqlite3VMPrintf(db, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   if (zSql == 0) {
 
     if (!db->mallocFailed)
@@ -77249,10 +77125,10 @@ static int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...) {
   va_list ap;
   int rc;
 
-  __builtin_c23_va_start(ap, zSql);
+  va_start(ap, zSql);
   z = sqlite3VMPrintf(db, zSql, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   if (z == 0)
     return 7;
   rc = execSql(db, pzErrMsg, z);
@@ -78445,10 +78321,10 @@ int sqlite3_vtab_config(sqlite3 *db, int op, ...) {
 
     ((void)(0));
 
-    __builtin_c23_va_start(ap, op);
+    va_start(ap, op);
     switch (op) {
     case 1: {
-      p->pVTable->bConstraint = (u8) __builtin_va_arg(ap, int);
+      p->pVTable->bConstraint = (u8) va_arg(ap, int);
       break;
     }
     case 2: {
@@ -78469,7 +78345,7 @@ int sqlite3_vtab_config(sqlite3 *db, int op, ...) {
     }
     }
 
-    __builtin_va_end(ap);
+    va_end(ap);
   }
 
   if (rc != 0)
@@ -91455,7 +91331,7 @@ int sqlite3_config(int op, ...) {
     ;
   }
 
-  __builtin_c23_va_start(ap, op);
+  va_start(ap, op);
   switch (op) {
 
   case 1: {
@@ -91481,49 +91357,49 @@ int sqlite3_config(int op, ...) {
 
   case 10: {
 
-    sqlite3Config.mutex = *__builtin_va_arg(ap, sqlite3_mutex_methods *);
+    sqlite3Config.mutex = *va_arg(ap, sqlite3_mutex_methods *);
     break;
   }
 
   case 11: {
 
-    *__builtin_va_arg(ap, sqlite3_mutex_methods *) = sqlite3Config.mutex;
+    *va_arg(ap, sqlite3_mutex_methods *) = sqlite3Config.mutex;
     break;
   }
 
   case 4: {
 
-    sqlite3Config.m = *__builtin_va_arg(ap, sqlite3_mem_methods *);
+    sqlite3Config.m = *va_arg(ap, sqlite3_mem_methods *);
     break;
   }
   case 5: {
 
     if (sqlite3Config.m.xMalloc == 0)
       sqlite3MemSetDefault();
-    *__builtin_va_arg(ap, sqlite3_mem_methods *) = sqlite3Config.m;
+    *va_arg(ap, sqlite3_mem_methods *) = sqlite3Config.m;
     break;
   }
   case 9: {
 
     ((void)(0));
 
-    sqlite3Config.bMemstat = __builtin_va_arg(ap, int);
+    sqlite3Config.bMemstat = va_arg(ap, int);
     break;
   }
   case 27: {
-    sqlite3Config.bSmallMalloc = __builtin_va_arg(ap, int);
+    sqlite3Config.bSmallMalloc = va_arg(ap, int);
     break;
   }
   case 7: {
 
-    sqlite3Config.pPage = __builtin_va_arg(ap, void *);
-    sqlite3Config.szPage = __builtin_va_arg(ap, int);
-    sqlite3Config.nPage = __builtin_va_arg(ap, int);
+    sqlite3Config.pPage = va_arg(ap, void *);
+    sqlite3Config.szPage = va_arg(ap, int);
+    sqlite3Config.nPage = va_arg(ap, int);
     break;
   }
   case 24: {
 
-    *__builtin_va_arg(ap, int *) = sqlite3HeaderSizeBtree() + sqlite3HeaderSizePcache() + sqlite3HeaderSizePcache1();
+    *va_arg(ap, int *) = sqlite3HeaderSizeBtree() + sqlite3HeaderSizePcache() + sqlite3HeaderSizePcache1();
     break;
   }
 
@@ -91539,7 +91415,7 @@ int sqlite3_config(int op, ...) {
 
   case 18: {
 
-    sqlite3Config.pcache2 = *__builtin_va_arg(ap, sqlite3_pcache_methods2 *);
+    sqlite3Config.pcache2 = *va_arg(ap, sqlite3_pcache_methods2 *);
     break;
   }
   case 19: {
@@ -91547,20 +91423,20 @@ int sqlite3_config(int op, ...) {
     if (sqlite3Config.pcache2.xInit == 0) {
       sqlite3PCacheSetDefault();
     }
-    *__builtin_va_arg(ap, sqlite3_pcache_methods2 *) = sqlite3Config.pcache2;
+    *va_arg(ap, sqlite3_pcache_methods2 *) = sqlite3Config.pcache2;
     break;
   }
   case 13: {
-    sqlite3Config.szLookaside = __builtin_va_arg(ap, int);
-    sqlite3Config.nLookaside = __builtin_va_arg(ap, int);
+    sqlite3Config.szLookaside = va_arg(ap, int);
+    sqlite3Config.nLookaside = va_arg(ap, int);
     break;
   }
 
   case 16: {
 
     typedef void (*LOGFUNC_t)(void *, int, const char *);
-    LOGFUNC_t xLog = __builtin_va_arg(ap, LOGFUNC_t);
-    void *pLogArg = __builtin_va_arg(ap, void *);
+    LOGFUNC_t xLog = va_arg(ap, LOGFUNC_t);
+    void *pLogArg = va_arg(ap, void *);
     __atomic_store_n((&sqlite3Config.xLog), (xLog), 0);
     __atomic_store_n((&sqlite3Config.pLogArg), (pLogArg), 0);
     break;
@@ -91568,20 +91444,20 @@ int sqlite3_config(int op, ...) {
 
   case 17: {
 
-    int bOpenUri = __builtin_va_arg(ap, int);
+    int bOpenUri = va_arg(ap, int);
     __atomic_store_n((&sqlite3Config.bOpenUri), (bOpenUri), 0);
     break;
   }
 
   case 20: {
 
-    sqlite3Config.bUseCis = __builtin_va_arg(ap, int);
+    sqlite3Config.bUseCis = va_arg(ap, int);
     break;
   }
   case 22: {
 
-    sqlite3_int64 szMmap = __builtin_va_arg(ap, sqlite3_int64);
-    sqlite3_int64 mxMmap = __builtin_va_arg(ap, sqlite3_int64);
+    sqlite3_int64 szMmap = va_arg(ap, sqlite3_int64);
+    sqlite3_int64 mxMmap = va_arg(ap, sqlite3_int64);
     if (mxMmap < 0 || mxMmap > 0x7fff0000) {
       mxMmap = 0x7fff0000;
     }
@@ -91594,21 +91470,21 @@ int sqlite3_config(int op, ...) {
     break;
   }
   case 25: {
-    sqlite3Config.szPma = __builtin_va_arg(ap, unsigned int);
+    sqlite3Config.szPma = va_arg(ap, unsigned int);
     break;
   }
 
   case 26: {
-    sqlite3Config.nStmtSpill = __builtin_va_arg(ap, int);
+    sqlite3Config.nStmtSpill = va_arg(ap, int);
     break;
   }
   case 29: {
-    sqlite3Config.mxMemdbSize = __builtin_va_arg(ap, sqlite3_int64);
+    sqlite3Config.mxMemdbSize = va_arg(ap, sqlite3_int64);
     break;
   }
 
   case 30: {
-    int *pVal = __builtin_va_arg(ap, int *);
+    int *pVal = va_arg(ap, int *);
 
     *pVal = 0;
 
@@ -91621,7 +91497,7 @@ int sqlite3_config(int op, ...) {
   }
   }
 
-  __builtin_va_end(ap);
+  va_end(ap);
   return rc;
 }
 static int setupLookaside(sqlite3 *db, void *pBuf, int sz, int cnt) {
@@ -91776,24 +91652,24 @@ int sqlite3_db_config(sqlite3 *db, int op, ...) {
 
   sqlite3_mutex_enter(db->mutex);
 
-  __builtin_c23_va_start(ap, op);
+  va_start(ap, op);
   switch (op) {
   case 1000: {
 
-    db->aDb[0].zDbSName = __builtin_va_arg(ap, char *);
+    db->aDb[0].zDbSName = va_arg(ap, char *);
     rc = 0;
     break;
   }
   case 1001: {
-    void *pBuf = __builtin_va_arg(ap, void *);
-    int sz = __builtin_va_arg(ap, int);
-    int cnt = __builtin_va_arg(ap, int);
+    void *pBuf = va_arg(ap, void *);
+    int sz = va_arg(ap, int);
+    int cnt = va_arg(ap, int);
     rc = setupLookaside(db, pBuf, sz, cnt);
     break;
   }
   case 1023: {
-    int nIn = __builtin_va_arg(ap, int);
-    int *pOut = __builtin_va_arg(ap, int *);
+    int nIn = va_arg(ap, int);
+    int *pOut = va_arg(ap, int *);
     if (nIn > 3 && nIn < 24)
       db->nFpDigit = (u8)nIn;
     if (pOut)
@@ -91812,8 +91688,8 @@ int sqlite3_db_config(sqlite3 *db, int op, ...) {
     rc = 1;
     for (i = 0; i < ((int)(sizeof(aFlagOp) / sizeof(aFlagOp[0]))); i++) {
       if (aFlagOp[i].op == op) {
-        int onoff = __builtin_va_arg(ap, int);
-        int *pRes = __builtin_va_arg(ap, int *);
+        int onoff = va_arg(ap, int);
+        int *pRes = va_arg(ap, int *);
         u64 oldFlags = db->flags;
         if (onoff > 0) {
           db->flags |= aFlagOp[i].mask;
@@ -91834,7 +91710,7 @@ int sqlite3_db_config(sqlite3 *db, int op, ...) {
   }
   }
 
-  __builtin_va_end(ap);
+  va_end(ap);
   sqlite3_mutex_leave(db->mutex);
   return rc;
 }
@@ -93558,7 +93434,7 @@ int sqlite3_test_control(int op, ...) {
 
   va_list ap;
 
-  __builtin_c23_va_start(ap, op);
+  va_start(ap, op);
   switch (op) {
 
   case 5: {
@@ -93571,9 +93447,9 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 28: {
-    int x = __builtin_va_arg(ap, int);
+    int x = va_arg(ap, int);
     int y;
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
 
     ((void)(0));
     if (db && (y = db->aDb[0].pSchema->schema_cookie) != 0) {
@@ -93584,8 +93460,8 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 7: {
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
-    int b = __builtin_va_arg(ap, int);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
+    int b = va_arg(ap, int);
     if (b) {
       db->flags |= ((u64)(0x00008) << 32);
     } else {
@@ -93594,14 +93470,14 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 8: {
-    int sz = __builtin_va_arg(ap, int);
-    int *aProg = __builtin_va_arg(ap, int *);
+    int sz = va_arg(ap, int);
+    int *aProg = va_arg(ap, int *);
     rc = sqlite3BitvecBuiltinTest(sz, aProg);
     break;
   }
   case 9: {
     typedef int (*sqlite3FaultFuncType)(int);
-    sqlite3Config.xTestCallback = __builtin_va_arg(ap, sqlite3FaultFuncType);
+    sqlite3Config.xTestCallback = va_arg(ap, sqlite3FaultFuncType);
     rc = sqlite3FaultSim(0);
     break;
   }
@@ -93610,8 +93486,8 @@ int sqlite3_test_control(int op, ...) {
     typedef void (*void_function)(void);
     void_function xBenignBegin;
     void_function xBenignEnd;
-    xBenignBegin = __builtin_va_arg(ap, void_function);
-    xBenignEnd = __builtin_va_arg(ap, void_function);
+    xBenignBegin = va_arg(ap, void_function);
+    xBenignEnd = va_arg(ap, void_function);
     sqlite3BenignMallocHooks(xBenignBegin, xBenignEnd);
     break;
   }
@@ -93619,7 +93495,7 @@ int sqlite3_test_control(int op, ...) {
     rc = sqlite3PendingByte;
 
     {
-      unsigned int newVal = __builtin_va_arg(ap, unsigned int);
+      unsigned int newVal = va_arg(ap, unsigned int);
       if (newVal)
         sqlite3PendingByte = newVal;
     }
@@ -93634,7 +93510,7 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 13: {
-    int x = __builtin_va_arg(ap, int);
+    int x = va_arg(ap, int);
     rc = x ? (x) : 0;
     break;
   }
@@ -93643,22 +93519,22 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 15: {
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
-    db->dbOptFlags = __builtin_va_arg(ap, u32);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
+    db->dbOptFlags = va_arg(ap, u32);
     break;
   }
 
   case 16: {
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
-    int *pN = __builtin_va_arg(ap, int *);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
+    int *pN = va_arg(ap, int *);
     *pN = db->dbOptFlags;
     break;
   }
   case 18: {
-    sqlite3Config.bLocaltimeFault = __builtin_va_arg(ap, int);
+    sqlite3Config.bLocaltimeFault = va_arg(ap, int);
     if (sqlite3Config.bLocaltimeFault == 2) {
       typedef int (*sqlite3LocaltimeType)(const void *, void *);
-      sqlite3Config.xAltLocaltime = __builtin_va_arg(ap, sqlite3LocaltimeType);
+      sqlite3Config.xAltLocaltime = va_arg(ap, sqlite3LocaltimeType);
     } else {
       sqlite3Config.xAltLocaltime = 0;
     }
@@ -93666,21 +93542,21 @@ int sqlite3_test_control(int op, ...) {
   }
 
   case 17: {
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
     db->mDbFlags ^= 0x0020;
     break;
   }
   case 20: {
-    sqlite3Config.neverCorrupt = __builtin_va_arg(ap, int);
+    sqlite3Config.neverCorrupt = va_arg(ap, int);
     break;
   }
   case 29: {
-    sqlite3Config.bExtraSchemaChecks = __builtin_va_arg(ap, int);
+    sqlite3Config.bExtraSchemaChecks = va_arg(ap, int);
     break;
   }
 
   case 19: {
-    sqlite3Config.iOnceResetThreshold = __builtin_va_arg(ap, int);
+    sqlite3Config.iOnceResetThreshold = va_arg(ap, int);
     break;
   }
 
@@ -93690,8 +93566,8 @@ int sqlite3_test_control(int op, ...) {
   }
 
   case 24: {
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
-    db->nMaxSorterMmap = __builtin_va_arg(ap, int);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
+    db->nMaxSorterMmap = va_arg(ap, int);
     break;
   }
 
@@ -93701,14 +93577,14 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 25: {
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
     int iDb;
     sqlite3_mutex_enter(db->mutex);
-    iDb = sqlite3FindDbName(db, __builtin_va_arg(ap, const char *));
+    iDb = sqlite3FindDbName(db, va_arg(ap, const char *));
     if (iDb >= 0) {
       db->init.iDb = iDb;
-      db->init.busy = db->init.imposterTable = __builtin_va_arg(ap, int);
-      db->init.newTnum = __builtin_va_arg(ap, int);
+      db->init.busy = db->init.imposterTable = va_arg(ap, int);
+      db->init.newTnum = va_arg(ap, int);
       if (db->init.busy == 0 && db->init.newTnum > 0) {
         sqlite3ResetAllSchemasOfConnection(db);
       }
@@ -93717,20 +93593,20 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 27: {
-    sqlite3_context *pCtx = __builtin_va_arg(ap, sqlite3_context *);
+    sqlite3_context *pCtx = va_arg(ap, sqlite3_context *);
     sqlite3ResultIntReal(pCtx);
     break;
   }
   case 30: {
-    sqlite3 *db = __builtin_va_arg(ap, sqlite3 *);
-    u64 *pn = __builtin_va_arg(ap, sqlite3_uint64 *);
+    sqlite3 *db = va_arg(ap, sqlite3 *);
+    u64 *pn = va_arg(ap, sqlite3_uint64 *);
     *pn = 0;
     (void)db;
     break;
   }
   case 31: {
-    int opTrace = __builtin_va_arg(ap, int);
-    u32 *ptr = __builtin_va_arg(ap, u32 *);
+    int opTrace = va_arg(ap, int);
+    u32 *ptr = va_arg(ap, u32 *);
     switch (opTrace) {
     case 0:
       *ptr = sqlite3TreeTrace;
@@ -93748,11 +93624,11 @@ int sqlite3_test_control(int op, ...) {
     break;
   }
   case 33: {
-    double rIn = __builtin_va_arg(ap, double);
+    double rIn = va_arg(ap, double);
     LogEst rLogEst = sqlite3LogEstFromDouble(rIn);
-    int *pI1 = __builtin_va_arg(ap, int *);
-    u64 *pU64 = __builtin_va_arg(ap, u64 *);
-    int *pI2 = __builtin_va_arg(ap, int *);
+    int *pI1 = va_arg(ap, int *);
+    u64 *pU64 = va_arg(ap, u64 *);
+    int *pI2 = va_arg(ap, int *);
     *pI1 = rLogEst;
     *pU64 = sqlite3LogEstToInt(rLogEst);
     *pI2 = sqlite3LogEst(*pU64);
@@ -93760,8 +93636,8 @@ int sqlite3_test_control(int op, ...) {
   }
 
   case 34: {
-    const char *z = __builtin_va_arg(ap, const char *);
-    double *pR = __builtin_va_arg(ap, double *);
+    const char *z = va_arg(ap, const char *);
+    double *pR = va_arg(ap, double *);
     rc = sqlite3AtoF(z, pR);
     break;
   }
@@ -93770,7 +93646,7 @@ int sqlite3_test_control(int op, ...) {
   }
   }
 
-  __builtin_va_end(ap);
+  va_end(ap);
 
   return rc;
 }
@@ -94176,10 +94052,10 @@ static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...) {
   if ((p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N))
     return;
 
-  __builtin_c23_va_start(ap, zFormat);
+  va_start(ap, zFormat);
   sqlite3_vsnprintf(N, p->zBuf + p->nUsed, zFormat, ap);
 
-  __builtin_va_end(ap);
+  va_end(ap);
   p->nUsed += (int)strlen(p->zBuf + p->nUsed);
 }
 

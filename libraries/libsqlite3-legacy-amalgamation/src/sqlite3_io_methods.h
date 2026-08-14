@@ -8,7 +8,7 @@ typedef struct sqlite3_io_methods sqlite3_io_methods;
 typedef struct sqlite3_file sqlite3_file;
 typedef struct sqlite3_filetypedef sqlite3_filetypedef;
 
-#include <sqlite3_int64.h>
+#include "sqlite3_int64.h"
 
 struct sqlite3_io_methods {
   int iVersion;

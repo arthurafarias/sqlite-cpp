@@ -5,7 +5,7 @@
 extern C {
 #endif
 
-#include <i64.h>
+#include "i64.h"
 
   typedef i64 sqlite3_int64;
 

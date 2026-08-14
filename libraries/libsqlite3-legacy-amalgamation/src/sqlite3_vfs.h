@@ -5,7 +5,7 @@
 #extern "C" {
 #endif
 
-#include <sqlite3_syscall_ptr.h>
+#include "sqlite3_syscall_ptr.h"
 
 typedef struct sqlite3_vfs sqlite3_vfs;
 #include "sqlite3_filename.h"
