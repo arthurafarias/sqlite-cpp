@@ -34,6 +34,7 @@ add_subdirectory(libraries/libsqlite-core-interface)
 add_subdirectory(libraries/libsqlite-compiler-tokenizer)
 add_subdirectory(libraries/libsqlite-compiler-parser)
 add_subdirectory(libraries/libsqlite-compiler-code-generator)
+add_subdirectory(libraries/libsqlite3-legacy-amalgamation)
 
 # SRS 001 FR-5: each sqlite3-dependent application links against the split
 # above (cmake/SqliteCppLibrary.cmake's sqlite_cpp_link_full_split()) instead
