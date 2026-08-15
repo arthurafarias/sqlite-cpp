@@ -1,0 +1,1 @@
+PragmaName stub;

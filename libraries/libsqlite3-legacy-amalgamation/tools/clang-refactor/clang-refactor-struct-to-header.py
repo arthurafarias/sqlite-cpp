@@ -75,7 +75,7 @@ def extract_struct(source_file, struct_name, output_file, compiler_args=None):
     print(f"Successfully extracted 'struct {struct_name}' -> '{output_file}'")
 
     # 6. Update the original C file (Replace struct with #include)
-    include_line = f'#include "{os.path.basename(output_file)}"'
+    include_line = f'#include "sqlite/{os.path.basename(output_file)}"'
     new_source_code = source_code[:start_offset] + include_line + source_code[end_offset:]
 
     with open(source_file, 'w', encoding='utf-8') as f:

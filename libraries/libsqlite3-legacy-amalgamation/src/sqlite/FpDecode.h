@@ -1,0 +1,35 @@
+
+#pragma once
+#ifdef __cplusplus
+extern C {
+#endif
+
+#include "sqlite/_TypeIndex.h"
+
+#include "sqlite/DbPage.h"
+#include "sqlite/InitData.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_hard_heap.h"
+#include "sqlite/sqlite3_libversion.h"
+#include "sqlite/sqlite3_libversion_number.h"
+#include "sqlite/sqlite3_soft_heap.h"
+#include "sqlite/sqlite3_sourceid.h"
+#include "sqlite/StrAccum.h"
+#include "sqlite/yDbMask.h"
+#include "sqlite/ynVar.h"
+
+typedef struct FpDecode FpDecode;
+
+struct FpDecode {
+  int n;
+  int iDP;
+  char *z;
+  char zBuf[20 + 1];
+  char sign;
+  char isSpecial;
+};
+
+#ifdef __cplusplus
+}
+#endif
+

@@ -1,2 +1,4 @@
 {
+    "cmake.generator": "Ninja",
+    "cmake.buildToolArgs": ["-k", "0"]
 }

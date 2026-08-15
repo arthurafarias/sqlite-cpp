@@ -10,7 +10,7 @@ string(STRIP "${SQLITE_VERSION_STRING}" SQLITE_VERSION_STRING)
 project(libsqlite3-legacy VERSION ${SQLITE_VERSION_STRING} LANGUAGES C)
 
 option(SQLITE_BUILD_SHARED_LIBS "Build libsqlite3-legacy as a shared library" ON)
-option(SQLITE_BUILD_STATIC_LIBS "Build libsqlite3-legacy as a library" ON)
+option(SQLITE_BUILD_STATIC_LIBS "Build libsqlite3-legacy as a library" OFF)
 
 if(NOT SQLITE_BUILD_SHARED_LIBS AND NOT SQLITE_BUILD_STATIC_LIBS)
     message(FATAL_ERROR "At least one of SQLITE_BUILD_SHARED_LIBS / SQLITE_BUILD_STATIC_LIBS must be ON")
