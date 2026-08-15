@@ -30,6 +30,7 @@ extern C {
   int sqlite3PCachePercentDirty(PCache *);
   int sqlite3PCacheIsDirty(PCache * pCache);
   int sqlite3PcacheSetPageSize(PCache *, int);
+  
 #ifdef __cplusplus
 }
 #endif
