@@ -8,6 +8,7 @@ extern "C" {
 
 #include "sqlite/u64.h"
 
+typedef struct unixFileId unixFileId;
 struct unixFileId {
   dev_t dev;
   u64 ino;
