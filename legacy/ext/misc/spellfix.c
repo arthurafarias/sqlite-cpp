@@ -71,7 +71,7 @@ SQLITE_EXTENSION_INIT1
 ** The following table gives the character class for non-initial ASCII
 ** characters.
 */
-static const unsigned char midClass[] = {
+const unsigned char midClass[] = {
  /*   */ CCLASS_OTHER,    /*   */ CCLASS_OTHER,   /*   */ CCLASS_OTHER,
  /*   */ CCLASS_OTHER,    /*   */ CCLASS_OTHER,   /*   */ CCLASS_OTHER,
  /*   */ CCLASS_OTHER,    /*   */ CCLASS_OTHER,   /*   */ CCLASS_OTHER,
@@ -121,7 +121,7 @@ static const unsigned char midClass[] = {
 ** initial character of a word.  The only difference from midClass is with
 ** the letters H, W, and Y.
 */
-static const unsigned char initClass[] = {
+const unsigned char initClass[] = {
  /*   */ CCLASS_OTHER,    /*   */ CCLASS_OTHER,   /*   */ CCLASS_OTHER,
  /*   */ CCLASS_OTHER,    /*   */ CCLASS_OTHER,   /*   */ CCLASS_OTHER,
  /*   */ CCLASS_OTHER,    /*   */ CCLASS_OTHER,   /*   */ CCLASS_OTHER,
@@ -172,7 +172,7 @@ static const unsigned char initClass[] = {
 ** character class.  Note that initClass[] can be used to map the class
 ** symbol back into the class number.
 */
-static const unsigned char className[] = ".ABCDHLRMY9 ?";
+const unsigned char className[] = ".ABCDHLRMY9 ?";
 
 /*
 ** Generate a "phonetic hash" from a string of ASCII characters
@@ -190,7 +190,7 @@ static const unsigned char className[] = ".ABCDHLRMY9 ?";
 **
 ** Return NULL if memory allocation fails.  
 */
-static unsigned char *phoneticHash(const unsigned char *zIn, int nIn){
+unsigned char *phoneticHash(const unsigned char *zIn, int nIn){
   unsigned char *zOut = sqlite3_malloc64( (i64)nIn + 1 );
   int i;
   int nOut = 0;
@@ -242,7 +242,7 @@ static unsigned char *phoneticHash(const unsigned char *zIn, int nIn){
 ** This is an SQL function wrapper around phoneticHash().  See
 ** the description of phoneticHash() for additional information.
 */
-static void phoneticHashSqlFunc(
+void phoneticHashSqlFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -264,7 +264,7 @@ static void phoneticHashSqlFunc(
 ** Return the character class number for a character given its
 ** context.
 */
-static char characterClass(char cPrev, char c){
+char characterClass(char cPrev, char c){
   return cPrev==0 ? initClass[c&0x7f] : midClass[c&0x7f];
 }
 
@@ -273,7 +273,7 @@ static char characterClass(char cPrev, char c){
 ** following character cPrev.  If cPrev==0, that means c is the first
 ** character of the word.
 */
-static int insertOrDeleteCost(char cPrev, char c, char cNext){
+int insertOrDeleteCost(char cPrev, char c, char cNext){
   char classC = characterClass(cPrev, c);
   char classCprev;
 
@@ -314,7 +314,7 @@ static int insertOrDeleteCost(char cPrev, char c, char cNext){
 ** the previous character is cPrev.  If cPrev==0 then cTo is the first
 ** character of the word.
 */
-static int substituteCost(char cPrev, char cFrom, char cTo){
+int substituteCost(char cPrev, char cFrom, char cTo){
   char classFrom, classTo;
   if( cFrom==cTo ){
     /* Exact match */
@@ -359,7 +359,7 @@ static int substituteCost(char cPrev, char cFrom, char cTo){
 ** If zA does end in a '*', then it is the number of bytes in the prefix
 ** of zB that was deemed to match zA.
 */
-static int editdist1(const char *zA, const char *zB, int *pnMatch){
+int editdist1(const char *zA, const char *zB, int *pnMatch){
   unsigned int nA, nB;   /* Number of characters in zA[] and zB[] */
   unsigned int xA, xB;   /* Loop counters for zA[] and zB[] */
   char cA = 0, cB;       /* Current character of zA and zB */
@@ -517,7 +517,7 @@ static int editdist1(const char *zA, const char *zB, int *pnMatch){
 ** a prefix of B and extra characters on the end of B have minimal additional
 ** cost.
 */
-static void editdistSqlFunc(
+void editdistSqlFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -584,7 +584,7 @@ struct EditDist3Lang {
 /*
 ** The default EditDist3Lang object, with default costs.
 */
-static const EditDist3Lang editDist3Lang = { 0, 100, 100, 150, 0 };
+const EditDist3Lang editDist3Lang = { 0, 100, 100, 150, 0 };
 
 /*
 ** Complete configuration
@@ -641,7 +641,7 @@ struct EditDist3ToString {
 ** Clear or delete an instance of the object that records all edit-distance
 ** weights.
 */
-static void editDist3ConfigClear(EditDist3Config *p){
+void editDist3ConfigClear(EditDist3Config *p){
   int i;
   if( p==0 ) return;
   for(i=0; i<p->nLang; i++){
@@ -656,7 +656,7 @@ static void editDist3ConfigClear(EditDist3Config *p){
   sqlite3_free(p->a);
   memset(p, 0, sizeof(*p));
 }
-static void editDist3ConfigDelete(void *pIn){
+void editDist3ConfigDelete(void *pIn){
   EditDist3Config *p = (EditDist3Config*)pIn;
   editDist3ConfigClear(p);
   sqlite3_free(p);
@@ -666,7 +666,7 @@ static void editDist3ConfigDelete(void *pIn){
 ** Return negative, zero, or positive if the A is less than, equal to,
 ** or greater than B.
 */
-static int editDist3CostCompare(EditDist3Cost *pA, EditDist3Cost *pB){
+int editDist3CostCompare(EditDist3Cost *pA, EditDist3Cost *pB){
   int n = pA->nFrom;
   int rc;
   if( n>pB->nFrom ) n = pB->nFrom;
@@ -679,7 +679,7 @@ static int editDist3CostCompare(EditDist3Cost *pA, EditDist3Cost *pB){
 ** Merge together two sorted lists of EditDist3Cost objects, in order
 ** of increasing FROM.
 */
-static EditDist3Cost *editDist3CostMerge(
+EditDist3Cost *editDist3CostMerge(
   EditDist3Cost *pA,
   EditDist3Cost *pB
 ){
@@ -708,7 +708,7 @@ static EditDist3Cost *editDist3CostMerge(
 /*
 ** Sort a list of EditDist3Cost objects into order of increasing FROM
 */
-static EditDist3Cost *editDist3CostSort(EditDist3Cost *pList){
+EditDist3Cost *editDist3CostSort(EditDist3Cost *pList){
   EditDist3Cost *ap[60], *p;
   int i;
   int mx = 0;
@@ -738,7 +738,7 @@ static EditDist3Cost *editDist3CostSort(EditDist3Cost *pList){
 /*
 ** Load all edit-distance weights from a table.
 */
-static int editDist3ConfigLoad(
+int editDist3ConfigLoad(
   EditDist3Config *p,      /* The edit distance configuration to load */
   sqlite3 *db,            /* Load from this database */
   const char *zTable      /* Name of the table from which to load */
@@ -819,7 +819,7 @@ static int editDist3ConfigLoad(
 ** Return the length (in bytes) of a utf-8 character.  Or return a maximum
 ** of N.
 */
-static int utf8Len(unsigned char c, int N){
+int utf8Len(unsigned char c, int N){
   int len = 1;
   if( c>0x7f ){
     if( (c&0xe0)==0xc0 ){
@@ -838,7 +838,7 @@ static int utf8Len(unsigned char c, int N){
 ** Return TRUE (non-zero) if the To side of the given cost matches
 ** the given string.
 */
-static int matchTo(EditDist3Cost *p, const char *z, int n){
+int matchTo(EditDist3Cost *p, const char *z, int n){
   assert( n>0 );
   if( p->a[p->nFrom]!=z[0] ) return 0;
   if( p->nTo>n ) return 0;
@@ -850,7 +850,7 @@ static int matchTo(EditDist3Cost *p, const char *z, int n){
 ** Return TRUE (non-zero) if the From side of the given cost matches
 ** the given string.
 */
-static int matchFrom(EditDist3Cost *p, const char *z, int n){
+int matchFrom(EditDist3Cost *p, const char *z, int n){
   assert( p->nFrom<=n );
   if( p->nFrom ){
     if( p->a[0]!=z[0] ) return 0;
@@ -863,7 +863,7 @@ static int matchFrom(EditDist3Cost *p, const char *z, int n){
 ** Return TRUE (non-zero) of the next FROM character and the next TO
 ** character are the same.
 */
-static int matchFromTo(
+int matchFromTo(
   EditDist3FromString *pStr,  /* Left hand string */
   int n1,                     /* Index of comparison character on the left */
   const char *z2,             /* Right-handl comparison character */
@@ -880,7 +880,7 @@ static int matchFromTo(
 /*
 ** Delete an EditDist3FromString objecct
 */
-static void editDist3FromStringDelete(EditDist3FromString *p){
+void editDist3FromStringDelete(EditDist3FromString *p){
   int i;
   if( p ){
     for(i=0; i<p->n; i++){
@@ -894,7 +894,7 @@ static void editDist3FromStringDelete(EditDist3FromString *p){
 /*
 ** Create a EditDist3FromString object.
 */
-static EditDist3FromString *editDist3FromStringNew(
+EditDist3FromString *editDist3FromStringNew(
   const EditDist3Lang *pLang,
   const char *z,
   int n
@@ -956,7 +956,7 @@ static EditDist3FromString *editDist3FromStringNew(
 ** Update entry m[i] such that it is the minimum of its current value
 ** and m[j]+iCost.
 */
-static void updateCost(
+void updateCost(
   unsigned int *m,
   int i,
   int j,
@@ -991,7 +991,7 @@ static void updateCost(
 ** it is the number of characters in the prefix of z2 that was deemed to 
 ** match pFrom.
 */
-static int editDist3Core(
+int editDist3Core(
   EditDist3FromString *pFrom,  /* The FROM string */
   const char *z2,              /* The TO string */
   int n2,                      /* Length of the TO string */
@@ -1153,7 +1153,7 @@ editDist3Abort:
 /*
 ** Get an appropriate EditDist3Lang object.
 */
-static const EditDist3Lang *editDist3FindLang(
+const EditDist3Lang *editDist3FindLang(
   EditDist3Config *pConfig,
   int iLang
 ){
@@ -1173,7 +1173,7 @@ static const EditDist3Lang *editDist3FindLang(
 **
 ** The second form loads edit weights into memory from a table.
 */
-static void editDist3SqlFunc(
+void editDist3SqlFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1215,7 +1215,7 @@ static void editDist3SqlFunc(
 /*
 ** Register the editDist3 function with SQLite
 */
-static int editDist3Install(sqlite3 *db){
+int editDist3Install(sqlite3 *db){
   int rc;
   EditDist3Config *pConfig = sqlite3_malloc64( sizeof(*pConfig) );
   if( pConfig==0 ) return SQLITE_NOMEM;
@@ -1248,7 +1248,7 @@ static int editDist3Install(sqlite3 *db){
 ** This lookup table is used to help decode the first byte of
 ** a multi-byte UTF8 character.
 */
-static const unsigned char sqlite3Utf8Trans1[] = {
+const unsigned char sqlite3Utf8Trans1[] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
   0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -1263,7 +1263,7 @@ static const unsigned char sqlite3Utf8Trans1[] = {
 /*
 ** Return the value of the first UTF-8 character in the string.
 */
-static int utf8Read(const unsigned char *z, int n, int *pSize){
+int utf8Read(const unsigned char *z, int n, int *pSize){
   int c, i;
 
   /* All callers to this routine (in the current implementation)
@@ -1288,7 +1288,7 @@ static int utf8Read(const unsigned char *z, int n, int *pSize){
 ** Return the number of characters in the utf-8 string in the nIn byte
 ** buffer pointed to by zIn.
 */
-static int utf8Charlen(const char *zIn, int nIn){
+int utf8Charlen(const char *zIn, int nIn){
   int i;
   int nChar = 0;
   for(i=0; i<nIn; nChar++){
@@ -1311,7 +1311,7 @@ struct Transliteration {
 /*
 ** Table of translations from unicode characters into ASCII.
 */
-static const Transliteration translit[] = {
+const Transliteration translit[] = {
   { 0x00A0,  0x20, 0x00, 0x00, 0x00 },  /*   to   */
   { 0x00B5,  0x75, 0x00, 0x00, 0x00 },  /* µ to u */
   { 0x00C0,  0x41, 0x00, 0x00, 0x00 },  /* À to A */
@@ -1703,7 +1703,7 @@ static const Transliteration translit[] = {
   { 0xFB06,  0x73, 0x74, 0x00, 0x00 },  /* ﬆ to st */
 };
 
-static const Transliteration *spellfixFindTranslit(int c, int *pxTop){
+const Transliteration *spellfixFindTranslit(int c, int *pxTop){
   *pxTop = (sizeof(translit)/sizeof(translit[0])) - 1;
   return translit;
 }
@@ -1718,7 +1718,7 @@ static const Transliteration *spellfixFindTranslit(int c, int *pxTop){
 ** Space to hold the returned string comes from sqlite3_malloc() and
 ** should be freed by the caller.
 */
-static unsigned char *transliterate(const unsigned char *zIn, int nIn){
+unsigned char *transliterate(const unsigned char *zIn, int nIn){
 #ifdef SQLITE_SPELLFIX_5BYTE_MAPPINGS
   unsigned char *zOut = sqlite3_malloc64( (i64)nIn*5 + 1 );
 #else
@@ -1776,7 +1776,7 @@ static unsigned char *transliterate(const unsigned char *zIn, int nIn){
 ** Or, if the transliteration of the input string is less than nTrans
 ** bytes in size, return the number of characters in the input string.
 */
-static int translen_to_charlen(const char *zIn, int nIn, int nTrans){
+int translen_to_charlen(const char *zIn, int nIn, int nTrans){
   int i, c, sz, nOut;
   int nChar;
 
@@ -1822,7 +1822,7 @@ static int translen_to_charlen(const char *zIn, int nIn, int nTrans){
 ** Convert a string that contains non-ASCII Roman characters into 
 ** pure ASCII.
 */
-static void transliterateSqlFunc(
+void transliterateSqlFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1853,7 +1853,7 @@ static void transliterateSqlFunc(
 ** two or more of the above scripts or 999 if X contains no characters
 ** from any of the above scripts.
 */
-static void scriptCodeSqlFunc(
+void scriptCodeSqlFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1960,7 +1960,7 @@ struct spellfix1_cursor {
 **
 ** If *pRc is initially non-zero then this routine is a no-op.
 */
-static void spellfix1DbExec(
+void spellfix1DbExec(
   int *pRc,              /* Success code */
   sqlite3 *db,           /* Database in which to run SQL */
   const char *zFormat,   /* Format string for SQL */
@@ -1983,7 +1983,7 @@ static void spellfix1DbExec(
 /*
 ** xDisconnect/xDestroy method for the fuzzy-search module.
 */
-static int spellfix1Uninit(int isDestroy, sqlite3_vtab *pVTab){
+int spellfix1Uninit(int isDestroy, sqlite3_vtab *pVTab){
   spellfix1_vtab *p = (spellfix1_vtab*)pVTab;
   int rc = SQLITE_OK;
   if( isDestroy ){
@@ -1999,10 +1999,10 @@ static int spellfix1Uninit(int isDestroy, sqlite3_vtab *pVTab){
   }
   return rc;
 }
-static int spellfix1Disconnect(sqlite3_vtab *pVTab){
+int spellfix1Disconnect(sqlite3_vtab *pVTab){
   return spellfix1Uninit(0, pVTab);
 }
-static int spellfix1Destroy(sqlite3_vtab *pVTab){
+int spellfix1Destroy(sqlite3_vtab *pVTab){
   return spellfix1Uninit(1, pVTab);
 }
 
@@ -2010,7 +2010,7 @@ static int spellfix1Destroy(sqlite3_vtab *pVTab){
 ** Make a copy of a string.  Remove leading and trailing whitespace
 ** and dequote it.
 */
-static char *spellfix1Dequote(const char *zIn){
+char *spellfix1Dequote(const char *zIn){
   char *zOut;
   int i, j;
   char c;
@@ -2048,7 +2048,7 @@ static char *spellfix1Dequote(const char *zIn){
 **   argv[2]   -> table name
 **   argv[3].. -> optional arguments (i.e. "edit_cost_table" parameter)
 */
-static int spellfix1Init(
+int spellfix1Init(
   int isCreate,
   sqlite3 *db,
   void *pAux,
@@ -2138,7 +2138,7 @@ static int spellfix1Init(
 /*
 ** The xConnect and xCreate methods
 */
-static int spellfix1Connect(
+int spellfix1Connect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -2147,7 +2147,7 @@ static int spellfix1Connect(
 ){
   return spellfix1Init(0, db, pAux, argc, argv, ppVTab, pzErr);
 }
-static int spellfix1Create(
+int spellfix1Create(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -2160,7 +2160,7 @@ static int spellfix1Create(
 /*
 ** Clear all of the content from a cursor.
 */
-static void spellfix1ResetCursor(spellfix1_cursor *pCur){
+void spellfix1ResetCursor(spellfix1_cursor *pCur){
   int i;
   for(i=0; i<pCur->nRow; i++){
     sqlite3_free(pCur->a[i].zWord);
@@ -2177,7 +2177,7 @@ static void spellfix1ResetCursor(spellfix1_cursor *pCur){
 /*
 ** Resize the cursor to hold up to N rows of content
 */
-static void spellfix1ResizeCursor(spellfix1_cursor *pCur, int N){
+void spellfix1ResizeCursor(spellfix1_cursor *pCur, int N){
   struct spellfix1_row *aNew;
   assert( N>=pCur->nRow );
   aNew = sqlite3_realloc64(pCur->a, sizeof(pCur->a[0])*N);
@@ -2196,7 +2196,7 @@ static void spellfix1ResizeCursor(spellfix1_cursor *pCur, int N){
 /*
 ** Close a fuzzy-search cursor.
 */
-static int spellfix1Close(sqlite3_vtab_cursor *cur){
+int spellfix1Close(sqlite3_vtab_cursor *cur){
   spellfix1_cursor *pCur = (spellfix1_cursor *)cur;
   spellfix1ResetCursor(pCur);
   spellfix1ResizeCursor(pCur, 0);
@@ -2222,7 +2222,7 @@ static int spellfix1Close(sqlite3_vtab_cursor *cur){
 ** filter.argv[*] values contains $str, $langid, $top, $scope and $rowid
 ** if specified and in that order.
 */
-static int spellfix1BestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+int spellfix1BestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   int iPlan = 0;
   int iLangTerm = -1;
   int iTopTerm = -1;
@@ -2336,7 +2336,7 @@ static int spellfix1BestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 /*
 ** Open a new fuzzy-search cursor.
 */
-static int spellfix1Open(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+int spellfix1Open(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   spellfix1_vtab *p = (spellfix1_vtab*)pVTab;
   spellfix1_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
@@ -2351,7 +2351,7 @@ static int spellfix1Open(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 ** Adjust a distance measurement by the words rank in order to show
 ** preference to common words.
 */
-static int spellfix1Score(int iDistance, int iRank){
+int spellfix1Score(int iDistance, int iRank){
   int iLog2;
   for(iLog2=0; iRank>0; iLog2++, iRank>>=1){}
   return iDistance + 32 - iLog2;
@@ -2361,7 +2361,7 @@ static int spellfix1Score(int iDistance, int iRank){
 ** Compare two spellfix1_row objects for sorting purposes in qsort() such
 ** that they sort in order of increasing distance.
 */
-static int SQLITE_CDECL spellfix1RowCompare(const void *A, const void *B){
+int SQLITE_CDECL spellfix1RowCompare(const void *A, const void *B){
   const struct spellfix1_row *a = (const struct spellfix1_row*)A;
   const struct spellfix1_row *b = (const struct spellfix1_row*)B;
   return a->iScore - b->iScore;
@@ -2392,7 +2392,7 @@ typedef struct MatchQuery {
 ** Run a query looking for the best matches against zPattern using
 ** zHash as the character class seed hash.
 */
-static void spellfix1RunQuery(MatchQuery *p, const char *zQuery, int nQuery){
+void spellfix1RunQuery(MatchQuery *p, const char *zQuery, int nQuery){
   const char *zK1;
   const char *zWord;
   int iDist;
@@ -2531,7 +2531,7 @@ static void spellfix1RunQuery(MatchQuery *p, const char *zQuery, int nQuery){
 ** This version of the xFilter method work if the MATCH term is present
 ** and we are doing a scan.
 */
-static int spellfix1FilterForMatch(
+int spellfix1FilterForMatch(
   spellfix1_cursor *pCur,
   int argc,
   sqlite3_value **argv
@@ -2646,7 +2646,7 @@ filter_exit:
 /*
 ** This version of xFilter handles a full-table scan case
 */
-static int spellfix1FilterForFullScan(
+int spellfix1FilterForFullScan(
   spellfix1_cursor *pCur,
   int argc,
   sqlite3_value **argv
@@ -2686,7 +2686,7 @@ static int spellfix1FilterForFullScan(
 ** it starts its output over again.  Always called at least once
 ** prior to any spellfix1Column, spellfix1Rowid, or spellfix1Eof call.
 */
-static int spellfix1Filter(
+int spellfix1Filter(
   sqlite3_vtab_cursor *cur, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -2706,7 +2706,7 @@ static int spellfix1Filter(
 /*
 ** Advance a cursor to its next row of output
 */
-static int spellfix1Next(sqlite3_vtab_cursor *cur){
+int spellfix1Next(sqlite3_vtab_cursor *cur){
   spellfix1_cursor *pCur = (spellfix1_cursor *)cur;
   int rc = SQLITE_OK;
   if( pCur->iRow < pCur->nRow ){
@@ -2724,7 +2724,7 @@ static int spellfix1Next(sqlite3_vtab_cursor *cur){
 /*
 ** Return TRUE if we are at the end-of-file
 */
-static int spellfix1Eof(sqlite3_vtab_cursor *cur){
+int spellfix1Eof(sqlite3_vtab_cursor *cur){
   spellfix1_cursor *pCur = (spellfix1_cursor *)cur;
   return pCur->iRow>=pCur->nRow;
 }
@@ -2732,7 +2732,7 @@ static int spellfix1Eof(sqlite3_vtab_cursor *cur){
 /*
 ** Return columns from the current row.
 */
-static int spellfix1Column(
+int spellfix1Column(
   sqlite3_vtab_cursor *cur,
   sqlite3_context *ctx,
   int i
@@ -2818,7 +2818,7 @@ static int spellfix1Column(
 /*
 ** The rowid.
 */
-static int spellfix1Rowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int spellfix1Rowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   spellfix1_cursor *pCur = (spellfix1_cursor*)cur;
   if( pCur->pFullScan ){
     *pRowid = sqlite3_column_int64(pCur->pFullScan, 4);
@@ -2833,8 +2833,8 @@ static int spellfix1Rowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** containing the conflict mode that xUpdate() should use for the current
 ** operation. One of: "ROLLBACK", "IGNORE", "ABORT" or "REPLACE".
 */
-static const char *spellfix1GetConflict(sqlite3 *db){
-  static const char *azConflict[] = {
+const char *spellfix1GetConflict(sqlite3 *db){
+  const char *azConflict[] = {
     /* Note: Instead of "FAIL" - "ABORT". */
     "ROLLBACK", "IGNORE", "ABORT", "ABORT", "REPLACE"
   };
@@ -2856,7 +2856,7 @@ static const char *spellfix1GetConflict(sqlite3 *db){
 /*
 ** The xUpdate() method.
 */
-static int spellfix1Update(
+int spellfix1Update(
   sqlite3_vtab *pVTab,
   int argc,
   sqlite3_value **argv,
@@ -2971,7 +2971,7 @@ static int spellfix1Update(
 /*
 ** Rename the spellfix1 table.
 */
-static int spellfix1Rename(sqlite3_vtab *pVTab, const char *zNew){
+int spellfix1Rename(sqlite3_vtab *pVTab, const char *zNew){
   spellfix1_vtab *p = (spellfix1_vtab*)pVTab;
   sqlite3 *db = p->db;
   int rc = SQLITE_OK;
@@ -2996,7 +2996,7 @@ static int spellfix1Rename(sqlite3_vtab *pVTab, const char *zNew){
 /*
 ** A virtual table module that provides fuzzy search.
 */
-static sqlite3_module spellfix1Module = {
+sqlite3_module spellfix1Module = {
   0,                       /* iVersion */
   spellfix1Create,         /* xCreate - handle CREATE VIRTUAL TABLE */
   spellfix1Connect,        /* xConnect - reconnected to an existing table */
@@ -3027,7 +3027,7 @@ static sqlite3_module spellfix1Module = {
 /*
 ** Register the various functions and the virtual table.
 */
-static int spellfix1Register(sqlite3 *db){
+int spellfix1Register(sqlite3 *db){
   int rc = SQLITE_OK;
   unsigned int i;
   rc = sqlite3_create_function(db, "spellfix1_translit", 1,

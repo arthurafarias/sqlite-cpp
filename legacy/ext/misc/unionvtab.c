@@ -250,7 +250,7 @@ struct UnionCsr {
 ** is attempted but fails, NULL is returned and *pRc is set to 
 ** SQLITE_NOMEM.
 */
-static void *unionMalloc(int *pRc, sqlite3_int64 nByte){
+void *unionMalloc(int *pRc, sqlite3_int64 nByte){
   void *pRet;
   assert( nByte>0 );
   if( *pRc==SQLITE_OK ){
@@ -273,7 +273,7 @@ static void *unionMalloc(int *pRc, sqlite3_int64 nByte){
 ** If the allocation is attempted but fails, NULL is returned and *pRc is 
 ** set to SQLITE_NOMEM.
 */
-static char *unionStrdup(int *pRc, const char *zIn){
+char *unionStrdup(int *pRc, const char *zIn){
   char *zRet = 0;
   if( zIn ){
     sqlite3_int64 nByte = strlen(zIn) + 1;
@@ -294,7 +294,7 @@ static char *unionStrdup(int *pRc, const char *zIn){
 ** If the first character of the input is not an open quote, then this
 ** function is a no-op.
 */
-static void unionDequote(char *z){
+void unionDequote(char *z){
   if( z ){
     char q = z[0];
 
@@ -338,7 +338,7 @@ static void unionDequote(char *z){
 ** code and *pzErr may be set to an error message buffer allocated by
 ** sqlite3_malloc().
 */
-static sqlite3_stmt *unionPrepare(
+sqlite3_stmt *unionPrepare(
   int *pRc,                       /* IN/OUT: Error code */
   sqlite3 *db,                    /* Database handle */
   const char *zSql,               /* SQL statement to prepare */
@@ -360,7 +360,7 @@ static sqlite3_stmt *unionPrepare(
 ** Like unionPrepare(), except prepare the results of vprintf(zFmt, ...)
 ** instead of a constant SQL string.
 */
-static sqlite3_stmt *unionPreparePrintf(
+sqlite3_stmt *unionPreparePrintf(
   int *pRc,                       /* IN/OUT: Error code */
   char **pzErr,                   /* OUT: Error message */
   sqlite3 *db,                    /* Database handle */
@@ -395,7 +395,7 @@ static sqlite3_stmt *unionPreparePrintf(
 ** buffer allocated by sqlite3_malloc().
 */
 #if 0
-static void unionReset(int *pRc, sqlite3_stmt *pStmt, char **pzErr){
+void unionReset(int *pRc, sqlite3_stmt *pStmt, char **pzErr){
   int rc = sqlite3_reset(pStmt);
   if( *pRc==SQLITE_OK ){
     *pRc = rc;
@@ -411,7 +411,7 @@ static void unionReset(int *pRc, sqlite3_stmt *pStmt, char **pzErr){
 ** SQLITE_OK when this function is called, then it is set to the
 ** value returned by sqlite3_finalize() before this function exits.
 */
-static void unionFinalize(int *pRc, sqlite3_stmt *pStmt, char **pzErr){
+void unionFinalize(int *pRc, sqlite3_stmt *pStmt, char **pzErr){
   sqlite3 *db = sqlite3_db_handle(pStmt);
   int rc = sqlite3_finalize(pStmt);
   if( *pRc==SQLITE_OK ){
@@ -432,7 +432,7 @@ static void unionFinalize(int *pRc, sqlite3_stmt *pStmt, char **pzErr){
 ** language error message. The caller is responsible for eventually freeing 
 ** any error message using sqlite3_free().
 */
-static int unionInvokeOpenClose(
+int unionInvokeOpenClose(
   UnionTab *pTab, 
   UnionSrc *pSrc, 
   int bClose,
@@ -460,7 +460,7 @@ static int unionInvokeOpenClose(
 ** close open database files until at most nMax are open. An SQLite error
 ** code is returned if an error occurs, or SQLITE_OK otherwise.
 */
-static void unionCloseSources(UnionTab *pTab, int nMax){
+void unionCloseSources(UnionTab *pTab, int nMax){
   while( pTab->pClosable && pTab->nOpen>nMax ){
     UnionSrc *p;
     UnionSrc **pp;
@@ -478,7 +478,7 @@ static void unionCloseSources(UnionTab *pTab, int nMax){
 /*
 ** xDisconnect method.
 */
-static int unionDisconnect(sqlite3_vtab *pVtab){
+int unionDisconnect(sqlite3_vtab *pVtab){
   if( pVtab ){
     UnionTab *pTab = (UnionTab*)pVtab;
     int i;
@@ -509,7 +509,7 @@ static int unionDisconnect(sqlite3_vtab *pVtab){
 ** error message. If the table is a rowid table and no error occurs,
 ** return SQLITE_OK and leave (*pzErr) unmodified.
 */
-static int unionIsIntkeyTable(
+int unionIsIntkeyTable(
   sqlite3 *db,                    /* Database handle */
   UnionSrc *pSrc,                 /* Source table to test */
   char **pzErr                    /* OUT: Error message */
@@ -552,7 +552,7 @@ static int unionIsIntkeyTable(
 ** of the caller to free the returned string using sqlite3_free() when
 ** it is no longer required.
 */
-static char *unionSourceToStr(
+char *unionSourceToStr(
   int *pRc,                       /* IN/OUT: Error code */
   UnionTab *pTab,                 /* Virtual table object */
   UnionSrc *pSrc,                 /* Source table to test */
@@ -589,7 +589,7 @@ static char *unionSourceToStr(
 ** Or, if no problems regarding the source tables are detected and no
 ** other error occurs, SQLITE_OK is returned.
 */
-static int unionSourceCheck(UnionTab *pTab, char **pzErr){
+int unionSourceCheck(UnionTab *pTab, char **pzErr){
   int rc = SQLITE_OK;
   char *z0 = 0;
   int i;
@@ -613,8 +613,8 @@ static int unionSourceCheck(UnionTab *pTab, char **pzErr){
 ** Try to open the swarmvtab database.  If initially unable, invoke the
 ** not-found callback UDF and then try again.
 */
-static int unionOpenDatabaseInner(UnionTab *pTab, UnionSrc *pSrc, char **pzErr){
-  static const int openFlags = SQLITE_OPEN_READONLY | SQLITE_OPEN_URI;
+int unionOpenDatabaseInner(UnionTab *pTab, UnionSrc *pSrc, char **pzErr){
+  const int openFlags = SQLITE_OPEN_READONLY | SQLITE_OPEN_URI;
   int rc;
 
   rc = unionInvokeOpenClose(pTab, pSrc, 0, pzErr);
@@ -657,7 +657,7 @@ static int unionOpenDatabaseInner(UnionTab *pTab, UnionSrc *pSrc, char **pzErr){
 ** the responsibility of the caller to eventually free the error message buffer
 ** using sqlite3_free(). 
 */
-static int unionOpenDatabase(UnionTab *pTab, int iSrc, char **pzErr){
+int unionOpenDatabase(UnionTab *pTab, int iSrc, char **pzErr){
   int rc = SQLITE_OK;
   UnionSrc *pSrc = &pTab->aSrc[iSrc];
 
@@ -701,7 +701,7 @@ static int unionOpenDatabase(UnionTab *pTab, int iSrc, char **pzErr){
 ** zero before it was incremented, also remove the source from the closable
 ** list.
 */
-static void unionIncrRefcount(UnionTab *pTab, int iTab){
+void unionIncrRefcount(UnionTab *pTab, int iTab){
   if( pTab->bSwarm ){
     UnionSrc *pSrc = &pTab->aSrc[iTab];
     assert( pSrc->nUser>=0 && pSrc->db );
@@ -723,7 +723,7 @@ static void unionIncrRefcount(UnionTab *pTab, int iTab){
 ** count on the associated source table. If this means the source tables
 ** refcount is now zero, add it to the closable list.
 */
-static int unionFinalizeCsrStmt(UnionCsr *pCsr){
+int unionFinalizeCsrStmt(UnionCsr *pCsr){
   int rc = SQLITE_OK;
   if( pCsr->pStmt ){
     UnionTab *pTab = (UnionTab*)pCsr->base.pVtab;
@@ -746,7 +746,7 @@ static int unionFinalizeCsrStmt(UnionCsr *pCsr){
 /* 
 ** Return true if the argument is a space, tab, CR or LF character.
 */
-static int union_isspace(char c){
+int union_isspace(char c){
   return (c==' ' || c=='\n' || c=='\r' || c=='\t');
 }
 
@@ -754,7 +754,7 @@ static int union_isspace(char c){
 ** Return true if the argument is an alphanumeric character in the 
 ** ASCII range.
 */
-static int union_isidchar(char c){
+int union_isidchar(char c){
   return ((c>='a' && c<='z') || (c>='A' && c<'Z') || (c>='0' && c<='9'));
 }
 
@@ -774,7 +774,7 @@ static int union_isidchar(char c){
 ** an English language error message. It is the responsibility of the 
 ** caller to eventually free the buffer using sqlite3_free().
 */
-static void unionConfigureVtab(
+void unionConfigureVtab(
   int *pRc,                       /* IN/OUT: Error code */
   UnionTab *pTab,                 /* Table to configure */
   sqlite3_stmt *pStmt,            /* SQL statement to find sources */
@@ -880,7 +880,7 @@ static void unionConfigureVtab(
 **   argv[3]   -> SQL statement
 **   argv[4]   -> not-found callback UDF name
 */
-static int unionConnect(
+int unionConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -1030,7 +1030,7 @@ static int unionConnect(
 /*
 ** xOpen
 */
-static int unionOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int unionOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   UnionCsr *pCsr;
   int rc = SQLITE_OK;
   (void)p;  /* Suppress harmless warning */
@@ -1042,7 +1042,7 @@ static int unionOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** xClose
 */
-static int unionClose(sqlite3_vtab_cursor *cur){
+int unionClose(sqlite3_vtab_cursor *cur){
   UnionCsr *pCsr = (UnionCsr*)cur;
   unionFinalizeCsrStmt(pCsr);
   sqlite3_free(pCsr);
@@ -1054,7 +1054,7 @@ static int unionClose(sqlite3_vtab_cursor *cur){
 ** returns SQLITE_ROW, it should be called again within the same xNext()
 ** method call. See unionNext() for details.
 */
-static int doUnionNext(UnionCsr *pCsr){
+int doUnionNext(UnionCsr *pCsr){
   int rc = SQLITE_OK;
   assert( pCsr->pStmt );
   if( sqlite3_step(pCsr->pStmt)!=SQLITE_ROW ){
@@ -1089,7 +1089,7 @@ static int doUnionNext(UnionCsr *pCsr){
 /*
 ** xNext
 */
-static int unionNext(sqlite3_vtab_cursor *cur){
+int unionNext(sqlite3_vtab_cursor *cur){
   int rc;
   do {
     rc = doUnionNext((UnionCsr*)cur);
@@ -1100,7 +1100,7 @@ static int unionNext(sqlite3_vtab_cursor *cur){
 /*
 ** xColumn
 */
-static int unionColumn(
+int unionColumn(
   sqlite3_vtab_cursor *cur,
   sqlite3_context *ctx,
   int i
@@ -1113,7 +1113,7 @@ static int unionColumn(
 /*
 ** xRowid
 */
-static int unionRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int unionRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   UnionCsr *pCsr = (UnionCsr*)cur;
   *pRowid = sqlite3_column_int64(pCsr->pStmt, 0);
   return SQLITE_OK;
@@ -1122,7 +1122,7 @@ static int unionRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 /*
 ** xEof
 */
-static int unionEof(sqlite3_vtab_cursor *cur){
+int unionEof(sqlite3_vtab_cursor *cur){
   UnionCsr *pCsr = (UnionCsr*)cur;
   return pCsr->pStmt==0;
 }
@@ -1130,7 +1130,7 @@ static int unionEof(sqlite3_vtab_cursor *cur){
 /*
 ** xFilter
 */
-static int unionFilter(
+int unionFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -1263,7 +1263,7 @@ static int unionFilter(
 ** is passed as either the first or second argument to xFilter, depending
 ** on whether or not there is also a LT|LE constraint.
 */
-static int unionBestIndex(
+int unionBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -1326,8 +1326,8 @@ static int unionBestIndex(
 /*
 ** Register the unionvtab virtual table module with database handle db.
 */
-static int createUnionVtab(sqlite3 *db){
-  static sqlite3_module unionModule = {
+int createUnionVtab(sqlite3 *db){
+  sqlite3_module unionModule = {
     0,                            /* iVersion */
     unionConnect,
     unionConnect,

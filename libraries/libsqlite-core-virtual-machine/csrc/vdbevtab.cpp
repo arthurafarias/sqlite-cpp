@@ -47,7 +47,7 @@ struct bytecodevtab_cursor {
 /*
 ** Create a new bytecode() table-valued function.
 */
-static int bytecodevtabConnect(
+int bytecodevtabConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -103,7 +103,7 @@ static int bytecodevtabConnect(
 /*
 ** This method is the destructor for bytecodevtab objects.
 */
-static int bytecodevtabDisconnect(sqlite3_vtab *pVtab){
+int bytecodevtabDisconnect(sqlite3_vtab *pVtab){
   bytecodevtab *p = (bytecodevtab*)pVtab;
   sqlite3_free(p);
   return SQLITE_OK;
@@ -112,7 +112,7 @@ static int bytecodevtabDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new bytecodevtab_cursor object.
 */
-static int bytecodevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int bytecodevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   bytecodevtab *pVTab = (bytecodevtab*)p;
   bytecodevtab_cursor *pCur;
   pCur = sqlite3_malloc( sizeof(*pCur) );
@@ -126,7 +126,7 @@ static int bytecodevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Clear all internal content from a bytecodevtab cursor.
 */
-static void bytecodevtabCursorClear(bytecodevtab_cursor *pCur){
+void bytecodevtabCursorClear(bytecodevtab_cursor *pCur){
   sqlite3_free(pCur->zP4);
   pCur->zP4 = 0;
   sqlite3VdbeMemRelease(&pCur->sub);
@@ -144,7 +144,7 @@ static void bytecodevtabCursorClear(bytecodevtab_cursor *pCur){
 /*
 ** Destructor for a bytecodevtab_cursor.
 */
-static int bytecodevtabClose(sqlite3_vtab_cursor *cur){
+int bytecodevtabClose(sqlite3_vtab_cursor *cur){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   bytecodevtabCursorClear(pCur);
   sqlite3_free(pCur);
@@ -155,7 +155,7 @@ static int bytecodevtabClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a bytecodevtab_cursor to its next row of output.
 */
-static int bytecodevtabNext(sqlite3_vtab_cursor *cur){
+int bytecodevtabNext(sqlite3_vtab_cursor *cur){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   bytecodevtab *pTab = (bytecodevtab*)cur->pVtab;
   int rc;
@@ -186,7 +186,7 @@ static int bytecodevtabNext(sqlite3_vtab_cursor *cur){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int bytecodevtabEof(sqlite3_vtab_cursor *cur){
+int bytecodevtabEof(sqlite3_vtab_cursor *cur){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   return pCur->aOp==0;
 }
@@ -195,7 +195,7 @@ static int bytecodevtabEof(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the bytecodevtab_cursor
 ** is currently pointing.
 */
-static int bytecodevtabColumn(
+int bytecodevtabColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -318,7 +318,7 @@ static int bytecodevtabColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int bytecodevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int bytecodevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -330,7 +330,7 @@ static int bytecodevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 **    idxNum==0     means show all subprograms
 **    idxNum==1     means show only the main bytecode and omit subprograms.
 */
-static int bytecodevtabFilter(
+int bytecodevtabFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -373,7 +373,7 @@ static int bytecodevtabFilter(
 ** into the xFilter method.  If there is no valid stmt=? constraint,
 ** then return an SQLITE_CONSTRAINT error.
 */
-static int bytecodevtabBestIndex(
+int bytecodevtabBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -404,7 +404,7 @@ static int bytecodevtabBestIndex(
 ** This following structure defines all the methods for the 
 ** virtual table.
 */
-static sqlite3_module bytecodevtabModule = {
+sqlite3_module bytecodevtabModule = {
   /* iVersion    */ 0,
   /* xCreate     */ 0,
   /* xConnect    */ bytecodevtabConnect,

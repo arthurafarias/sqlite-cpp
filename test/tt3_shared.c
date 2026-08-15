@@ -16,7 +16,7 @@
 
 /*
 */
-static char *shared_thread1(int iTid, void *pArg){
+char *shared_thread1(int iTid, void *pArg){
   Error err = {0};                /* Error code and message */
 
   while( !timetostop(&err) ){
@@ -30,7 +30,7 @@ static char *shared_thread1(int iTid, void *pArg){
 }
 
 
-static void shared1(int nMs){
+void shared1(int nMs){
   Error err = {0};
   Sqlite db = {0};              /* SQLite database connection */
   Threadset threads = {0};

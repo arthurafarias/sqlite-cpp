@@ -27,7 +27,7 @@ typedef sqlite3_int64 i64;        /* signed 64-bit */
 typedef sqlite3_uint64 u64;       /* unsigned 64-bit */
 
 
-static struct GlobalData {
+struct GlobalData {
   i64 pagesize;                   /* Size of a database page */
   i64 usablesize;                 /* pagesize-nRes */
   int dbfd;                       /* File descriptor for reading the DB */
@@ -49,7 +49,7 @@ static struct GlobalData {
 ** Convert the var-int format into i64.  Return the number of bytes
 ** in the var-int.  Write the var-int value into *pVal.
 */
-static int decodeVarint(const unsigned char *z, i64 *pVal){
+int decodeVarint(const unsigned char *z, i64 *pVal){
   i64 v = 0;
   int i;
   for(i=0; i<8; i++){
@@ -64,13 +64,13 @@ static int decodeVarint(const unsigned char *z, i64 *pVal){
 /*
 ** Extract a big-endian 32-bit integer
 */
-static u32 decodeInt32(const u8 *z){
+u32 decodeInt32(const u8 *z){
   return (z[0]<<24) + (z[1]<<16) + (z[2]<<8) + z[3];
 }
 
 /* Report an out-of-memory error and die.
 */
-static void out_of_memory(void){
+void out_of_memory(void){
   fprintf(stderr,"Out of memory...\n");
   exit(1);
 }
@@ -78,7 +78,7 @@ static void out_of_memory(void){
 /*
 ** Open a database connection.
 */
-static sqlite3 *openDatabase(const char *zPrg, const char *zName){
+sqlite3 *openDatabase(const char *zPrg, const char *zName){
   sqlite3 *db = 0;
   int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_URI;
   int rc = sqlite3_open_v2(zName, &db, flags, 0);
@@ -106,7 +106,7 @@ static sqlite3 *openDatabase(const char *zPrg, const char *zName){
 /*
 ** Open the database file.
 */
-static void fileOpen(const char *zPrg, const char *zName){
+void fileOpen(const char *zPrg, const char *zName){
   assert( g.dbfd<0 );
   if( g.bRaw==0 ){
     int rc;
@@ -131,7 +131,7 @@ static void fileOpen(const char *zPrg, const char *zName){
 /*
 ** Close the database file opened by fileOpen()
 */
-static void fileClose(){
+void fileClose(){
   if( g.bRaw==0 ){
     sqlite3_close(g.pDb);
     g.pDb = 0;
@@ -148,7 +148,7 @@ static void fileClose(){
 ** Space to hold the content is obtained from sqlite3_malloc() and needs 
 ** to be freed by the caller.
 */
-static unsigned char *fileRead(sqlite3_int64 ofst, int nByte){
+unsigned char *fileRead(sqlite3_int64 ofst, int nByte){
   unsigned char *aData;
   int got;
   int rc;
@@ -186,7 +186,7 @@ static unsigned char *fileRead(sqlite3_int64 ofst, int nByte){
 /*
 ** Return the size of the file in byte.
 */
-static i64 fileGetsize(void){
+i64 fileGetsize(void){
   i64 res = 0;
   if( g.bRaw==0 ){
     int rc = g.pFd->pMethods->xFileSize(g.pFd, &res);
@@ -209,7 +209,7 @@ static i64 fileGetsize(void){
 /*
 ** Print a range of bytes as hex and as ascii.
 */
-static unsigned char *print_byte_range(
+unsigned char *print_byte_range(
   sqlite3_int64 ofst,  /* First byte in the range of bytes to print */
   int nByte,           /* Number of bytes to print */
   int printOfst        /* Add this amount to the index on the left column */
@@ -261,7 +261,7 @@ static unsigned char *print_byte_range(
 /*
 ** Print an entire page of content as hex
 */
-static void print_page(u32 iPg){
+void print_page(u32 iPg){
   i64 iStart;
   unsigned char *aData;
   iStart = ((i64)(iPg-1))*g.pagesize;
@@ -274,7 +274,7 @@ static void print_page(u32 iPg){
 
 /* Print a line of decoded output showing a 4-byte unsigned integer.
 */
-static void print_decode_line(
+void print_decode_line(
   unsigned char *aData,      /* Content being decoded */
   int ofst, int nByte,       /* Start and size of decode */
   const char *zMsg           /* Message to append */
@@ -300,7 +300,7 @@ static void print_decode_line(
 /*
 ** Decode the database header.
 */
-static void print_db_header(void){
+void print_db_header(void){
   unsigned char *aData;
   aData = print_byte_range(0, 100, 0);
   printf("Decoded:\n");
@@ -333,7 +333,7 @@ static void print_db_header(void){
 /*
 ** Describe cell content.
 */
-static i64 describeContent(
+i64 describeContent(
   unsigned char *a,       /* Cell content */
   i64 nLocal,             /* Bytes in a[] */
   char *zDesc             /* Write description here */
@@ -399,7 +399,7 @@ static i64 describeContent(
 ** Compute the local payload size given the total payload size and
 ** the page size.
 */
-static i64 localPayload(i64 nPayload, char cType){
+i64 localPayload(i64 nPayload, char cType){
   i64 maxLocal;
   i64 minLocal;
   i64 surplus;
@@ -431,7 +431,7 @@ static i64 localPayload(i64 nPayload, char cType){
 **
 ** The return value is the local cell size.
 */
-static i64 describeCell(
+i64 describeCell(
   unsigned char cType,    /* Page type */
   unsigned char *a,       /* Cell content */
   int showCellContent,    /* Show cell content if true */
@@ -444,7 +444,7 @@ static i64 describeCell(
   i64 nPayload;
   i64 rowid;
   i64 nLocal;
-  static char zDesc[1000];
+  char zDesc[1000];
   i = 0;
   if( cType<=5 ){
     leftChild = ((a[0]*256 + a[1])*256 + a[2])*256 + a[3];
@@ -488,7 +488,7 @@ static i64 describeCell(
 /* Print an offset followed by nByte bytes.  Add extra white-space
 ** at the end so that subsequent text is aligned.
 */
-static void printBytes(
+void printBytes(
   unsigned char *aData,      /* Content being decoded */
   unsigned char *aStart,     /* Start of content to be printed */
   int nByte                  /* Number of bytes to print */
@@ -509,7 +509,7 @@ static void printBytes(
 ** Write a full decode on stdout for the cell at a[ofst].
 ** Assume the page contains a header of size szPgHdr bytes.
 */
-static void decodeCell(
+void decodeCell(
   unsigned char *a,       /* Page content (without the page-1 header) */
   unsigned pgno,          /* Page number */
   int iCell,              /* Cell index */
@@ -662,7 +662,7 @@ static void decodeCell(
 /*
 ** Decode a btree page
 */
-static void decode_btree_page(
+void decode_btree_page(
   unsigned char *a,   /* Page content */
   int pgno,           /* Page number */
   int hdrSize,        /* Size of the page header.  0 or 100 */
@@ -760,7 +760,7 @@ static void decode_btree_page(
 /*
 ** Decode a freelist trunk page.
 */
-static void decode_trunk_page(
+void decode_trunk_page(
   u32 pgno,             /* The page number */
   int detail,           /* Show leaf pages if true */
   int recursive         /* Follow the trunk change if true */
@@ -796,7 +796,7 @@ static void decode_trunk_page(
 /*
 ** Add a comment on the use of a page.
 */
-static void page_usage_msg(u32 pgno, const char *zFormat, ...){
+void page_usage_msg(u32 pgno, const char *zFormat, ...){
   va_list ap;
   char *zMsg;
 
@@ -821,7 +821,7 @@ static void page_usage_msg(u32 pgno, const char *zFormat, ...){
 /*
 ** Find overflow pages of a cell and describe their usage.
 */
-static void page_usage_cell(
+void page_usage_cell(
   unsigned char cType,    /* Page type */
   unsigned char *a,       /* Cell content */
   u32 pgno,               /* page containing the cell */
@@ -866,7 +866,7 @@ static void page_usage_cell(
 /*
 ** True if the memory is all zeros
 */
-static int allZero(unsigned char *a, int n){
+int allZero(unsigned char *a, int n){
   while( n && (a++)[0]==0 ){ n--; }
   return n==0;
 }
@@ -878,7 +878,7 @@ static int allZero(unsigned char *a, int n){
 ** If parent==0, then this is the root of a btree.  If parent<0 then
 ** this is an orphan page.
 */
-static void page_usage_btree(
+void page_usage_btree(
   u32 pgno,             /* Page to describe */
   int parent,           /* Parent of this page.  0 for root pages */
   int idx,              /* Which child of the parent */
@@ -965,7 +965,7 @@ static void page_usage_btree(
 /*
 ** Determine page usage by the freelist
 */
-static void page_usage_freelist(u32 pgno){
+void page_usage_freelist(u32 pgno){
   unsigned char *a;
   int cnt = 0;
   int i;
@@ -996,7 +996,7 @@ static void page_usage_freelist(u32 pgno){
 /*
 ** Determine pages used as PTRMAP pages
 */
-static void page_usage_ptrmap(u8 *a){
+void page_usage_ptrmap(u8 *a){
   if( decodeInt32(a+52) ){
     int usable = g.pagesize - a[20];
     u64 pgno = 2;
@@ -1012,10 +1012,10 @@ static void page_usage_ptrmap(u8 *a){
 /*
 ** The six bytes at a[] are a big-endian unsigned integer which is the
 ** number of milliseconds since 1970.  Decode that value into an ISO 8601
-** date/time string stored in static space and return a pointer to that
+** date/time string stored in space and return a pointer to that
 ** string.
 */
-static const char *decodeTimestamp(const unsigned char *a){
+const char *decodeTimestamp(const unsigned char *a){
   uint64_t ms;               /* Milliseconds since 1970 */
   uint64_t days;             /* Days since 1970-01-01 */
   uint64_t sod;              /* Start of date specified by ms */
@@ -1034,7 +1034,7 @@ static const char *decodeTimestamp(const unsigned char *a){
   unsigned int yoe;          /* year of 400-year era */
   unsigned int doy;          /* day of year */
   unsigned int mp;           /* month with March==0 */
-  static char zOut[50];      /* Return results here */
+  char zOut[50];      /* Return results here */
 
   for(ms=0, i=0; i<=5; i++) ms = (ms<<8) + a[i];
   if( ms==0 ){
@@ -1069,7 +1069,7 @@ static const char *decodeTimestamp(const unsigned char *a){
 /*
 ** Try to figure out how every page in the database file is being used.
 */
-static void page_usage_report(const char *zPrg, const char *zDbName){
+void page_usage_report(const char *zPrg, const char *zDbName){
   u32 i, j;
   int rc;
   sqlite3 *db;
@@ -1193,7 +1193,7 @@ static void page_usage_report(const char *zPrg, const char *zDbName){
 /*
 ** Try to figure out how every page in the database file is being used.
 */
-static void ptrmap_coverage_report(const char *zDbName){
+void ptrmap_coverage_report(const char *zDbName){
   u64 pgno;
   unsigned char *aHdr;
   unsigned char *a;
@@ -1252,7 +1252,7 @@ static void ptrmap_coverage_report(const char *zDbName){
 ** Check the range validity for a page number.  Print an error and
 ** exit if the page is out of range.
 */
-static void checkPageValidity(unsigned int iPage){
+void checkPageValidity(unsigned int iPage){
   if( iPage<1 || iPage>g.mxPage ){
     fprintf(stderr, "Invalid page number %d:  valid range is 1..%d\n",
             iPage, g.mxPage);
@@ -1263,7 +1263,7 @@ static void checkPageValidity(unsigned int iPage){
 /*
 ** Print a usage comment
 */
-static void usage(const char *argv0){
+void usage(const char *argv0){
   fprintf(stderr, "Usage %s ?--uri? FILENAME ?args...?\n\n", argv0);
   fprintf(stderr,
     "switches:\n"

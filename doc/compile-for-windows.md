@@ -159,7 +159,7 @@ statically linked so that it does not depend on separate DLL:
   2.  Untar the TCL source tarball into a fresh directory.  CD into
       the "win/" subfolder.
 
-  3.  Run: `nmake /f makefile.vc OPTS=static shell`
+  3.  Run: `nmake /f makefile.vc OPTS=shell`
 
   4.  CD into the "Release*" subfolder that is created (note the
       wildcard - the full name of the directory might vary).  There

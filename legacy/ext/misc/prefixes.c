@@ -61,7 +61,7 @@ struct prefixes_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against the virtual table will look like.
 */
-static int prefixesConnect(
+int prefixesConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -87,7 +87,7 @@ static int prefixesConnect(
 /*
 ** This method is the destructor for prefixes_vtab objects.
 */
-static int prefixesDisconnect(sqlite3_vtab *pVtab){
+int prefixesDisconnect(sqlite3_vtab *pVtab){
   prefixes_vtab *p = (prefixes_vtab*)pVtab;
   sqlite3_free(p);
   return SQLITE_OK;
@@ -96,7 +96,7 @@ static int prefixesDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new prefixes_cursor object.
 */
-static int prefixesOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int prefixesOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   prefixes_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -108,7 +108,7 @@ static int prefixesOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a prefixes_cursor.
 */
-static int prefixesClose(sqlite3_vtab_cursor *cur){
+int prefixesClose(sqlite3_vtab_cursor *cur){
   prefixes_cursor *pCur = (prefixes_cursor*)cur;
   sqlite3_free(pCur->zStr);
   sqlite3_free(pCur);
@@ -119,7 +119,7 @@ static int prefixesClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a prefixes_cursor to its next row of output.
 */
-static int prefixesNext(sqlite3_vtab_cursor *cur){
+int prefixesNext(sqlite3_vtab_cursor *cur){
   prefixes_cursor *pCur = (prefixes_cursor*)cur;
   pCur->iRowid++;
   return SQLITE_OK;
@@ -129,7 +129,7 @@ static int prefixesNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the prefixes_cursor
 ** is currently pointing.
 */
-static int prefixesColumn(
+int prefixesColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -151,7 +151,7 @@ static int prefixesColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int prefixesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int prefixesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   prefixes_cursor *pCur = (prefixes_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -161,7 +161,7 @@ static int prefixesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int prefixesEof(sqlite3_vtab_cursor *cur){
+int prefixesEof(sqlite3_vtab_cursor *cur){
   prefixes_cursor *pCur = (prefixes_cursor*)cur;
   return pCur->iRowid>pCur->nStr;
 }
@@ -172,7 +172,7 @@ static int prefixesEof(sqlite3_vtab_cursor *cur){
 ** once prior to any call to prefixesColumn() or prefixesRowid() or 
 ** prefixesEof().
 */
-static int prefixesFilter(
+int prefixesFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -196,7 +196,7 @@ static int prefixesFilter(
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int prefixesBestIndex(
+int prefixesBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -224,7 +224,7 @@ static int prefixesBestIndex(
 ** This following structure defines all the methods for the 
 ** virtual table.
 */
-static sqlite3_module prefixesModule = {
+sqlite3_module prefixesModule = {
   /* iVersion    */ 0,
   /* xCreate     */ 0,
   /* xConnect    */ prefixesConnect,
@@ -277,7 +277,7 @@ static sqlite3_module prefixesModule = {
 ** This function assumes the input is well-formed utf-8. If it is not,
 ** it is possible for this function to return -1.
 */
-static void prefixLengthFunc(
+void prefixLengthFunc(
   sqlite3_context *ctx,
   int nVal,
   sqlite3_value **apVal

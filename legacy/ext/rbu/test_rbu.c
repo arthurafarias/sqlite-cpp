@@ -56,7 +56,7 @@ void test_rbu_delta(sqlite3_context *pCtx, int nArg, sqlite3_value **apVal){
   Tcl_DecrRefCount(pScript);
 }
 
-static int xRenameCallback(void *pArg, const char *zOld, const char *zNew){
+int xRenameCallback(void *pArg, const char *zOld, const char *zNew){
   int rc = SQLITE_OK;
   TestRbu *pTest = (TestRbu*)pArg;
   Tcl_Obj *pEval = Tcl_DuplicateObj(pTest->xRename);
@@ -71,7 +71,7 @@ static int xRenameCallback(void *pArg, const char *zOld, const char *zNew){
   return rc ? SQLITE_IOERR : SQLITE_OK;
 }
 
-static int SQLITE_TCLAPI test_sqlite3rbu_cmd(
+int SQLITE_TCLAPI test_sqlite3rbu_cmd(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -254,7 +254,7 @@ static int SQLITE_TCLAPI test_sqlite3rbu_cmd(
   return ret;
 }
 
-static void createRbuWrapper(
+void createRbuWrapper(
   Tcl_Interp *interp,
   const char *zCmd,
   sqlite3rbu *pRbu
@@ -269,7 +269,7 @@ static void createRbuWrapper(
 /*
 ** Tclcmd: sqlite3rbu CMD <target-db> <rbu-db> ?<state-db>?
 */
-static int SQLITE_TCLAPI test_sqlite3rbu(
+int SQLITE_TCLAPI test_sqlite3rbu(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -299,7 +299,7 @@ static int SQLITE_TCLAPI test_sqlite3rbu(
 /*
 ** Tclcmd: sqlite3rbu_vacuum CMD <target-db> <state-db>
 */
-static int SQLITE_TCLAPI test_sqlite3rbu_vacuum(
+int SQLITE_TCLAPI test_sqlite3rbu_vacuum(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -328,7 +328,7 @@ static int SQLITE_TCLAPI test_sqlite3rbu_vacuum(
 /*
 ** Tclcmd: sqlite3rbu_create_vfs ?-default? NAME PARENT
 */
-static int SQLITE_TCLAPI test_sqlite3rbu_create_vfs(
+int SQLITE_TCLAPI test_sqlite3rbu_create_vfs(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -363,7 +363,7 @@ static int SQLITE_TCLAPI test_sqlite3rbu_create_vfs(
 /*
 ** Tclcmd: sqlite3rbu_destroy_vfs NAME
 */
-static int SQLITE_TCLAPI test_sqlite3rbu_destroy_vfs(
+int SQLITE_TCLAPI test_sqlite3rbu_destroy_vfs(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -384,7 +384,7 @@ static int SQLITE_TCLAPI test_sqlite3rbu_destroy_vfs(
 /*
 ** Tclcmd: sqlite3rbu_internal_test
 */
-static int SQLITE_TCLAPI test_sqlite3rbu_internal_test(
+int SQLITE_TCLAPI test_sqlite3rbu_internal_test(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -407,7 +407,7 @@ static int SQLITE_TCLAPI test_sqlite3rbu_internal_test(
 }
 
 int SqliteRbu_Init(Tcl_Interp *interp){ 
-  static struct {
+  struct {
      char *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {

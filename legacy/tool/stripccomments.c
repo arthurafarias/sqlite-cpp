@@ -219,7 +219,7 @@ void do_it_all(void){
   }
 }
 
-static void usage(char const *zAppName){
+void usage(char const *zAppName){
   fprintf(stderr, "Strips C- and C++-style comments from stdin and sends "
           "the results to stdout.\n");
   fprintf(stderr, "Usage: %s [--keep-first|-k] < input > output\n", zAppName);

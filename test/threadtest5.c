@@ -32,15 +32,15 @@
 #include <stdarg.h>
 
 /* Name of the in-memory database */
-static char *zDbName = 0;
+char *zDbName = 0;
 
 /* True for debugging */
-static int eVerbose = 0;
+int eVerbose = 0;
 
 /* If rc is not SQLITE_OK, then print an error message and stop
 ** the test.
 */
-static void error_out(int rc, const char *zCtx, int lineno){
+void error_out(int rc, const char *zCtx, int lineno){
   if( rc!=SQLITE_OK ){
     fprintf(stderr, "error %d at %d in \"%s\"\n", rc, lineno, zCtx);
     exit(-1);
@@ -50,7 +50,7 @@ static void error_out(int rc, const char *zCtx, int lineno){
 #if 0
 /* Return the number of milliseconds since the Julian epoch (-4714-11-24).
 */
-static sqlite3_int64 gettime(void){
+sqlite3_int64 gettime(void){
   sqlite3_int64 tm;
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
   pVfs->xCurrentTimeInt64(pVfs, &tm);
@@ -60,7 +60,7 @@ static sqlite3_int64 gettime(void){
 
 /* Run the SQL in the second argument.
 */
-static int exec(
+int exec(
   sqlite3 *db,
   const char *zId,
   int lineno,
@@ -88,7 +88,7 @@ static int exec(
 
 /* Generate a perpared statement from the input SQL
 */
-static sqlite3_stmt *prepare(
+sqlite3_stmt *prepare(
   sqlite3 *db,
   const char *zId,
   int lineno,
@@ -119,7 +119,7 @@ static sqlite3_stmt *prepare(
 /*
 ** Wait for table zTable to exist in the schema.
 */
-static void waitOnTable(sqlite3 *db, const char *zWorker, const char *zTable){
+void waitOnTable(sqlite3 *db, const char *zWorker, const char *zTable){
   while(1){
     int eFound = 0;
     sqlite3_stmt *q = prepare(db, zWorker, __LINE__,
@@ -136,7 +136,7 @@ static void waitOnTable(sqlite3 *db, const char *zWorker, const char *zTable){
 /*
 ** Return true if x is  a prime number
 */
-static int isPrime(int x){
+int isPrime(int x){
   int i;
   if( x<2 ) return 1;
   for(i=2; i*i<=x; i++){
@@ -146,7 +146,7 @@ static int isPrime(int x){
 }
 
 /* Each worker thread runs an instance of the following */
-static void *worker(void *pArg){
+void *worker(void *pArg){
   int rc;
   const char *zName = (const char*)pArg;
   sqlite3 *db = 0;
@@ -226,7 +226,7 @@ static void *worker(void *pArg){
 }
 
 /* Print a usage comment and die */
-static void usage(const char *argv0){
+void usage(const char *argv0){
   printf("Usage: %s [options]\n", argv0);
   printf(
     "  -num-workers N      Run N worker threads\n"

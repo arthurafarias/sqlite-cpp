@@ -88,7 +88,7 @@ int sqlite3_sort_count = 0;
 */
 #ifdef SQLITE_TEST
 int sqlite3_max_blobsize = 0;
-static void updateMaxBlobsize(Mem *p){
+void updateMaxBlobsize(Mem *p){
   if( (p->flags & (MEM_Str|MEM_Blob))!=0 && p->n>sqlite3_max_blobsize ){
     sqlite3_max_blobsize = p->n;
   }
@@ -140,8 +140,8 @@ int sqlite3_found_count = 0;
 **   sqlite3MisuseError(lineno)
 **   sqlite3CantopenError(lineno)
 */
-static void test_trace_breakpoint(int pc, Op *pOp, Vdbe *v){
-  static u64 n = 0;
+void test_trace_breakpoint(int pc, Op *pOp, Vdbe *v){
+  u64 n = 0;
   (void)pc;
   (void)pOp;
   (void)v;
@@ -191,7 +191,7 @@ static void test_trace_breakpoint(int pc, Op *pOp, Vdbe *v){
 # define VdbeBranchTaken(I,M)
 #else
 # define VdbeBranchTaken(I,M) vdbeTakeBranch(pOp->iSrcLine,I,M)
-  static void vdbeTakeBranch(u32 iSrcLine, u8 I, u8 M){
+  void vdbeTakeBranch(u32 iSrcLine, u8 I, u8 M){
     u8 mNever;
     assert( I<=2 );  /* 0: fall through,  1: taken,  2: alternate taken */
     assert( M<=4 );  /* 2: two-way branch, 3: three-way branch, 4: OP_Jump */
@@ -250,7 +250,7 @@ static void test_trace_breakpoint(int pc, Op *pOp, Vdbe *v){
 ** Allocate VdbeCursor number iCur.  Return a pointer to it.  Return NULL
 ** if we run out of memory.
 */
-static VdbeCursor *allocateCursor(
+VdbeCursor *allocateCursor(
   Vdbe *p,              /* The virtual machine */
   int iCur,             /* Index of the new VdbeCursor */
   int nField,           /* Number of fields in the table or index */
@@ -326,7 +326,7 @@ static VdbeCursor *allocateCursor(
 ** integer value if the string is in range to be an integer.  Otherwise,
 ** return false.
 */
-static int alsoAnInt(Mem *pRec, double rValue, i64 *piValue){
+int alsoAnInt(Mem *pRec, double rValue, i64 *piValue){
   i64 iValue;
   iValue = sqlite3RealToI64(rValue);
   if( sqlite3RealSameAsInt(rValue,iValue) ){
@@ -351,7 +351,7 @@ static int alsoAnInt(Mem *pRec, double rValue, i64 *piValue){
 ** point or exponential notation, the result is only MEM_Real, even
 ** if there is an exact integer representation of the quantity.
 */
-static void applyNumericAffinity(Mem *pRec, int bTryForInt){
+void applyNumericAffinity(Mem *pRec, int bTryForInt){
   double rValue;
   int rc;
   assert( (pRec->flags & (MEM_Str|MEM_Int|MEM_Real|MEM_IntReal))==MEM_Str );
@@ -394,7 +394,7 @@ static void applyNumericAffinity(Mem *pRec, int bTryForInt){
 ** SQLITE_AFF_NONE:
 **    No-op.  pRec is unchanged.
 */
-static void applyAffinity(
+void applyAffinity(
   Mem *pRec,          /* The value to apply affinity to */
   char affinity,      /* The affinity to be applied */
   u8 enc              /* Use this text encoding */
@@ -464,7 +464,7 @@ void sqlite3ValueApplyAffinity(
 ** numeric type, if has one.  Set the pMem->u.r and pMem->u.i fields
 ** accordingly.
 */
-static u16 SQLITE_NOINLINE computeNumericType(Mem *pMem){
+u16 SQLITE_NOINLINE computeNumericType(Mem *pMem){
   int rc;
   sqlite3_int64 ix;
   assert( (pMem->flags & (MEM_Int|MEM_Real|MEM_IntReal))==0 );
@@ -495,7 +495,7 @@ static u16 SQLITE_NOINLINE computeNumericType(Mem *pMem){
 ** Unlike applyNumericAffinity(), this routine does not modify pMem->flags.
 ** But it does set pMem->u.r and pMem->u.i appropriately.
 */
-static u16 numericType(Mem *pMem){
+u16 numericType(Mem *pMem){
   assert( (pMem->flags & MEM_Null)==0
        || pMem->db==0 || pMem->db->mallocFailed );
   if( pMem->flags & (MEM_Int|MEM_Real|MEM_IntReal|MEM_Null) ){
@@ -518,7 +518,7 @@ static u16 numericType(Mem *pMem){
 */
 void sqlite3VdbeMemPrettyPrint(Mem *pMem, StrAccum *pStr){
   int f = pMem->flags;
-  static const char *const encnames[] = {"(X)", "(8)", "(16LE)", "(16BE)"};
+  const char *const encnames[] = {"(X)", "(8)", "(16LE)", "(16BE)"};
   if( f&MEM_Blob ){
     int i;
     char c;
@@ -579,7 +579,7 @@ void sqlite3VdbeMemPrettyPrint(Mem *pMem, StrAccum *pStr){
 /*
 ** Print the value of a register for tracing purposes:
 */
-static void memTracePrint(Mem *p){
+void memTracePrint(Mem *p){
   if( p->flags & MEM_Undefined ){
     printf(" undefined");
   }else if( p->flags & MEM_Null ){
@@ -605,7 +605,7 @@ static void memTracePrint(Mem *p){
   }
   if( p->flags & MEM_Subtype ) printf(" subtype=0x%02x", p->eSubtype);
 }
-static void registerTrace(int iReg, Mem *p){
+void registerTrace(int iReg, Mem *p){
   printf("R[%d] = ", iReg);
   memTracePrint(p);
   if( p->pScopyFrom ){
@@ -651,7 +651,7 @@ void sqlite3VdbeRegisterDump(Vdbe *v){
 **
 **     assert( checkSavepointCount(db) );
 */
-static int checkSavepointCount(sqlite3 *db){
+int checkSavepointCount(sqlite3 *db){
   int n = 0;
   Savepoint *p;
   for(p=db->pSavepoint; p; p=p->pNext) n++;
@@ -664,12 +664,12 @@ static int checkSavepointCount(sqlite3 *db){
 ** Return the register of pOp->p2 after first preparing it to be
 ** overwritten with an integer value.
 */
-static SQLITE_NOINLINE Mem *out2PrereleaseWithClear(Mem *pOut){
+SQLITE_NOINLINE Mem *out2PrereleaseWithClear(Mem *pOut){
   sqlite3VdbeMemSetNull(pOut);
   pOut->flags = MEM_Int;
   return pOut;
 }
-static Mem *out2Prerelease(Vdbe *p, VdbeOp *pOp){
+Mem *out2Prerelease(Vdbe *p, VdbeOp *pOp){
   Mem *pOut;
   assert( pOp->p2>0 );
   assert( pOp->p2<=(p->nMem+1 - p->nCursor) );
@@ -687,7 +687,7 @@ static Mem *out2Prerelease(Vdbe *p, VdbeOp *pOp){
 ** Compute a bloom filter hash using pOp->p4.i registers from aMem[] beginning
 ** with pOp->p3.  Return the hash.
 */
-static u64 filterHash(const Mem *aMem, const Op *pOp){
+u64 filterHash(const Mem *aMem, const Op *pOp){
   int i, mx;
   u64 h = 0;
 
@@ -716,7 +716,7 @@ static u64 filterHash(const Mem *aMem, const Op *pOp){
 ** the code reduces register pressure and helps the common case
 ** to run faster.
 */
-static SQLITE_NOINLINE int vdbeColumnFromOverflow(
+SQLITE_NOINLINE int vdbeColumnFromOverflow(
   VdbeCursor *pC,       /* The BTree cursor from which we are reading */
   int iCol,             /* The column to read */
   u32 t,                /* The serial-type code for the column value */
@@ -797,7 +797,7 @@ static SQLITE_NOINLINE int vdbeColumnFromOverflow(
 /*
 ** Send a "statement aborts" message to the error log.
 */
-static SQLITE_NOINLINE void sqlite3VdbeLogAbort(
+SQLITE_NOINLINE void sqlite3VdbeLogAbort(
   Vdbe *p,     /* The statement that is running at the time of failure */
   int rc,      /* Error code */
   Op *pOp,     /* Opcode that filed */
@@ -828,8 +828,8 @@ static SQLITE_NOINLINE void sqlite3VdbeLogAbort(
 /*
 ** Return the symbolic name for the data type of a pMem
 */
-static const char *vdbeMemTypeName(Mem *pMem){
-  static const char *azTypes[] = {
+const char *vdbeMemTypeName(Mem *pMem){
+  const char *azTypes[] = {
       /* SQLITE_INTEGER */ "INT",
       /* SQLITE_FLOAT   */ "REAL",
       /* SQLITE_TEXT    */ "TEXT",
@@ -1336,7 +1336,7 @@ case OP_Halt: {
       zErr = sqlite3ValueText(&aMem[pOp->p3], SQLITE_UTF8);
       sqlite3VdbeError(p, "%s", zErr);
     }else if( pOp->p5 ){
-      static const char * const azType[] = { "NOT NULL", "UNIQUE", "CHECK",
+      const char * const azType[] = { "NOT NULL", "UNIQUE", "CHECK",
                                              "FOREIGN KEY" };
       testcase( pOp->p5==1 );
       testcase( pOp->p5==2 );
@@ -2599,10 +2599,10 @@ case OP_Or: {             /* same as TK_OR, in1, in2, out3 */
   v1 = sqlite3VdbeBooleanValue(&aMem[pOp->p1], 2);
   v2 = sqlite3VdbeBooleanValue(&aMem[pOp->p2], 2);
   if( pOp->opcode==OP_And ){
-    static const unsigned char and_logic[] = { 0, 0, 0, 0, 1, 2, 0, 2, 2 };
+    const unsigned char and_logic[] = { 0, 0, 0, 0, 1, 2, 0, 2, 2 };
     v1 = and_logic[v1*3+v2];
   }else{
-    static const unsigned char or_logic[] = { 0, 1, 2, 1, 1, 1, 2, 1, 2 };
+    const unsigned char or_logic[] = { 0, 1, 2, 1, 1, 1, 2, 1, 2 };
     v1 = or_logic[v1*3+v2];
   }
   pOut = &aMem[pOp->p3];
@@ -2817,7 +2817,7 @@ case OP_IsType: {        /* jump */
           typeMask = 0x08;   /* SQLITE_BLOB */
         }
       }else{
-        static const unsigned char aMask[] = {
+        const unsigned char aMask[] = {
            0x10, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x2,
            0x01, 0x01, 0x10, 0x10
         };
@@ -3200,7 +3200,7 @@ op_column_restart:
       ** a MEM_Ephem value.  This branch is a fast short-cut that is equivalent
       ** to calling sqlite3VdbeSerialGet() and sqlite3VdbeDeephemeralize().
       */
-      static const u16 aFlag[] = { MEM_Blob, MEM_Str|MEM_Term };
+      const u16 aFlag[] = { MEM_Blob, MEM_Str|MEM_Term };
       pDest->n = len = (t-12)/2;
       pDest->enc = encoding;
       if( pDest->szMalloc < len+2 ){
@@ -3289,7 +3289,7 @@ op_column_corrupt:
 **
 ** GENERATED ALWAYS AS ... STATIC columns are only checked if P3
 ** is zero.  When P3 is non-zero, no type checking occurs for
-** static generated columns.  Virtual columns are computed at query time
+** generated columns.  Virtual columns are computed at query time
 ** and so they are never checked.
 **
 ** Preconditions:
@@ -4544,7 +4544,7 @@ case OP_OpenEphemeral: {     /* ncycle */
   VdbeCursor *pCx;
   KeyInfo *pKeyInfo;
 
-  static const int vfsFlags =
+  const int vfsFlags =
       SQLITE_OPEN_READWRITE |
       SQLITE_OPEN_CREATE |
       SQLITE_OPEN_EXCLUSIVE |
@@ -4609,7 +4609,7 @@ case OP_OpenEphemeral: {     /* ncycle */
       if( rc ){
         assert( !sqlite3BtreeClosesWithCursor(pCx->ub.pBtx, pCx->uc.pCursor) );
         sqlite3BtreeClose(pCx->ub.pBtx);
-        p->apCsr[pOp->p1] = 0;  /* Not required; helps with static analysis */
+        p->apCsr[pOp->p1] = 0;  /* Not required; helps with analysis */
       }else{
         assert( sqlite3BtreeClosesWithCursor(pCx->ub.pBtx, pCx->uc.pCursor) );
       }
@@ -8313,7 +8313,7 @@ case OP_VCreate: {
 
   memset(&sMem, 0, sizeof(sMem));
   sMem.db = db;
-  /* Because P2 is always a static string, it is impossible for the
+  /* Because P2 is always a string, it is impossible for the
   ** sqlite3VdbeMemCopy() to fail */
   assert( (aMem[pOp->p2].flags & MEM_Str)!=0 );
   assert( (aMem[pOp->p2].flags & MEM_Static)!=0 );

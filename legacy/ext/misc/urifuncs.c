@@ -36,7 +36,7 @@ SQLITE_EXTENSION_INIT1
 **
 ** Return the filename corresponding to SCHEMA.
 */
-static void func_db_filename(
+void func_db_filename(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -52,7 +52,7 @@ static void func_db_filename(
 **
 ** Return the value of the NAME query parameter to the database for SCHEMA
 */
-static void func_uri_parameter(
+void func_uri_parameter(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -71,7 +71,7 @@ static void func_uri_parameter(
 ** Return the boolean value of the NAME query parameter to
 ** the database for SCHEMA
 */
-static void func_uri_boolean(
+void func_uri_boolean(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -90,7 +90,7 @@ static void func_uri_boolean(
 **
 ** Return the name of the Nth query parameter
 */
-static void func_uri_key(
+void func_uri_key(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -109,7 +109,7 @@ static void func_uri_key(
 ** Return the int64 value of the NAME query parameter to
 ** the database for SCHEMA
 */
-static void func_uri_int64(
+void func_uri_int64(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -128,7 +128,7 @@ static void func_uri_int64(
 **
 ** Return the database filename for SCHEMA
 */
-static void func_filename_database(
+void func_filename_database(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -145,7 +145,7 @@ static void func_filename_database(
 **
 ** Return the rollback journal filename for SCHEMA
 */
-static void func_filename_journal(
+void func_filename_journal(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -162,7 +162,7 @@ static void func_filename_journal(
 **
 ** Return the WAL filename for SCHEMA
 */
-static void func_filename_wal(
+void func_filename_wal(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -182,7 +182,7 @@ int sqlite3_urifuncs_init(
   char **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
-  static const struct {
+  const struct {
     const char *zFuncName;
     int nArg;
     void (*xFunc)(sqlite3_context*,int,sqlite3_value**);

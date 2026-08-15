@@ -52,7 +52,7 @@ void sqlite3HashClear(Hash *pH){
 /*
 ** The hashing function.
 */
-static unsigned int strHash(const char *z){
+unsigned int strHash(const char *z){
   unsigned int h = 0;
   while( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
     /* Knuth multiplicative hashing.  (Sorting & Searching, p. 510).
@@ -76,7 +76,7 @@ static unsigned int strHash(const char *z){
 /* Link pNew element into the hash table pH.  If pEntry!=0 then also
 ** insert pNew into the pEntry hash bucket.
 */
-static void insertElement(
+void insertElement(
   Hash *pH,              /* The complete hash table */
   Hash::_ht *pEntry,     /* The entry into which pNew is inserted */
   HashElem *pNew         /* The element to be inserted */
@@ -110,7 +110,7 @@ static void insertElement(
 ** if the new size is the same as the prior size.
 ** Return TRUE if the resize occurs and false if not.
 */
-static int rehash(Hash *pH, unsigned int new_size){
+int rehash(Hash *pH, unsigned int new_size){
   Hash::_ht *new_ht;              /* The new hash table */
   HashElem *elem, *next_elem;    /* For looping over existing elements */
 
@@ -147,10 +147,10 @@ static int rehash(Hash *pH, unsigned int new_size){
 
 /* This function (for internal use only) locates an element in an
 ** hash table that matches the given key.  If no element is found,
-** a pointer to a static null element with HashElem.data==0 is returned.
+** a pointer to a null element with HashElem.data==0 is returned.
 ** If pH is not NULL, then the hash for this key is written to *pH.
 */
-static HashElem *findElementWithHash(
+HashElem *findElementWithHash(
   const Hash *pH,     /* The pH to be searched */
   const char *pKey,   /* The key we are searching for */
   unsigned int *pHash /* Write the hash value here */
@@ -158,7 +158,7 @@ static HashElem *findElementWithHash(
   HashElem *elem;                /* Used to loop thru the element list */
   unsigned int count;            /* Number of elements left to test */
   unsigned int h;                /* The computed hash */
-  static HashElem nullElement = { 0, 0, 0, 0, 0 };
+  HashElem nullElement = { 0, 0, 0, 0, 0 };
 
   h = strHash(pKey);
   if( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
@@ -185,7 +185,7 @@ static HashElem *findElementWithHash(
 /* Remove a single entry from the hash table given a pointer to that
 ** element and a hash on the element's key.
 */
-static void removeElement(
+void removeElement(
   Hash *pH,         /* The pH containing "elem" */
   HashElem *elem    /* The element to be removed from the pH */
 ){

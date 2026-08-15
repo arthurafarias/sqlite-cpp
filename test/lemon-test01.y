@@ -11,9 +11,9 @@
 %token_type   int
 %default_type int
 %include {
-  static int nSyntaxError = 0;
-  static int nAccept = 0;
-  static int nFailure = 0;
+  int nSyntaxError = 0;
+  int nAccept = 0;
+  int nFailure = 0;
 }
 
 all ::=  A B.
@@ -31,9 +31,9 @@ all ::=  error B.
 %code {
   #include <assert.h>
   #include "lemon-test01.h"
-  static int nTest = 0;
-  static int nErr = 0;
-  static void testCase(int testId, int shouldBe, int actual){
+  int nTest = 0;
+  int nErr = 0;
+  void testCase(int testId, int shouldBe, int actual){
     nTest++;
     if( shouldBe==actual ){
       printf("test %d: ok\n", testId);

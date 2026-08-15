@@ -73,7 +73,7 @@ struct stmt_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against stmt will look like.
 */
-static int stmtConnect(
+int stmtConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -117,7 +117,7 @@ static int stmtConnect(
 /*
 ** This method is the destructor for stmt_cursor objects.
 */
-static int stmtDisconnect(sqlite3_vtab *pVtab){
+int stmtDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -125,7 +125,7 @@ static int stmtDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new stmt_cursor object.
 */
-static int stmtOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int stmtOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   stmt_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -135,7 +135,7 @@ static int stmtOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   return SQLITE_OK;
 }
 
-static void stmtCsrReset(stmt_cursor *pCur){
+void stmtCsrReset(stmt_cursor *pCur){
   StmtRow *pRow = 0;
   StmtRow *pNext = 0;
   for(pRow=pCur->pRow; pRow; pRow=pNext){
@@ -148,7 +148,7 @@ static void stmtCsrReset(stmt_cursor *pCur){
 /*
 ** Destructor for a stmt_cursor.
 */
-static int stmtClose(sqlite3_vtab_cursor *cur){
+int stmtClose(sqlite3_vtab_cursor *cur){
   stmtCsrReset((stmt_cursor*)cur);
   sqlite3_free(cur);
   return SQLITE_OK;
@@ -158,7 +158,7 @@ static int stmtClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a stmt_cursor to its next row of output.
 */
-static int stmtNext(sqlite3_vtab_cursor *cur){
+int stmtNext(sqlite3_vtab_cursor *cur){
   stmt_cursor *pCur = (stmt_cursor*)cur;
   StmtRow *pNext = pCur->pRow->pNext;
   sqlite3_free(pCur->pRow);
@@ -170,7 +170,7 @@ static int stmtNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the stmt_cursor
 ** is currently pointing.
 */
-static int stmtColumn(
+int stmtColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -189,7 +189,7 @@ static int stmtColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int stmtRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int stmtRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   stmt_cursor *pCur = (stmt_cursor*)cur;
   *pRowid = pCur->pRow->iRowid;
   return SQLITE_OK;
@@ -199,7 +199,7 @@ static int stmtRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int stmtEof(sqlite3_vtab_cursor *cur){
+int stmtEof(sqlite3_vtab_cursor *cur){
   stmt_cursor *pCur = (stmt_cursor*)cur;
   return pCur->pRow==0;
 }
@@ -210,7 +210,7 @@ static int stmtEof(sqlite3_vtab_cursor *cur){
 ** once prior to any call to stmtColumn() or stmtRowid() or 
 ** stmtEof().
 */
-static int stmtFilter(
+int stmtFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -275,7 +275,7 @@ static int stmtFilter(
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int stmtBestIndex(
+int stmtBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -289,7 +289,7 @@ static int stmtBestIndex(
 ** This following structure defines all the methods for the 
 ** stmt virtual table.
 */
-static sqlite3_module stmtModule = {
+sqlite3_module stmtModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   stmtConnect,               /* xConnect */

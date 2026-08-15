@@ -544,7 +544,7 @@ set cols_list [lsort -command colscmp $cols_list]
 puts $fd "\n/* Names of columns for pragmas that return multi-column result"
 puts $fd "** or that return single-column results where the name of the"
 puts $fd "** result column is different from the name of the pragma\n*/"
-puts $fd "static const char *const pragCName\[\] = {"
+puts $fd "const char *const pragCName\[\] = {"
 set offset 0
 set allcollist {}
 foreach cols $cols_list {
@@ -582,7 +582,7 @@ puts $fd "  u8 nPragCName;          \
 /* Num of col names. 0 means use pragma name */"
 puts $fd "  u64 iArg;                /* Extra argument */"
 puts $fd "\175 PragmaName;"
-puts $fd "static const PragmaName aPragmaName\[\] = \173"
+puts $fd "const PragmaName aPragmaName\[\] = \173"
 
 set current_if {}
 set spacer [format {    %26s } {}]

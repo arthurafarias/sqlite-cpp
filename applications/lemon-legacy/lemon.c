@@ -39,7 +39,7 @@ extern int access(const char *path, int mode);
 #include <unistd.h>
 #endif
 
-/* #define PRIVATE static */
+/* #define PRIVATE */
 #define PRIVATE
 
 #ifdef TEST
@@ -49,8 +49,8 @@ extern int access(const char *path, int mode);
 #endif
 
 extern void memory_error();
-static int showPrecedenceConflict = 0;
-static char *msort(char*,char**,int(*)(const char*,const char*));
+int showPrecedenceConflict = 0;
+char *msort(char*,char**,int(*)(const char*,const char*));
 
 /*
 ** Compilers are getting increasingly pedantic about type conversions
@@ -72,7 +72,7 @@ struct MemChunk {
 /*
 ** Global linked list of all memory allocations.
 */
-static MemChunk *memChunkList = 0;
+MemChunk *memChunkList = 0;
 
 /*
 ** Wrappers around malloc(), calloc(), realloc() and free().
@@ -86,7 +86,7 @@ static MemChunk *memChunkList = 0;
 ** where they do not matter.  So this code is provided to hush the
 ** warnings.
 */
-static void *lemon_malloc(size_t nByte){
+void *lemon_malloc(size_t nByte){
   MemChunk *p;
   if( nByte<0 ) return 0;
   p = malloc( nByte + sizeof(MemChunk) );
@@ -100,19 +100,19 @@ static void *lemon_malloc(size_t nByte){
   memChunkList = p;
   return (void*)&p[1];
 }
-static void *lemon_calloc(size_t nElem, size_t sz){
+void *lemon_calloc(size_t nElem, size_t sz){
   void *p = lemon_malloc(nElem*sz);
   memset(p, 0, nElem*sz);
   return p;
 }
-static void lemon_free(void *pOld){
+void lemon_free(void *pOld){
   if( pOld ){
     MemChunk *p = (MemChunk*)pOld;
     p--;
     memset(pOld, 0, p->sz);
   }
 }
-static void *lemon_realloc(void *pOld, size_t nNew){
+void *lemon_realloc(void *pOld, size_t nNew){
   void *pNew;
   MemChunk *p;
   if( pOld==0 ) return lemon_malloc(nNew);
@@ -127,7 +127,7 @@ static void *lemon_realloc(void *pOld, size_t nNew){
 /* Free all outstanding memory allocations.
 ** Do this right before exiting.
 */
-static void lemon_free_all(void){
+void lemon_free_all(void){
   while( memChunkList ){
     MemChunk *pNext = memChunkList->pNext;
     free( memChunkList );
@@ -152,7 +152,7 @@ static void lemon_free_all(void){
 **   %.*s
 **
 */
-static void lemon_addtext(
+void lemon_addtext(
   char *zBuf,           /* The buffer to which text is added */
   int *pnUsed,          /* Slots of the buffer used so far */
   const char *zIn,      /* Text to add */
@@ -167,7 +167,7 @@ static void lemon_addtext(
   while( (-iWidth)>nIn ){ zBuf[(*pnUsed)++] = ' '; iWidth++; }
   zBuf[*pnUsed] = 0;
 }
-static int lemon_vsprintf(char *str, const char *zFormat, va_list ap){
+int lemon_vsprintf(char *str, const char *zFormat, va_list ap){
   int i, j, k, c;
   int nUsed = 0;
   const char *z;
@@ -219,7 +219,7 @@ static int lemon_vsprintf(char *str, const char *zFormat, va_list ap){
   lemon_addtext(str, &nUsed, &zFormat[j], i-j, 0);
   return nUsed;
 }
-static int lemon_sprintf(char *str, const char *format, ...){
+int lemon_sprintf(char *str, const char *format, ...){
   va_list ap;
   int rc;
   va_start(ap, format);
@@ -227,10 +227,10 @@ static int lemon_sprintf(char *str, const char *format, ...){
   va_end(ap);
   return rc;
 }
-static void lemon_strcpy(char *dest, const char *src){
+void lemon_strcpy(char *dest, const char *src){
   while( (*(dest++) = *(src++))!=0 ){}
 }
-static void lemon_strcat(char *dest, const char *src){
+void lemon_strcat(char *dest, const char *src){
   while( *dest ) dest++;
   lemon_strcpy(dest, src);
 }
@@ -241,8 +241,8 @@ struct rule;
 struct lemon;
 struct action;
 
-static struct action *Action_new(void);
-static struct action *Action_sort(struct action *);
+struct action *Action_new(void);
+struct action *Action_sort(struct action *);
 
 /********** From the file "build.h" ************************************/
 void FindRulePrecedences(struct lemon*);
@@ -454,7 +454,7 @@ struct plink {
 
 /* The state vector for the entire parser generator is recorded as
 ** follows.  (LEMON uses no global variables and makes little use of
-** static variables.  Fields in the following structure can be thought
+** variables.  Fields in the following structure can be thought
 ** of as begin global variables in the program.) */
 struct lemon {
   struct state **sorted;   /* Table of states sorted by state number */
@@ -567,8 +567,8 @@ void Configtable_clear(int(*)(struct config *));
 */
 
 /* Allocate a new parser action */
-static struct action *Action_new(void){
-  static struct action *actionfreelist = 0;
+struct action *Action_new(void){
+  struct action *actionfreelist = 0;
   struct action *newaction;
 
   if( actionfreelist==0 ){
@@ -591,7 +591,7 @@ static struct action *Action_new(void){
 ** positive if the first action is less than, equal to, or greater than
 ** the first
 */
-static int actioncmp(
+int actioncmp(
   struct action *ap1,
   struct action *ap2
 ){
@@ -610,7 +610,7 @@ static int actioncmp(
 }
 
 /* Sort parser actions */
-static struct action *Action_sort(
+struct action *Action_sort(
   struct action *ap
 ){
   ap = (struct action *)msort((char *)ap,(char **)&ap->next,
@@ -1223,7 +1223,7 @@ void FindFollowSets(struct lemon *lemp)
   }while( progress );
 }
 
-static int resolve_conflict(struct action *,struct action *);
+int resolve_conflict(struct action *,struct action *);
 
 /* Compute the reduce actions, and resolve conflicts.
 */
@@ -1316,7 +1316,7 @@ void FindActions(struct lemon *lemp)
 ** If either action is a SHIFT, then it must be apx.  This
 ** function won't work if apx->type==REDUCE and apy->type==SHIFT.
 */
-static int resolve_conflict(
+int resolve_conflict(
   struct action *apx,
   struct action *apy
 ){
@@ -1383,11 +1383,11 @@ static int resolve_conflict(
 ** in the LEMON parser generator.
 */
 
-static struct config *freelist = 0;      /* List of free configurations */
-static struct config *current = 0;       /* Top of list of configurations */
-static struct config **currentend = 0;   /* Last on list of configs */
-static struct config *basis = 0;         /* Top of list of basis configs */
-static struct config **basisend = 0;     /* End of list of basis configs */
+struct config *freelist = 0;      /* List of free configurations */
+struct config *current = 0;       /* Top of list of configurations */
+struct config **currentend = 0;   /* Last on list of configs */
+struct config *basis = 0;         /* Top of list of basis configs */
+struct config **basisend = 0;     /* End of list of basis configs */
 
 /* Return a pointer to a new configuration */
 PRIVATE struct config *newconfig(void){
@@ -1596,15 +1596,15 @@ void memory_error(void){
   exit(1);
 }
 
-static int nDefine = 0;        /* Number of -D options on the command line */
-static int nDefineUsed = 0;    /* Number of -D options actually used */
-static char **azDefine = 0;    /* Name of the -D macros */
-static char *bDefineUsed = 0;  /* True for every -D macro actually used */
+int nDefine = 0;        /* Number of -D options on the command line */
+int nDefineUsed = 0;    /* Number of -D options actually used */
+char **azDefine = 0;    /* Name of the -D macros */
+char *bDefineUsed = 0;  /* True for every -D macro actually used */
 
 /* This routine is called with the argument to each -D command-line option.
 ** Add the macro defined to the azDefine array.
 */
-static void handle_D_option(char *z){
+void handle_D_option(char *z){
   char **paz;
   nDefine++;
   azDefine = (char **) lemon_realloc(azDefine, sizeof(azDefine[0])*nDefine);
@@ -1632,7 +1632,7 @@ static void handle_D_option(char *z){
 /* This routine is called with the argument to each -U command-line option.
 ** Omit a previously defined macro.
 */
-static void handle_U_option(char *z){
+void handle_U_option(char *z){
   int i;
   for(i=0; i<nDefine; i++){
     if( strcmp(azDefine[i],z)==0 ){
@@ -1648,8 +1648,8 @@ static void handle_U_option(char *z){
 
 /* Rember the name of the output directory 
 */
-static char *outputDir = NULL;
-static void handle_d_option(char *z){
+char *outputDir = NULL;
+void handle_d_option(char *z){
   outputDir = (char *) lemon_malloc( lemonStrlen(z)+1 );
   if( outputDir==0 ){
     fprintf(stderr,"out of memory\n");
@@ -1658,8 +1658,8 @@ static void handle_d_option(char *z){
   lemon_strcpy(outputDir, z);
 }
 
-static char *user_templatename = NULL;
-static void handle_T_option(char *z){
+char *user_templatename = NULL;
+void handle_T_option(char *z){
   user_templatename = (char *) lemon_malloc( lemonStrlen(z)+1 );
   if( user_templatename==0 ){
     memory_error();
@@ -1668,7 +1668,7 @@ static void handle_T_option(char *z){
 }
 
 /* Merge together to lists of rules ordered by rule.iRule */
-static struct rule *Rule_merge(struct rule *pA, struct rule *pB){
+struct rule *Rule_merge(struct rule *pA, struct rule *pB){
   struct rule *pFirst = 0;
   struct rule **ppPrev = &pFirst;
   while( pA && pB ){
@@ -1693,7 +1693,7 @@ static struct rule *Rule_merge(struct rule *pA, struct rule *pB){
 /*
 ** Sort a list of rules in order of increasing iRule value
 */
-static struct rule *Rule_sort(struct rule *rp){
+struct rule *Rule_sort(struct rule *rp){
   unsigned int i;
   struct rule *pNext;
   struct rule *x[32];
@@ -1716,11 +1716,11 @@ static struct rule *Rule_sort(struct rule *rp){
 }
 
 /* forward reference */
-static const char *minimum_size_type(int lwr, int upr, int *pnByte);
+const char *minimum_size_type(int lwr, int upr, int *pnByte);
 
 /* Print a single line of the "Parser Stats" output
 */
-static void stats_line(const char *zLabel, int iValue){
+void stats_line(const char *zLabel, int iValue){
   int nLabel = lemonStrlen(zLabel);
   printf("  %s%.*s %5d\n", zLabel,
          35-nLabel, "................................",
@@ -1730,7 +1730,7 @@ static void stats_line(const char *zLabel, int iValue){
 /*
 ** Comparison function used by qsort() to sort the azDefine[] array.
 */
-static int defineCmp(const void *pA, const void *pB){
+int defineCmp(const void *pA, const void *pB){
   const char *zA = *(const char**)pA;
   const char *zB = *(const char**)pB;
   return strcmp(zA,zB);
@@ -1738,19 +1738,19 @@ static int defineCmp(const void *pA, const void *pB){
 
 /* The main program.  Parse the command line and do it... */
 int main(int argc, char **argv){
-  static int version = 0;
-  static int rpflag = 0;
-  static int basisflag = 0;
-  static int compress = 0;
-  static int quiet = 0;
-  static int statistics = 0;
-  static int mhflag = 0;
-  static int nolinenosflag = 0;
-  static int noResort = 0;
-  static int sqlFlag = 0;
-  static int printPP = 0;
+  int version = 0;
+  int rpflag = 0;
+  int basisflag = 0;
+  int compress = 0;
+  int quiet = 0;
+  int statistics = 0;
+  int mhflag = 0;
+  int nolinenosflag = 0;
+  int noResort = 0;
+  int sqlFlag = 0;
+  int printPP = 0;
   
-  static struct s_options options[] = {
+  struct s_options options[] = {
     {OPT_FLAG, "b", (char*)&basisflag, "Print only the basis in report."},
     {OPT_FLAG, "c", (char*)&compress, "Don't compress the action table."},
     {OPT_FSTR, "d", (char*)&handle_d_option, "Output directory.  Default '.'"},
@@ -1956,7 +1956,7 @@ int main(int argc, char **argv){
 **   The "next" pointers for elements in the lists a and b are
 **   changed.
 */
-static char *merge(
+char *merge(
   char *a,
   char *b,
   int (*cmp)(const char*,const char*),
@@ -2008,7 +2008,7 @@ static char *merge(
 **   The "next" pointers for elements in list are changed.
 */
 #define LISTSIZE 30
-static char *msort(
+char *msort(
   char *list,
   char **next,
   int (*cmp)(const char*,const char*)
@@ -2034,9 +2034,9 @@ static char *msort(
   return ep;
 }
 /************************ From the file "option.c" **************************/
-static char **g_argv;
-static struct s_options *op;
-static FILE *errstream;
+char **g_argv;
+struct s_options *op;
+FILE *errstream;
 
 #define ISOPT(X) ((X)[0]=='-'||(X)[0]=='+'||strchr((X),'=')!=0)
 
@@ -2044,7 +2044,7 @@ static FILE *errstream;
 ** Print the command line with a carrot pointing to the k-th character
 ** of the n-th field.
 */
-static void errline(int n, int k, FILE *err)
+void errline(int n, int k, FILE *err)
 {
   int spcnt, i;
   if( g_argv[0] ){
@@ -2070,7 +2070,7 @@ static void errline(int n, int k, FILE *err)
 ** Return the index of the N-th non-switch argument.  Return -1
 ** if N is out of range.
 */
-static int argindex(int n)
+int argindex(int n)
 {
   int i;
   int dashdash = 0;
@@ -2086,12 +2086,12 @@ static int argindex(int n)
   return -1;
 }
 
-static char emsg[] = "Command line syntax error: ";
+char emsg[] = "Command line syntax error: ";
 
 /*
 ** Process a flag command line argument.
 */
-static int handleflags(int i, FILE *err)
+int handleflags(int i, FILE *err)
 {
   int v;
   int errcnt = 0;
@@ -2127,7 +2127,7 @@ static int handleflags(int i, FILE *err)
 /*
 ** Process a command line switch which has an argument.
 */
-static int handleswitch(int i, FILE *err)
+int handleswitch(int i, FILE *err)
 {
   int lv = 0;
   double dv = 0.0;
@@ -2371,7 +2371,7 @@ struct pstate {
 };
 
 /* Parse a single token */
-static void parseonetoken(struct pstate *psp)
+void parseonetoken(struct pstate *psp)
 {
   const char *x;
   x = Strsafe(psp->tokenstart);     /* Save the token permanently */
@@ -2916,7 +2916,7 @@ static void parseonetoken(struct pstate *psp)
 /* The text in the input is part of the argument to an %ifdef or %ifndef.
 ** Evaluate the text as a boolean expression.  Return true or false.
 */
-static int eval_preprocessor_boolean(char *z, int lineno){
+int eval_preprocessor_boolean(char *z, int lineno){
   int neg = 0;
   int res = 0;
   int okTerm = 1;
@@ -3017,7 +3017,7 @@ pp_syntax_error:
 ** macros.  This routine looks for "%ifdef" and "%ifndef" and "%endif" and
 ** comments them out.  Text in between is also commented out as appropriate.
 */
-static void preprocess_input(char *z){
+void preprocess_input(char *z){
   int i, j, k;
   int exclude = 0;
   int start = 0;
@@ -3239,7 +3239,7 @@ void Parse(struct lemon *gp)
 ** Routines processing configuration follow-set propagation links
 ** in the LEMON parser generator.
 */
-static struct plink *plink_freelist = 0;
+struct plink *plink_freelist = 0;
 
 /* Allocate a new plink */
 struct plink *Plink_new(void){
@@ -3763,7 +3763,7 @@ PRIVATE void tplt_skip_header(FILE *in){
 ** a pointer to the opened file. */
 PRIVATE FILE *tplt_open(struct lemon *lemp)
 {
-  static char templatename[] = "lempar.c";
+  char templatename[] = "lempar.c";
   char buf[1000];
   FILE *in;
   char *tpltname;
@@ -3924,10 +3924,10 @@ int has_destructor(struct symbol *sp, struct lemon *lemp)
 ** If n==-1, then the previous character is overwritten.
 */
 PRIVATE char *append_str(const char *zText, int n, int p1, int p2){
-  static char empty[1] = { 0 };
-  static char *z = 0;
-  static int alloced = 0;
-  static int used = 0;
+  char empty[1] = { 0 };
+  char *z = 0;
+  int alloced = 0;
+  int used = 0;
   int c;
   char zInt[40];
   if( zText==0 ){
@@ -3987,7 +3987,7 @@ PRIVATE int translate_code(struct lemon *lemp, struct rule *rp){
   lhsused = 0;
 
   if( rp->code==0 ){
-    static char newlinestr[2] = { '\n', '\0' };
+    char newlinestr[2] = { '\n', '\0' };
     rp->code = newlinestr;
     rp->line = rp->ruleline;
     rp->noCode = 1;
@@ -4338,7 +4338,7 @@ void print_stack_union(
 ** lwr and upr, inclusive.  If pnByte!=NULL then also write the sizeof
 ** for that type (1, 2, or 4) into *pnByte.
 */
-static const char *minimum_size_type(int lwr, int upr, int *pnByte){
+const char *minimum_size_type(int lwr, int upr, int *pnByte){
   const char *zType = "int";
   int nByte = 4;
   if( lwr>=0 ){
@@ -4379,7 +4379,7 @@ struct axset {
 /*
 ** Compare to axset structures for sorting purposes
 */
-static int axset_compare(const void *a, const void *b){
+int axset_compare(const void *a, const void *b){
   struct axset *p1 = (struct axset*)a;
   struct axset *p2 = (struct axset*)b;
   int c;
@@ -4394,7 +4394,7 @@ static int axset_compare(const void *a, const void *b){
 /*
 ** Write text on "out" that describes the rule "rp".
 */
-static void writeRuleText(FILE *out, struct rule *rp){
+void writeRuleText(FILE *out, struct rule *rp){
   int j;
   fprintf(out,"%s ::=", rp->lhs->name);
   for(j=0; j<rp->nrhs; j++){
@@ -4414,7 +4414,7 @@ static void writeRuleText(FILE *out, struct rule *rp){
 /*
 ** Return true if the string is not NULL and not empty.
 */
-static int notnull(const char *z){
+int notnull(const char *z){
   return z && z[0];
 }
 
@@ -4805,7 +4805,7 @@ void ReportTable(
   lemp->nactiontab = n = acttab_action_size(pActtab);
   lemp->tablesize += n*szActionType;
   fprintf(out,"#define YY_ACTTAB_COUNT (%d)\n", n); lineno++;
-  fprintf(out,"static const YYACTIONTYPE yy_action[] = {\n"); lineno++;
+  fprintf(out,"const YYACTIONTYPE yy_action[] = {\n"); lineno++;
   for(i=j=0; i<n; i++){
     int action = acttab_yyaction(pActtab, i);
     if( action<0 ) action = lemp->noAction;
@@ -4823,7 +4823,7 @@ void ReportTable(
   /* Output the yy_lookahead table */
   lemp->nlookaheadtab = n = acttab_lookahead_size(pActtab);
   lemp->tablesize += n*szCodeType;
-  fprintf(out,"static const YYCODETYPE yy_lookahead[] = {\n"); lineno++;
+  fprintf(out,"const YYCODETYPE yy_lookahead[] = {\n"); lineno++;
   for(i=j=0; i<n; i++){
     int la = acttab_yylookahead(pActtab, i);
     if( la<0 ) la = lemp->nsymbol;
@@ -4860,7 +4860,7 @@ void ReportTable(
   fprintf(out, "#define YY_SHIFT_COUNT    (%d)\n", n-1); lineno++;
   fprintf(out, "#define YY_SHIFT_MIN      (%d)\n", mnTknOfst); lineno++;
   fprintf(out, "#define YY_SHIFT_MAX      (%d)\n", mxTknOfst); lineno++;
-  fprintf(out, "static const %s yy_shift_ofst[] = {\n",
+  fprintf(out, "const %s yy_shift_ofst[] = {\n",
        minimum_size_type(mnTknOfst, lemp->nterminal+lemp->nactiontab, &sz));
        lineno++;
   lemp->tablesize += n*sz;
@@ -4886,7 +4886,7 @@ void ReportTable(
   fprintf(out, "#define YY_REDUCE_COUNT (%d)\n", n-1); lineno++;
   fprintf(out, "#define YY_REDUCE_MIN   (%d)\n", mnNtOfst); lineno++;
   fprintf(out, "#define YY_REDUCE_MAX   (%d)\n", mxNtOfst); lineno++;
-  fprintf(out, "static const %s yy_reduce_ofst[] = {\n",
+  fprintf(out, "const %s yy_reduce_ofst[] = {\n",
           minimum_size_type(mnNtOfst-1, mxNtOfst, &sz)); lineno++;
   lemp->tablesize += n*sz;
   for(i=j=0; i<n; i++){
@@ -4906,7 +4906,7 @@ void ReportTable(
   fprintf(out, "};\n"); lineno++;
 
   /* Output the default action table */
-  fprintf(out, "static const YYACTIONTYPE yy_default[] = {\n"); lineno++;
+  fprintf(out, "const YYACTIONTYPE yy_default[] = {\n"); lineno++;
   n = lemp->nxstate;
   lemp->tablesize += n*szActionType;
   for(i=j=0; i<n; i++){
@@ -5288,7 +5288,7 @@ void CompressTables(struct lemon *lemp)
 ** of non-terminal actions, then the smaller is the one with the most
 ** token actions.
 */
-static int stateResortCompare(const void *a, const void *b){
+int stateResortCompare(const void *a, const void *b){
   const struct state *pA = *(const struct state**)a;
   const struct state *pB = *(const struct state**)b;
   int n;
@@ -5352,7 +5352,7 @@ void ResortStates(struct lemon *lemp)
 ** Set manipulation routines for the LEMON parser generator.
 */
 
-static int size = 0;
+int size = 0;
 
 /* Set the set size */
 void SetSize(int n)
@@ -5463,7 +5463,7 @@ typedef struct s_x1node {
 } x1node;
 
 /* There is only one instance of the array, which is the following */
-static struct s_x1 *x1a;
+struct s_x1 *x1a;
 
 /* Allocate a new associative array */
 void Strsafe_init(void){
@@ -5631,7 +5631,7 @@ typedef struct s_x2node {
 } x2node;
 
 /* There is only one instance of the array, which is the following */
-static struct s_x2 *x2a;
+struct s_x2 *x2a;
 
 /* Allocate a new associative array */
 void Symbol_init(void){
@@ -5830,7 +5830,7 @@ typedef struct s_x3node {
 } x3node;
 
 /* There is only one instance of the array, which is the following */
-static struct s_x3 *x3a;
+struct s_x3 *x3a;
 
 /* Allocate a new associative array */
 void State_init(void){
@@ -5970,7 +5970,7 @@ typedef struct s_x4node {
 } x4node;
 
 /* There is only one instance of the array, which is the following */
-static struct s_x4 *x4a;
+struct s_x4 *x4a;
 
 /* Allocate a new associative array */
 void Configtable_init(void){

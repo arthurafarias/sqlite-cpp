@@ -53,7 +53,7 @@ struct GlobalVars {
 /*
 ** Clear and free an sqlite3_str object
 */
-static void strFree(sqlite3_str *pStr){
+void strFree(sqlite3_str *pStr){
   sqlite3_free(sqlite3_str_finish(pStr));
 }
 
@@ -61,7 +61,7 @@ static void strFree(sqlite3_str *pStr){
 ** Print an error resulting from faulting command-line arguments and
 ** abort the program.
 */
-static void cmdlineError(const char *zFormat, ...){
+void cmdlineError(const char *zFormat, ...){
   sqlite3_str *pOut = sqlite3_str_new(0);
   va_list ap;
   va_start(ap, zFormat);
@@ -77,7 +77,7 @@ static void cmdlineError(const char *zFormat, ...){
 ** Print an error message for an error that occurs at runtime, then
 ** abort the program.
 */
-static void runtimeError(const char *zFormat, ...){
+void runtimeError(const char *zFormat, ...){
   sqlite3_str *pOut = sqlite3_str_new(0);
   va_list ap;
   va_start(ap, zFormat);
@@ -96,7 +96,7 @@ static void runtimeError(const char *zFormat, ...){
 ** caller is responsible for ensuring this space is freed when no longer
 ** needed.
 */
-static char *safeId(const char *zId){
+char *safeId(const char *zId){
   int i, x;
   char c;
   if( zId[0]==0 ) return sqlite3_mprintf("\"\"");
@@ -119,7 +119,7 @@ static char *safeId(const char *zId){
 ** Prepare a new SQL statement.  Print an error and abort if anything
 ** goes wrong.
 */
-static sqlite3_stmt *db_vprepare(const char *zFormat, va_list ap){
+sqlite3_stmt *db_vprepare(const char *zFormat, va_list ap){
   char *zSql;
   int rc;
   sqlite3_stmt *pStmt;
@@ -134,7 +134,7 @@ static sqlite3_stmt *db_vprepare(const char *zFormat, va_list ap){
   sqlite3_free(zSql);
   return pStmt;
 }
-static sqlite3_stmt *db_prepare(const char *zFormat, ...){
+sqlite3_stmt *db_prepare(const char *zFormat, ...){
   va_list ap;
   sqlite3_stmt *pStmt;
   va_start(ap, zFormat);
@@ -146,7 +146,7 @@ static sqlite3_stmt *db_prepare(const char *zFormat, ...){
 /*
 ** Free a list of strings
 */
-static void namelistFree(char **az){
+void namelistFree(char **az){
   if( az ){
     int i;
     for(i=0; az[i]; i++) sqlite3_free(az[i]);
@@ -198,7 +198,7 @@ static void namelistFree(char **az){
 **    CREATE TABLE t5(rowid,_rowid_,oid);
 **    az = 0     // The rowid is not accessible
 */
-static char **columnNames(
+char **columnNames(
   const char *zDb,                /* Database ("main" or "aux") to query */
   const char *zTab,               /* Name of table to return details of */
   int *pnPKey,                    /* OUT: Number of PK columns */
@@ -333,7 +333,7 @@ static char **columnNames(
 /*
 ** Print the sqlite3_value X as an SQL literal.
 */
-static void printQuoted(FILE *out, sqlite3_value *X){
+void printQuoted(FILE *out, sqlite3_value *X){
   switch( sqlite3_value_type(X) ){
     case SQLITE_FLOAT: {
       double r1;
@@ -407,7 +407,7 @@ static void printQuoted(FILE *out, sqlite3_value *X){
 /*
 ** Output SQL that will recreate the aux.zTab table.
 */
-static void dump_table(const char *zTab, FILE *out){
+void dump_table(const char *zTab, FILE *out){
   char *zId = safeId(zTab); /* Name of the table */
   char **az = 0;            /* List of columns */
   int nPk;                  /* Number of true primary key columns */
@@ -481,7 +481,7 @@ static void dump_table(const char *zTab, FILE *out){
 ** Compute all differences for a single table, except if the
 ** table name is sqlite_schema, ignore the rootpage column.
 */
-static void diff_one_table(const char *zTab, FILE *out){
+void diff_one_table(const char *zTab, FILE *out){
   char *zId = safeId(zTab); /* Name of table (translated for us in SQL) */
   char **az = 0;            /* Columns in main */
   char **az2 = 0;           /* Columns in aux */
@@ -738,7 +738,7 @@ end_diff_one_table:
 ** do not, output an error message on stderr and exit(1). Otherwise, if
 ** the schemas do match, return control to the caller.
 */
-static void checkSchemasMatch(const char *zTab){
+void checkSchemasMatch(const char *zTab){
   sqlite3_stmt *pStmt = db_prepare(
       "SELECT A.sql=B.sql FROM main.sqlite_schema A, aux.sqlite_schema B"
       " WHERE A.name=%Q AND B.name=%Q", zTab, zTab
@@ -790,7 +790,7 @@ struct hash {
 /*
 ** Initialize the rolling hash using the first NHASH characters of z[]
 */
-static void hash_init(hash *pHash, const char *z){
+void hash_init(hash *pHash, const char *z){
   u16 a, b, i;
   a = b = 0;
   for(i=0; i<NHASH; i++){
@@ -806,7 +806,7 @@ static void hash_init(hash *pHash, const char *z){
 /*
 ** Advance the rolling hash by a single character "c"
 */
-static void hash_next(hash *pHash, int c){
+void hash_next(hash *pHash, int c){
   u16 old = pHash->z[pHash->i];
   pHash->z[pHash->i] = (char)c;
   pHash->i = (pHash->i+1)&(NHASH-1);
@@ -817,15 +817,15 @@ static void hash_next(hash *pHash, int c){
 /*
 ** Return a 32-bit hash value
 */
-static u32 hash_32bit(hash *pHash){
+u32 hash_32bit(hash *pHash){
   return (pHash->a & 0xffff) | (((u32)(pHash->b & 0xffff))<<16);
 }
 
 /*
 ** Write an base-64 integer into the given buffer.
 */
-static void putInt(unsigned int v, char **pz){
-  static const char zDigits[] =
+void putInt(unsigned int v, char **pz){
+  const char zDigits[] =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~";
   /*  123456789 123456789 123456789 123456789 123456789 123456789 123 */
   int i, j;
@@ -845,7 +845,7 @@ static void putInt(unsigned int v, char **pz){
 /*
 ** Return the number digits in the base-64 representation of a positive integer
 */
-static int digit_count(int v){
+int digit_count(int v){
   unsigned int i, x;
   for(i=1, x=64; (unsigned int)v>=x; i++, x <<= 6){}
   return i;
@@ -854,7 +854,7 @@ static int digit_count(int v){
 /*
 ** Compute a 32-bit checksum on the N-byte buffer.  Return the result.
 */
-static unsigned int checksum(const char *zIn, size_t N){
+unsigned int checksum(const char *zIn, size_t N){
   const unsigned char *z = (const unsigned char *)zIn;
   unsigned sum0 = 0;
   unsigned sum1 = 0;
@@ -948,7 +948,7 @@ static unsigned int checksum(const char *zIn, size_t N){
 ** do not match or which can not be encoded efficiently using copy
 ** commands.
 */
-static int rbuDeltaCreate(
+int rbuDeltaCreate(
   const char *zSrc,      /* The source or pattern file */
   unsigned int lenSrc,   /* Length of the source file */
   const char *zOut,      /* The target file */
@@ -1134,7 +1134,7 @@ static int rbuDeltaCreate(
 ** End of code copied from fossil.
 **************************************************************************/
 
-static void strPrintfArray(
+void strPrintfArray(
   sqlite3_str *pStr,              /* String object to append to */
   const char *zSep,               /* Separator string */
   const char *zFmt,               /* Format for each entry */
@@ -1147,7 +1147,7 @@ static void strPrintfArray(
   }
 }
 
-static void getRbudiffQuery(
+void getRbudiffQuery(
   const char *zTab,
   char **azCol,
   int nPK,
@@ -1223,7 +1223,7 @@ static void getRbudiffQuery(
   for(i=1; i<=nPK; i++) sqlite3_str_appendf(pSql, "%s%d", ((i>1)?", ":""), i);
 }
 
-static void rbudiff_one_table(const char *zTab, FILE *out){
+void rbudiff_one_table(const char *zTab, FILE *out){
   int bOtaRowid;                  /* True to use an ota_rowid column */
   int nPK;                        /* Number of primary key columns in table */
   char **azCol;                   /* NULL terminated array of col names */
@@ -1358,7 +1358,7 @@ static void rbudiff_one_table(const char *zTab, FILE *out){
 **   *  Number of rows deleted
 **   *  Number of identical rows
 */
-static void summarize_one_table(const char *zTab, FILE *out){
+void summarize_one_table(const char *zTab, FILE *out){
   char *zId = safeId(zTab); /* Name of table (translated for us in SQL) */
   char **az = 0;            /* Columns in main */
   char **az2 = 0;           /* Columns in aux */
@@ -1488,7 +1488,7 @@ end_summarize_one_table:
 /*
 ** Write a 64-bit signed integer as a varint onto out
 */
-static void putsVarint(FILE *out, sqlite3_uint64 v){
+void putsVarint(FILE *out, sqlite3_uint64 v){
   int i, n;
   unsigned char p[12];
   if( v & (((sqlite3_uint64)0xff000000)<<32) ){
@@ -1513,7 +1513,7 @@ static void putsVarint(FILE *out, sqlite3_uint64 v){
 /*
 ** Write an SQLite value onto out.
 */
-static void putValue(FILE *out, sqlite3_stmt *pStmt, int k){
+void putValue(FILE *out, sqlite3_stmt *pStmt, int k){
   int iDType = sqlite3_column_type(pStmt, k);
   sqlite3_int64 iX;
   double rX;
@@ -1550,7 +1550,7 @@ static void putValue(FILE *out, sqlite3_stmt *pStmt, int k){
 /*
 ** Generate a CHANGESET for all differences from main.zTab to aux.zTab.
 */
-static void changeset_one_table(const char *zTab, FILE *out){
+void changeset_one_table(const char *zTab, FILE *out){
   sqlite3_stmt *pStmt;          /* SQL statment */
   char *zId = safeId(zTab);     /* Escaped name of the table */
   char **azCol = 0;             /* List of escaped column names */
@@ -1738,7 +1738,7 @@ end_changeset_one_table:
 ** Return true if the ascii character passed as the only argument is a
 ** whitespace character. Otherwise return false.
 */
-static int is_whitespace(char x){
+int is_whitespace(char x){
   return (x==' ' || x=='\t' || x=='\n' || x=='\r');
 }
 
@@ -1748,7 +1748,7 @@ static int is_whitespace(char x){
 ** Return a pointer to the character within zIn immediately following 
 ** the token or quoted string just extracted.
 */
-static const char *gobble_token(const char *zIn, char *zBuf, int nBuf){
+const char *gobble_token(const char *zIn, char *zBuf, int nBuf){
   const char *p = zIn;
   char *pOut = zBuf;
   char *pEnd = &pOut[nBuf-1];
@@ -1794,7 +1794,7 @@ static const char *gobble_token(const char *zIn, char *zBuf, int nBuf){
 ** statement, then the value returned is the name of the module that it
 ** uses. Otherwise, if the statement is not a CVT, NULL is returned.
 */
-static void module_name_func(
+void module_name_func(
   sqlite3_context *pCtx, 
   int nVal, sqlite3_value **apVal
 ){
@@ -1883,7 +1883,7 @@ const char *all_tables_sql(){
 /*
 ** Print sketchy documentation for this utility program
 */
-static void showHelp(void){
+void showHelp(void){
   sqlite3_fprintf(stdout, "Usage: %s [options] DB1 DB2\n", g.zArgv0);
   sqlite3_fprintf(stdout,
 "Output SQL text that would transform DB1 into DB2.\n"

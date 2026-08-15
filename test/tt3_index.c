@@ -14,7 +14,7 @@
 */
 
 
-static char *create_drop_index_thread(int iTid, void *pArg){
+char *create_drop_index_thread(int iTid, void *pArg){
   Error err = {0};                /* Error code and message */
   Sqlite db = {0};                /* SQLite database connection */
 
@@ -46,7 +46,7 @@ static char *create_drop_index_thread(int iTid, void *pArg){
   return sqlite3_mprintf("ok");
 }
 
-static void create_drop_index_1(int nMs){
+void create_drop_index_1(int nMs){
   Error err = {0};
   Sqlite db = {0};
   Threadset threads = {0};

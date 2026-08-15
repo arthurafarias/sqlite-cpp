@@ -28,7 +28,7 @@
 ** E"). The resuls of passing a codepoint that corresponds to an
 ** uppercase letter are undefined.
 */
-static int fts5_remove_diacritic(int c, int bComplex){
+int fts5_remove_diacritic(int c, int bComplex){
   unsigned short aDia[] = {
         0,  1797,  1848,  1859,  1891,  1928,  1940,  1995, 
      2024,  2040,  2060,  2110,  2168,  2206,  2264,  2286, 
@@ -132,7 +132,7 @@ int sqlite3Fts5UnicodeFold(int c, int eRemoveDiacritic){
   ** file distributed as part of the "Unicode Character Database". See
   ** http://www.unicode.org for details.
   */
-  static const struct TableEntry {
+  const struct TableEntry {
     unsigned short iCode;
     unsigned char flags;
     unsigned char nRange;
@@ -193,7 +193,7 @@ int sqlite3Fts5UnicodeFold(int c, int eRemoveDiacritic){
     {42896, 1, 4},         {42912, 1, 10},        {42922, 72, 1},
     {65313, 14, 26},       
   };
-  static const unsigned short aiOff[] = {
+  const unsigned short aiOff[] = {
    1,     2,     8,     15,    16,    26,    28,    32,    
    37,    38,    40,    48,    63,    64,    69,    71,    
    79,    80,    116,   202,   203,   205,   206,   207,   
@@ -371,11 +371,11 @@ int sqlite3Fts5UnicodeCatParse(const char *zCat, u8 *aArray){
   return 0;
 }
 
-static u16 aFts5UnicodeBlock[] = {
+u16 aFts5UnicodeBlock[] = {
     0,     1471,  1753,  1760,  1760,  1760,  1760,  1760,  1760,  1760,  
     1760,  1760,  1760,  1760,  1760,  1763,  1765,  
   };
-static u16 aFts5UnicodeMap[] = {
+u16 aFts5UnicodeMap[] = {
     0,     32,    33,    36,    37,    40,    41,    42,    43,    44,    
     45,    46,    48,    58,    60,    63,    65,    91,    92,    93,    
     94,    95,    96,    97,    123,   124,   125,   126,   127,   160,   
@@ -554,7 +554,7 @@ static u16 aFts5UnicodeMap[] = {
     63045, 63104, 63232, 0,     42710, 42752, 46900, 46912, 47133, 63488, 
     1,     32,    256,   0,     65533, 
   };
-static u16 aFts5UnicodeData[] = {
+u16 aFts5UnicodeData[] = {
     1025,  61,    117,   55,    117,   54,    50,    53,    57,    53,    
     49,    85,    333,   85,    121,   85,    841,   54,    53,    50,    
     56,    48,    56,    837,   54,    57,    50,    57,    1057,  61,    

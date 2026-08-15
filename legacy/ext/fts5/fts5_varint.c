@@ -293,7 +293,7 @@ u8 sqlite3Fts5GetVarint(const unsigned char *p, u64 *v){
 ** bit clear.  Except, if we get to the 9th byte, it stores the full
 ** 8 bits and is the last byte.
 */
-static int FTS5_NOINLINE fts5PutVarint64(unsigned char *p, u64 v){
+int FTS5_NOINLINE fts5PutVarint64(unsigned char *p, u64 v){
   int i, j, n;
   u8 buf[10];
   if( v & (((u64)0xff000000)<<32) ){

@@ -153,7 +153,7 @@ struct Blob {
 /*
 ** All global variables are gathered into the "g" singleton.
 */
-static struct GlobalVars {
+struct GlobalVars {
   const char *zArgv0;              /* Name of program */
   const char *zDbFile;             /* Name of database file */
   VFile aFile[MX_FILE];            /* The virtual filesystem */
@@ -185,7 +185,7 @@ extern int sqlite3_stmtrand_init(sqlite3*,char**,void*);
 /*
 ** Print an error message and quit.
 */
-static void fatalError(const char *zFormat, ...){
+void fatalError(const char *zFormat, ...){
   va_list ap;
   fprintf(stderr, "%s", g.zArgv0);
   if( g.zDbFile ) fprintf(stderr, " %s", g.zDbFile);
@@ -202,7 +202,7 @@ static void fatalError(const char *zFormat, ...){
 ** signal handler
 */
 #ifdef __unix__
-static void signalHandler(int signum){
+void signalHandler(int signum){
   const char *zSig;
   if( signum==SIGABRT ){
     zSig = "abort";
@@ -221,7 +221,7 @@ static void signalHandler(int signum){
 ** Set the an alarm to go off after N seconds.  Disable the alarm
 ** if N==0
 */
-static void setAlarm(int N){
+void setAlarm(int N){
 #ifdef __unix__
   alarm(N);
 #else
@@ -238,7 +238,7 @@ static void setAlarm(int N){
 ** *pVdbeLimitFlag is true if the --limit-vdbe command-line option is used.
 ** In that case, hitting the progress handler is a fatal error.
 */
-static int progressHandler(void *pVdbeLimitFlag){
+int progressHandler(void *pVdbeLimitFlag){
   if( *(int*)pVdbeLimitFlag ) fatalError("too many VDBE cycles");
   return 1;
 }
@@ -247,7 +247,7 @@ static int progressHandler(void *pVdbeLimitFlag){
 /*
 ** Reallocate memory.  Show an error and quit if unable.
 */
-static void *safe_realloc(void *pOld, int szNew){
+void *safe_realloc(void *pOld, int szNew){
   void *pNew = realloc(pOld, szNew<=0 ? 1 : szNew);
   if( pNew==0 ) fatalError("unable to realloc for %d bytes", szNew);
   return pNew;
@@ -256,7 +256,7 @@ static void *safe_realloc(void *pOld, int szNew){
 /*
 ** Initialize the virtual file system.
 */
-static void formatVfs(void){
+void formatVfs(void){
   int i;
   for(i=0; i<MX_FILE; i++){
     g.aFile[i].sz = -1;
@@ -270,7 +270,7 @@ static void formatVfs(void){
 /*
 ** Erase all information in the virtual file system.
 */
-static void reformatVfs(void){
+void reformatVfs(void){
   int i;
   for(i=0; i<MX_FILE; i++){
     if( g.aFile[i].sz<0 ) continue;
@@ -291,7 +291,7 @@ static void reformatVfs(void){
 /*
 ** Find a VFile by name
 */
-static VFile *findVFile(const char *zName){
+VFile *findVFile(const char *zName){
   int i;
   if( zName==0 ) return 0;
   for(i=0; i<MX_FILE; i++){
@@ -307,7 +307,7 @@ static VFile *findVFile(const char *zName){
 **
 ** Return NULL only if the filesystem is full.
 */
-static VFile *createVFile(const char *zName, int sz, unsigned char *pData){
+VFile *createVFile(const char *zName, int sz, unsigned char *pData){
   VFile *pNew = findVFile(zName);
   int i;
   if( pNew ) return pNew;
@@ -329,7 +329,7 @@ static VFile *createVFile(const char *zName, int sz, unsigned char *pData){
 }
 
 /* Return true if the line is all zeros */
-static int allZero(unsigned char *aLine){
+int allZero(unsigned char *aLine){
   int i;
   for(i=0; i<16 && aLine[i]==0; i++){}
   return i==16;
@@ -339,7 +339,7 @@ static int allZero(unsigned char *aLine){
 ** Render a database and query as text that can be input into
 ** the CLI.
 */
-static void renderDbSqlForCLI(
+void renderDbSqlForCLI(
   FILE *out,             /* Write to this file */
   const char *zFile,     /* Name of the database file */
   unsigned char *aDb,    /* Database content */
@@ -402,7 +402,7 @@ static void renderDbSqlForCLI(
 /*
 ** Find the tail (the last component) of a pathname.
 */
-static const char *pathTail(const char *zPath){
+const char *pathTail(const char *zPath){
   const char *zTail = zPath;
   while( zPath[0] ){
     if( zPath[0]=='/' && zPath[1]!=0 ) zTail = &zPath[1];
@@ -421,7 +421,7 @@ static const char *pathTail(const char *zPath){
 ** The file content is held in memory obtained from sqlite_malloc64() which
 ** should be freed by the caller.
 */
-static char *readFile(const char *zFilename, long *sz){
+char *readFile(const char *zFilename, long *sz){
   FILE *in;
   long nIn;
   unsigned char *pBuf;
@@ -451,7 +451,7 @@ static char *readFile(const char *zFilename, long *sz){
 ** of the file named X is read and returned as a BLOB.  NULL is returned
 ** if the file does not exist or is unreadable.
 */
-static void readfileFunc(
+void readfileFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -473,7 +473,7 @@ static void readfileFunc(
 ** character, whichever comes first, is read and returned as TEXT.  NULL
 ** is returned if the file does not exist or is unreadable.
 */
-static void readtextfileFunc(
+void readtextfileFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -506,7 +506,7 @@ static void readtextfileFunc(
 ** NULL is returned if something goes wrong, such as being unable to open
 ** file X for writing.
 */
-static void writefileFunc(
+void writefileFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -535,7 +535,7 @@ static void writefileFunc(
 /*
 ** Load a list of Blob objects from the database
 */
-static void blobListLoadFromDb(
+void blobListLoadFromDb(
   sqlite3 *db,             /* Read from this database */
   const char *zSql,        /* Query used to extract the blobs */
   int firstId,             /* First sqlid to load */
@@ -586,7 +586,7 @@ static void blobListLoadFromDb(
 /*
 ** Free a list of Blob objects
 */
-static void blobListFree(Blob *p){
+void blobListFree(Blob *p){
   Blob *pNext;
   while( p ){
     pNext = p->pNext;
@@ -601,8 +601,8 @@ static void blobListFree(Blob *p){
 ** 1907-01-01 00:00:00  ->  210866716800000
 ** 2021-01-01 00:00:00  ->  212476176000000
 */
-static sqlite3_int64 timeOfDay(void){
-  static sqlite3_vfs *clockVfs = 0;
+sqlite3_int64 timeOfDay(void){
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ){
     clockVfs = sqlite3_vfs_find(0);
@@ -638,38 +638,38 @@ typedef struct FuzzCtx {
 } FuzzCtx;
 
 /* Verbosity level for the dbsqlfuzz test runner */
-static int eVerbosity = 0;
+int eVerbosity = 0;
 
 /* True to activate PRAGMA vdbe_debug=on */
-static int bVdbeDebug = 0;
+int bVdbeDebug = 0;
 
 /* Timeout for each fuzzing attempt, in milliseconds */
-static int giTimeout = 10000;   /* Defaults to 10 seconds */
+int giTimeout = 10000;   /* Defaults to 10 seconds */
 
 /* Maximum number of progress handler callbacks */
-static unsigned int mxProgressCb = 2000;
+unsigned int mxProgressCb = 2000;
 
 /* Maximum string length in SQLite */
-static int lengthLimit = 1000000;
+int lengthLimit = 1000000;
 
 /* Maximum expression depth */
-static int depthLimit = 500;
+int depthLimit = 500;
 
 /* Limit on the amount of heap memory that can be used */
-static sqlite3_int64 heapLimit = 100000000;
+sqlite3_int64 heapLimit = 100000000;
 
 /* Maximum byte-code program length in SQLite */
-static int vdbeOpLimit = 25000;
+int vdbeOpLimit = 25000;
 
 /* Maximum size of the in-memory database */
-static sqlite3_int64 maxDbSize = 104857600;
+sqlite3_int64 maxDbSize = 104857600;
 /* OOM simulation parameters */
-static unsigned int oomCounter = 0;    /* Simulate OOM when equals 1 */
-static unsigned int oomRepeat = 0;     /* Number of OOMs in a row */
-static void*(*defaultMalloc)(int) = 0; /* The low-level malloc routine */
+unsigned int oomCounter = 0;    /* Simulate OOM when equals 1 */
+unsigned int oomRepeat = 0;     /* Number of OOMs in a row */
+void*(*defaultMalloc)(int) = 0; /* The low-level malloc routine */
 
 /* Enable recovery */
-static int bNoRecover = 0;
+int bNoRecover = 0;
 
 /* This routine is called when a simulated OOM occurs.  It is broken
 ** out as a separate routine to make it easy to set a breakpoint on
@@ -689,7 +689,7 @@ void oomFault(void){
 /* This routine is a replacement malloc() that is used to simulate
 ** Out-Of-Memory (OOM) errors for testing purposes.
 */
-static void *oomMalloc(int nByte){
+void *oomMalloc(int nByte){
   if( oomCounter ){
     if( oomCounter==1 ){
       oomFault();
@@ -703,7 +703,7 @@ static void *oomMalloc(int nByte){
 
 /* Register the OOM simulator.  This must occur before any memory
 ** allocations */
-static void registerOomSimulator(void){
+void registerOomSimulator(void){
   sqlite3_mem_methods mem;
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_GETMALLOC, &mem);
@@ -713,7 +713,7 @@ static void registerOomSimulator(void){
 }
 
 /* Turn off any pending OOM simulation */
-static void disableOom(void){
+void disableOom(void){
   oomCounter = 0;
   oomRepeat = 0;
 }
@@ -723,7 +723,7 @@ static void disableOom(void){
 ** This routine only works if h really is a valid hexadecimal
 ** character:  0..9a..fA..F
 */
-static unsigned char hexToInt(unsigned int h){
+unsigned char hexToInt(unsigned int h){
 #ifdef SQLITE_EBCDIC
   h += 9*(1&~(h>>4));   /* EBCDIC */
 #else
@@ -739,7 +739,7 @@ static unsigned char hexToInt(unsigned int h){
 ** and returns true.  If the input buffer does not match the patterns,
 ** no changes are made to either *pK or *pI and this routine returns false.
 */
-static int isOffset(
+int isOffset(
   const unsigned char *zIn,  /* Text input */
   int nIn,                   /* Bytes of input */
   unsigned int *pK,          /* half-byte cursor to adjust */
@@ -769,7 +769,7 @@ static int isOffset(
 **
 ** Abort on an OOM.
 */
-static int decodeDatabase(
+int decodeDatabase(
   const unsigned char *zIn,      /* Input text to be decoded */
   int nIn,                       /* Bytes of input text */
   unsigned char **paDecode,      /* OUT: decoded database file */
@@ -856,7 +856,7 @@ static int decodeDatabase(
 ** The argument is the cutoff-time after which all processing should
 ** stop.  So return non-zero if the cut-off time is exceeded.
 */
-static int progress_handler(void *pClientData) {
+int progress_handler(void *pClientData) {
   FuzzCtx *p = (FuzzCtx*)pClientData;
   sqlite3_int64 iNow = timeOfDay();
   int rc = iNow>=p->iCutoffTime;
@@ -888,7 +888,7 @@ static int progress_handler(void *pClientData) {
 **
 ** Also block ATTACH if attaching a file from the filesystem.
 */
-static int block_troublesome_sql(
+int block_troublesome_sql(
   void *pClientData,
   int eCode,
   const char *zArg1,
@@ -945,7 +945,7 @@ static int block_troublesome_sql(
       break;
     }
     case SQLITE_FUNCTION: {
-      static const char *azBadFuncs[] = {
+      const char *azBadFuncs[] = {
         "avg",
         "count",
         "cume_dist",
@@ -1030,7 +1030,7 @@ extern int sqlite3_dbdata_init(sqlite3*,const char**,void*);
 ** This function is used as a callback by the recover extension. Simply
 ** print the supplied SQL statement to stdout.
 */
-static int recoverSqlCb(void *pCtx, const char *zSql){
+int recoverSqlCb(void *pCtx, const char *zSql){
   if( eVerbosity>=2 && zSql ){
     printf("%s\n", zSql);
   }
@@ -1040,7 +1040,7 @@ static int recoverSqlCb(void *pCtx, const char *zSql){
 /*
 ** This function is called to recover data from the database.
 */
-static int recoverDatabase(sqlite3 *db){
+int recoverDatabase(sqlite3 *db){
   int rc;                                 /* Return code from this routine */
   const char *zRecoveryDb = "";           /* Name of "recovery" database */
   const char *zLAF = "lost_and_found";    /* Name of "lost_and_found" table */
@@ -1076,7 +1076,7 @@ static int recoverDatabase(sqlite3 *db){
 **     $carray_clr     ->   First argument to carray() for color names
 **     $carray_primes  ->   First argument to carray() for prime numbers
 */
-static void bindDebugParameters(sqlite3_stmt *pStmt){
+void bindDebugParameters(sqlite3_stmt *pStmt){
   int nVar = sqlite3_bind_parameter_count(pStmt);
   int i;
   for(i=1; i<=nVar; i++){
@@ -1084,7 +1084,7 @@ static void bindDebugParameters(sqlite3_stmt *pStmt){
     if( zVar==0 ) continue;
 #ifdef SQLITE_ENABLE_CARRAY
     if( strcmp(zVar,"$carray_clr")==0 ){
-      static char *azColorNames[] = {
+      char *azColorNames[] = {
         "azure", "black", "blue",   "brown", "cyan",   "fuchsia", "gold",
         "gray",  "green", "indigo", "khaki", "lime",   "magenta", "maroon",
         "navy",  "olive", "orange", "pink",  "purple", "red",     "silver",
@@ -1093,7 +1093,7 @@ static void bindDebugParameters(sqlite3_stmt *pStmt){
       sqlite3_carray_bind(pStmt,i,azColorNames,26,SQLITE_CARRAY_TEXT,0);
     }else
     if( strcmp(zVar,"$carray_primes")==0 ){
-      static int aPrimes[] = {
+      int aPrimes[] = {
         1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
        53, 59, 61, 67, 71, 73, 79, 83, 89, 97
       };
@@ -1117,7 +1117,7 @@ static void bindDebugParameters(sqlite3_stmt *pStmt){
 /*
 ** Run the SQL text
 */
-static int runDbSql(
+int runDbSql(
   sqlite3 *db,                /* Run SQL on this database connection */
   const char *zSql,           /* The SQL to be run */
   unsigned int *pBtsFlags,
@@ -1229,7 +1229,7 @@ static int runDbSql(
 ** This should be the same as in dbsqlfuzz.c.  Make sure those codes stay
 ** in sync.
 */
-static const struct {
+const struct {
   unsigned int mask;
   int iSetting;
   char *zName;
@@ -1254,7 +1254,7 @@ static const struct {
 
 /* Toggle a dbconfig setting
 */
-static void toggleDbConfig(sqlite3 *db, int iSetting){
+void toggleDbConfig(sqlite3 *db, int iSetting){
   int v = 0;
   sqlite3_db_config(db, iSetting, -1, &v);
   v = !v;
@@ -1476,7 +1476,7 @@ testrun_finished:
 ** description, such as would be found in a dbsqlfuzz test case.  Return
 ** true if this does appear to be a dbsqlfuzz test case and false otherwise.
 */
-static int isDbSql(unsigned char *a, int n){
+int isDbSql(unsigned char *a, int n){
   unsigned char buf[12];
   int i;
   if( n>4 && memcmp(a,"\n--\n",4)==0 ) return 1;
@@ -1490,7 +1490,7 @@ static int isDbSql(unsigned char *a, int n){
 
 /* Implementation of the isdbsql(TEXT) SQL function.
 */
-static void isDbSqlFunc(
+void isDbSqlFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1502,7 +1502,7 @@ static void isDbSqlFunc(
 
 /* Methods for the VHandle object
 */
-static int inmemClose(sqlite3_file *pFile){
+int inmemClose(sqlite3_file *pFile){
   VHandle *p = (VHandle*)pFile;
   VFile *pVFile = p->pVFile;
   pVFile->nRef--;
@@ -1513,7 +1513,7 @@ static int inmemClose(sqlite3_file *pFile){
   }
   return SQLITE_OK;
 }
-static int inmemRead(
+int inmemRead(
   sqlite3_file *pFile,   /* Read from this open file */
   void *pData,           /* Store content in this buffer */
   int iAmt,              /* Bytes of content */
@@ -1534,7 +1534,7 @@ static int inmemRead(
   memcpy(pData, pVFile->a + iOfst, iAmt);
   return SQLITE_OK;
 }
-static int inmemWrite(
+int inmemWrite(
   sqlite3_file *pFile,   /* Write to this file */
   const void *pData,     /* Content to write */
   int iAmt,              /* bytes to write */
@@ -1555,36 +1555,36 @@ static int inmemWrite(
   memcpy(pVFile->a + iOfst, pData, iAmt);
   return SQLITE_OK;
 }
-static int inmemTruncate(sqlite3_file *pFile, sqlite3_int64 iSize){
+int inmemTruncate(sqlite3_file *pFile, sqlite3_int64 iSize){
   VHandle *pHandle = (VHandle*)pFile;
   VFile *pVFile = pHandle->pVFile;
   if( pVFile->sz>iSize && iSize>=0 ) pVFile->sz = (int)iSize;
   return SQLITE_OK;
 }
-static int inmemSync(sqlite3_file *pFile, int flags){
+int inmemSync(sqlite3_file *pFile, int flags){
   return SQLITE_OK;
 }
-static int inmemFileSize(sqlite3_file *pFile, sqlite3_int64 *pSize){
+int inmemFileSize(sqlite3_file *pFile, sqlite3_int64 *pSize){
   *pSize = ((VHandle*)pFile)->pVFile->sz;
   return SQLITE_OK;
 }
-static int inmemLock(sqlite3_file *pFile, int type){
+int inmemLock(sqlite3_file *pFile, int type){
   return SQLITE_OK;
 }
-static int inmemUnlock(sqlite3_file *pFile, int type){
+int inmemUnlock(sqlite3_file *pFile, int type){
   return SQLITE_OK;
 }
-static int inmemCheckReservedLock(sqlite3_file *pFile, int *pOut){
+int inmemCheckReservedLock(sqlite3_file *pFile, int *pOut){
   *pOut = 0;
   return SQLITE_OK;
 }
-static int inmemFileControl(sqlite3_file *pFile, int op, void *pArg){
+int inmemFileControl(sqlite3_file *pFile, int op, void *pArg){
   return SQLITE_NOTFOUND;
 }
-static int inmemSectorSize(sqlite3_file *pFile){
+int inmemSectorSize(sqlite3_file *pFile){
   return 512;
 }
-static int inmemDeviceCharacteristics(sqlite3_file *pFile){
+int inmemDeviceCharacteristics(sqlite3_file *pFile){
   return
       SQLITE_IOCAP_SAFE_APPEND |
       SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN |
@@ -1594,7 +1594,7 @@ static int inmemDeviceCharacteristics(sqlite3_file *pFile){
 
 /* Method table for VHandle
 */
-static sqlite3_io_methods VHandleMethods = {
+sqlite3_io_methods VHandleMethods = {
   /* iVersion  */    1,
   /* xClose    */    inmemClose,
   /* xRead     */    inmemRead,
@@ -1620,7 +1620,7 @@ static sqlite3_io_methods VHandleMethods = {
 ** Open a new file in the inmem VFS.  All files are anonymous and are
 ** delete-on-close.
 */
-static int inmemOpen(
+int inmemOpen(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   sqlite3_file *pFile,
@@ -1642,7 +1642,7 @@ static int inmemOpen(
 /*
 ** Delete a file by name
 */
-static int inmemDelete(
+int inmemDelete(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   int syncdir
@@ -1662,7 +1662,7 @@ static int inmemDelete(
 
 /* Check for the existence of a file
 */
-static int inmemAccess(
+int inmemAccess(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   int flags,
@@ -1675,7 +1675,7 @@ static int inmemAccess(
 
 /* Get the canonical pathname for a file
 */
-static int inmemFullPathname(
+int inmemFullPathname(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   int nOut,
@@ -1687,7 +1687,7 @@ static int inmemFullPathname(
 
 /* Always use the same random see, for repeatability.
 */
-static int inmemRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
+int inmemRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
   memset(zBuf, 0, nBuf);
   memcpy(zBuf, &g.uRandom, nBuf<sizeof(g.uRandom) ? nBuf : sizeof(g.uRandom));
   return nBuf;
@@ -1696,8 +1696,8 @@ static int inmemRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf){
 /*
 ** Register the VFS that reads from the g.aFile[] set of files.
 */
-static void inmemVfsRegister(int makeDefault){
-  static sqlite3_vfs inmemVfs;
+void inmemVfsRegister(int makeDefault){
+  sqlite3_vfs inmemVfs;
   sqlite3_vfs *pDefault = sqlite3_vfs_find(0);
   inmemVfs.iVersion = 3;
   inmemVfs.szOsFile = sizeof(VHandle);
@@ -1723,7 +1723,7 @@ static void inmemVfsRegister(int makeDefault){
 ** Run multiple commands of SQL.  Similar to sqlite3_exec(), but does not
 ** stop if an error is encountered.
 */
-static void runSql(sqlite3 *db, const char *zSql, unsigned  runFlags){
+void runSql(sqlite3 *db, const char *zSql, unsigned  runFlags){
   const char *zMore;
   sqlite3_stmt *pStmt;
 
@@ -1798,7 +1798,7 @@ static void runSql(sqlite3 *db, const char *zSql, unsigned  runFlags){
 **    (2)  Put all entries in order
 **    (3)  Vacuum
 */
-static void rebuild_database(sqlite3 *db, int dbSqlOnly){
+void rebuild_database(sqlite3 *db, int dbSqlOnly){
   int rc;
   char *zSql;
   zSql = sqlite3_mprintf(
@@ -1827,7 +1827,7 @@ static void rebuild_database(sqlite3 *db, int dbSqlOnly){
 ** Return the value of a hexadecimal digit.  Return -1 if the input
 ** is not a hex digit.
 */
-static int hexDigitValue(char c){
+int hexDigitValue(char c){
   if( c>='0' && c<='9' ) return c - '0';
   if( c>='a' && c<='f' ) return c - 'a' + 10;
   if( c>='A' && c<='F' ) return c - 'A' + 10;
@@ -1837,9 +1837,9 @@ static int hexDigitValue(char c){
 /*
 ** Interpret zArg as an integer value, possibly with suffixes.
 */
-static int integerValue(const char *zArg){
+int integerValue(const char *zArg){
   sqlite3_int64 v = 0;
-  static const struct { char *zSuffix; int iMult; } aMult[] = {
+  const struct { char *zSuffix; int iMult; } aMult[] = {
     { "KiB", 1024 },
     { "MiB", 1024*1024 },
     { "GiB", 1024*1024*1024 },
@@ -1885,7 +1885,7 @@ static int integerValue(const char *zArg){
 ** Return the number of "v" characters in a string.  Return 0 if there
 ** are any characters in the string other than "v".
 */
-static int numberOfVChar(const char *z){
+int numberOfVChar(const char *z){
   int N = 0;
   while( z[0] && z[0]=='v' ){
     z++;
@@ -1897,7 +1897,7 @@ static int numberOfVChar(const char *z){
 /*
 ** Print sketchy documentation for this utility program
 */
-static void showHelp(void){
+void showHelp(void){
   printf("Usage: %s [options] SOURCE-DB ?ARGS...?\n", g.zArgv0);
   printf(
 "Read databases and SQL scripts from SOURCE-DB and execute each script against\n"
@@ -2576,7 +2576,7 @@ int main(int argc, char **argv){
           printf("%s\n", g.zTestName);
           fflush(stdout);
         }else if( !quietFlag ){
-          static int prevAmt = -1;
+          int prevAmt = -1;
           int idx = pSql->seq;
           int amt = idx*10/(g.nSql);
           if( amt!=prevAmt ){
@@ -2620,7 +2620,7 @@ int main(int argc, char **argv){
           printf("%s\n", g.zTestName);
           fflush(stdout);
         }else if( !quietFlag ){
-          static int prevAmt = -1;
+          int prevAmt = -1;
           int idx = pSql->seq*g.nDb + pDb->id - 1;
           int amt = idx*10/(g.nDb*g.nSql);
           if( amt!=prevAmt ){

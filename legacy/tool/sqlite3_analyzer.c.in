@@ -32,7 +32,7 @@ INCLUDE $ROOT/ext/misc/sqlite3_stdio.c
 **      puts stderr STRING
 **      puts -nonewline STRING
 */
-static int subst_puts(
+int subst_puts(
   void *NotUsed,
   Tcl_Interp *interp,
   int objc,

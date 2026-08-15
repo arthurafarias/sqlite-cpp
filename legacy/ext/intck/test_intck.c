@@ -28,7 +28,7 @@ struct TestIntck {
   sqlite3_intck *intck;
 };
 
-static int testIntckCmd(
+int testIntckCmd(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -120,7 +120,7 @@ static int testIntckCmd(
 /*
 ** Destructor for commands created by test_sqlite3_intck().
 */
-static void testIntckFree(void *clientData){
+void testIntckFree(void *clientData){
   TestIntck *p = (TestIntck*)clientData;
   sqlite3_intck_close(p->intck);
   ckfree(p);
@@ -129,7 +129,7 @@ static void testIntckFree(void *clientData){
 /*
 ** tclcmd: sqlite3_intck DB DBNAME
 */
-static int test_sqlite3_intck(
+int test_sqlite3_intck(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -176,7 +176,7 @@ static int test_sqlite3_intck(
 /*
 ** tclcmd: test_do_intck DB DBNAME
 */
-static int test_do_intck(
+int test_do_intck(
   void * clientData,
   Tcl_Interp *interp,
   int objc,

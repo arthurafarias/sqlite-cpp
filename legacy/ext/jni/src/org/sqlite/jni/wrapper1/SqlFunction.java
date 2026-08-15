@@ -167,7 +167,7 @@ public interface SqlFunction  {
        Represents a single SqlFunction argument. Primarily intended
        for use with the Arguments class's Iterable interface.
     */
-    public final static class Arg {
+    public final class Arg {
       private final Arguments a;
       private final int ndx;
       /* Only for use by the Arguments class. */

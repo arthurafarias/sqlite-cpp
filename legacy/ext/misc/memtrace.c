@@ -26,25 +26,25 @@
 #include <stdio.h>
 
 /* The original memory allocation routines */
-static sqlite3_mem_methods memtraceBase;
-static FILE *memtraceOut;
+sqlite3_mem_methods memtraceBase;
+FILE *memtraceOut;
 
 /* Methods that trace memory allocations */
-static void *memtraceMalloc(int n){
+void *memtraceMalloc(int n){
   if( memtraceOut ){
     fprintf(memtraceOut, "MEMTRACE: allocate %d bytes\n", 
             memtraceBase.xRoundup(n));
   }
   return memtraceBase.xMalloc(n);
 }
-static void memtraceFree(void *p){
+void memtraceFree(void *p){
   if( p==0 ) return;
   if( memtraceOut ){
     fprintf(memtraceOut, "MEMTRACE: free %d bytes\n", memtraceBase.xSize(p));
   }
   memtraceBase.xFree(p);
 }
-static void *memtraceRealloc(void *p, int n){
+void *memtraceRealloc(void *p, int n){
   if( p==0 ) return memtraceMalloc(n);
   if( n==0 ){
     memtraceFree(p);
@@ -56,21 +56,21 @@ static void *memtraceRealloc(void *p, int n){
   }
   return memtraceBase.xRealloc(p, n);
 }
-static int memtraceSize(void *p){
+int memtraceSize(void *p){
   return memtraceBase.xSize(p);
 }
-static int memtraceRoundup(int n){
+int memtraceRoundup(int n){
   return memtraceBase.xRoundup(n);
 }
-static int memtraceInit(void *p){
+int memtraceInit(void *p){
   return memtraceBase.xInit(p);
 }
-static void memtraceShutdown(void *p){
+void memtraceShutdown(void *p){
   memtraceBase.xShutdown(p);
 }
 
 /* The substitute memory allocator */
-static sqlite3_mem_methods ersaztMethods = {
+sqlite3_mem_methods ersaztMethods = {
   memtraceMalloc,
   memtraceFree,
   memtraceRealloc,

@@ -24,7 +24,7 @@
 
 set help {Usage: tclsh mksqlite3c.tcl <options>
  where <options> is zero or more of the following with these effects:
-   --nostatic     => Do not generate with compile-time modifiable linkage.
+   --no    => Do not generate with compile-time modifiable linkage.
    --linemacros=?  => Emit #line directives into output or not. (? = 1 or 0)
    --useapicall   => Prepend functions with SQLITE_APICALL or SQLITE_CDECL.
    --srcdir $SRC  => Specify the directory containing constituent sources.
@@ -37,7 +37,7 @@ set help {Usage: tclsh mksqlite3c.tcl <options>
 # comment of the amalgamation.
 #
 
-set addstatic 1
+set add1
 set linemacros 0
 set useapicall 0
 set enable_recover 0
@@ -49,7 +49,7 @@ for {set i 0} {$i<[llength $argv]} {incr i} {
   if {[regexp {^-?-enable-recover$} $x]} {
     set enable_recover 1
   } elseif {[regexp {^-?-nostatic$} $x]} {
-    set addstatic 0
+    set add0
   } elseif {[regexp {^-?-linemacros(?:=([01]))?$} $x ma ulm]} {
     if {$ulm == ""} {set ulm 1}
     set linemacros $ulm
@@ -244,7 +244,7 @@ proc section_comment {text} {
 #
 proc copy_file {filename} {
   global seen_hdr available_hdr varonly_hdr cdecllist out
-  global addstatic linemacros useapicall srcdir
+  global addlinemacros useapicall srcdir
   set ln 0
   set tail [file tail $filename]
   section_comment "Begin file $tail"

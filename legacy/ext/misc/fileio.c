@@ -129,7 +129,7 @@ SQLITE_EXTENSION_INIT1
 ** UTF8 chmod() function for Windows
 */
 #if defined(_WIN32) || defined(WIN32)
-static int fileio_chmod(const char *zPath, int pmode){
+int fileio_chmod(const char *zPath, int pmode){
   int rc;
   wchar_t *b1 = sqlite3_win32_utf8_to_unicode(zPath);
   if( b1==0 ) return -1;
@@ -143,7 +143,7 @@ static int fileio_chmod(const char *zPath, int pmode){
 ** UTF8 mkdir() function for Windows
 */
 #if defined(_WIN32) || defined(WIN32)
-static int fileio_mkdir(const char *zPath){
+int fileio_mkdir(const char *zPath){
   int rc;
   wchar_t *b1 = sqlite3_win32_utf8_to_unicode(zPath);
   if( b1==0 ) return -1;
@@ -165,7 +165,7 @@ static int fileio_mkdir(const char *zPath){
 ** Throw an SQLITE_IOERR if there are difficulties pulling the file
 ** off of disk.
 */
-static void readFileContents(sqlite3_context *ctx, const char *zName){
+void readFileContents(sqlite3_context *ctx, const char *zName){
   FILE *in;
   sqlite3_int64 nIn;
   void *pBuf;
@@ -207,7 +207,7 @@ static void readFileContents(sqlite3_context *ctx, const char *zName){
 ** of the file named X is read and returned as a BLOB.  NULL is returned
 ** if the file does not exist or is unreadable.
 */
-static void readfileFunc(
+void readfileFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -223,7 +223,7 @@ static void readfileFunc(
 ** Set the error message contained in context ctx to the results of
 ** vprintf(zFmt, ...).
 */
-static void ctxErrorMsg(sqlite3_context *ctx, const char *zFmt, ...){
+void ctxErrorMsg(sqlite3_context *ctx, const char *zFmt, ...){
   char *zMsg = 0;
   va_list ap;
   va_start(ap, zFmt);
@@ -238,7 +238,7 @@ static void ctxErrorMsg(sqlite3_context *ctx, const char *zFmt, ...){
 ** This function is designed to convert a Win32 FILETIME structure into the
 ** number of seconds since the Unix Epoch (1970-01-01 00:00:00 UTC).
 */
-static sqlite3_uint64 fileTimeToUnixTime(
+sqlite3_uint64 fileTimeToUnixTime(
   LPFILETIME pFileTime
 ){
   SYSTEMTIME epochSystemTime;
@@ -266,7 +266,7 @@ static sqlite3_uint64 fileTimeToUnixTime(
 ** is required in order for the included time to be returned as UTC.  On all
 ** other systems, this function simply calls stat().
 */
-static int fileStat(
+int fileStat(
   const char *zPath,
   STRUCT_STAT *pStatBuf
 ){
@@ -299,7 +299,7 @@ static int fileStat(
 ** is required in order for the included time to be returned as UTC.  On all
 ** other systems, this function simply calls lstat().
 */
-static int fileLinkStat(
+int fileLinkStat(
   const char *zPath,
   STRUCT_STAT *pStatBuf
 ){
@@ -321,7 +321,7 @@ static int fileLinkStat(
 ** SQLITE_OK is returned if the directory is successfully created, or
 ** SQLITE_ERROR otherwise.
 */
-static int makeDirectory(
+int makeDirectory(
   const char *zFile
 ){
   char *zCopy = sqlite3_mprintf("%s", zFile);
@@ -361,7 +361,7 @@ static int makeDirectory(
 ** This function does the work for the writefile() UDF. Refer to 
 ** header comments at the top of this file for details.
 */
-static int writeFile(
+int writeFile(
   sqlite3_context *pCtx,          /* Context to return bytes written in */
   const char *zFile,              /* File to write */
   sqlite3_value *pData,           /* Data to write */
@@ -482,7 +482,7 @@ static int writeFile(
 ** Implementation of the "writefile(W,X[,Y[,Z]]])" SQL function.  
 ** Refer to header comments at the top of this file for details.
 */
-static void writefileFunc(
+void writefileFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -532,7 +532,7 @@ static void writefileFunc(
 ** Given a numberic st_mode from stat(), convert it into a human-readable
 ** text string in the style of "ls -l".
 */
-static void lsModeFunc(
+void lsModeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -598,7 +598,7 @@ struct fsdir_tab {
 /*
 ** Construct a new fsdir virtual table object.
 */
-static int fsdirConnect(
+int fsdirConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -625,7 +625,7 @@ static int fsdirConnect(
 /*
 ** This method is the destructor for fsdir vtab objects.
 */
-static int fsdirDisconnect(sqlite3_vtab *pVtab){
+int fsdirDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -633,7 +633,7 @@ static int fsdirDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new fsdir_cursor object.
 */
-static int fsdirOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int fsdirOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   fsdir_cursor *pCur;
   (void)p;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
@@ -648,7 +648,7 @@ static int fsdirOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 ** Reset a cursor back to the state it was in when first returned
 ** by fsdirOpen().
 */
-static void fsdirResetCursor(fsdir_cursor *pCur){
+void fsdirResetCursor(fsdir_cursor *pCur){
   int i;
   for(i=0; i<=pCur->iLvl; i++){
     FsdirLevel *pLvl = &pCur->aLvl[i];
@@ -669,7 +669,7 @@ static void fsdirResetCursor(fsdir_cursor *pCur){
 /*
 ** Destructor for an fsdir_cursor.
 */
-static int fsdirClose(sqlite3_vtab_cursor *cur){
+int fsdirClose(sqlite3_vtab_cursor *cur){
   fsdir_cursor *pCur = (fsdir_cursor*)cur;
 
   fsdirResetCursor(pCur);
@@ -681,7 +681,7 @@ static int fsdirClose(sqlite3_vtab_cursor *cur){
 ** Set the error message for the virtual table associated with cursor
 ** pCur to the results of vprintf(zFmt, ...).
 */
-static void fsdirSetErrmsg(fsdir_cursor *pCur, const char *zFmt, ...){
+void fsdirSetErrmsg(fsdir_cursor *pCur, const char *zFmt, ...){
   va_list ap;
   va_start(ap, zFmt);
   pCur->base.pVtab->zErrMsg = sqlite3_vmprintf(zFmt, ap);
@@ -692,7 +692,7 @@ static void fsdirSetErrmsg(fsdir_cursor *pCur, const char *zFmt, ...){
 /*
 ** Advance an fsdir_cursor to its next row of output.
 */
-static int fsdirNext(sqlite3_vtab_cursor *cur){
+int fsdirNext(sqlite3_vtab_cursor *cur){
   fsdir_cursor *pCur = (fsdir_cursor*)cur;
   mode_t m = pCur->sStat.st_mode;
 
@@ -756,7 +756,7 @@ static int fsdirNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the series_cursor
 ** is currently pointing.
 */
-static int fsdirColumn(
+int fsdirColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -829,7 +829,7 @@ static int fsdirColumn(
 ** first row returned is assigned rowid value 1, and each subsequent
 ** row a value 1 more than that of the previous.
 */
-static int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   fsdir_cursor *pCur = (fsdir_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -839,7 +839,7 @@ static int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int fsdirEof(sqlite3_vtab_cursor *cur){
+int fsdirEof(sqlite3_vtab_cursor *cur){
   fsdir_cursor *pCur = (fsdir_cursor*)cur;
   return (pCur->zPath==0);
 }
@@ -853,7 +853,7 @@ static int fsdirEof(sqlite3_vtab_cursor *cur){
 **     0x04         LEVEL<N
 **     0x08         LEVEL<=N  
 */
-static int fsdirFilter(
+int fsdirFilter(
   sqlite3_vtab_cursor *cur, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -921,7 +921,7 @@ static int fsdirFilter(
 **  0x02  dir is in argv[1]
 **  0x04  maxdepth is in argv[1] or [2]
 */
-static int fsdirBestIndex(
+int fsdirBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -1019,8 +1019,8 @@ static int fsdirBestIndex(
 /*
 ** Register the "fsdir" virtual table.
 */
-static int fsdirRegister(sqlite3 *db){
-  static sqlite3_module fsdirModule = {
+int fsdirRegister(sqlite3 *db){
+  sqlite3_module fsdirModule = {
     0,                         /* iVersion */
     0,                         /* xCreate */
     fsdirConnect,              /* xConnect */
@@ -1060,7 +1060,7 @@ static int fsdirRegister(sqlite3 *db){
 ** returned is held in memory allocated using sqlite3_malloc64().
 ** The caller is responsible for calling sqlite3_free().
 */
-static char *portable_realpath(const char *zPath){
+char *portable_realpath(const char *zPath){
 #if !defined(_WIN32)       /* BEGIN unix */
 
   char *zOut = 0;          /* Result */
@@ -1117,7 +1117,7 @@ static char *portable_realpath(const char *zPath){
 ** by calling system realpath() on the prefix of X that does exist and
 ** appending the tail of X that does not (yet) exist.
 */
-static void realpathFunc(
+void realpathFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

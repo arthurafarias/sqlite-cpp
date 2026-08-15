@@ -66,7 +66,7 @@ struct PCache {
   int sqlite3PcacheTrace = 2;       /* 0: off  1: simple  2: cache dumps */
   int sqlite3PcacheMxDump = 9999;   /* Max cache entries for pcacheDump() */
 # define pcacheTrace(X) if(sqlite3PcacheTrace){sqlite3DebugPrintf X;}
-  static void pcachePageTrace(int i, sqlite3_pcache_page *pLower){
+  void pcachePageTrace(int i, sqlite3_pcache_page *pLower){
     PgHdr *pPg;
     unsigned char *a;
     int j;
@@ -80,7 +80,7 @@ struct PCache {
       printf(" ptr %p\n", pPg);
     }
   }
-  static void pcacheDump(PCache *pCache){
+  void pcacheDump(PCache *pCache){
     int N;
     int i;
     sqlite3_pcache_page *pLower;
@@ -108,14 +108,14 @@ struct PCache {
 ** This routine runs inside of assert() statements only.
 */
 #if defined(SQLITE_ENABLE_EXPENSIVE_ASSERT)
-static int pageOnDirtyList(PCache *pCache, PgHdr *pPg){
+int pageOnDirtyList(PCache *pCache, PgHdr *pPg){
   PgHdr *p;
   for(p=pCache->pDirty; p; p=p->pDirtyNext){
     if( p==pPg ) return 1;
   }
   return 0;
 }
-static int pageNotOnDirtyList(PCache *pCache, PgHdr *pPg){
+int pageNotOnDirtyList(PCache *pCache, PgHdr *pPg){
   PgHdr *p;
   for(p=pCache->pDirty; p; p=p->pDirtyNext){
     if( p==pPg ) return 0;
@@ -192,7 +192,7 @@ int sqlite3PcachePageSanity(PgHdr *pPg){
 ** remove pPage from the dirty list.  The 0x02 means add pPage back to
 ** the dirty list.  Doing both moves pPage to the front of the dirty list.
 */
-static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
+void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
   PCache *p = pPage->pCache;
 
   pcacheTrace(("%p.DIRTYLIST.%s %d\n", p,
@@ -262,7 +262,7 @@ static void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove){
 ** Wrapper around the pluggable caches xUnpin method. If the cache is
 ** being used for an in-memory database, this function is a no-op.
 */
-static void pcacheUnpin(PgHdr *p){
+void pcacheUnpin(PgHdr *p){
   if( p->pCache->bPurgeable ){
     pcacheTrace(("%p.UNPIN %d\n", p->pCache, p->pgno));
     sqlite3GlobalConfig.pcache2.xUnpin(p->pCache->pCache, p->pPage, 0);
@@ -274,7 +274,7 @@ static void pcacheUnpin(PgHdr *p){
 ** Compute the number of pages of cache requested.   p->szCache is the
 ** cache size requested by the "PRAGMA cache_size" statement.
 */
-static int numberOfCachePages(PCache *p){
+int numberOfCachePages(PCache *p){
   if( p->szCache>=0 ){
     /* IMPLEMENTATION-OF: R-42059-47211 If the argument N is positive then the
     ** suggested cache size is set to N. */
@@ -498,7 +498,7 @@ int sqlite3PcacheFetchStress(
 ** requires extra stack manipulation that can be avoided in the common
 ** case.
 */
-static SQLITE_NOINLINE PgHdr *pcacheFetchFinishWithInit(
+SQLITE_NOINLINE PgHdr *pcacheFetchFinishWithInit(
   PCache *pCache,             /* Obtain the page from this cache */
   Pgno pgno,                  /* Page number obtained */
   sqlite3_pcache_page *pPage  /* Page obtained by prior PcacheFetch() call */
@@ -743,7 +743,7 @@ void sqlite3PcacheClear(PCache *pCache){
 ** Merge two lists of pages connected by pDirty and in pgno order.
 ** Do not bother fixing the pDirtyPrev pointers.
 */
-static PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB){
+PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB){
   PgHdr result, *pTail;
   pTail = &result;
   assert( pA!=0 && pB!=0 );
@@ -780,7 +780,7 @@ static PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB){
 ** ever changes to make the previous sentence incorrect.
 */
 #define N_SORT_BUCKET  32
-static PgHdr *pcacheSortDirtyList(PgHdr *pIn){
+PgHdr *pcacheSortDirtyList(PgHdr *pIn){
   PgHdr *a[N_SORT_BUCKET], *p;
   int i;
   memset(a, 0, sizeof(a));

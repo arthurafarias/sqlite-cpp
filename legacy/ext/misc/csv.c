@@ -90,7 +90,7 @@ struct CsvReader {
 };
 
 /* Initialize a CsvReader object */
-static void csv_reader_init(CsvReader *p){
+void csv_reader_init(CsvReader *p){
   p->in = 0;
   p->z = 0;
   p->n = 0;
@@ -103,7 +103,7 @@ static void csv_reader_init(CsvReader *p){
 }
 
 /* Close and reset a CsvReader object */
-static void csv_reader_reset(CsvReader *p){
+void csv_reader_reset(CsvReader *p){
   if( p->in ){
     fclose(p->in);
     sqlite3_free(p->zIn);
@@ -113,7 +113,7 @@ static void csv_reader_reset(CsvReader *p){
 }
 
 /* Report an error on a CsvReader */
-static void csv_errmsg(CsvReader *p, const char *zFormat, ...){
+void csv_errmsg(CsvReader *p, const char *zFormat, ...){
   va_list ap;
   va_start(ap, zFormat);
   sqlite3_vsnprintf(CSV_MXERR, p->zErr, zFormat, ap);
@@ -123,7 +123,7 @@ static void csv_errmsg(CsvReader *p, const char *zFormat, ...){
 /* Open the file associated with a CsvReader
 ** Return the number of errors.
 */
-static int csv_reader_open(
+int csv_reader_open(
   CsvReader *p,               /* The reader to open */
   const char *zFilename,      /* Read from this filename */
   const char *zData           /*  ... or use this data */
@@ -152,7 +152,7 @@ static int csv_reader_open(
 /* The input buffer has overflowed.  Refill the input buffer, then
 ** return the next character
 */
-static CSV_NOINLINE int csv_getc_refill(CsvReader *p){
+CSV_NOINLINE int csv_getc_refill(CsvReader *p){
   size_t got;
 
   assert( p->iIn>=p->nIn );  /* Only called on an empty input buffer */
@@ -166,7 +166,7 @@ static CSV_NOINLINE int csv_getc_refill(CsvReader *p){
 }
 
 /* Return the next character of input.  Return EOF at end of input. */
-static int csv_getc(CsvReader *p){
+int csv_getc(CsvReader *p){
   if( p->iIn >= p->nIn ){
     if( p->in!=0 ) return csv_getc_refill(p);
     return EOF;
@@ -176,7 +176,7 @@ static int csv_getc(CsvReader *p){
 
 /* Increase the size of p->z and append character c to the end. 
 ** Return 0 on success and non-zero if there is an OOM error */
-static CSV_NOINLINE int csv_resize_and_append(CsvReader *p, char c){
+CSV_NOINLINE int csv_resize_and_append(CsvReader *p, char c){
   char *zNew;
   i64 nNew = p->nAlloc*2 + 100;
   zNew = sqlite3_realloc64(p->z, nNew);
@@ -193,7 +193,7 @@ static CSV_NOINLINE int csv_resize_and_append(CsvReader *p, char c){
 
 /* Append a single character to the CsvReader.z[] array.
 ** Return 0 on success and non-zero if there is an OOM error */
-static int csv_append(CsvReader *p, char c){
+int csv_append(CsvReader *p, char c){
   if( p->n>=p->nAlloc-1 ) return csv_resize_and_append(p, c);
   p->z[p->n++] = c;
   return 0;
@@ -212,7 +212,7 @@ static int csv_append(CsvReader *p, char c){
 ** Return 0 at EOF or on OOM.  On EOF, the p->cTerm character will have
 ** been set to EOF.
 */
-static char *csv_read_one_field(CsvReader *p){
+char *csv_read_one_field(CsvReader *p){
   int c;
   p->n = 0;
   c = csv_getc(p);
@@ -293,20 +293,20 @@ static char *csv_read_one_field(CsvReader *p){
 
 /* Forward references to the various virtual table methods implemented
 ** in this file. */
-static int csvtabCreate(sqlite3*, void*, int, const char*const*, 
+int csvtabCreate(sqlite3*, void*, int, const char*const*, 
                            sqlite3_vtab**,char**);
-static int csvtabConnect(sqlite3*, void*, int, const char*const*, 
+int csvtabConnect(sqlite3*, void*, int, const char*const*, 
                            sqlite3_vtab**,char**);
-static int csvtabBestIndex(sqlite3_vtab*,sqlite3_index_info*);
-static int csvtabDisconnect(sqlite3_vtab*);
-static int csvtabOpen(sqlite3_vtab*, sqlite3_vtab_cursor**);
-static int csvtabClose(sqlite3_vtab_cursor*);
-static int csvtabFilter(sqlite3_vtab_cursor*, int idxNum, const char *idxStr,
+int csvtabBestIndex(sqlite3_vtab*,sqlite3_index_info*);
+int csvtabDisconnect(sqlite3_vtab*);
+int csvtabOpen(sqlite3_vtab*, sqlite3_vtab_cursor**);
+int csvtabClose(sqlite3_vtab_cursor*);
+int csvtabFilter(sqlite3_vtab_cursor*, int idxNum, const char *idxStr,
                           int argc, sqlite3_value **argv);
-static int csvtabNext(sqlite3_vtab_cursor*);
-static int csvtabEof(sqlite3_vtab_cursor*);
-static int csvtabColumn(sqlite3_vtab_cursor*,sqlite3_context*,int);
-static int csvtabRowid(sqlite3_vtab_cursor*,sqlite3_int64*);
+int csvtabNext(sqlite3_vtab_cursor*);
+int csvtabEof(sqlite3_vtab_cursor*);
+int csvtabColumn(sqlite3_vtab_cursor*,sqlite3_context*,int);
+int csvtabRowid(sqlite3_vtab_cursor*,sqlite3_int64*);
 
 /* An instance of the CSV virtual table */
 typedef struct CsvTable {
@@ -331,7 +331,7 @@ typedef struct CsvCursor {
 } CsvCursor;
 
 /* Transfer error message text from a reader into a CsvTable */
-static void csv_xfer_error(CsvTable *pTab, CsvReader *pRdr){
+void csv_xfer_error(CsvTable *pTab, CsvReader *pRdr){
   sqlite3_free(pTab->base.zErrMsg);
   pTab->base.zErrMsg = sqlite3_mprintf("%s", pRdr->zErr);
 }
@@ -339,7 +339,7 @@ static void csv_xfer_error(CsvTable *pTab, CsvReader *pRdr){
 /*
 ** This method is the destructor fo a CsvTable object.
 */
-static int csvtabDisconnect(sqlite3_vtab *pVtab){
+int csvtabDisconnect(sqlite3_vtab *pVtab){
   CsvTable *p = (CsvTable*)pVtab;
   sqlite3_free(p->zFilename);
   sqlite3_free(p->zData);
@@ -349,20 +349,20 @@ static int csvtabDisconnect(sqlite3_vtab *pVtab){
 
 /* Skip leading whitespace.  Return a pointer to the first non-whitespace
 ** character, or to the zero terminator if the string has only whitespace */
-static const char *csv_skip_whitespace(const char *z){
+const char *csv_skip_whitespace(const char *z){
   while( isspace((unsigned char)z[0]) ) z++;
   return z;
 }
 
 /* Remove trailing whitespace from the end of string z[] */
-static void csv_trim_whitespace(char *z){
+void csv_trim_whitespace(char *z){
   size_t n = strlen(z);
   while( n>0 && isspace((unsigned char)z[n]) ) n--;
   z[n] = 0;
 }
 
 /* Dequote the string */
-static void csv_dequote(char *z){
+void csv_dequote(char *z){
   int j;
   char cQuote = z[0];
   size_t i, n;
@@ -381,7 +381,7 @@ static void csv_dequote(char *z){
 ** whitespace before and around tokens.  If it is, return a pointer to the
 ** first character of VALUE.  If it is not, return NULL.
 */
-static const char *csv_parameter(const char *zTag, int nTag, const char *z){
+const char *csv_parameter(const char *zTag, int nTag, const char *z){
   z = csv_skip_whitespace(z);
   if( strncmp(zTag, z, nTag)!=0 ) return 0;
   z = csv_skip_whitespace(z+nTag);
@@ -395,7 +395,7 @@ static const char *csv_parameter(const char *zTag, int nTag, const char *z){
 ** even if there is an error.  If an error occurs, then an error message
 ** is left in p->zErr.  If there are no errors, p->zErr[0]==0.
 */
-static int csv_string_parameter(
+int csv_string_parameter(
   CsvReader *p,            /* Leave the error message here, if there is one */
   const char *zParam,      /* Parameter we are checking for */
   const char *zArg,        /* Raw text of the virtual table argment */
@@ -423,7 +423,7 @@ static int csv_string_parameter(
 /* Return 0 if the argument is false and 1 if it is true.  Return -1 if
 ** we cannot really tell.
 */
-static int csv_boolean(const char *z){
+int csv_boolean(const char *z){
   if( sqlite3_stricmp("yes",z)==0
    || sqlite3_stricmp("on",z)==0
    || sqlite3_stricmp("true",z)==0
@@ -446,7 +446,7 @@ static int csv_boolean(const char *z){
 ** not "= BOOLEAN" component) and return non-zero.  If the input string
 ** does not begin with TAG, return zero.
 */
-static int csv_boolean_parameter(
+int csv_boolean_parameter(
   const char *zTag,       /* Tag we are looking for */
   int nTag,               /* Size of the tag in bytes */
   const char *z,          /* Input parameter */
@@ -488,7 +488,7 @@ static int csv_boolean_parameter(
 ** the number of columns in the first row is counted to determine the
 ** column count.  If header=YES, then the first row is skipped.
 */
-static int csvtabConnect(
+int csvtabConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -506,7 +506,7 @@ static int csvtabConnect(
   int nCol = -99;            /* Value of the columns= parameter */
   CsvReader sRdr;            /* A CSV file reader used to store an error
                              ** message and/or to count the number of columns */
-  static const char *azParam[] = {
+  const char *azParam[] = {
      "filename", "data", "schema", 
   };
   char *azPValue[3];         /* Parameter values */
@@ -668,7 +668,7 @@ csvtab_connect_error:
 /*
 ** Reset the current row content held by a CsvCursor.
 */
-static void csvtabCursorRowReset(CsvCursor *pCur){
+void csvtabCursorRowReset(CsvCursor *pCur){
   CsvTable *pTab = (CsvTable*)pCur->base.pVtab;
   int i;
   for(i=0; i<pTab->nCol; i++){
@@ -682,7 +682,7 @@ static void csvtabCursorRowReset(CsvCursor *pCur){
 ** The xConnect and xCreate methods do the same thing, but they must be
 ** different so that the virtual table is not an eponymous virtual table.
 */
-static int csvtabCreate(
+int csvtabCreate(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -695,7 +695,7 @@ static int csvtabCreate(
 /*
 ** Destructor for a CsvCursor.
 */
-static int csvtabClose(sqlite3_vtab_cursor *cur){
+int csvtabClose(sqlite3_vtab_cursor *cur){
   CsvCursor *pCur = (CsvCursor*)cur;
   csvtabCursorRowReset(pCur);
   csv_reader_reset(&pCur->rdr);
@@ -706,7 +706,7 @@ static int csvtabClose(sqlite3_vtab_cursor *cur){
 /*
 ** Constructor for a new CsvTable cursor object.
 */
-static int csvtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int csvtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   CsvTable *pTab = (CsvTable*)p;
   CsvCursor *pCur;
   size_t nByte;
@@ -729,7 +729,7 @@ static int csvtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 ** Advance a CsvCursor to its next row of input.
 ** Set the EOF marker if we reach the end of input.
 */
-static int csvtabNext(sqlite3_vtab_cursor *cur){
+int csvtabNext(sqlite3_vtab_cursor *cur){
   CsvCursor *pCur = (CsvCursor*)cur;
   CsvTable *pTab = (CsvTable*)cur->pVtab;
   int i = 0;
@@ -772,7 +772,7 @@ static int csvtabNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the CsvCursor
 ** is currently pointing.
 */
-static int csvtabColumn(
+int csvtabColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -788,7 +788,7 @@ static int csvtabColumn(
 /*
 ** Return the rowid for the current row.
 */
-static int csvtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int csvtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   CsvCursor *pCur = (CsvCursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -798,7 +798,7 @@ static int csvtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int csvtabEof(sqlite3_vtab_cursor *cur){
+int csvtabEof(sqlite3_vtab_cursor *cur){
   CsvCursor *pCur = (CsvCursor*)cur;
   return pCur->iRowid<0;
 }
@@ -807,7 +807,7 @@ static int csvtabEof(sqlite3_vtab_cursor *cur){
 ** Only a full table scan is supported.  So xFilter simply rewinds to
 ** the beginning.
 */
-static int csvtabFilter(
+int csvtabFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -840,7 +840,7 @@ static int csvtabFilter(
 ** constraints lowers the estimated cost, which is fiction, but is useful
 ** for testing certain kinds of virtual table behavior.
 */
-static int csvtabBestIndex(
+int csvtabBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -879,7 +879,7 @@ static int csvtabBestIndex(
 }
 
 
-static sqlite3_module CsvModule = {
+sqlite3_module CsvModule = {
   0,                       /* iVersion */
   csvtabCreate,            /* xCreate */
   csvtabConnect,           /* xConnect */
@@ -913,10 +913,10 @@ static sqlite3_module CsvModule = {
 ** available that has an xUpdate function.  But the xUpdate always returns
 ** SQLITE_READONLY since the CSV file is not really writable.
 */
-static int csvtabUpdate(sqlite3_vtab *p,int n,sqlite3_value**v,sqlite3_int64*x){
+int csvtabUpdate(sqlite3_vtab *p,int n,sqlite3_value**v,sqlite3_int64*x){
   return SQLITE_READONLY;
 }
-static sqlite3_module CsvModuleFauxWrite = {
+sqlite3_module CsvModuleFauxWrite = {
   0,                       /* iVersion */
   csvtabCreate,            /* xCreate */
   csvtabConnect,           /* xConnect */

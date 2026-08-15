@@ -103,7 +103,7 @@
 #define CC_DOT       26    /* '.' */
 #define CC_ILLEGAL   27    /* Illegal character */
 
-static const unsigned char aiClass[] = {
+const unsigned char aiClass[] = {
 /*         x0  x1  x2  x3  x4  x5  x6  x7  x8  x9  xa  xb  xc  xd  xe  xf */
 /* 0x */   27, 27, 27, 27, 27, 27, 27, 27, 27,  7,  7, 27,  7,  7, 27, 27,
 /* 1x */   27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
@@ -130,7 +130,7 @@ static const unsigned char aiClass[] = {
 ** handle case conversions for the UTF character set since the tables
 ** involved are nearly as big or bigger than SQLite itself.
 */
-static const unsigned char sqlite3UpperToLower[] = {
+const unsigned char sqlite3UpperToLower[] = {
       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
      18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
      36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
@@ -176,7 +176,7 @@ static const unsigned char sqlite3UpperToLower[] = {
 ** non-ASCII UTF character. Hence the test for whether or not a character is
 ** part of an identifier is 0x46.
 */
-static const unsigned char sqlite3CtypeMap[256] = {
+const unsigned char sqlite3CtypeMap[256] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 00..07    ........ */
   0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00,  /* 08..0f    ........ */
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 10..17    ........ */
@@ -297,7 +297,7 @@ static const unsigned char sqlite3CtypeMap[256] = {
 ** Return the length (in bytes) of the token that begins at z[0]. 
 ** Store the token type in *tokenType before returning.
 */
-static sqlite3_int64 sqlite3GetToken(const unsigned char *z, int *tokenType){
+sqlite3_int64 sqlite3GetToken(const unsigned char *z, int *tokenType){
   sqlite3_int64 i;
   int c;
   switch( aiClass[*z] ){  /* Switch on the character-class of the first byte
@@ -653,7 +653,7 @@ char *sqlite3_normalize(const char *zSql){
 ** Break zIn up into separate SQL statements and run sqlite3_normalize()
 ** on each one.  Print the result of each run.
 */
-static void normalizeFile(char *zIn){
+void normalizeFile(char *zIn){
   int i;
   if( zIn==0 ) return;
   for(i=0; zIn[i]; i++){

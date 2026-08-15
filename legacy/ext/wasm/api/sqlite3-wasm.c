@@ -1,5 +1,5 @@
 /*
-** This file requires access to sqlite3.c static state in order to
+** This file requires access to sqlite3.c state in order to
 ** implement certain WASM-specific features, and thus directly
 ** includes that file. Unlike the rest of sqlite3.c, this file
 ** requires compiling with -std=c99 (or equivalent, or a later C
@@ -277,11 +277,11 @@
 ** enough for general-purpose string conversions because some of our
 ** tests use input files (strings) of 16MB+.
 */
-static unsigned char PStack_mem[
+unsigned char PStack_mem[
   1024 * 4 /* API docs guaranty at least 2kb and it's been set at 4kb
               since it was introduced. */
 ] = {0};
-static struct {
+struct {
   unsigned const char * const pBegin;/* Start (inclusive) of memory */
   unsigned const char * const pEnd;  /* One-after-the-end of memory */
   unsigned char * pPos;              /* Current stack pointer */
@@ -392,7 +392,7 @@ SQLITE_WASM_EXPORT2(void,sqlite3__wasm_test_struct,(WasmTestStruct * s)){
 ** us where it's happening.
 */
 SQLITE_WASM_EXPORT2(const char *,sqlite3__wasm_enum_json,(void)){
-  static char aBuffer[1024 * 20] =
+  char aBuffer[1024 * 20] =
     {0} /* where the JSON goes. 2025-09-19: output size=19295, but
            that can vary slightly from build to build, so a little
            leeway is needed here. */;
@@ -1551,12 +1551,12 @@ SQLITE_WASM_EXPORT2(int,sqlite3__wasm_posix_create_file,
 ** This function is NOT part of the sqlite3 public API. It is strictly
 ** for use by the sqlite project's own JS/WASM bindings.
 **
-** This returns either a pointer to a static buffer or zKeyIn directly
+** This returns either a pointer to a buffer or zKeyIn directly
 ** (if zClass is NULL or empty).
 */
 SQLITE_WASM_EXPORT2(const char *,sqlite3__wasm_kvvfsMakeKey,
                     (const char *zClass, const char *zKeyIn)){
-  static char buf[SQLITE_KVOS_SZ+1] = {0};
+  char buf[SQLITE_KVOS_SZ+1] = {0};
   assert(sqlite3KvvfsMethods.nKeySize>24);
   if( zClass && *zClass ){
     kvrecordMakeKey(zClass, zKeyIn, buf);
@@ -1776,7 +1776,7 @@ SQLITE_WASM_EXPORT2(int,sqlite3__wasm_kvvfs_encode,(const char *a, int nA, char 
 ** defined, SQLITE_NOTFOUND is returned without side effects.
 */
 SQLITE_WASM_EXPORT2(int,sqlite3__wasm_init_wasmfs,(const char *zMountPoint)){
-  static backend_t pOpfs = 0;
+  backend_t pOpfs = 0;
   if( !zMountPoint || !*zMountPoint ) zMountPoint = "/opfs";
   if( !pOpfs ){
     pOpfs = wasmfs_create_opfs_backend();
@@ -1874,12 +1874,12 @@ SQLITE_WASM_EXPORT2(char *,sqlite3__wasm_test_str_hello,(int fail)){
 **                optional + or - sign in front, or a hexadecimal
 **                literal of the form 0x...
 */
-static int sqlite3__wasm_SQLTester_strnotglob(const char *zGlob, const char *z){
+int sqlite3__wasm_SQLTester_strnotglob(const char *zGlob, const char *z){
   int c, c2;
   int invert;
   int seen;
   typedef int (*recurse_f)(const char *,const char *);
-  static const recurse_f recurse = sqlite3__wasm_SQLTester_strnotglob;
+  const recurse_f recurse = sqlite3__wasm_SQLTester_strnotglob;
 
   while( (c = (*(zGlob++)))!=0 ){
     if( c=='*' ){

@@ -35,7 +35,7 @@ struct TestStreamInput {
 ** argument. If successful, set *pDb to point to the db handle and return
 ** TCL_OK. Otherwise, return TCL_ERROR.
 */
-static int dbHandleFromObj(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
+int dbHandleFromObj(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
   Tcl_CmdInfo info;
   if( 0==Tcl_GetCommandInfo(interp, Tcl_GetString(pObj), &info) ){
     Tcl_AppendResult(interp, "no such handle: ", Tcl_GetString(pObj), NULL);
@@ -99,8 +99,8 @@ int sql_exec_changeset(
 
 
 #ifdef SQLITE_DEBUG
-static int sqlite3_test_changeset(int, void *, char **);
-static void assert_changeset_is_ok(int n, void *p){
+int sqlite3_test_changeset(int, void *, char **);
+void assert_changeset_is_ok(int n, void *p){
   char *z = 0;
   (void)sqlite3_test_changeset(n, p, &z);
   assert( z==0 );
@@ -112,7 +112,7 @@ static void assert_changeset_is_ok(int n, void *p){
 /*
 ** Tclcmd: sql_exec_changeset DB SQL
 */
-static int SQLITE_TCLAPI test_sql_exec_changeset(
+int SQLITE_TCLAPI test_sql_exec_changeset(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -155,7 +155,7 @@ static int SQLITE_TCLAPI test_sql_exec_changeset(
 ** If the named variable cannot be found, or if it cannot be interpreted
 ** as a integer, return 0.
 */
-static int test_tcl_integer(Tcl_Interp *interp, const char *zVar){
+int test_tcl_integer(Tcl_Interp *interp, const char *zVar){
   Tcl_Obj *pObj;
   int iVal = 0;
   Tcl_Obj *pName = Tcl_NewStringObj(zVar, -1);
@@ -166,7 +166,7 @@ static int test_tcl_integer(Tcl_Interp *interp, const char *zVar){
   return iVal;
 }
 
-static int test_session_error(Tcl_Interp *interp, int rc, char *zErr){
+int test_session_error(Tcl_Interp *interp, int rc, char *zErr){
   extern const char *sqlite3ErrName(int);
   Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
   if( zErr ){
@@ -176,7 +176,7 @@ static int test_session_error(Tcl_Interp *interp, int rc, char *zErr){
   return TCL_ERROR;
 }
 
-static int test_table_filter(void *pCtx, const char *zTbl){
+int test_table_filter(void *pCtx, const char *zTbl){
   TestSession *p = (TestSession*)pCtx;
   Tcl_Obj *pEval;
   int rc;
@@ -206,7 +206,7 @@ struct TestSessionsBlob {
 };
 typedef struct TestSessionsBlob TestSessionsBlob;
 
-static int testStreamOutput(
+int testStreamOutput(
   void *pCtx,
   const void *pData,
   int nData
@@ -234,7 +234,7 @@ static int testStreamOutput(
 **          $session patchset
 **          $session table_filter SCRIPT
 */
-static int SQLITE_TCLAPI test_session_cmd(
+int SQLITE_TCLAPI test_session_cmd(
   void *clientData,
   Tcl_Interp *interp,
   int objc,
@@ -242,7 +242,7 @@ static int SQLITE_TCLAPI test_session_cmd(
 ){
   TestSession *p = (TestSession*)clientData;
   sqlite3_session *pSession = p->pSession;
-  static struct SessionSubcmd {
+  struct SessionSubcmd {
     const char *zSub;
     int nArg;
     const char *zMsg;
@@ -410,7 +410,7 @@ static int SQLITE_TCLAPI test_session_cmd(
   return TCL_OK;
 }
 
-static void SQLITE_TCLAPI test_session_del(void *clientData){
+void SQLITE_TCLAPI test_session_del(void *clientData){
   TestSession *p = (TestSession*)clientData;
   if( p->pFilterScript ) Tcl_DecrRefCount(p->pFilterScript);
   sqlite3session_delete(p->pSession);
@@ -420,7 +420,7 @@ static void SQLITE_TCLAPI test_session_del(void *clientData){
 /*
 ** Tclcmd:  sqlite3session CMD DB-HANDLE DB-NAME
 */
-static int SQLITE_TCLAPI test_sqlite3session(
+int SQLITE_TCLAPI test_sqlite3session(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -466,7 +466,7 @@ static int SQLITE_TCLAPI test_sqlite3session(
   return TCL_OK;
 }
 
-static void test_append_value(Tcl_Obj *pList, sqlite3_value *pVal){
+void test_append_value(Tcl_Obj *pList, sqlite3_value *pVal){
   if( pVal==0 ){
     Tcl_ListObjAppendElement(0, pList, Tcl_NewObj());
     Tcl_ListObjAppendElement(0, pList, Tcl_NewObj());
@@ -512,7 +512,7 @@ struct TestConflictHandler {
   Tcl_Obj *pFilterScript;
 };
 
-static int test_obj_eq_string(Tcl_Obj *p, const char *z){
+int test_obj_eq_string(Tcl_Obj *p, const char *z){
   Tcl_Size n;
   Tcl_Size nObj;
   char *zObj;
@@ -523,7 +523,7 @@ static int test_obj_eq_string(Tcl_Obj *p, const char *z){
   return (nObj==n && (n==0 || 0==memcmp(zObj, z, n)));
 }
 
-static Tcl_Obj *testIterData(sqlite3_changeset_iter *pIter){
+Tcl_Obj *testIterData(sqlite3_changeset_iter *pIter){
   Tcl_Obj *pVar = 0;
   int nCol;                       /* Number of columns in table */
   int nCol2;                      /* Number of columns in table */
@@ -582,7 +582,7 @@ static Tcl_Obj *testIterData(sqlite3_changeset_iter *pIter){
 }
 
 
-static int test_filter_handler(
+int test_filter_handler(
   void *pCtx,                     /* Pointer to TestConflictHandler structure */
   const char *zTab                /* Table name */
 ){
@@ -605,7 +605,7 @@ static int test_filter_handler(
   return res;
 }  
 
-static int test_filter_v3_handler(
+int test_filter_v3_handler(
   void *pCtx,                     /* Pointer to TestConflictHandler structure */
   sqlite3_changeset_iter *pIter
 ){
@@ -628,7 +628,7 @@ static int test_filter_v3_handler(
   return res;
 }  
 
-static int test_conflict_handler(
+int test_conflict_handler(
   void *pCtx,                     /* Pointer to TestConflictHandler structure */
   int eConf,                      /* DATA, MISSING, CONFLICT, CONSTRAINT */
   sqlite3_changeset_iter *pIter   /* Handle describing change and conflict */
@@ -795,7 +795,7 @@ static int test_conflict_handler(
 ** effect of a malloc failure within an sqlite3_value_xxx() function
 ** invoked by a conflict-handler callback.
 */
-static int replace_handler(
+int replace_handler(
   void *pCtx,                     /* Pointer to TestConflictHandler structure */
   int eConf,                      /* DATA, MISSING, CONFLICT, CONSTRAINT */
   sqlite3_changeset_iter *pIter   /* Handle describing change and conflict */
@@ -829,7 +829,7 @@ static int replace_handler(
   return SQLITE_CHANGESET_OMIT;
 }
 
-static int testStreamInput(
+int testStreamInput(
   void *pCtx,                     /* Context pointer */
   void *pData,                    /* Buffer to populate */
   int *pnData                     /* IN/OUT: Bytes requested/supplied */
@@ -865,7 +865,7 @@ static int testStreamInput(
 ** because Tcl's buffers are often padded by a few bytes, which prevents
 ** small overreads from being detected when tests are run under asan.
 */
-static void *testGetByteArrayFromObj(Tcl_Obj *p, Tcl_Size *pnByte){
+void *testGetByteArrayFromObj(Tcl_Obj *p, Tcl_Size *pnByte){
   Tcl_Size nByte = 0;
   void *aByte = Tcl_GetByteArrayFromObj(p, &nByte);
   void *aCopy = malloc(nByte ? (size_t)nByte : 1);
@@ -875,7 +875,7 @@ static void *testGetByteArrayFromObj(Tcl_Obj *p, Tcl_Size *pnByte){
 }
 
 
-static int SQLITE_TCLAPI testSqlite3changesetApply(
+int SQLITE_TCLAPI testSqlite3changesetApply(
   int iVersion,
   void * clientData,
   Tcl_Interp *interp,
@@ -1009,7 +1009,7 @@ static int SQLITE_TCLAPI testSqlite3changesetApply(
 /*
 ** sqlite3changeset_apply DB CHANGESET CONFLICT-SCRIPT ?FILTER-SCRIPT?
 */
-static int SQLITE_TCLAPI test_sqlite3changeset_apply(
+int SQLITE_TCLAPI test_sqlite3changeset_apply(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1020,7 +1020,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_apply(
 /*
 ** sqlite3changeset_apply_v2 DB CHANGESET CONFLICT-SCRIPT ?FILTER-SCRIPT?
 */
-static int SQLITE_TCLAPI test_sqlite3changeset_apply_v2(
+int SQLITE_TCLAPI test_sqlite3changeset_apply_v2(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1031,7 +1031,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_apply_v2(
 /*
 ** sqlite3changeset_apply_v3 DB CHANGESET CONFLICT-SCRIPT ?FILTER-SCRIPT?
 */
-static int SQLITE_TCLAPI test_sqlite3changeset_apply_v3(
+int SQLITE_TCLAPI test_sqlite3changeset_apply_v3(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1043,7 +1043,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_apply_v3(
 /*
 ** sqlite3changeset_apply_replace_all DB CHANGESET 
 */
-static int SQLITE_TCLAPI test_sqlite3changeset_apply_replace_all(
+int SQLITE_TCLAPI test_sqlite3changeset_apply_replace_all(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1079,7 +1079,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_apply_replace_all(
 /*
 ** sqlite3changeset_invert CHANGESET
 */
-static int SQLITE_TCLAPI test_sqlite3changeset_invert(
+int SQLITE_TCLAPI test_sqlite3changeset_invert(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1128,7 +1128,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_invert(
 ** The caller is responsible for eventually calling free() on the returned
 ** value.
 */
-static u8 *copyToMalloc(const u8 *aIn, int nIn){
+u8 *copyToMalloc(const u8 *aIn, int nIn){
   u8 *pRet = malloc(nIn);
   memcpy(pRet, aIn, nIn);
   return pRet;
@@ -1137,7 +1137,7 @@ static u8 *copyToMalloc(const u8 *aIn, int nIn){
 /*
 ** sqlite3changeset_concat LEFT RIGHT
 */
-static int SQLITE_TCLAPI test_sqlite3changeset_concat(
+int SQLITE_TCLAPI test_sqlite3changeset_concat(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1195,7 +1195,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_concat(
 /*
 ** sqlite3session_foreach VARNAME CHANGESET SCRIPT
 */
-static int SQLITE_TCLAPI test_sqlite3session_foreach(
+int SQLITE_TCLAPI test_sqlite3session_foreach(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1300,13 +1300,13 @@ static int SQLITE_TCLAPI test_sqlite3session_foreach(
 ** tclcmd: CMD rebase CHANGESET
 ** tclcmd: CMD delete
 */
-static int SQLITE_TCLAPI test_rebaser_cmd(
+int SQLITE_TCLAPI test_rebaser_cmd(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  static struct RebaseSubcmd {
+  struct RebaseSubcmd {
     const char *zSub;
     int nArg;
     const char *zMsg;
@@ -1385,7 +1385,7 @@ static int SQLITE_TCLAPI test_rebaser_cmd(
   return TCL_OK;
 }
 
-static void SQLITE_TCLAPI test_rebaser_del(void *clientData){
+void SQLITE_TCLAPI test_rebaser_del(void *clientData){
   sqlite3_rebaser *p = (sqlite3_rebaser*)clientData;
   sqlite3rebaser_delete(p);
 }
@@ -1393,7 +1393,7 @@ static void SQLITE_TCLAPI test_rebaser_del(void *clientData){
 /*
 ** tclcmd: sqlite3rebaser_create NAME
 */
-static int SQLITE_TCLAPI test_sqlite3rebaser_create(
+int SQLITE_TCLAPI test_sqlite3rebaser_create(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1429,7 +1429,7 @@ static int SQLITE_TCLAPI test_sqlite3rebaser_create(
 ** Or, if the changeset appears to be well-formed, this function
 ** returns SQLITE_OK and sets (*pzErr) to NULL.
 */
-static int sqlite3_test_changeset(
+int sqlite3_test_changeset(
   int nChangeset,
   void *pChangeset,
   char **pzErr
@@ -1490,7 +1490,7 @@ static int sqlite3_test_changeset(
 /*
 ** test_changeset CHANGESET
 */
-static int SQLITE_TCLAPI test_changeset(
+int SQLITE_TCLAPI test_changeset(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1523,13 +1523,13 @@ static int SQLITE_TCLAPI test_changeset(
 /*
 ** tclcmd: sqlite3rebaser_configure OP VALUE
 */
-static int SQLITE_TCLAPI test_sqlite3session_config(
+int SQLITE_TCLAPI test_sqlite3session_config(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  static struct ConfigOpt {
+  struct ConfigOpt {
     const char *zSub;
     int op;
   } aSub[] = {
@@ -1576,13 +1576,13 @@ struct TestChangeIter {
 /*
 ** Destructor for Tcl changegroup command object.
 */
-static void test_changegroup_del(void *clientData){
+void test_changegroup_del(void *clientData){
   TestChangegroup *pGrp = (TestChangegroup*)clientData;
   sqlite3changegroup_delete(pGrp->pGrp);
   ckfree(pGrp);
 }
 
-static int testGetNewOrOld(Tcl_Interp *interp, Tcl_Obj *pObj, int *pbNew){
+int testGetNewOrOld(Tcl_Interp *interp, Tcl_Obj *pObj, int *pbNew){
   const char *azVal[] = { "old", "new", 0 };
   int iIdx = 0;
   int rc = Tcl_GetIndexFromObj(interp, pObj, azVal, "record", 0, &iIdx);
@@ -1596,14 +1596,14 @@ static int testGetNewOrOld(Tcl_Interp *interp, Tcl_Obj *pObj, int *pbNew){
 ** Tclcmd:  $changegroup output
 ** Tclcmd:  $changegroup delete
 */
-static int SQLITE_TCLAPI test_changegroup_cmd(
+int SQLITE_TCLAPI test_changegroup_cmd(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
   TestChangegroup *p = (TestChangegroup*)clientData;
-  static struct ChangegroupCmd {
+  struct ChangegroupCmd {
     const char *zSub;
     int nArg;
     const char *zMsg;
@@ -1894,7 +1894,7 @@ static int SQLITE_TCLAPI test_changegroup_cmd(
 /*
 ** Tclcmd:  sqlite3changegroup CMD
 */
-static int SQLITE_TCLAPI test_sqlite3changegroup(
+int SQLITE_TCLAPI test_sqlite3changegroup(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -1929,19 +1929,19 @@ extern const char *sqlite3ErrName(int);
 /*
 ** Destructor for Tcl iterator command object.
 */
-static void test_iter_del(void *clientData){
+void test_iter_del(void *clientData){
   TestChangeIter *p = (TestChangeIter*)clientData;
   sqlite3changeset_finalize(p->pIter);
   ckfree(p);
 }
 
-static int SQLITE_TCLAPI test_iter_cmd(
+int SQLITE_TCLAPI test_iter_cmd(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  static const char *aSub[] = {
+  const char *aSub[] = {
     "next",        /* 0 */
     "data",        /* 1 */
     "finalize",    /* 2 */
@@ -1985,7 +1985,7 @@ static int SQLITE_TCLAPI test_iter_cmd(
 /*
 ** Tclcmd:  sqlite3changeset_start ?-invert? CHANGESET
 */
-static int SQLITE_TCLAPI test_sqlite3changeset_start(
+int SQLITE_TCLAPI test_sqlite3changeset_start(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -2000,7 +2000,7 @@ static int SQLITE_TCLAPI test_sqlite3changeset_start(
   int rc = SQLITE_OK;
   int nAlloc = 0;                 /* Bytes of space to allocate */
 
-  static int iCmd = 1;
+  int iCmd = 1;
   char zCmd[64];
 
   if( objc==3 ){

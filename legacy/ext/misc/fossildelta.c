@@ -81,7 +81,7 @@ struct hash {
 /*
 ** Initialize the rolling hash using the first NHASH characters of z[]
 */
-static void hash_init(hash *pHash, const char *z){
+void hash_init(hash *pHash, const char *z){
   u16 a, b, i;
   a = b = z[0];
   for(i=1; i<NHASH; i++){
@@ -97,7 +97,7 @@ static void hash_init(hash *pHash, const char *z){
 /*
 ** Advance the rolling hash by a single character "c"
 */
-static void hash_next(hash *pHash, int c){
+void hash_next(hash *pHash, int c){
   u16 old = pHash->z[pHash->i];
   pHash->z[pHash->i] = c;
   pHash->i = (pHash->i+1)&(NHASH-1);
@@ -108,7 +108,7 @@ static void hash_next(hash *pHash, int c){
 /*
 ** Return a 32-bit hash value
 */
-static u32 hash_32bit(hash *pHash){
+u32 hash_32bit(hash *pHash){
   return (pHash->a & 0xffff) | (((u32)(pHash->b & 0xffff))<<16);
 }
 
@@ -120,7 +120,7 @@ static u32 hash_32bit(hash *pHash){
 **    hash_init(&h, zInput);
 **    return hash_32bit(&h);
 */
-static u32 hash_once(const char *z){
+u32 hash_once(const char *z){
   u16 a, b, i;
   a = b = z[0];
   for(i=1; i<NHASH; i++){
@@ -133,8 +133,8 @@ static u32 hash_once(const char *z){
 /*
 ** Write an base-64 integer into the given buffer.
 */
-static void putInt(unsigned int v, char **pz){
-  static const char zDigits[] =
+void putInt(unsigned int v, char **pz){
+  const char zDigits[] =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~";
   /*  123456789 123456789 123456789 123456789 123456789 123456789 123 */
   int i, j;
@@ -157,8 +157,8 @@ static void putInt(unsigned int v, char **pz){
 ** the integer.  The *pLen parameter holds the length of the string
 ** in *pz and is decremented once for each character in the integer.
 */
-static unsigned int deltaGetInt(const char **pz, int *pLen){
-  static const signed char zValue[] = {
+unsigned int deltaGetInt(const char **pz, int *pLen){
+  const signed char zValue[] = {
     -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
@@ -194,7 +194,7 @@ static unsigned int deltaGetInt(const char **pz, int *pLen){
 /*
 ** Return the number digits in the base-64 representation of a positive integer
 */
-static int digit_count(int v){
+int digit_count(int v){
   unsigned int i, x;
   for(i=1, x=64; v>=x; i++, x <<= 6){}
   return i;
@@ -212,8 +212,8 @@ static int digit_count(int v){
 ** have occurred if the buffer was padded with zeros to the next multiple
 ** of four bytes.
 */
-static unsigned int checksum(const char *zIn, size_t N){
-  static const int byteOrderTest = 1;
+unsigned int checksum(const char *zIn, size_t N){
+  const int byteOrderTest = 1;
   const unsigned char *z = (const unsigned char *)zIn;
   const unsigned char *zEnd = (const unsigned char*)&zIn[N&~3];
   unsigned sum = 0;
@@ -330,7 +330,7 @@ static unsigned int checksum(const char *zIn, size_t N){
 ** do not match or which can not be encoded efficiently using copy
 ** commands.
 */
-static int delta_create(
+int delta_create(
   const char *zSrc,      /* The source or pattern file */
   unsigned int lenSrc,   /* Length of the source file */
   const char *zOut,      /* The target file */
@@ -517,7 +517,7 @@ static int delta_create(
 ** for the output and hence allocate nor more space that is really
 ** needed.
 */
-static int delta_output_size(const char *zDelta, int lenDelta){
+int delta_output_size(const char *zDelta, int lenDelta){
   int size;
   size = deltaGetInt(&zDelta, &lenDelta);
   if( lenDelta<=0 || *zDelta!='\n' ){
@@ -548,7 +548,7 @@ static int delta_output_size(const char *zDelta, int lenDelta){
 ** Refer to the delta_create() documentation above for a description
 ** of the delta file format.
 */
-static int delta_apply(
+int delta_apply(
   const char *zSrc,      /* The source or pattern file */
   int lenSrc,            /* Length of the source file */
   const char *zDelta,    /* Delta to apply to the pattern */
@@ -640,7 +640,7 @@ static int delta_apply(
 **
 ** Return a delta for carrying X into Y.
 */
-static void deltaCreateFunc(
+void deltaCreateFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -675,7 +675,7 @@ static void deltaCreateFunc(
 **
 ** Return the result of applying delta D to input X.
 */
-static void deltaApplyFunc(
+void deltaApplyFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -718,7 +718,7 @@ static void deltaApplyFunc(
 **
 ** Return the size of the output that results from applying delta D.
 */
-static void deltaOutputSizeFunc(
+void deltaOutputSizeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -791,7 +791,7 @@ struct deltaparsevtab_cursor {
 
 /* Operator names:
 */
-static const char *azOp[] = {
+const char *azOp[] = {
   "SIZE", "COPY", "INSERT", "CHECKSUM", "ERROR", "EOF"
 };
 #define DELTAPARSE_OP_SIZE         0
@@ -814,7 +814,7 @@ static const char *azOp[] = {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against the virtual table will look like.
 */
-static int deltaparsevtabConnect(
+int deltaparsevtabConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -845,7 +845,7 @@ static int deltaparsevtabConnect(
 /*
 ** This method is the destructor for deltaparsevtab_vtab objects.
 */
-static int deltaparsevtabDisconnect(sqlite3_vtab *pVtab){
+int deltaparsevtabDisconnect(sqlite3_vtab *pVtab){
   deltaparsevtab_vtab *p = (deltaparsevtab_vtab*)pVtab;
   sqlite3_free(p);
   return SQLITE_OK;
@@ -854,7 +854,7 @@ static int deltaparsevtabDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new deltaparsevtab_cursor object.
 */
-static int deltaparsevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int deltaparsevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   deltaparsevtab_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -866,7 +866,7 @@ static int deltaparsevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a deltaparsevtab_cursor.
 */
-static int deltaparsevtabClose(sqlite3_vtab_cursor *cur){
+int deltaparsevtabClose(sqlite3_vtab_cursor *cur){
   deltaparsevtab_cursor *pCur = (deltaparsevtab_cursor*)cur;
   sqlite3_free(pCur->aDelta);
   sqlite3_free(pCur);
@@ -877,7 +877,7 @@ static int deltaparsevtabClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a deltaparsevtab_cursor to its next row of output.
 */
-static int deltaparsevtabNext(sqlite3_vtab_cursor *cur){
+int deltaparsevtabNext(sqlite3_vtab_cursor *cur){
   deltaparsevtab_cursor *pCur = (deltaparsevtab_cursor*)cur;
   const char *z;
   int i = 0;
@@ -932,7 +932,7 @@ static int deltaparsevtabNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the deltaparsevtab_cursor
 ** is currently pointing.
 */
-static int deltaparsevtabColumn(
+int deltaparsevtabColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -972,7 +972,7 @@ static int deltaparsevtabColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int deltaparsevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int deltaparsevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   deltaparsevtab_cursor *pCur = (deltaparsevtab_cursor*)cur;
   *pRowid = pCur->iCursor;
   return SQLITE_OK;
@@ -982,7 +982,7 @@ static int deltaparsevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int deltaparsevtabEof(sqlite3_vtab_cursor *cur){
+int deltaparsevtabEof(sqlite3_vtab_cursor *cur){
   deltaparsevtab_cursor *pCur = (deltaparsevtab_cursor*)cur;
   return pCur->eOp==DELTAPARSE_OP_EOF || pCur->iCursor>=pCur->nDelta;
 }
@@ -993,7 +993,7 @@ static int deltaparsevtabEof(sqlite3_vtab_cursor *cur){
 ** once prior to any call to deltaparsevtabColumn() or deltaparsevtabRowid() or
 ** deltaparsevtabEof().
 */
-static int deltaparsevtabFilter(
+int deltaparsevtabFilter(
   sqlite3_vtab_cursor *pVtabCursor,
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -1037,7 +1037,7 @@ static int deltaparsevtabFilter(
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int deltaparsevtabBestIndex(
+int deltaparsevtabBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -1063,7 +1063,7 @@ static int deltaparsevtabBestIndex(
 ** This following structure defines all the methods for the
 ** virtual table.
 */
-static sqlite3_module deltaparsevtabModule = {
+sqlite3_module deltaparsevtabModule = {
   /* iVersion    */ 0,
   /* xCreate     */ 0,
   /* xConnect    */ deltaparsevtabConnect,
@@ -1101,7 +1101,7 @@ int sqlite3_fossildelta_init(
   char **pzErrMsg,
   const sqlite3_api_routines *pApi
 ){
-  static const int enc = SQLITE_UTF8|SQLITE_INNOCUOUS;
+  const int enc = SQLITE_UTF8|SQLITE_INNOCUOUS;
   int rc = SQLITE_OK;
   SQLITE_EXTENSION_INIT2(pApi);
   (void)pzErrMsg;  /* Unused parameter */

@@ -239,7 +239,7 @@ void sqlite3Fts5PoslistSafeAppend(
   i64 iPos
 ){
   if( iPos>=*piPrev ){
-    static const i64 colmask = ((i64)(0x7FFFFFFF)) << 32;
+    const i64 colmask = ((i64)(0x7FFFFFFF)) << 32;
     if( (iPos & colmask) != (*piPrev & colmask) ){
       pBuf->p[pBuf->n++] = 1;
       pBuf->n += sqlite3Fts5PutVarint(&pBuf->p[pBuf->n], (iPos>>32));

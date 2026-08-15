@@ -5,7 +5,7 @@
 #include "sqlite3.h"
 #include <stdio.h>
 
-static const struct {
+const struct {
   int eCode;
   char *zName;
 } aLimit[] = {
@@ -23,7 +23,7 @@ static const struct {
   { SQLITE_LIMIT_WORKER_THREADS,        "SQLITE_MAX_WORKER_THREADS"       },
 };
 
-static int maxLimit(sqlite3 *db, int eCode){
+int maxLimit(sqlite3 *db, int eCode){
   int iOrig = sqlite3_limit(db, eCode, 0x7fffffff);
   return sqlite3_limit(db, eCode, iOrig);
 }

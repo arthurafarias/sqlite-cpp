@@ -62,7 +62,7 @@ ifcapable !subquery {
   return
 }
 
-# Testing of the IN operator using static lists on the right-hand side.
+# Testing of the IN operator using lists on the right-hand side.
 #
 do_test in-2.1 {
   execsql {SELECT a FROM t1 WHERE b IN (8,12,16,24,32) ORDER BY a}

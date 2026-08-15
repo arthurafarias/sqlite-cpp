@@ -67,7 +67,7 @@ struct explain_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against explain will look like.
 */
-static int explainConnect(
+int explainConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -104,7 +104,7 @@ static int explainConnect(
 /*
 ** This method is the destructor for explain_cursor objects.
 */
-static int explainDisconnect(sqlite3_vtab *pVtab){
+int explainDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -112,7 +112,7 @@ static int explainDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new explain_cursor object.
 */
-static int explainOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int explainOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   explain_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -125,7 +125,7 @@ static int explainOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a explain_cursor.
 */
-static int explainClose(sqlite3_vtab_cursor *cur){
+int explainClose(sqlite3_vtab_cursor *cur){
   explain_cursor *pCur = (explain_cursor*)cur;
   sqlite3_finalize(pCur->pExplain);
   sqlite3_free(pCur->zSql);
@@ -137,7 +137,7 @@ static int explainClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a explain_cursor to its next row of output.
 */
-static int explainNext(sqlite3_vtab_cursor *cur){
+int explainNext(sqlite3_vtab_cursor *cur){
   explain_cursor *pCur = (explain_cursor*)cur;
   pCur->rc = sqlite3_step(pCur->pExplain);
   if( pCur->rc!=SQLITE_DONE && pCur->rc!=SQLITE_ROW ) return pCur->rc;
@@ -148,7 +148,7 @@ static int explainNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the explain_cursor
 ** is currently pointing.
 */
-static int explainColumn(
+int explainColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -166,7 +166,7 @@ static int explainColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int explainRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int explainRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   explain_cursor *pCur = (explain_cursor*)cur;
   *pRowid = sqlite3_column_int64(pCur->pExplain, 0);
   return SQLITE_OK;
@@ -176,7 +176,7 @@ static int explainRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int explainEof(sqlite3_vtab_cursor *cur){
+int explainEof(sqlite3_vtab_cursor *cur){
   explain_cursor *pCur = (explain_cursor*)cur;
   return pCur->rc!=SQLITE_ROW;
 }
@@ -189,7 +189,7 @@ static int explainEof(sqlite3_vtab_cursor *cur){
 **
 ** The argv[0] is the SQL statement that is to be explained.
 */
-static int explainFilter(
+int explainFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -232,7 +232,7 @@ static int explainFilter(
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int explainBestIndex(
+int explainBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -268,7 +268,7 @@ static int explainBestIndex(
 ** This following structure defines all the methods for the 
 ** explain virtual table.
 */
-static sqlite3_module explainModule = {
+sqlite3_module explainModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   explainConnect,            /* xConnect */

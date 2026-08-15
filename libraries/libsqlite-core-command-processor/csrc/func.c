@@ -24,7 +24,7 @@
 /*
 ** Return the collating function associated with a function.
 */
-static CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
+CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
   VdbeOp *pOp;
   assert( context->pVdbe!=0 );
   pOp = &context->pVdbe->aOp[context->iOp-1];
@@ -37,7 +37,7 @@ static CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
 ** Indicate that the accumulator load should be skipped on this
 ** iteration of the aggregate loop.
 */
-static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
+void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
   assert( context->isError<=0 );
   context->isError = -1;
   context->skipFlag = 1;
@@ -46,7 +46,7 @@ static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
 /*
 ** Implementation of the non-aggregate min() and max() functions
 */
-static void minmaxFunc(
+void minmaxFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -76,12 +76,12 @@ static void minmaxFunc(
 /*
 ** Return the type of the argument.
 */
-static void typeofFunc(
+void typeofFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **argv
 ){
-  static const char *azType[] = { "integer", "real", "text", "blob", "null" };
+  const char *azType[] = { "integer", "real", "text", "blob", "null" };
   int i = sqlite3_value_type(argv[0]) - 1;
   UNUSED_PARAMETER(NotUsed);
   assert( i>=0 && i<ArraySize(azType) );
@@ -101,7 +101,7 @@ static void typeofFunc(
 **
 ** Return the subtype of X
 */
-static void subtypeFunc(
+void subtypeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -113,7 +113,7 @@ static void subtypeFunc(
 /*
 ** Implementation of the length() function
 */
-static void lengthFunc(
+void lengthFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -152,7 +152,7 @@ static void lengthFunc(
 /*
 ** Implementation of the octet_length() function
 */
-static void bytelengthFunc(
+void bytelengthFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -191,7 +191,7 @@ static void bytelengthFunc(
 ** IMP: R-23979-26855 The abs(X) function returns the absolute value of
 ** the numeric argument X.
 */
-static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
   assert( argc==1 );
   UNUSED_PARAMETER(argc);
   switch( sqlite3_value_type(argv[0]) ){
@@ -240,7 +240,7 @@ static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** the number of bytes in haystack prior to the first occurrence of needle,
 ** or 0 if needle never occurs in haystack.
 */
-static void instrFunc(
+void instrFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -308,7 +308,7 @@ endInstrOOM:
 /*
 ** Implementation of the printf() (a.k.a. format()) SQL function.
 */
-static void printfFunc(
+void printfFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -353,7 +353,7 @@ static void printfFunc(
 **
 ** If p2 is negative, return the p2 characters preceding p1.
 */
-static void substrFunc(
+void substrFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -448,7 +448,7 @@ static void substrFunc(
 ** Implementation of the round() function
 */
 #ifndef SQLITE_OMIT_FLOATING_POINT
-static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
   i64 n = 0;
   double r;
   char *zBuf;
@@ -489,7 +489,7 @@ static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** If nByte is larger than the maximum string or blob length, then
 ** raise an SQLITE_TOOBIG exception and return NULL.
 */
-static void *contextMalloc(sqlite3_context *context, i64 nByte){
+void *contextMalloc(sqlite3_context *context, i64 nByte){
   char *z;
   sqlite3 *db = sqlite3_context_db_handle(context);
   assert( nByte>0 );
@@ -510,7 +510,7 @@ static void *contextMalloc(sqlite3_context *context, i64 nByte){
 /*
 ** Implementation of the upper() and lower() SQL functions.
 */
-static void upperFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+void upperFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
   char *z1;
   const char *z2;
   int i, n;
@@ -529,7 +529,7 @@ static void upperFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
     }
   }
 }
-static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
   char *z1;
   const char *z2;
   int i, n;
@@ -562,7 +562,7 @@ static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 /*
 ** Implementation of random().  Return a random integer. 
 */
-static void randomFunc(
+void randomFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -588,7 +588,7 @@ static void randomFunc(
 ** Implementation of randomblob(N).  Return a random blob
 ** that is N bytes long.
 */
-static void randomBlob(
+void randomBlob(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -612,7 +612,7 @@ static void randomBlob(
 ** Implementation of the last_insert_rowid() SQL function.  The return
 ** value is the same as the sqlite3_last_insert_rowid() API function.
 */
-static void last_insert_rowid(
+void last_insert_rowid(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -632,7 +632,7 @@ static void last_insert_rowid(
 ** around the sqlite3_changes64() C/C++ function and hence follows the
 ** same rules for counting changes.
 */
-static void changes(
+void changes(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -646,7 +646,7 @@ static void changes(
 ** Implementation of the total_changes() SQL function.  The return value is
 ** the same as the sqlite3_total_changes64() API function.
 */
-static void total_changes(
+void total_changes(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -681,13 +681,13 @@ struct compareInfo {
 # define Utf8Read(A)               (A[0]<0x80?*(A++):sqlite3Utf8Read(&A))
 #endif
 
-static const struct compareInfo globInfo = { '*', '?', '[', 0 };
+const struct compareInfo globInfo = { '*', '?', '[', 0 };
 /* The correct SQL-92 behavior is for the LIKE operator to ignore
 ** case.  Thus  'a' LIKE 'A' would be true. */
-static const struct compareInfo likeInfoNorm = { '%', '_',   0, 1 };
+const struct compareInfo likeInfoNorm = { '%', '_',   0, 1 };
 /* If SQLITE_CASE_SENSITIVE_LIKE is defined, then the LIKE operator
 ** is case sensitive causing 'a' LIKE 'A' to be false */
-static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
+const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 
 /*
 ** Possible error returns from patternMatch()
@@ -734,7 +734,7 @@ static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 **
 ** This routine is usually quick, but can be N**2 in the worst case.
 */
-static int patternCompare(
+int patternCompare(
   const u8 *zPattern,              /* The glob pattern */
   const u8 *zString,               /* The string to compare against the glob */
   const struct compareInfo *pInfo, /* Information about how to do the compare */
@@ -913,7 +913,7 @@ int sqlite3_like_count = 0;
 ** This same function (with a different compareInfo structure) computes
 ** the GLOB operator.
 */
-static void likeFunc(
+void likeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -984,7 +984,7 @@ static void likeFunc(
 ** argument if the arguments are different.  The result is NULL if the
 ** arguments are equal to each other.
 */
-static void nullifFunc(
+void nullifFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **argv
@@ -1000,7 +1000,7 @@ static void nullifFunc(
 ** Implementation of the sqlite_version() function.  The result is the version
 ** of the SQLite library that is running.
 */
-static void versionFunc(
+void versionFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -1016,7 +1016,7 @@ static void versionFunc(
 ** that identifies the particular version of the source code used to build
 ** SQLite.
 */
-static void sourceidFunc(
+void sourceidFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -1032,7 +1032,7 @@ static void sourceidFunc(
 ** sqlite3_log().  The return value is NULL.  The function exists purely for
 ** its side-effects.
 */
-static void errlogFunc(
+void errlogFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1048,7 +1048,7 @@ static void errlogFunc(
 ** was used to build SQLite.
 */
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptionusedFunc(
+void compileoptionusedFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1072,7 +1072,7 @@ static void compileoptionusedFunc(
 ** used to build SQLite.
 */
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptiongetFunc(
+void compileoptiongetFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1090,7 +1090,7 @@ static void compileoptiongetFunc(
 
 /* Array for converting from half-bytes (nybbles) into ASCII hex
 ** digits. */
-static const char hexdigits[] = {
+const char hexdigits[] = {
   '0', '1', '2', '3', '4', '5', '6', '7',
   '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
@@ -1156,7 +1156,7 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
 ** a decoding of those digits into *pVal.  Or return false if any
 ** one of the first N characters in z[] is not a hexadecimal digit.
 */
-static int isNHex(const char *z, int N, u32 *pVal){
+int isNHex(const char *z, int N, u32 *pVal){
   int i;
   u32 v = 0;
   for(i=0; i<N; i++){
@@ -1180,7 +1180,7 @@ static int isNHex(const char *z, int N, u32 *pVal){
 **    or \UXXXXXXXX (8 hexadecimal digits). To specify a backslash,
 **    write two backslashes. All other characters are taken literally.
 */
-static void unistrFunc(
+void unistrFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1264,7 +1264,7 @@ unistr_error:
 ** implemented instead.  The difference is that UNISTR_QUOTE() uses the
 ** UNISTR() function to escape control characters.
 */
-static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
   sqlite3_str str;
   sqlite3 *db = sqlite3_context_db_handle(context);
   assert( argc==1 );
@@ -1283,7 +1283,7 @@ static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** The unicode() function.  Return the integer unicode code-point value
 ** for the first character of the input string.
 */
-static void unicodeFunc(
+void unicodeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1298,7 +1298,7 @@ static void unicodeFunc(
 ** an integer.  It constructs a string where each character of the string
 ** is the unicode character for the corresponding integer argument.
 */
-static void charFunc(
+void charFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1340,7 +1340,7 @@ static void charFunc(
 ** The hex() function.  Interpret the argument as a blob.  Return
 ** a hexadecimal rendering as text.
 */
-static void hexFunc(
+void hexFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1370,7 +1370,7 @@ static void hexFunc(
 ** Buffer zStr contains nStr bytes of utf-8 encoded text. Return 1 if zStr
 ** contains character ch, or 0 if it does not.
 */
-static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
+int strContainsChar(const u8 *zStr, int nStr, u32 ch){
   const u8 *zEnd = &zStr[nStr];
   const u8 *z = zStr;
   while( z<zEnd ){
@@ -1402,7 +1402,7 @@ static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
 **     unhex('AB CD', ' ') IS x'ABCD'
 **     unhex('A BCD', ' ') IS NULL
 */
-static void unhexFunc(
+void unhexFunc(
   sqlite3_context *pCtx,
   int argc,
   sqlite3_value **argv
@@ -1459,7 +1459,7 @@ static void unhexFunc(
 /*
 ** The zeroblob(N) function returns a zero-filled blob of size N bytes.
 */
-static void zeroblobFunc(
+void zeroblobFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1482,7 +1482,7 @@ static void zeroblobFunc(
 ** from A by replacing every occurrence of B with C.  The match
 ** must be exact.  Collating sequences are not used.
 */
-static void replaceFunc(
+void replaceFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1575,7 +1575,7 @@ static void replaceFunc(
 ** Implementation of the TRIM(), LTRIM(), and RTRIM() functions.
 ** The userdata is 0x1 for left trim, 0x2 for right trim, 0x3 for both.
 */
-static void trimFunc(
+void trimFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1597,8 +1597,8 @@ static void trimFunc(
   nIn = (unsigned)sqlite3_value_bytes(argv[0]);
   assert( zIn==sqlite3_value_text(argv[0]) );
   if( argc==1 ){
-    static const unsigned lenOne[] = { 1 };
-    static unsigned char * const azOne[] = { (u8*)" " };
+    const unsigned lenOne[] = { 1 };
+    unsigned char * const azOne[] = { (u8*)" " };
     nChar = 1;
     aLen = (unsigned*)lenOne;
     azChar = (unsigned char **)azOne;
@@ -1662,7 +1662,7 @@ static void trimFunc(
 ** Return a string value that is the concatenation of all non-null
 ** entries in argv[].  Use zSep as the separator.
 */
-static void concatFuncCore(
+void concatFuncCore(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv,
@@ -1707,7 +1707,7 @@ static void concatFuncCore(
 ** The CONCAT(...) function.  Generate a string result that is the
 ** concatentation of all non-null arguments.
 */
-static void concatFunc(
+void concatFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1722,7 +1722,7 @@ static void concatFunc(
 ** argument.  Use the first argument (which must be non-NULL) as the
 ** separator.
 */
-static void concatwsFunc(
+void concatwsFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1744,7 +1744,7 @@ static void concatwsFunc(
 ** involving application-defined functions to be examined in a generic
 ** sqlite3 shell.
 */
-static void unknownFunc(
+void unknownFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1768,7 +1768,7 @@ static void unknownFunc(
 ** IMP: R-59782-00072 The soundex(X) function returns a string that is the
 ** soundex encoding of the string X.
 */
-static void soundexFunc(
+void soundexFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1776,7 +1776,7 @@ static void soundexFunc(
   char zResult[8];
   const u8 *zIn;
   int i, j;
-  static const unsigned char iCode[] = {
+  const unsigned char iCode[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1821,7 +1821,7 @@ static void soundexFunc(
 /*
 ** A function that loads a shared-library extension then returns NULL.
 */
-static void loadExt(sqlite3_context *context, int argc, sqlite3_value **argv){
+void loadExt(sqlite3_context *context, int argc, sqlite3_value **argv){
   const char *zFile = (const char *)sqlite3_value_text(argv[0]);
   const char *zProc;
   sqlite3 *db = sqlite3_context_db_handle(context);
@@ -1870,7 +1870,7 @@ struct SumCtx {
 ** Variables are marked "volatile" to defeat c89 x86 floating point
 ** optimizations can mess up this algorithm.
 */
-static void kahanBabuskaNeumaierStep(
+void kahanBabuskaNeumaierStep(
   volatile SumCtx *pSum,
   volatile double r
 ){
@@ -1887,7 +1887,7 @@ static void kahanBabuskaNeumaierStep(
 /*
 ** Add a (possibly large) integer to the running sum.
 */
-static void kahanBabuskaNeumaierStepInt64(volatile SumCtx *pSum, i64 iVal){
+void kahanBabuskaNeumaierStepInt64(volatile SumCtx *pSum, i64 iVal){
   if( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
     i64 iBig, iSm;
     iSm = iVal % 16384;
@@ -1902,7 +1902,7 @@ static void kahanBabuskaNeumaierStepInt64(volatile SumCtx *pSum, i64 iVal){
 /*
 ** Initialize the Kahan-Babaska-Neumaier sum from a 64-bit integer
 */
-static void kahanBabuskaNeumaierInit(
+void kahanBabuskaNeumaierInit(
   volatile SumCtx *p,
   i64 iVal
 ){
@@ -1926,7 +1926,7 @@ static void kahanBabuskaNeumaierInit(
 ** value.  TOTAL never fails, but SUM might throw an exception if
 ** it overflows an integer.
 */
-static void sumStep(sqlite3_context *context, int argc, sqlite3_value **argv){
+void sumStep(sqlite3_context *context, int argc, sqlite3_value **argv){
   SumCtx *p;
   int type;
   assert( argc==1 );
@@ -1962,7 +1962,7 @@ static void sumStep(sqlite3_context *context, int argc, sqlite3_value **argv){
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void sumInverse(sqlite3_context *context, int argc, sqlite3_value**argv){
+void sumInverse(sqlite3_context *context, int argc, sqlite3_value**argv){
   SumCtx *p;
   int type;
   assert( argc==1 );
@@ -2000,7 +2000,7 @@ static void sumInverse(sqlite3_context *context, int argc, sqlite3_value**argv){
 #else
 # define sumInverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void sumFinalize(sqlite3_context *context){
+void sumFinalize(sqlite3_context *context){
   SumCtx *p;
   p = sqlite3_aggregate_context(context, 0);
   if( p && p->cnt>0 ){
@@ -2017,7 +2017,7 @@ static void sumFinalize(sqlite3_context *context){
     }
   }
 }
-static void avgFinalize(sqlite3_context *context){
+void avgFinalize(sqlite3_context *context){
   SumCtx *p;
   p = sqlite3_aggregate_context(context, 0);
   if( p && p->cnt>0 ){
@@ -2031,7 +2031,7 @@ static void avgFinalize(sqlite3_context *context){
     sqlite3_result_double(context, r/(double)p->cnt);
   }
 }
-static void totalFinalize(sqlite3_context *context){
+void totalFinalize(sqlite3_context *context){
   SumCtx *p;
   double r = 0.0;
   p = sqlite3_aggregate_context(context, 0);
@@ -2061,7 +2061,7 @@ struct CountCtx {
 /*
 ** Routines to implement the count() aggregate function.
 */
-static void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
+void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
   CountCtx *p;
   p = sqlite3_aggregate_context(context, sizeof(*p));
   if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0])) && p ){
@@ -2077,13 +2077,13 @@ static void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
           || p->n==sqlite3_aggregate_count(context) );
 #endif
 }  
-static void countFinalize(sqlite3_context *context){
+void countFinalize(sqlite3_context *context){
   CountCtx *p;
   p = sqlite3_aggregate_context(context, 0);
   sqlite3_result_int64(context, p ? p->n : 0);
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void countInverse(sqlite3_context *ctx, int argc, sqlite3_value **argv){
+void countInverse(sqlite3_context *ctx, int argc, sqlite3_value **argv){
   CountCtx *p;
   p = sqlite3_aggregate_context(ctx, sizeof(*p));
   /* p is always non-NULL since countStep() will have been called first */
@@ -2101,7 +2101,7 @@ static void countInverse(sqlite3_context *ctx, int argc, sqlite3_value **argv){
 /*
 ** Routines to implement min() and max() aggregate functions.
 */
-static void minmaxStep(
+void minmaxStep(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **argv
@@ -2139,7 +2139,7 @@ static void minmaxStep(
     sqlite3VdbeMemCopy(pBest, pArg);
   }
 }
-static void minMaxValueFinalize(sqlite3_context *context, int bValue){
+void minMaxValueFinalize(sqlite3_context *context, int bValue){
   sqlite3_value *pRes;
   pRes = (sqlite3_value *)sqlite3_aggregate_context(context, 0);
   if( pRes ){
@@ -2150,13 +2150,13 @@ static void minMaxValueFinalize(sqlite3_context *context, int bValue){
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void minMaxValue(sqlite3_context *context){
+void minMaxValue(sqlite3_context *context){
   minMaxValueFinalize(context, 1);
 }
 #else
 # define minMaxValue 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void minMaxFinalize(sqlite3_context *context){
+void minMaxFinalize(sqlite3_context *context){
   minMaxValueFinalize(context, 0);
 }
 
@@ -2188,7 +2188,7 @@ typedef struct {
 #endif
 } GroupConcatCtx;
 
-static void groupConcatStep(
+void groupConcatStep(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2259,7 +2259,7 @@ static void groupConcatStep(
 }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatInverse(
+void groupConcatInverse(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2305,7 +2305,7 @@ static void groupConcatInverse(
 #else
 # define groupConcatInverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void groupConcatFinalize(sqlite3_context *context){
+void groupConcatFinalize(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
   if( pGCC ){
@@ -2316,7 +2316,7 @@ static void groupConcatFinalize(sqlite3_context *context){
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatValue(sqlite3_context *context){
+void groupConcatValue(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
   if( pGCC ){
@@ -2466,7 +2466,7 @@ int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
 ** The sqlite3_user_data() pointer is a pointer to the libm implementation
 ** of the underlying C function.
 */
-static void ceilingFunc(
+void ceilingFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2493,8 +2493,8 @@ static void ceilingFunc(
 ** unable to take a pointer to these functions.  Hence, we here wrap them
 ** in our own actual functions.
 */
-static double xCeil(double x){ return ceil(x); }
-static double xFloor(double x){ return floor(x); }
+double xCeil(double x){ return ceil(x); }
+double xFloor(double x){ return floor(x); }
 
 /*
 ** Some systems do not have log2() and log10() in their standard math
@@ -2516,7 +2516,7 @@ static double xFloor(double x){ return floor(x); }
 **   log10(X)    - log X base 10
 **   log(B,X)    - log X base B
 */
-static void logFunc(
+void logFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2564,15 +2564,15 @@ static void logFunc(
 /*
 ** Functions to converts degrees to radians and radians to degrees.
 */
-static double degToRad(double x){ return x*(M_PI/180.0); }
-static double radToDeg(double x){ return x*(180.0/M_PI); }
+double degToRad(double x){ return x*(M_PI/180.0); }
+double radToDeg(double x){ return x*(180.0/M_PI); }
 
 /*
 ** Implementation of 1-argument SQL math functions:
 **
 **   exp(X)  - Compute e to the X-th power
 */
-static void math1Func(
+void math1Func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2594,7 +2594,7 @@ static void math1Func(
 **
 **   power(X,Y)  - Compute X to the Y-th power
 */
-static void math2Func(
+void math2Func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2617,7 +2617,7 @@ static void math2Func(
 /*
 ** Implementation of 0-argument pi() function.
 */
-static void piFunc(
+void piFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2632,7 +2632,7 @@ static void piFunc(
 /*
 ** Implementation of sign(X) function.
 */
-static void signFunc(
+void signFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2771,7 +2771,7 @@ struct Percentile {
 /*
 ** Return TRUE if the input floating-point number is an infinity.
 */
-static int percentIsInfinity(double r){
+int percentIsInfinity(double r){
   sqlite3_uint64 u;
   assert( sizeof(u)==sizeof(r) );
   memcpy(&u, &r, sizeof(u));
@@ -2781,7 +2781,7 @@ static int percentIsInfinity(double r){
 /*
 ** Return TRUE if two doubles differ by 0.001 or less.
 */
-static int percentSameValue(double a, double b){
+int percentSameValue(double a, double b){
   a -= b;
   return a>=-0.001 && a<=0.001;
 }
@@ -2797,7 +2797,7 @@ static int percentSameValue(double a, double b){
 ** order.  The smallest return value in this case will be 0, and
 ** the largest return value will be p->nUsed.
 */
-static i64 percentBinarySearch(Percentile *p, double y, int bExact){
+i64 percentBinarySearch(Percentile *p, double y, int bExact){
   i64 iFirst = 0;                   /* First element of search range */
   i64 iLast = (i64)p->nUsed - 1;    /* Last element of search range */
   while( iLast>=iFirst ){
@@ -2822,7 +2822,7 @@ static i64 percentBinarySearch(Percentile *p, double y, int bExact){
 ** (with two '%' characters).  That substring will be replaced by the name
 ** of the function.
 */
-static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
+void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
   char *zMsg1;
   char *zMsg2;
   va_list ap;
@@ -2840,7 +2840,7 @@ static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
 ** The "step" function for percentile(Y,P) is called once for each
 ** input row.
 */
-static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
+void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
   Percentile *p;
   double rPct;
   int eType;
@@ -2951,7 +2951,7 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 **    (2)  To avoid the function call to the comparison routine for each
 **         comparison.
 */
-static void percentSort(double *a, unsigned int n){
+void percentSort(double *a, unsigned int n){
   int iLt;  /* Entries before a[iLt] are less than rPivot */
   int iGt;  /* Entries at or after a[iGt] are greater than rPivot */
   int i;         /* Loop counter */
@@ -3001,7 +3001,7 @@ static void percentSort(double *a, unsigned int n){
 ** The "inverse" function for percentile(Y,P) is called to remove a
 ** row that was previously inserted by "step".
 */
-static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
+void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
   Percentile *p;
   int eType;
   double y;
@@ -3048,7 +3048,7 @@ static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
 ** Compute the final output of percentile().  Clean up all allocated
 ** memory if and only if bIsFinal is true.
 */
-static void percentCompute(sqlite3_context *pCtx, int bIsFinal){
+void percentCompute(sqlite3_context *pCtx, int bIsFinal){
   Percentile *p;
   int settings = SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&1; /* Discrete? */
   unsigned i1, i2;
@@ -3082,10 +3082,10 @@ static void percentCompute(sqlite3_context *pCtx, int bIsFinal){
     p->bKeepSorted = 1;
   }
 }
-static void percentFinal(sqlite3_context *pCtx){
+void percentFinal(sqlite3_context *pCtx){
   percentCompute(pCtx, 1);
 }
-static void percentValue(sqlite3_context *pCtx){
+void percentValue(sqlite3_context *pCtx){
   percentCompute(pCtx, 0);
 }
 /****** End of percentile family of functions ******/
@@ -3098,7 +3098,7 @@ static void percentValue(sqlite3_context *pCtx){
 ** Return JSON text that describes low-level debug/diagnostic information
 ** about the sqlite3_file object associated with SCHEMA.
 */
-static void filestatFunc(
+void filestatFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -3155,7 +3155,7 @@ static void filestatFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void fpdecodeFunc(
+void fpdecodeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -3199,7 +3199,7 @@ static void fpdecodeFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void parseuriFunc(
+void parseuriFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -3274,7 +3274,7 @@ void sqlite3RegisterBuiltinFunctions(void){
   **
   ** For peak efficiency, put the most frequently used function last.
   */
-  static FuncDef aBuiltinFunc[] = {
+  FuncDef aBuiltinFunc[] = {
 /***** Functions only available with SQLITE_TESTCTRL_INTERNAL_FUNCTIONS *****/
 #if !defined(SQLITE_UNTESTABLE)
     TEST_FUNC(implies_nonnull_row, 2, INLINEFUNC_implies_nonnull_row, 0),

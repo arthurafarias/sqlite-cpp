@@ -99,7 +99,7 @@ SQLITE_EXTENSION_INIT1
 /*
 ** Implementation of the ieee754() function
 */
-static void ieee754func(
+void ieee754func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -217,7 +217,7 @@ static void ieee754func(
 /*
 ** Functions to convert between blobs and floats.
 */
-static void ieee754func_from_blob(
+void ieee754func_from_blob(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -237,7 +237,7 @@ static void ieee754func_from_blob(
     sqlite3_result_double(context, r);
   }
 }
-static void ieee754func_to_blob(
+void ieee754func_to_blob(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -264,7 +264,7 @@ static void ieee754func_to_blob(
 **
 ** The bit patterns are copied.  The numeric values are different.
 */
-static void ieee754func_from_int(
+void ieee754func_from_int(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -277,7 +277,7 @@ static void ieee754func_from_int(
     sqlite3_result_double(context, r);
   }
 }
-static void ieee754func_to_int(
+void ieee754func_to_int(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -304,7 +304,7 @@ static void ieee754func_to_int(
 **
 **     SELECT ieee754_inc(0.0,+1);
 */
-static void ieee754inc(
+void ieee754inc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -331,7 +331,7 @@ int sqlite3_ieee_init(
   char **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
-  static const struct {
+  const struct {
     char *zFName;
     int nArg;
     int iAux;

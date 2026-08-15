@@ -249,7 +249,7 @@ int vt02Connect(
   vt02_vtab *pVtab;
   int rc;
   const char *zSchema = (const char*)pAux;
-  static const char zDefaultSchema[] = 
+  const char zDefaultSchema[] = 
     "CREATE TABLE x(x INT, a INT, b INT, c INT, d INT,"
     " flags INT HIDDEN, logtab TEXT HIDDEN);";
 #define VT02_COL_X       0
@@ -286,7 +286,7 @@ int vt02Disconnect(sqlite3_vtab *pVTab){
 
 /* Put an error message into the zErrMsg string of the virtual table.
 */
-static void vt02ErrMsg(sqlite3_vtab *pVtab, const char *zFormat, ...){
+void vt02ErrMsg(sqlite3_vtab *pVtab, const char *zFormat, ...){
   va_list ap;
   sqlite3_free(pVtab->zErrMsg);
   va_start(ap, zFormat);
@@ -297,7 +297,7 @@ static void vt02ErrMsg(sqlite3_vtab *pVtab, const char *zFormat, ...){
 
 /* Open a cursor for scanning
 */
-static int vt02Open(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+int vt02Open(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   vt02_cur *pCur;
   pCur = sqlite3_malloc( sizeof(*pCur) );
   if( pCur==0 ){
@@ -311,7 +311,7 @@ static int vt02Open(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 
 /* Close a cursor
 */
-static int vt02Close(sqlite3_vtab_cursor *pCursor){
+int vt02Close(sqlite3_vtab_cursor *pCursor){
   vt02_cur *pCur = (vt02_cur*)pCursor;
   sqlite3_free(pCur);
   return SQLITE_OK;
@@ -320,14 +320,14 @@ static int vt02Close(sqlite3_vtab_cursor *pCursor){
 /* Return TRUE if we are at the end of the BVS and there are
 ** no more entries.
 */
-static int vt02Eof(sqlite3_vtab_cursor *pCursor){
+int vt02Eof(sqlite3_vtab_cursor *pCursor){
   vt02_cur *pCur = (vt02_cur*)pCursor;
   return pCur->i<pCur->iMin || pCur->i>=pCur->iEof;
 }
 
 /* Advance the cursor to the next row in the table
 */
-static int vt02Next(sqlite3_vtab_cursor *pCursor){
+int vt02Next(sqlite3_vtab_cursor *pCursor){
   vt02_cur *pCur = (vt02_cur*)pCursor;
   do{
     pCur->i += pCur->iIncr;
@@ -356,7 +356,7 @@ static int vt02Next(sqlite3_vtab_cursor *pCursor){
 **   1xx           Use offset provided by argv[N]
 **  1xxx           Output rows in reverse order
 */
-static int vt02Filter(
+int vt02Filter(
   sqlite3_vtab_cursor *pCursor, /* The cursor to rewind */
   int idxNum,                   /* Search strategy */
   const char *idxStr,           /* Not used */
@@ -474,7 +474,7 @@ vt02_bad_idxnum:
 
 /* Return the Nth column of the current row.
 */
-static int vt02Column(
+int vt02Column(
   sqlite3_vtab_cursor *pCursor,
   sqlite3_context *context,
   int N
@@ -484,7 +484,7 @@ static int vt02Column(
   if( N==VT02_COL_X ){
     sqlite3_result_int(context, v);
   }else if( N>=VT02_COL_A && N<=VT02_COL_D ){
-    static const int iDivisor[] = { 1, 1000, 100, 10, 1 };
+    const int iDivisor[] = { 1, 1000, 100, 10, 1 };
     v = (v/iDivisor[N])%10;
     sqlite3_result_int(context, v);
   }
@@ -493,7 +493,7 @@ static int vt02Column(
 
 /* Return the rowid of the current row
 */
-static int vt02Rowid(sqlite3_vtab_cursor *pCursor, sqlite3_int64 *pRowid){
+int vt02Rowid(sqlite3_vtab_cursor *pCursor, sqlite3_int64 *pRowid){
   vt02_cur *pCur = (vt02_cur*)pCursor;
   *pRowid = pCur->i+1;
   return SQLITE_OK;
@@ -522,7 +522,7 @@ static int vt02Rowid(sqlite3_vtab_cursor *pCursor, sqlite3_int64 *pRowid){
 ** freed after it has been run.  If something goes wrong with the SQL,
 ** then an error is left in pVTab->zErrMsg.
 */
-static void sqlite3RunSql(
+void sqlite3RunSql(
   sqlite3 *db,               /* Run the SQL on this database connection */
   sqlite3_vtab *pVTab,       /* Report errors to this virtual table */
   const char *zFormat,       /* Format string for SQL, or NULL */
@@ -570,7 +570,7 @@ static void sqlite3RunSql(
 **
 ** If an error occurs, leave an error message in pVTab->zErrMsg.
 */
-static void sqlite3BestIndexLog(
+void sqlite3BestIndexLog(
   sqlite3_index_info *pInfo,  /* The sqlite3_index_info object */
   const char *zLogTab,        /* Log into this table */
   sqlite3 *db,                /* Database connection containing zLogTab */
@@ -769,7 +769,7 @@ static void sqlite3BestIndexLog(
 
 /* Find an estimated cost of running a query against vt02.
 */
-static int vt02BestIndex(sqlite3_vtab *pVTab, sqlite3_index_info *pInfo){
+int vt02BestIndex(sqlite3_vtab *pVTab, sqlite3_index_info *pInfo){
   int i;                      /* Loop counter */
   int isEq[5];                /* Equality constraints on X, A, B, C, and D */
   int isUsed[5];              /* Other non-== cosntraints X, A, B, C, and D */
@@ -1020,7 +1020,7 @@ static int vt02BestIndex(sqlite3_vtab *pVTab, sqlite3_index_info *pInfo){
 
   /* Generate the log if requested */
   if( zLogTab ){
-    static const char *azColname[] = {
+    const char *azColname[] = {
        "x", "a", "b", "c", "d", "flags", "logtab"
     };
     sqlite3 *db = ((vt02_vtab*)pVTab)->db;
@@ -1068,11 +1068,11 @@ const sqlite3_module vt02Module = {
   /* xIntegrity    */  0
 };
 
-static void vt02CoreInit(sqlite3 *db){
-  static const char zPkXSchema[] = 
+void vt02CoreInit(sqlite3 *db){
+  const char zPkXSchema[] = 
     "CREATE TABLE x(x INT NOT NULL PRIMARY KEY, a INT, b INT, c INT, d INT,"
     " flags INT HIDDEN, logtab TEXT HIDDEN);";
-  static const char zPkABCDSchema[] = 
+  const char zPkABCDSchema[] = 
     "CREATE TABLE x(x INT, a INT NOT NULL, b INT NOT NULL, c INT NOT NULL, "
     "d INT NOT NULL, flags INT HIDDEN, logtab TEXT HIDDEN, "
     "PRIMARY KEY(a,b,c,d));";
@@ -1082,7 +1082,7 @@ static void vt02CoreInit(sqlite3 *db){
 }
 
 #ifdef TH3_VERSION
-static void vt02_init(th3state *p, int iDb, char *zArg){
+void vt02_init(th3state *p, int iDb, char *zArg){
   vt02CoreInit(th3dbPointer(p, iDb));
 }
 #else

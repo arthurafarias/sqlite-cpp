@@ -67,14 +67,14 @@ SQLITE_EXTENSION_INIT1
 /*
 ** Return TRUE if character c is a whitespace character
 */
-static int totypeIsspace(unsigned char c){
+int totypeIsspace(unsigned char c){
   return c==' ' || c=='\t' || c=='\n' || c=='\v' || c=='\f' || c=='\r';
 }
 
 /*
 ** Return TRUE if character c is a digit
 */
-static int totypeIsdigit(unsigned char c){
+int totypeIsdigit(unsigned char c){
   return c>='0' && c<='9';
 }
 
@@ -92,7 +92,7 @@ static int totypeIsdigit(unsigned char c){
 **
 ** will return -8.
 */
-static int totypeCompare2pow63(const char *zNum){
+int totypeCompare2pow63(const char *zNum){
   int c = 0;
   int i;
                     /* 012345678901234567 */
@@ -122,7 +122,7 @@ static int totypeCompare2pow63(const char *zNum){
 **
 ** The string is not necessarily zero-terminated.
 */
-static int totypeAtoi64(const char *zNum, sqlite3_int64 *pNum, int length){
+int totypeAtoi64(const char *zNum, sqlite3_int64 *pNum, int length){
   sqlite3_uint64 u = 0;
   int neg = 0; /* assume positive */
   int i;
@@ -201,7 +201,7 @@ static int totypeAtoi64(const char *zNum, sqlite3_int64 *pNum, int length){
 ** returns FALSE but it still converts the prefix and writes the result
 ** into *pResult.
 */
-static int totypeAtoF(const char *z, double *pResult, int length){
+int totypeAtoF(const char *z, double *pResult, int length){
   const char *zEnd = z + length;
   /* sign * significand * (10 ^ (esign * exponent)) */
   int sign = 1;    /* sign of significand */
@@ -358,7 +358,7 @@ totype_atof_calc:
 ** This function is a modified copy of internal SQLite function
 ** sqlite3RealToI64().
 */
-static sqlite3_int64 totypeDoubleToInt(double r){
+sqlite3_int64 totypeDoubleToInt(double r){
   if( r<-9223372036854774784.0 ) return 0;
   if( r>+9223372036854774784.0 ) return 0;
   return (sqlite3_int64)r;
@@ -369,7 +369,7 @@ static sqlite3_int64 totypeDoubleToInt(double r){
 ** can be losslessly converted into an integer, then make the conversion and
 ** return the result.  Otherwise, return NULL.
 */
-static void tointegerFunc(
+void tointegerFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -439,7 +439,7 @@ static void tointegerFunc(
 #pragma warning(disable: 4748)
 #pragma optimize("", off)
 #endif
-static void torealFunc(
+void torealFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

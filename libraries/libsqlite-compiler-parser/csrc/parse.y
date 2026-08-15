@@ -121,7 +121,7 @@ struct FrameBound     { int eType; Expr *pExpr; };
 /*
 ** Generate a syntax error
 */
-static void parserSyntaxError(Parse *pParse, Token *p){
+void parserSyntaxError(Parse *pParse, Token *p){
   sqlite3ErrorMsg(pParse, "near \"%T\": syntax error", p);
 }
 
@@ -129,7 +129,7 @@ static void parserSyntaxError(Parse *pParse, Token *p){
 ** Disable lookaside memory allocation for objects that might be
 ** shared across database connections.
 */
-static void disableLookaside(Parse *pParse){
+void disableLookaside(Parse *pParse){
   sqlite3 *db = pParse->db;
   pParse->disableLookaside++;
 #ifdef SQLITE_DEBUG
@@ -145,7 +145,7 @@ static void disableLookaside(Parse *pParse){
 ** Issue an error message if an ORDER BY or LIMIT clause occurs on an
 ** UPDATE or DELETE statement.
 */
-static void updateDeleteLimitError(
+void updateDeleteLimitError(
   Parse *pParse,
   ExprList *pOrderBy,
   Expr *pLimit
@@ -540,7 +540,7 @@ cmd ::= select(X).  {
   ** all elements in the list.  And make sure list length does not exceed
   ** SQLITE_LIMIT_COMPOUND_SELECT.
   */
-  static void parserDoubleLinkSelect(Parse *pParse, Select *p){
+  void parserDoubleLinkSelect(Parse *pParse, Select *p){
     assert( p!=0 );
     if( p->pPrior ){
       Select *pNext = 0, *pLoop = p;
@@ -571,7 +571,7 @@ cmd ::= select(X).  {
   /* Attach a With object describing the WITH clause to a Select
   ** object describing the query for which the WITH clause is a prefix.
   */
-  static Select *attachWithToSelect(Parse *pParse, Select *pSelect, With *pWith){
+  Select *attachWithToSelect(Parse *pParse, Select *pSelect, With *pWith){
     if( pSelect ){
       pSelect->pWith = pWith;
       parserDoubleLinkSelect(pParse, pSelect);
@@ -585,7 +585,7 @@ cmd ::= select(X).  {
   ** sqlite3_realloc() that includes a call to sqlite3FaultSim() to facilitate
   ** testing.
   */
-  static void *parserStackRealloc(
+  void *parserStackRealloc(
     void *pOld,               /* Prior allocation */
     sqlite3_uint64 newSize,   /* Requested new alloation size */
     Parse *pParse             /* Parsing context */
@@ -594,13 +594,13 @@ cmd ::= select(X).  {
     if( p==0 ) sqlite3OomFault(pParse->db);
     return p;
   }
-  static void parserStackFree(void *pOld, Parse *pParse){
+  void parserStackFree(void *pOld, Parse *pParse){
     (void)pParse;
     sqlite3_free(pOld); 
   }
 
   /* Return an integer that is the maximum allowed stack size */
-  static int parserStackSizeLimit(Parse *pParse){
+  int parserStackSizeLimit(Parse *pParse){
     return pParse->db->aLimit[SQLITE_LIMIT_PARSER_DEPTH];
   }
 }
@@ -1137,7 +1137,7 @@ idlist(A) ::= nm(Y).
 %include {
 
   /* Construct a new Expr object from a single token */
-  static Expr *tokenExpr(Parse *pParse, int op, Token t){
+  Expr *tokenExpr(Parse *pParse, int op, Token t){
     Expr *p = sqlite3DbMallocRawNN(pParse->db, sizeof(Expr)+t.n+1);
     if( p ){
       /* memset(p, 0, sizeof(Expr)); */
@@ -1262,7 +1262,7 @@ expr(A) ::= idj(X) LP STAR RP. {
   ** transformation.  Because DISTINCT is not allowed in the ordered-set aggregate
   ** syntax, an error is raised if DISTINCT is used.
   */
-  static Expr *sqlite3ExprAddOrderedsetFunction(
+  Expr *sqlite3ExprAddOrderedsetFunction(
     Parse *pParse,         /* Parsing context */
     Token *pFuncname,      /* Name of the function */
     int isDistinct,        /* DISTINCT or ALL qualifier */
@@ -1385,7 +1385,7 @@ expr(A) ::= expr(A) likeop(OP) expr(Y) ESCAPE expr(E).  [LIKE_KW]  {
 %include {
   /* Create a TK_ISNULL or TK_NOTNULL expression, perhaps optimized to
   ** to TK_TRUEFALSE, if possible */
-  static Expr *sqlite3PExprIsNull(
+  Expr *sqlite3PExprIsNull(
     Parse *pParse,  /* Parsing context */
     int op,         /* TK_ISNULL or TK_NOTNULL */
     Expr *pLeft     /* Operand */
@@ -1412,7 +1412,7 @@ expr(A) ::= expr(A) likeop(OP) expr(Y) ESCAPE expr(E).  [LIKE_KW]  {
 
   /* Create a TK_IS or TK_ISNOT operator, perhaps optimized to
   ** TK_ISNULL or TK_NOTNULL or TK_TRUEFALSE. */
-  static Expr *sqlite3PExprIs(
+  Expr *sqlite3PExprIs(
     Parse *pParse,  /* Parsing context */
     int op,         /* TK_IS or TK_ISNOT */
     Expr *pLeft,    /* Left operand */
@@ -1660,7 +1660,7 @@ uniqueflag(A) ::= .        {A = OE_None;}
   ** a COLLATE clause or an ASC or DESC keyword, except ignore the
   ** error while parsing a legacy schema.
   */
-  static ExprList *parserAddExprIdListTerm(
+  ExprList *parserAddExprIdListTerm(
     Parse *pParse,
     ExprList *pPrior,
     Token *pIdToken,

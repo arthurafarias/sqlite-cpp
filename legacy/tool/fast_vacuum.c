@@ -53,7 +53,7 @@
 ** Finalize a prepared statement.  If an error has occurred, print the
 ** error message and exit.
 */
-static void vacuumFinalize(sqlite3_stmt *pStmt){
+void vacuumFinalize(sqlite3_stmt *pStmt){
   sqlite3 *db = sqlite3_db_handle(pStmt);
   int rc = sqlite3_finalize(pStmt);
   if( rc ){
@@ -67,7 +67,7 @@ static void vacuumFinalize(sqlite3_stmt *pStmt){
 ** output.  If an error occurs, print an error message and exit the
 ** process.
 */
-static void execSql(sqlite3 *db, const char *zSql){
+void execSql(sqlite3 *db, const char *zSql){
   sqlite3_stmt *pStmt;
   if( !zSql ){
     fprintf(stderr, "out of memory!\n");
@@ -90,7 +90,7 @@ static void execSql(sqlite3 *db, const char *zSql){
 ** run.  If any errors occur, an error is printed and the process
 ** exits.
 */
-static void execExecSql(sqlite3 *db, const char *zSql){
+void execExecSql(sqlite3 *db, const char *zSql){
   sqlite3_stmt *pStmt;
   int rc;
 

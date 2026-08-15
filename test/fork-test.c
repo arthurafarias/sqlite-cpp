@@ -100,19 +100,19 @@
 /*
 ** Process ID of the parent
 */
-static pid_t parentPid = 0;
+pid_t parentPid = 0;
 
 /*
 ** Return either "parent" or "child", as appropriate.
 */
-static const char *whoAmI(void){
+const char *whoAmI(void){
   return getpid()==parentPid ? "parent" : "child";
 }
 
 /*
 ** This is an sqlite3_exec() callback routine that prints all results.
 */
-static int execCallback(void *pNotUsed, int nCol, char **aVal, char **aCol){
+int execCallback(void *pNotUsed, int nCol, char **aVal, char **aCol){
   int i;
   const char *zWho = whoAmI();
   for(i=0; i<nCol; i++){
@@ -129,7 +129,7 @@ static int execCallback(void *pNotUsed, int nCol, char **aVal, char **aCol){
 /*
 ** Execute one or more SQL statements.
 */
-static void sqlExec(sqlite3 *db, const char *zSql, int bCallback){
+void sqlExec(sqlite3 *db, const char *zSql, int bCallback){
   int rc;
   char *zErr = 0;
   printf("%s: %s\n", whoAmI(), zSql);
@@ -145,7 +145,7 @@ static void sqlExec(sqlite3 *db, const char *zSql, int bCallback){
 /*
 ** Trace callback for the vfstrace extension.
 */
-static int vfsTraceCallback(const char *zMsg, void *pNotUsed){
+int vfsTraceCallback(const char *zMsg, void *pNotUsed){
   printf("%s: %s", whoAmI(), zMsg);
   fflush(stdout);
   return 0;

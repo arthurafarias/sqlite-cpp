@@ -27,7 +27,7 @@ typedef struct SessionInput SessionInput;
 
 #define SESSIONS_ROWID "_rowid_"
 
-static int sessions_strm_chunk_size = SESSIONS_STRM_CHUNK_SIZE;
+int sessions_strm_chunk_size = SESSIONS_STRM_CHUNK_SIZE;
 
 typedef struct SessionHook SessionHook;
 struct SessionHook {
@@ -330,14 +330,14 @@ struct SessionChange {
 ** Write a varint with value iVal into the buffer at aBuf. Return the 
 ** number of bytes written.
 */
-static int sessionVarintPut(u8 *aBuf, int iVal){
+int sessionVarintPut(u8 *aBuf, int iVal){
   return putVarint32(aBuf, iVal);
 }
 
 /*
 ** Return the number of bytes required to store value iVal as a varint.
 */
-static int sessionVarintLen(int iVal){
+int sessionVarintLen(int iVal){
   return sqlite3VarintLen(iVal);
 }
 
@@ -345,7 +345,7 @@ static int sessionVarintLen(int iVal){
 ** Read a varint value from aBuf[] into *piVal. Return the number of 
 ** bytes read.
 */
-static int sessionVarintGet(const u8 *aBuf, int *piVal){
+int sessionVarintGet(const u8 *aBuf, int *piVal){
   return getVarint32(aBuf, *piVal);
 }
 
@@ -353,7 +353,7 @@ static int sessionVarintGet(const u8 *aBuf, int *piVal){
 ** Read a varint value from buffer aBuf[], size nBuf bytes, into *piVal.
 ** Return the number of bytes read.
 */
-static int sessionVarintGetSafe(const u8 *aBuf, int nBuf, int *piVal){
+int sessionVarintGetSafe(const u8 *aBuf, int nBuf, int *piVal){
   u8 aCopy[9];
   const u8 *aRead = aBuf;
   memset(aCopy, 0, sizeof(aCopy));
@@ -371,7 +371,7 @@ static int sessionVarintGetSafe(const u8 *aBuf, int nBuf, int *piVal){
 ** Read a 64-bit big-endian integer value from buffer aRec[]. Return
 ** the value read.
 */
-static sqlite3_int64 sessionGetI64(u8 *aRec){
+sqlite3_int64 sessionGetI64(u8 *aRec){
   u64 x = SESSION_UINT32(aRec);
   u32 y = SESSION_UINT32(aRec+4);
   x = (x<<32) + y;
@@ -381,7 +381,7 @@ static sqlite3_int64 sessionGetI64(u8 *aRec){
 /*
 ** Write a 64-bit big-endian integer value to the buffer aBuf[].
 */
-static void sessionPutI64(u8 *aBuf, sqlite3_int64 i){
+void sessionPutI64(u8 *aBuf, sqlite3_int64 i){
   aBuf[0] = (i>>56) & 0xFF;
   aBuf[1] = (i>>48) & 0xFF;
   aBuf[2] = (i>>40) & 0xFF;
@@ -395,7 +395,7 @@ static void sessionPutI64(u8 *aBuf, sqlite3_int64 i){
 /*
 ** Write a double value to the buffer aBuf[].
 */
-static void sessionPutDouble(u8 *aBuf, double r){
+void sessionPutDouble(u8 *aBuf, double r){
   /* TODO: SQLite does something special to deal with mixed-endian
   ** floating point values (e.g. ARM7). This code probably should
   ** too.  */
@@ -418,7 +418,7 @@ static void sessionPutDouble(u8 *aBuf, double r){
 ** within a call to sqlite3_value_text() (may fail if the db is utf-16)) 
 ** SQLITE_NOMEM is returned.
 */
-static int sessionSerializeValue(
+int sessionSerializeValue(
   u8 *aBuf,                       /* If non-NULL, write serialized value here */
   sqlite3_value *pValue,          /* Value to serialize */
   sqlite3_int64 *pnWrite          /* IN/OUT: Increment by bytes written */
@@ -491,7 +491,7 @@ static int sessionSerializeValue(
 ** pSession is not NULL, increase the sqlite3_session.nMalloc variable
 ** by the number of bytes allocated.
 */
-static void *sessionMalloc64(sqlite3_session *pSession, i64 nByte){
+void *sessionMalloc64(sqlite3_session *pSession, i64 nByte){
   void *pRet = sqlite3_malloc64(nByte);
   if( pSession ) pSession->nMalloc += sqlite3_msize(pRet);
   return pRet;
@@ -502,7 +502,7 @@ static void *sessionMalloc64(sqlite3_session *pSession, i64 nByte){
 ** call to sessionMalloc64(). If pSession is not NULL, decrease the
 ** sqlite3_session.nMalloc counter by the number of bytes freed.
 */
-static void sessionFree(sqlite3_session *pSession, void *pFree){
+void sessionFree(sqlite3_session *pSession, void *pFree){
   if( pSession ) pSession->nMalloc -= sqlite3_msize(pFree);
   sqlite3_free(pFree);
 }
@@ -528,7 +528,7 @@ static void sessionFree(sqlite3_session *pSession, void *pFree){
 ** Append the hash of the 64-bit integer passed as the second argument to the
 ** hash-key value passed as the first. Return the new hash-key value.
 */
-static unsigned int sessionHashAppendI64(unsigned int h, i64 i){
+unsigned int sessionHashAppendI64(unsigned int h, i64 i){
   h = HASH_APPEND(h, i & 0xFFFFFFFF);
   return HASH_APPEND(h, (i>>32)&0xFFFFFFFF);
 }
@@ -537,7 +537,7 @@ static unsigned int sessionHashAppendI64(unsigned int h, i64 i){
 ** Append the hash of the blob passed via the second and third arguments to 
 ** the hash-key value passed as the first. Return the new hash-key value.
 */
-static unsigned int sessionHashAppendBlob(unsigned int h, int n, const u8 *z){
+unsigned int sessionHashAppendBlob(unsigned int h, int n, const u8 *z){
   int i;
   for(i=0; i<n; i++) h = HASH_APPEND(h, z[i]);
   return h;
@@ -547,7 +547,7 @@ static unsigned int sessionHashAppendBlob(unsigned int h, int n, const u8 *z){
 ** Append the hash of the data type passed as the second argument to the
 ** hash-key value passed as the first. Return the new hash-key value.
 */
-static unsigned int sessionHashAppendType(unsigned int h, int eType){
+unsigned int sessionHashAppendType(unsigned int h, int eType){
   return HASH_APPEND(h, eType);
 }
 
@@ -562,7 +562,7 @@ static unsigned int sessionHashAppendType(unsigned int h, int eType){
 ** of *piHash asn *pbNullPK are undefined. Otherwise, SQLITE_OK is returned
 ** and the output variables are set as described above.
 */
-static int sessionPreupdateHash(
+int sessionPreupdateHash(
   sqlite3_session *pSession,      /* Session object that owns pTab */
   i64 iRowid,
   SessionTable *pTab,             /* Session table handle */
@@ -633,7 +633,7 @@ static int sessionPreupdateHash(
 ** Return the number of bytes of space occupied by the value (including
 ** the type byte).
 */
-static int sessionSerialLen(const u8 *a){
+int sessionSerialLen(const u8 *a){
   int e;
   int n;
   assert( a!=0 );
@@ -654,7 +654,7 @@ static int sessionSerialLen(const u8 *a){
 ** The bPkOnly argument is non-zero if the record at aRecord[] is from
 ** a patchset DELETE. In this case the non-PK fields are omitted entirely.
 */
-static unsigned int sessionChangeHash(
+unsigned int sessionChangeHash(
   SessionTable *pTab,             /* Table handle */
   int bPkOnly,                    /* Record consists of PK fields only */
   u8 *aRecord,                    /* Change record */
@@ -703,7 +703,7 @@ static unsigned int sessionChangeHash(
 ** have the same values stored in the primary key columns), or false 
 ** otherwise.
 */
-static int sessionChangeEqual(
+int sessionChangeEqual(
   SessionTable *pTab,             /* Table used for PK definition */
   int bLeftPkOnly,                /* True if aLeft[] contains PK fields only */
   u8 *aLeft,                      /* Change record */
@@ -746,7 +746,7 @@ static int sessionChangeEqual(
 ** record contains a value for a given column, then neither does the
 ** output record.
 */
-static void sessionMergeRecord(
+void sessionMergeRecord(
   u8 **paOut, 
   int nCol,
   u8 *aLeft,
@@ -792,7 +792,7 @@ static void sessionMergeRecord(
 **   return *paOne;
 **
 */
-static u8 *sessionMergeValue(
+u8 *sessionMergeValue(
   u8 **paOne,                     /* IN/OUT: Left-hand buffer pointer */
   u8 **paTwo,                     /* IN/OUT: Right-hand buffer pointer */
   int *pnVal                      /* OUT: Bytes in returned value */
@@ -826,7 +826,7 @@ static u8 *sessionMergeValue(
 ** This function is used by changeset_concat() to merge two UPDATE changes
 ** on the same row.
 */
-static int sessionMergeUpdate(
+int sessionMergeUpdate(
   u8 **paOut,                     /* IN/OUT: Pointer to output buffer */
   SessionTable *pTab,             /* Table change pertains to */
   int bPatchset,                  /* True if records are patchset records */
@@ -903,7 +903,7 @@ static int sessionMergeUpdate(
 ** if the pre-update-hook does not affect the same row as pChange, it returns
 ** false.
 */
-static int sessionPreupdateEqual(
+int sessionPreupdateEqual(
   sqlite3_session *pSession,      /* Session object that owns SessionTable */
   i64 iRowid,                     /* Rowid value if pTab->bRowid */
   SessionTable *pTab,             /* Table associated with change */
@@ -990,7 +990,7 @@ static int sessionPreupdateEqual(
 ** Growing the hash table in this case is a performance optimization only,
 ** it is not required for correct operation.
 */
-static int sessionGrowHash(
+int sessionGrowHash(
   sqlite3_session *pSession,      /* For memory accounting. May be NULL */
   int bPatchset, 
   SessionTable *pTab
@@ -1057,7 +1057,7 @@ static int sessionGrowHash(
 ** All returned buffers are part of the same single allocation, which must
 ** be freed using sqlite3_free() by the caller
 */
-static int sessionTableInfo(
+int sessionTableInfo(
   sqlite3_session *pSession,      /* For memory accounting. May be NULL */
   sqlite3 *db,                    /* Database connection */
   const char *zDb,                /* Name of attached database (e.g. "main") */
@@ -1224,7 +1224,7 @@ static int sessionTableInfo(
 ** indicate that updates on this table should be ignored. SessionTable.abPK 
 ** is set to NULL in this case.
 */
-static int sessionInitTable(
+int sessionInitTable(
   sqlite3_session *pSession,      /* Optional session handle */
   SessionTable *pTab,             /* Table object to initialize */
   sqlite3 *db,                    /* Database handle to read schema from */
@@ -1272,7 +1272,7 @@ static int sessionInitTable(
 /*
 ** Re-initialize table object pTab.
 */
-static int sessionReinitTable(sqlite3_session *pSession, SessionTable *pTab){
+int sessionReinitTable(sqlite3_session *pSession, SessionTable *pTab){
   int nCol = 0;
   int nTotalCol = 0;
   const char **azCol = 0;
@@ -1330,7 +1330,7 @@ static int sessionReinitTable(sqlite3_session *pSession, SessionTable *pTab){
 ** nCol fields. This function updates it with the default values for
 ** the missing fields.
 */
-static void sessionUpdateOneChange(
+void sessionUpdateOneChange(
   sqlite3_session *pSession,      /* For memory accounting */
   int *pRc,                       /* IN/OUT: Error code */
   SessionChange **pp,             /* IN/OUT: Change object to update */
@@ -1427,7 +1427,7 @@ static void sessionUpdateOneChange(
 ** If successful, return zero. Otherwise, if an OOM condition is encountered,
 ** set *pRc to SQLITE_NOMEM and return non-zero.
 */
-static int sessionBufferGrow(SessionBuffer *p, i64 nByte, int *pRc){
+int sessionBufferGrow(SessionBuffer *p, i64 nByte, int *pRc){
 #define SESSION_MAX_BUFFER_SZ (0x7FFFFF00 - 1) 
   i64 nReq = p->nBuf + nByte;
   if( *pRc==SQLITE_OK && nReq>p->nAlloc ){
@@ -1471,7 +1471,7 @@ static int sessionBufferGrow(SessionBuffer *p, i64 nByte, int *pRc){
 ** If an OOM condition is encountered, set *pRc to SQLITE_NOMEM before
 ** returning.
 */
-static void sessionAppendStr(
+void sessionAppendStr(
   SessionBuffer *p, 
   const char *zStr, 
   int *pRc
@@ -1488,7 +1488,7 @@ static void sessionAppendStr(
 ** Format a string using printf() style formatting and then append it to the
 ** buffer using sessionAppendString().
 */
-static void sessionAppendPrintf(
+void sessionAppendPrintf(
   SessionBuffer *p,               /* Buffer to append to */
   int *pRc, 
   const char *zFmt,
@@ -1520,7 +1520,7 @@ static void sessionAppendPrintf(
 **
 **   SELECT NULL, 123, 'abcd';
 */
-static int sessionPrepareDfltStmt(
+int sessionPrepareDfltStmt(
   sqlite3 *db,                    /* Database handle */
   SessionTable *pTab,             /* Table to prepare statement for */
   sqlite3_stmt **ppStmt           /* OUT: Statement handle */
@@ -1550,7 +1550,7 @@ static int sessionPrepareDfltStmt(
 ** called, set it to the results of the sqlite3_finalize() call. Or, if
 ** it is already set to an error code, leave it as is.
 */
-static void sessionFinalizeStmt(sqlite3_stmt *pStmt, int *pRc){
+void sessionFinalizeStmt(sqlite3_stmt *pStmt, int *pRc){
   int rc = sqlite3_finalize(pStmt);
   if( *pRc==SQLITE_OK ) *pRc = rc;
 }
@@ -1560,7 +1560,7 @@ static void sessionFinalizeStmt(sqlite3_stmt *pStmt, int *pRc){
 ** with fewer than pTab->nCol columns. This function updates all such 
 ** change-records with the default values for the missing columns.
 */
-static int sessionUpdateChanges(sqlite3_session *pSession, SessionTable *pTab){
+int sessionUpdateChanges(sqlite3_session *pSession, SessionTable *pTab){
   sqlite3_stmt *pStmt = 0;
   int rc = pSession->rc;
 
@@ -1593,7 +1593,7 @@ struct SessionStat1Ctx {
   SessionHook hook;
   sqlite3_session *pSession;
 };
-static int sessionStat1Old(void *pCtx, int iCol, sqlite3_value **ppVal){
+int sessionStat1Old(void *pCtx, int iCol, sqlite3_value **ppVal){
   SessionStat1Ctx *p = (SessionStat1Ctx*)pCtx;
   sqlite3_value *pVal = 0;
   int rc = p->hook.xOld(p->hook.pCtx, iCol, &pVal);
@@ -1603,7 +1603,7 @@ static int sessionStat1Old(void *pCtx, int iCol, sqlite3_value **ppVal){
   *ppVal = pVal;
   return rc;
 }
-static int sessionStat1New(void *pCtx, int iCol, sqlite3_value **ppVal){
+int sessionStat1New(void *pCtx, int iCol, sqlite3_value **ppVal){
   SessionStat1Ctx *p = (SessionStat1Ctx*)pCtx;
   sqlite3_value *pVal = 0;
   int rc = p->hook.xNew(p->hook.pCtx, iCol, &pVal);
@@ -1613,16 +1613,16 @@ static int sessionStat1New(void *pCtx, int iCol, sqlite3_value **ppVal){
   *ppVal = pVal;
   return rc;
 }
-static int sessionStat1Count(void *pCtx){
+int sessionStat1Count(void *pCtx){
   SessionStat1Ctx *p = (SessionStat1Ctx*)pCtx;
   return p->hook.xCount(p->hook.pCtx);
 }
-static int sessionStat1Depth(void *pCtx){
+int sessionStat1Depth(void *pCtx){
   SessionStat1Ctx *p = (SessionStat1Ctx*)pCtx;
   return p->hook.xDepth(p->hook.pCtx);
 }
 
-static int sessionUpdateMaxSize(
+int sessionUpdateMaxSize(
   int op,
   sqlite3_session *pSession,      /* Session object pTab is attached to */
   SessionTable *pTab,             /* Table that change applies to */
@@ -1734,7 +1734,7 @@ static int sessionUpdateMaxSize(
 ** Unless one is already present or an error occurs, an entry is added
 ** to the changed-rows hash table associated with table pTab.
 */
-static void sessionPreupdateOneChange(
+void sessionPreupdateOneChange(
   int op,                         /* One of SQLITE_UPDATE, INSERT, DELETE */
   i64 iRowid,
   sqlite3_session *pSession,      /* Session object pTab is attached to */
@@ -1906,7 +1906,7 @@ static void sessionPreupdateOneChange(
   }
 }
 
-static int sessionFindTable(
+int sessionFindTable(
   sqlite3_session *pSession, 
   const char *zName,
   SessionTable **ppTab
@@ -1946,7 +1946,7 @@ static int sessionFindTable(
 /*
 ** The 'pre-update' hook registered by this module with SQLite databases.
 */
-static void xPreUpdate(
+void xPreUpdate(
   void *pCtx,                     /* Copy of third arg to preupdate_hook() */
   sqlite3 *db,                    /* Database handle */
   int op,                         /* SQLITE_UPDATE, DELETE or INSERT */
@@ -1987,16 +1987,16 @@ static void xPreUpdate(
 /*
 ** The pre-update hook implementations.
 */
-static int sessionPreupdateOld(void *pCtx, int iVal, sqlite3_value **ppVal){
+int sessionPreupdateOld(void *pCtx, int iVal, sqlite3_value **ppVal){
   return sqlite3_preupdate_old((sqlite3*)pCtx, iVal, ppVal);
 }
-static int sessionPreupdateNew(void *pCtx, int iVal, sqlite3_value **ppVal){
+int sessionPreupdateNew(void *pCtx, int iVal, sqlite3_value **ppVal){
   return sqlite3_preupdate_new((sqlite3*)pCtx, iVal, ppVal);
 }
-static int sessionPreupdateCount(void *pCtx){
+int sessionPreupdateCount(void *pCtx){
   return sqlite3_preupdate_count((sqlite3*)pCtx);
 }
-static int sessionPreupdateDepth(void *pCtx){
+int sessionPreupdateDepth(void *pCtx){
   return sqlite3_preupdate_depth((sqlite3*)pCtx);
 }
 
@@ -2004,7 +2004,7 @@ static int sessionPreupdateDepth(void *pCtx){
 ** Install the pre-update hooks on the session object passed as the only
 ** argument.
 */
-static void sessionPreupdateHooks(
+void sessionPreupdateHooks(
   sqlite3_session *pSession
 ){
   pSession->hook.pCtx = (void*)pSession->db;
@@ -2024,21 +2024,21 @@ struct SessionDiffCtx {
 /*
 ** The diff hook implementations.
 */
-static int sessionDiffOld(void *pCtx, int iVal, sqlite3_value **ppVal){
+int sessionDiffOld(void *pCtx, int iVal, sqlite3_value **ppVal){
   SessionDiffCtx *p = (SessionDiffCtx*)pCtx;
   *ppVal = sqlite3_column_value(p->pStmt, iVal+p->nOldOff+p->bRowid);
   return SQLITE_OK;
 }
-static int sessionDiffNew(void *pCtx, int iVal, sqlite3_value **ppVal){
+int sessionDiffNew(void *pCtx, int iVal, sqlite3_value **ppVal){
   SessionDiffCtx *p = (SessionDiffCtx*)pCtx;
   *ppVal = sqlite3_column_value(p->pStmt, iVal+p->bRowid);
    return SQLITE_OK;
 }
-static int sessionDiffCount(void *pCtx){
+int sessionDiffCount(void *pCtx){
   SessionDiffCtx *p = (SessionDiffCtx*)pCtx;
   return (p->nOldOff ? p->nOldOff : sqlite3_column_count(p->pStmt)) - p->bRowid;
 }
-static int sessionDiffDepth(void *pCtx){
+int sessionDiffDepth(void *pCtx){
   (void)pCtx;
   return 0;
 }
@@ -2047,7 +2047,7 @@ static int sessionDiffDepth(void *pCtx){
 ** Install the diff hooks on the session object passed as the only
 ** argument.
 */
-static void sessionDiffHooks(
+void sessionDiffHooks(
   sqlite3_session *pSession,
   SessionDiffCtx *pDiffCtx
 ){
@@ -2058,7 +2058,7 @@ static void sessionDiffHooks(
   pSession->hook.xDepth = sessionDiffDepth;
 }
 
-static char *sessionExprComparePK(
+char *sessionExprComparePK(
   int nCol,
   const char *zDb1, const char *zDb2, 
   const char *zTab,
@@ -2081,7 +2081,7 @@ static char *sessionExprComparePK(
   return zRet;
 }
 
-static char *sessionExprCompareOther(
+char *sessionExprCompareOther(
   int nCol,
   const char *zDb1, const char *zDb2, 
   const char *zTab,
@@ -2112,7 +2112,7 @@ static char *sessionExprCompareOther(
   return zRet;
 }
 
-static char *sessionSelectFindNew(
+char *sessionSelectFindNew(
   const char *zDb1,      /* Pick rows in this db only */
   const char *zDb2,      /* But not in this one */
   int bRowid,
@@ -2129,7 +2129,7 @@ static char *sessionSelectFindNew(
   return zRet;
 }
 
-static int sessionDiffFindNew(
+int sessionDiffFindNew(
   int op,
   sqlite3_session *pSession,
   SessionTable *pTab,
@@ -2170,7 +2170,7 @@ static int sessionDiffFindNew(
 **
 **    "main"."t1"."a", "main"."t1"."b", "main"."t1"."c"
 */
-static char *sessionAllCols(
+char *sessionAllCols(
   const char *zDb,
   SessionTable *pTab
 ){
@@ -2185,7 +2185,7 @@ static char *sessionAllCols(
   return zRet;
 }
 
-static int sessionDiffFindModified(
+int sessionDiffFindModified(
   sqlite3_session *pSession, 
   SessionTable *pTab, 
   const char *zFrom, 
@@ -2395,7 +2395,7 @@ int sqlite3session_create(
 ** Free the list of table objects passed as the first argument. The contents
 ** of the changed-rows hash tables are also deleted.
 */
-static void sessionDeleteTable(sqlite3_session *pSession, SessionTable *pList){
+void sessionDeleteTable(sqlite3_session *pSession, SessionTable *pList){
   SessionTable *pNext;
   SessionTable *pTab;
 
@@ -2522,7 +2522,7 @@ int sqlite3session_attach(
 ** Otherwise, if an error occurs, *pRc is set to an SQLite error code
 ** before returning.
 */
-static void sessionAppendValue(SessionBuffer *p, sqlite3_value *pVal, int *pRc){
+void sessionAppendValue(SessionBuffer *p, sqlite3_value *pVal, int *pRc){
   int rc = *pRc;
   if( rc==SQLITE_OK ){
     sqlite3_int64 nByte = 0;
@@ -2544,7 +2544,7 @@ static void sessionAppendValue(SessionBuffer *p, sqlite3_value *pVal, int *pRc){
 ** If an OOM condition is encountered, set *pRc to SQLITE_NOMEM before
 ** returning.
 */
-static void sessionAppendByte(SessionBuffer *p, u8 v, int *pRc){
+void sessionAppendByte(SessionBuffer *p, u8 v, int *pRc){
   if( 0==sessionBufferGrow(p, 1, pRc) ){
     p->aBuf[p->nBuf++] = v;
   }
@@ -2557,7 +2557,7 @@ static void sessionAppendByte(SessionBuffer *p, u8 v, int *pRc){
 ** If an OOM condition is encountered, set *pRc to SQLITE_NOMEM before
 ** returning.
 */
-static void sessionAppendVarint(SessionBuffer *p, int v, int *pRc){
+void sessionAppendVarint(SessionBuffer *p, int v, int *pRc){
   if( 0==sessionBufferGrow(p, 9, pRc) ){
     p->nBuf += sessionVarintPut(&p->aBuf[p->nBuf], v);
   }
@@ -2570,7 +2570,7 @@ static void sessionAppendVarint(SessionBuffer *p, int v, int *pRc){
 ** If an OOM condition is encountered, set *pRc to SQLITE_NOMEM before
 ** returning.
 */
-static void sessionAppendBlob(
+void sessionAppendBlob(
   SessionBuffer *p, 
   const u8 *aBlob, 
   int nBlob, 
@@ -2590,7 +2590,7 @@ static void sessionAppendBlob(
 ** If an OOM condition is encountered, set *pRc to SQLITE_NOMEM before
 ** returning.
 */
-static void sessionAppendInteger(
+void sessionAppendInteger(
   SessionBuffer *p,               /* Buffer to append to */
   int iVal,                       /* Value to write the string rep. of */
   int *pRc                        /* IN/OUT: Error code */
@@ -2609,7 +2609,7 @@ static void sessionAppendInteger(
 ** If an OOM condition is encountered, set *pRc to SQLITE_NOMEM before
 ** returning.
 */
-static void sessionAppendIdent(
+void sessionAppendIdent(
   SessionBuffer *p,               /* Buffer to a append to */
   const char *zStr,               /* String to quote, escape and append */
   int *pRc                        /* IN/OUT: Error code */
@@ -2637,7 +2637,7 @@ static void sessionAppendIdent(
 ** in column iCol of the row that SQL statement pStmt currently points
 ** to to the buffer.
 */
-static void sessionAppendCol(
+void sessionAppendCol(
   SessionBuffer *p,               /* Buffer to append to */
   sqlite3_stmt *pStmt,            /* Handle pointing to row containing value */
   int iCol,                       /* Column to read value from */
@@ -2698,7 +2698,7 @@ static void sessionAppendCol(
 ** original values of any fields that have been modified. The new.* record 
 ** contains the new values of only those fields that have been modified.
 */ 
-static int sessionAppendUpdate(
+int sessionAppendUpdate(
   SessionBuffer *pBuf,            /* Buffer to append to */
   int bPatchset,                  /* True for "patchset", 0 for "changeset" */
   sqlite3_stmt *pStmt,            /* Statement handle pointing at new row */
@@ -2798,7 +2798,7 @@ static int sessionAppendUpdate(
 ** the changeset format if argument bPatchset is zero, or the patchset
 ** format otherwise.
 */
-static int sessionAppendDelete(
+int sessionAppendDelete(
   SessionBuffer *pBuf,            /* Buffer to append to */
   int bPatchset,                  /* True for "patchset", 0 for "changeset" */
   SessionChange *p,               /* Object containing old values */
@@ -2847,7 +2847,7 @@ static int sessionAppendDelete(
   return rc;
 }
 
-static int sessionPrepare(
+int sessionPrepare(
   sqlite3 *db, 
   sqlite3_stmt **pp, 
   char **pzErrmsg,
@@ -2872,7 +2872,7 @@ static int sessionPrepare(
 **
 ** for each non-pk <column>.
 */
-static int sessionSelectStmt(
+int sessionSelectStmt(
   sqlite3 *db,                    /* Database handle */
   int bIgnoreNoop,
   const char *zDb,                /* Database name */
@@ -2984,7 +2984,7 @@ static int sessionSelectStmt(
 ** Return SQLITE_OK if all PK values are successfully bound, or an SQLite
 ** error code (e.g. SQLITE_NOMEM) otherwise.
 */
-static int sessionSelectBind(
+int sessionSelectBind(
   sqlite3_stmt *pSelect,          /* SELECT from sessionSelectStmt() */
   int nCol,                       /* Number of columns in table */
   u8 *abPK,                       /* PRIMARY KEY array */
@@ -3055,7 +3055,7 @@ static int sessionSelectBind(
 ** changeset format) to buffer *pBuf. If an error occurs, set *pRc to an
 ** SQLite error code before returning.
 */
-static void sessionAppendTableHdr(
+void sessionAppendTableHdr(
   SessionBuffer *pBuf,            /* Append header to this buffer */
   int bPatchset,                  /* Use the patchset format if true */
   SessionTable *pTab,             /* Table object to append header for */
@@ -3078,7 +3078,7 @@ static void sessionAppendTableHdr(
 ** occurs, an SQLite error code is returned and both output variables set 
 ** to 0.
 */
-static int sessionGenerateChangeset(
+int sessionGenerateChangeset(
   sqlite3_session *pSession,      /* Session object */
   int bPatchset,                  /* True for patchset, false for changeset */
   int (*xOutput)(void *pOut, const void *pData, int nData),
@@ -3364,7 +3364,7 @@ sqlite3_int64 sqlite3session_changeset_size(sqlite3_session *pSession){
 /*
 ** Do the work for either sqlite3changeset_start() or start_strm().
 */
-static int sessionChangesetStart(
+int sessionChangesetStart(
   sqlite3_changeset_iter **pp,    /* OUT: Changeset iterator handle */
   int (*xInput)(void *pIn, void *pData, int *pnData),
   void *pIn,
@@ -3443,7 +3443,7 @@ int sqlite3changeset_start_v2_strm(
 ** If the SessionInput object passed as the only argument is a streaming
 ** object and the buffer is full, discard some data to free up space.
 */
-static void sessionDiscardData(SessionInput *pIn){
+void sessionDiscardData(SessionInput *pIn){
   if( pIn->xInput && pIn->iCurrent>=sessions_strm_chunk_size ){
     int nMove = pIn->buf.nBuf - pIn->iCurrent;
     assert( nMove>=0 );
@@ -3464,7 +3464,7 @@ static void sessionDiscardData(SessionInput *pIn){
 **
 ** Return an SQLite error code if an error occurs, or SQLITE_OK otherwise.
 */
-static int sessionInputBuffer(SessionInput *pIn, int nByte){
+int sessionInputBuffer(SessionInput *pIn, int nByte){
   int rc = SQLITE_OK;
   if( pIn->xInput ){
     while( !pIn->bEof && (pIn->iNext+nByte)>=pIn->nData && rc==SQLITE_OK ){
@@ -3492,7 +3492,7 @@ static int sessionInputBuffer(SessionInput *pIn, int nByte){
 ** that contains nCol values. This function advances the pointer *ppRec
 ** until it points to the byte immediately following that record.
 */
-static void sessionSkipRecord(
+void sessionSkipRecord(
   u8 **ppRec,                     /* IN/OUT: Record pointer */
   int nCol                        /* Number of values in record */
 ){
@@ -3518,7 +3518,7 @@ static void sessionSkipRecord(
 ** buffer. SQLITE_OK is returned if successful, or SQLITE_NOMEM if an OOM
 ** error occurs.
 */
-static int sessionValueSetStr(
+int sessionValueSetStr(
   sqlite3_value *pVal,            /* Set the value of this object */
   u8 *aData,                      /* Buffer containing string or blob data */
   int nData,                      /* Size of buffer aData[] in bytes */
@@ -3559,7 +3559,7 @@ static int sessionValueSetStr(
 ** If an error occurs, an SQLite error code (e.g. SQLITE_NOMEM) is returned.
 ** The apOut[] array may have been partially populated in this case.
 */
-static int sessionReadRecord(
+int sessionReadRecord(
   SessionInput *pIn,              /* Input data */
   int nCol,                       /* Number of values in record */
   u8 *abPK,                       /* Array of primary key flags, or NULL */
@@ -3640,7 +3640,7 @@ static int sessionReadRecord(
 ** If successful, SQLITE_OK is returned. Otherwise, an SQLite error code.
 ** The input pointer is not moved.
 */
-static int sessionChangesetBufferTblhdr(SessionInput *pIn, int *pnByte){
+int sessionChangesetBufferTblhdr(SessionInput *pIn, int *pnByte){
   int rc = SQLITE_OK;
   int nCol = 0;
   int nRead = 0;
@@ -3691,7 +3691,7 @@ static int sessionChangesetBufferTblhdr(SessionInput *pIn, int *pnByte){
 ** the record in bytes. Otherwise, an SQLite error code is returned. The
 ** final value of *pnByte is undefined in this case.
 */
-static int sessionChangesetBufferRecord(
+int sessionChangesetBufferRecord(
   SessionInput *pIn,              /* Input data */
   int nCol,                       /* Number of columns in record */
   int *pnByte                     /* OUT: Size of record in bytes */
@@ -3741,7 +3741,7 @@ static int sessionChangesetBufferRecord(
 ** is returned and the final values of the various fields enumerated above
 ** are undefined.
 */
-static int sessionChangesetReadTblhdr(sqlite3_changeset_iter *p){
+int sessionChangesetReadTblhdr(sqlite3_changeset_iter *p){
   int rc;
   int nCopy;
   assert( p->rc==SQLITE_OK );
@@ -3790,7 +3790,7 @@ static int sessionChangesetReadTblhdr(sqlite3_changeset_iter *p){
 **   * If the iterator is configured to skip no-op UPDATEs,
 **     sessionChangesetNext() does that. This function does not.
 */
-static int sessionChangesetNextOne(
+int sessionChangesetNextOne(
   sqlite3_changeset_iter *p,      /* Changeset iterator */
   u8 **paRec,                     /* If non-NULL, store record pointer here */
   int *pnRec,                     /* If non-NULL, store size of record here */
@@ -3941,7 +3941,7 @@ static int sessionChangesetNextOne(
 ** error code if an error occurs, or SQLITE_DONE if there are no further 
 ** changes in the changeset.
 */
-static int sessionChangesetNext(
+int sessionChangesetNext(
   sqlite3_changeset_iter *p,      /* Changeset iterator */
   u8 **paRec,                     /* If non-NULL, store record pointer here */
   int *pnRec,                     /* If non-NULL, store size of record here */
@@ -4134,7 +4134,7 @@ int sqlite3changeset_finalize(sqlite3_changeset_iter *p){
   return rc;
 }
 
-static int sessionChangesetInvert(
+int sessionChangesetInvert(
   SessionInput *pInput,           /* Input changeset */
   int (*xOutput)(void *pOut, const void *pData, int nData),
   void *pOut,
@@ -4378,7 +4378,7 @@ struct SessionApplyCtx {
 **
 **   UPDATE tbl SET col = ?, col2 = ? WHERE pk1 IS ? AND pk2 IS ?
 */
-static int sessionUpdateFind(
+int sessionUpdateFind(
   sqlite3_changeset_iter *pIter,
   SessionApplyCtx *p,
   int bPatchset,
@@ -4517,7 +4517,7 @@ static int sessionUpdateFind(
 /*
 ** Free all cached UPDATE statements.
 */
-static void sessionUpdateFree(SessionApplyCtx *p){
+void sessionUpdateFree(SessionApplyCtx *p){
   SessionUpdate *pUp;
   SessionUpdate *pNext;
   for(pUp=p->pUp; pUp; pUp=pNext){
@@ -4547,7 +4547,7 @@ static void sessionUpdateFree(SessionApplyCtx *p){
 ** If successful, SQLITE_OK is returned and SessionApplyCtx.pDelete is left
 ** pointing to the prepared version of the SQL statement.
 */
-static int sessionDeleteRow(
+int sessionDeleteRow(
   sqlite3 *db,                    /* Database handle */
   const char *zTab,               /* Table name */
   SessionApplyCtx *p              /* Session changeset-apply context */
@@ -4612,7 +4612,7 @@ static int sessionDeleteRow(
 ** If successful, SQLITE_OK is returned and SessionApplyCtx.pSelect is left
 ** pointing to the prepared version of the SQL statement.
 */
-static int sessionSelectRow(
+int sessionSelectRow(
   sqlite3 *db,                    /* Database handle */
   const char *zTab,               /* Table name */
   SessionApplyCtx *p              /* Session changeset-apply context */
@@ -4632,7 +4632,7 @@ static int sessionSelectRow(
 ** If successful, SQLITE_OK is returned and SessionApplyCtx.pInsert is left
 ** pointing to the prepared version of the SQL statement.
 */
-static int sessionInsertRow(
+int sessionInsertRow(
   sqlite3 *db,                    /* Database handle */
   const char *zTab,               /* Table name */
   SessionApplyCtx *p              /* Session changeset-apply context */
@@ -4668,7 +4668,7 @@ static int sessionInsertRow(
 ** sessionInsertRow(), sessionUpdateRow() and sessionDeleteRow() for 
 ** other tables.
 */
-static int sessionStat1Sql(sqlite3 *db, SessionApplyCtx *p){
+int sessionStat1Sql(sqlite3 *db, SessionApplyCtx *p){
   int rc = sessionSelectRow(db, "sqlite_stat1", p);
   if( rc==SQLITE_OK ){
     rc = sessionPrepare(db, &p->pInsert, 0,
@@ -4691,7 +4691,7 @@ static int sessionStat1Sql(sqlite3 *db, SessionApplyCtx *p){
 ** A wrapper around sqlite3_bind_value() that detects an extra problem. 
 ** See comments in the body of this function for details.
 */
-static int sessionBindValue(
+int sessionBindValue(
   sqlite3_stmt *pStmt,            /* Statement to bind value to */
   int i,                          /* Parameter number to bind to */
   sqlite3_value *pVal             /* Value to bind */
@@ -4724,7 +4724,7 @@ static int sessionBindValue(
 **
 ** An SQLite error code is returned if an error occurs. Otherwise, SQLITE_OK.
 */
-static int sessionBindRow(
+int sessionBindRow(
   sqlite3_changeset_iter *pIter,  /* Iterator to read values from */
   int(*xValue)(sqlite3_changeset_iter *, int, sqlite3_value **),
   int nCol,                       /* Number of columns */
@@ -4773,7 +4773,7 @@ static int sessionBindRow(
 ** new.* record to the SELECT statement. Or, if it points to a DELETE or
 ** UPDATE, bind values from the old.* record. 
 */
-static int sessionSeekToRow(
+int sessionSeekToRow(
   sqlite3_changeset_iter *pIter,  /* Changeset iterator */
   SessionApplyCtx *p
 ){
@@ -4820,7 +4820,7 @@ static int sessionSeekToRow(
 **
 ** Return SQLITE_OK if successful, or an SQLite error code otherwise.
 */
-static int sessionRebaseAdd(
+int sessionRebaseAdd(
   SessionApplyCtx *p,             /* Apply context */
   int eType,                      /* Conflict resolution (OMIT or REPLACE) */
   sqlite3_changeset_iter *pIter   /* Iterator pointing at current change */
@@ -4894,7 +4894,7 @@ static int sessionRebaseAdd(
 ** SQLITE_MISUSE. If the conflict handler returns SQLITE_CHANGESET_OMIT,
 ** this function returns SQLITE_OK.
 */
-static int sessionConflictHandler(
+int sessionConflictHandler(
   int eType,                      /* Either CHANGESET_DATA or CONFLICT */
   SessionApplyCtx *p,             /* changeset_apply() context */
   sqlite3_changeset_iter *pIter,  /* Changeset iterator */
@@ -4998,7 +4998,7 @@ static int sessionConflictHandler(
 ** returns SQLITE_ABORT. Otherwise, if no error occurs, SQLITE_OK is 
 ** returned.
 */
-static int sessionApplyOneOp(
+int sessionApplyOneOp(
   sqlite3_changeset_iter *pIter,  /* Changeset iterator */
   SessionApplyCtx *p,             /* changeset_apply() context */
   int(*xConflict)(void *, int, sqlite3_changeset_iter *),
@@ -5131,7 +5131,7 @@ static int sessionApplyOneOp(
 ** returns SQLITE_CHANGESET_REPLACE - indicating that the change should be
 ** retried in some manner.
 */
-static int sessionApplyOneWithRetry(
+int sessionApplyOneWithRetry(
   sqlite3 *db,                    /* Apply change to "main" db of this handle */
   sqlite3_changeset_iter *pIter,  /* Changeset iterator to read change from */
   SessionApplyCtx *pApply,        /* Apply context */
@@ -5188,7 +5188,7 @@ static int sessionApplyOneWithRetry(
 /*
 ** Create an iterator to iterate through the retry buffer pRetry.
 */
-static int sessionRetryIterInit(
+int sessionRetryIterInit(
   SessionBuffer *pRetry,          /* Buffer to iterate through */
   int bPatchset,                  /* True for patchset, false for changeset */
   const char *zTab,               /* Table name */
@@ -5226,7 +5226,7 @@ static int sessionRetryIterInit(
 ** Except, if parameter iSkip is greater than or equal to 0, skip change 
 ** iSkip.
 */
-static int sessionApplyRetryBuffer(
+int sessionApplyRetryBuffer(
   SessionBuffer *pRetry,          /* Buffer to apply changes from */
   int iSkip,                      /* If >=0, index of change to omit */
   sqlite3 *db,                    /* Database handle */
@@ -5267,7 +5267,7 @@ static int sessionApplyRetryBuffer(
 ** error does occur, return an SQLite error code. The final value of (*pbWR)
 ** is undefined in this case.
 */
-static int sessionTableIsWithoutRowid(sqlite3 *db, const char *zTab, int *pbWR){
+int sessionTableIsWithoutRowid(sqlite3 *db, const char *zTab, int *pbWR){
   sqlite3_stmt *pList = 0;
   char *zSql = 0;
   int rc = SQLITE_OK;
@@ -5301,7 +5301,7 @@ static int sessionTableIsWithoutRowid(sqlite3 *db, const char *zTab, int *pbWR){
 ** Or, if an error occurs, an SQLite error code is returned and (*ppInsert)
 ** set to NULL. pApply->zErr may be set to an error message in this case.
 */
-static int sessionUpdateToDeleteInsert(
+int sessionUpdateToDeleteInsert(
   sqlite3 *db,                    /* Database to write to */
   const char *zTab,               /* Table name */
   SessionApplyCtx *pApply,        /* Apply context */
@@ -5445,7 +5445,7 @@ static int sessionUpdateToDeleteInsert(
 **      is invoked and the user has to decide whether to omit the change
 **      or rollback the entire _apply() operation.
 */
-static int sessionRetryConstraints(
+int sessionRetryConstraints(
   sqlite3 *db, 
   int bPatchset,
   const char *zTab,
@@ -5561,7 +5561,7 @@ static int sessionRetryConstraints(
 ** conflict handler callback is invoked to resolve any conflicts encountered
 ** while applying the change.
 */
-static int sessionChangesetApply(
+int sessionChangesetApply(
   sqlite3 *db,                    /* Apply change to "main" db of this handle */
   sqlite3_changeset_iter *pIter,  /* Changeset to apply */
   int(*xFilter)(
@@ -5834,7 +5834,7 @@ static int sessionChangesetApply(
 ** flags:
 **   Zero for apply(). The flags parameter for apply_v2() and apply_v3().
 */
-static int sessionChangesetApplyV23(
+int sessionChangesetApplyV23(
   sqlite3 *db,                    /* Apply change to "main" db of this handle */
   int nChangeset,                 /* Size of changeset in bytes */
   void *pChangeset,               /* Changeset blob */
@@ -6064,7 +6064,7 @@ struct sqlite3_changegroup {
 ** both the aRec[] change and the pExist change are safe to use without
 ** checking for buffer overflows.
 */
-static int sessionChangeMerge(
+int sessionChangeMerge(
   SessionTable *pTab,             /* Table structure */
   int bRebase,                    /* True for a rebase hash-table */
   int bPatchset,                  /* True for patchsets */
@@ -6249,7 +6249,7 @@ static int sessionChangeMerge(
 ** pTab. If so, return 1. Otherwise, if they are incompatible in some way,
 ** return 0.
 */
-static int sessionChangesetCheckCompat(
+int sessionChangesetCheckCompat(
   SessionTable *pTab,
   int nCol,
   u8 *abPK
@@ -6265,7 +6265,7 @@ static int sessionChangesetCheckCompat(
   return (pTab->nCol==nCol && 0==memcmp(abPK, pTab->abPK, nCol));
 }
 
-static int sessionChangesetExtendRecord(
+int sessionChangesetExtendRecord(
   sqlite3_changegroup *pGrp,
   SessionTable *pTab, 
   int nCol, 
@@ -6361,7 +6361,7 @@ static int sessionChangesetExtendRecord(
 ** object and return SQLITE_OK. Otherwise, if some error occurs, return
 ** an SQLite error code and leave (*ppTab) set to NULL.
 */
-static int sessionChangesetFindTable(
+int sessionChangesetFindTable(
   sqlite3_changegroup *pGrp, 
   const char *zTab, 
   sqlite3_changeset_iter *pIter, 
@@ -6434,7 +6434,7 @@ static int sessionChangesetFindTable(
 /*
 ** Add a single change to the changegroup pGrp.
 */
-static int sessionOneChangeToHash(
+int sessionOneChangeToHash(
   sqlite3_changegroup *pGrp,      /* Changegroup to update */
   SessionTable *pTab,             /* Table change pertains to */
   int op,                         /* One of SQLITE_INSERT, UPDATE, DELETE */
@@ -6504,7 +6504,7 @@ static int sessionOneChangeToHash(
 ** Add the change currently indicated by iterator pIter to the hash table
 ** belonging to changegroup pGrp.
 */
-static int sessionOneChangeIterToHash(
+int sessionOneChangeIterToHash(
   sqlite3_changegroup *pGrp,
   sqlite3_changeset_iter *pIter,
   int bRebase
@@ -6546,7 +6546,7 @@ static int sessionOneChangeIterToHash(
 ** Add all changes in the changeset traversed by the iterator passed as
 ** the first argument to the changegroup hash tables.
 */
-static int sessionChangesetToHash(
+int sessionChangesetToHash(
   sqlite3_changeset_iter *pIter,   /* Iterator to read from */
   sqlite3_changegroup *pGrp,       /* Changegroup object to add changeset to */
   int bRebase                      /* True if hash table is for rebasing */
@@ -6588,7 +6588,7 @@ static int sessionChangesetToHash(
 ** error code. If an error occurs and xOutput is NULL, (*ppOut) and (*pnOut)
 ** are both set to 0 before returning.
 */
-static int sessionChangegroupOutput(
+int sessionChangegroupOutput(
   sqlite3_changegroup *pGrp,
   int (*xOutput)(void *pOut, const void *pData, int nData),
   void *pOut,
@@ -6873,7 +6873,7 @@ struct sqlite3_rebaser {
 ** record to buffer pBuf that is a copy of a1, except that for
 ** each field that is undefined in a1[], swap in the field from a2[].
 */
-static void sessionAppendRecordMerge(
+void sessionAppendRecordMerge(
   SessionBuffer *pBuf,            /* Buffer to append to */
   int nCol,                       /* Number of columns in each record */
   u8 *a1, int n1,                 /* Record 1 */
@@ -6925,7 +6925,7 @@ static void sessionAppendRecordMerge(
 **     or "replaced" (0xFF), the old.* value is replaced by the value
 **     in the rebase buffer.
 */
-static void sessionAppendPartialUpdate(
+void sessionAppendPartialUpdate(
   SessionBuffer *pBuf,            /* Append record here */
   sqlite3_changeset_iter *pIter,  /* Iterator pointed at local change */
   u8 *aRec, int nRec,             /* Local change */
@@ -6994,7 +6994,7 @@ static void sessionAppendPartialUpdate(
 ** pnOut are not NULL, then the two output parameters are set to 0 before
 ** returning.
 */
-static int sessionRebase(
+int sessionRebase(
   sqlite3_rebaser *p,             /* Rebaser hash table */
   sqlite3_changeset_iter *pIter,  /* Input data */
   int (*xOutput)(void *pOut, const void *pData, int nData),
@@ -7295,7 +7295,7 @@ int sqlite3changegroup_change_begin(
 ** This function does processing common to the _change_int64(), _change_text()
 ** and other similar APIs.
 */
-static int checkChangeParams(
+int checkChangeParams(
   sqlite3_changegroup *pGrp, 
   int bNew,
   int iCol,

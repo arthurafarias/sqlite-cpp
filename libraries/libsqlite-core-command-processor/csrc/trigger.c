@@ -426,7 +426,7 @@ triggerfinish_cleanup:
 ** Duplicate a range of text from an SQL statement, then convert all
 ** whitespace characters into ordinary space characters.
 */
-static char *triggerSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
+char *triggerSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
   char *z = sqlite3DbSpanDup(db, zStart, zEnd);
   int i;
   if( z ) for(i=0; z[i]; i++) if( sqlite3Isspace(z[i]) ) z[i] = ' ';
@@ -464,7 +464,7 @@ TriggerStep *sqlite3TriggerSelectStep(
 **
 ** If an OOM error occurs, NULL is returned and db->mallocFailed is set.
 */
-static TriggerStep *triggerStepAllocate(
+TriggerStep *triggerStepAllocate(
   Parse *pParse,              /* Parser context */
   u8 op,                      /* Trigger opcode */
   SrcList *pTabList,          /* Target table */
@@ -698,7 +698,7 @@ drop_trigger_cleanup:
 ** Return a pointer to the Table structure for the table that a trigger
 ** is set on.
 */
-static Table *tableOfTrigger(Trigger *pTrigger){
+Table *tableOfTrigger(Trigger *pTrigger){
   return sqlite3HashFind(&pTrigger->pTabSchema->tblHash, pTrigger->table);
 }
 
@@ -778,7 +778,7 @@ void sqlite3UnlinkAndDeleteTrigger(sqlite3 *db, int iDb, const char *zName){
 ** it matches anything so always return true.  Return false only
 ** if there is no match.
 */
-static int checkColumnOverlap(IdList *pIdList, ExprList *pEList){
+int checkColumnOverlap(IdList *pIdList, ExprList *pEList){
   int e;
   if( pIdList==0 || NEVER(pEList==0) ) return 1;
   for(e=0; e<pEList->nExpr; e++){
@@ -790,7 +790,7 @@ static int checkColumnOverlap(IdList *pIdList, ExprList *pEList){
 /*
 ** Return true if any TEMP triggers exist
 */
-static int tempTriggersExist(sqlite3 *db){
+int tempTriggersExist(sqlite3 *db){
   if( NEVER(db->aDb[1].pSchema==0) ) return 0;
   if( sqliteHashFirst(&db->aDb[1].pSchema->trigHash)==0 ) return 0;
   return 1;
@@ -802,7 +802,7 @@ static int tempTriggersExist(sqlite3 *db){
 ** performed on the table, and, if that operation is an UPDATE, if at
 ** least one of the columns in pChanges is being modified.
 */
-static SQLITE_NOINLINE Trigger *triggersReallyExist(
+SQLITE_NOINLINE Trigger *triggersReallyExist(
   Parse *pParse,          /* Parse context */
   Table *pTab,            /* The table the contains the triggers */
   int op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
@@ -888,7 +888,7 @@ Trigger *sqlite3TriggersExist(
 ** list is of the form "*".  Raise an error if the terms if of the
 ** form "table.*".
 */
-static int isAsteriskTerm(
+int isAsteriskTerm(
   Parse *pParse,      /* Parsing context */
   Expr *pTerm         /* A term in the RETURNING clause */
 ){
@@ -908,7 +908,7 @@ static int isAsteriskTerm(
 ** This routine makes a copy of the pList, and at the same time expands
 ** any "*" wildcards to be the complete set of columns from pTab.
 */
-static ExprList *sqlite3ExpandReturning(
+ExprList *sqlite3ExpandReturning(
   Parse *pParse,        /* Parsing context */
   ExprList *pList,      /* The arguments to RETURNING */
   Table *pTab           /* The table being updated */
@@ -950,7 +950,7 @@ static ExprList *sqlite3ExpandReturning(
 ** uses a subquery, and if the subquery is SF_Correlated, then mark the
 ** expression as EP_VarSelect.
 */
-static int sqlite3ReturningSubqueryVarSelect(Walker *NotUsed, Expr *pExpr){
+int sqlite3ReturningSubqueryVarSelect(Walker *NotUsed, Expr *pExpr){
   UNUSED_PARAMETER(NotUsed);
   if( ExprUseXSelect(pExpr)
    && (pExpr->x.pSelect->selFlags & SF_Correlated)!=0
@@ -969,7 +969,7 @@ static int sqlite3ReturningSubqueryVarSelect(Walker *NotUsed, Expr *pExpr){
 **    (2) Set pWalker->eCode to non-zero so that the caller will know
 **        that (1) has happened.
 */
-static int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
+int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
   int i;
   SrcList *pSrc;
   assert( pSelect!=0 );
@@ -995,7 +995,7 @@ static int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
 **
 ** https://sqlite.org/forum/forumpost/2c83569ce8945d39
 */
-static void sqlite3ProcessReturningSubqueries(
+void sqlite3ProcessReturningSubqueries(
   ExprList *pEList,
   Table *pTab
 ){
@@ -1017,7 +1017,7 @@ static void sqlite3ProcessReturningSubqueries(
 ** that invoke a subprogram in the bytecode, the code for RETURNING
 ** is generated in-line.
 */
-static void codeReturningTrigger(
+void codeReturningTrigger(
   Parse *pParse,       /* Parse context */
   Trigger *pTrigger,   /* The trigger step that defines the RETURNING */
   Table *pTab,         /* The table to code triggers from */
@@ -1108,7 +1108,7 @@ static void codeReturningTrigger(
 ** Generate VDBE code for the statements inside the body of a single 
 ** trigger.
 */
-static int codeTriggerProgram(
+int codeTriggerProgram(
   Parse *pParse,            /* The parser context */
   TriggerStep *pStepList,   /* List of statements inside the trigger body */
   int orconf                /* Conflict algorithm. (OE_Abort, etc) */  
@@ -1194,7 +1194,7 @@ static int codeTriggerProgram(
 ** This function is used to add VdbeComment() annotations to a VDBE
 ** program. It is not used in production code, only for debugging.
 */
-static const char *onErrorText(int onError){
+const char *onErrorText(int onError){
   switch( onError ){
     case OE_Abort:    return "abort";
     case OE_Rollback: return "rollback";
@@ -1212,7 +1212,7 @@ static const char *onErrorText(int onError){
 ** (trigger program). If an error has occurred, transfer error information
 ** from pFrom to pTo.
 */
-static void transferParseError(Parse *pTo, Parse *pFrom){
+void transferParseError(Parse *pTo, Parse *pFrom){
   assert( pFrom->zErrMsg==0 || pFrom->nErr );
   assert( pTo->zErrMsg==0 || pTo->nErr );
   if( pTo->nErr==0 ){
@@ -1228,7 +1228,7 @@ static void transferParseError(Parse *pTo, Parse *pFrom){
 ** Create and populate a new TriggerPrg object with a sub-program 
 ** implementing trigger pTrigger with ON CONFLICT policy orconf.
 */
-static TriggerPrg *codeRowTrigger(
+TriggerPrg *codeRowTrigger(
   Parse *pParse,       /* Current parse context */
   Trigger *pTrigger,   /* Trigger to code */
   Table *pTab,         /* The table pTrigger is attached to */
@@ -1358,7 +1358,7 @@ static TriggerPrg *codeRowTrigger(
 ** TriggerPrg object exists, a new object is allocated and populated before
 ** being returned.
 */
-static TriggerPrg *getRowTrigger(
+TriggerPrg *getRowTrigger(
   Parse *pParse,       /* Current parse context */
   Trigger *pTrigger,   /* Trigger to code */
   Table *pTab,         /* The table trigger pTrigger is attached to */

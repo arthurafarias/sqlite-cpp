@@ -95,37 +95,37 @@ struct VLogFile {
 /*
 ** Methods for VLogFile
 */
-static int vlogClose(sqlite3_file*);
-static int vlogRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int vlogWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int vlogTruncate(sqlite3_file*, sqlite3_int64 size);
-static int vlogSync(sqlite3_file*, int flags);
-static int vlogFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int vlogLock(sqlite3_file*, int);
-static int vlogUnlock(sqlite3_file*, int);
-static int vlogCheckReservedLock(sqlite3_file*, int *pResOut);
-static int vlogFileControl(sqlite3_file*, int op, void *pArg);
-static int vlogSectorSize(sqlite3_file*);
-static int vlogDeviceCharacteristics(sqlite3_file*);
+int vlogClose(sqlite3_file*);
+int vlogRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
+int vlogWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
+int vlogTruncate(sqlite3_file*, sqlite3_int64 size);
+int vlogSync(sqlite3_file*, int flags);
+int vlogFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+int vlogLock(sqlite3_file*, int);
+int vlogUnlock(sqlite3_file*, int);
+int vlogCheckReservedLock(sqlite3_file*, int *pResOut);
+int vlogFileControl(sqlite3_file*, int op, void *pArg);
+int vlogSectorSize(sqlite3_file*);
+int vlogDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Methods for VLogVfs
 */
-static int vlogOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int vlogDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int vlogAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int vlogFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *vlogDlOpen(sqlite3_vfs*, const char *zFilename);
-static void vlogDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*vlogDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
-static void vlogDlClose(sqlite3_vfs*, void*);
-static int vlogRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int vlogSleep(sqlite3_vfs*, int microseconds);
-static int vlogCurrentTime(sqlite3_vfs*, double*);
-static int vlogGetLastError(sqlite3_vfs*, int, char *);
-static int vlogCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+int vlogOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
+int vlogDelete(sqlite3_vfs*, const char *zName, int syncDir);
+int vlogAccess(sqlite3_vfs*, const char *zName, int flags, int *);
+int vlogFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+void *vlogDlOpen(sqlite3_vfs*, const char *zFilename);
+void vlogDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+void (*vlogDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
+void vlogDlClose(sqlite3_vfs*, void*);
+int vlogRandomness(sqlite3_vfs*, int nByte, char *zOut);
+int vlogSleep(sqlite3_vfs*, int microseconds);
+int vlogCurrentTime(sqlite3_vfs*, double*);
+int vlogGetLastError(sqlite3_vfs*, int, char *);
+int vlogCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
 
-static VLogVfs vlog_vfs = {
+VLogVfs vlog_vfs = {
   {
     1,                            /* iVersion */
     0,                            /* szOsFile (set by register_vlog()) */
@@ -150,7 +150,7 @@ static VLogVfs vlog_vfs = {
   0
 };
 
-static sqlite3_io_methods vlog_io_methods = {
+sqlite3_io_methods vlog_io_methods = {
   1,                              /* iVersion */
   vlogClose,                      /* xClose */
   vlogRead,                       /* xRead */
@@ -172,7 +172,7 @@ static sqlite3_io_methods vlog_io_methods = {
 
 #if SQLITE_OS_UNIX && !defined(NO_GETTOD)
 #include <sys/time.h>
-static sqlite3_uint64 vlog_time(){
+sqlite3_uint64 vlog_time(){
   struct timeval sTime;
   gettimeofday(&sTime, 0);
   return sTime.tv_usec + (sqlite3_uint64)sTime.tv_sec * 1000000;
@@ -180,7 +180,7 @@ static sqlite3_uint64 vlog_time(){
 #elif SQLITE_OS_WIN
 #include <windows.h>
 #include <time.h>
-static sqlite3_uint64 vlog_time(){
+sqlite3_uint64 vlog_time(){
   FILETIME ft;
   sqlite3_uint64 u64time = 0;
  
@@ -194,7 +194,7 @@ static sqlite3_uint64 vlog_time(){
   return u64time /(sqlite3_uint64)10;
 }
 #else
-static sqlite3_uint64 vlog_time(){
+sqlite3_uint64 vlog_time(){
   return 0;
 }
 #endif
@@ -203,7 +203,7 @@ static sqlite3_uint64 vlog_time(){
 /*
 ** Write a message to the log file
 */
-static void vlogLogPrint(
+void vlogLogPrint(
   VLogLog *pLog,                 /* The log file to write into */
   sqlite3_int64 tStart,            /* Start time of system call */
   sqlite3_int64 tElapse,           /* Elapse time of system call */
@@ -237,12 +237,12 @@ static void vlogLogPrint(
 /*
 ** List of all active log connections.  Protected by the master mutex.
 */
-static VLogLog *allLogs = 0;
+VLogLog *allLogs = 0;
 
 /*
 ** Close a VLogLog object
 */
-static void vlogLogClose(VLogLog *p){
+void vlogLogClose(VLogLog *p){
   if( p ){
     sqlite3_mutex *pMutex;
     p->nRef--;
@@ -260,7 +260,7 @@ static void vlogLogClose(VLogLog *p){
 /*
 ** Open a VLogLog object on the given file
 */
-static VLogLog *vlogLogOpen(const char *zFilename){
+VLogLog *vlogLogOpen(const char *zFilename){
   int nName = (int)strlen(zFilename);
   int isJournal = 0;
   sqlite3_mutex *pMutex;
@@ -327,7 +327,7 @@ static VLogLog *vlogLogOpen(const char *zFilename){
 /*
 ** Close an vlog-file.
 */
-static int vlogClose(sqlite3_file *pFile){
+int vlogClose(sqlite3_file *pFile){
   sqlite3_uint64 tStart, tElapse;
   int rc = SQLITE_OK;
   VLogFile *p = (VLogFile *)pFile;
@@ -351,7 +351,7 @@ static int vlogClose(sqlite3_file *pFile){
 ** For blocks of more than 16 bytes, the signature is a hex dump of the
 ** first 8 bytes followed by a 64-bit has of the entire block.
 */
-static void vlogSignature(unsigned char *p, int n, char *zCksum){
+void vlogSignature(unsigned char *p, int n, char *zCksum){
   unsigned int s0 = 0, s1 = 0;
   unsigned int *pI;
   int i;
@@ -372,14 +372,14 @@ static void vlogSignature(unsigned char *p, int n, char *zCksum){
 /*
 ** Convert a big-endian 32-bit integer into a native integer
 */
-static int bigToNative(const unsigned char *x){
+int bigToNative(const unsigned char *x){
   return (x[0]<<24) + (x[1]<<16) + (x[2]<<8) + x[3];
 }
 
 /*
 ** Read data from an vlog-file.
 */
-static int vlogRead(
+int vlogRead(
   sqlite3_file *pFile, 
   void *zBuf, 
   int iAmt, 
@@ -423,7 +423,7 @@ static int vlogRead(
 /*
 ** Write data to an vlog-file.
 */
-static int vlogWrite(
+int vlogWrite(
   sqlite3_file *pFile,
   const void *z,
   int iAmt,
@@ -463,7 +463,7 @@ static int vlogWrite(
 /*
 ** Truncate an vlog-file.
 */
-static int vlogTruncate(sqlite3_file *pFile, sqlite_int64 size){
+int vlogTruncate(sqlite3_file *pFile, sqlite_int64 size){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogFile *p = (VLogFile *)pFile;
@@ -477,7 +477,7 @@ static int vlogTruncate(sqlite3_file *pFile, sqlite_int64 size){
 /*
 ** Sync an vlog-file.
 */
-static int vlogSync(sqlite3_file *pFile, int flags){
+int vlogSync(sqlite3_file *pFile, int flags){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogFile *p = (VLogFile *)pFile;
@@ -491,7 +491,7 @@ static int vlogSync(sqlite3_file *pFile, int flags){
 /*
 ** Return the current file-size of an vlog-file.
 */
-static int vlogFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+int vlogFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogFile *p = (VLogFile *)pFile;
@@ -505,7 +505,7 @@ static int vlogFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
 /*
 ** Lock an vlog-file.
 */
-static int vlogLock(sqlite3_file *pFile, int eLock){
+int vlogLock(sqlite3_file *pFile, int eLock){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogFile *p = (VLogFile *)pFile;
@@ -519,7 +519,7 @@ static int vlogLock(sqlite3_file *pFile, int eLock){
 /*
 ** Unlock an vlog-file.
 */
-static int vlogUnlock(sqlite3_file *pFile, int eLock){
+int vlogUnlock(sqlite3_file *pFile, int eLock){
   int rc;
   sqlite3_uint64 tStart;
   VLogFile *p = (VLogFile *)pFile;
@@ -532,7 +532,7 @@ static int vlogUnlock(sqlite3_file *pFile, int eLock){
 /*
 ** Check if another file-handle holds a RESERVED lock on an vlog-file.
 */
-static int vlogCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+int vlogCheckReservedLock(sqlite3_file *pFile, int *pResOut){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogFile *p = (VLogFile *)pFile;
@@ -547,7 +547,7 @@ static int vlogCheckReservedLock(sqlite3_file *pFile, int *pResOut){
 /*
 ** File control method. For custom operations on an vlog-file.
 */
-static int vlogFileControl(sqlite3_file *pFile, int op, void *pArg){
+int vlogFileControl(sqlite3_file *pFile, int op, void *pArg){
   VLogFile *p = (VLogFile *)pFile;
   sqlite3_uint64 tStart, tElapse;
   int rc;
@@ -574,7 +574,7 @@ static int vlogFileControl(sqlite3_file *pFile, int op, void *pArg){
 /*
 ** Return the sector-size in bytes for an vlog-file.
 */
-static int vlogSectorSize(sqlite3_file *pFile){
+int vlogSectorSize(sqlite3_file *pFile){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogFile *p = (VLogFile *)pFile;
@@ -588,7 +588,7 @@ static int vlogSectorSize(sqlite3_file *pFile){
 /*
 ** Return the device characteristic flags supported by an vlog-file.
 */
-static int vlogDeviceCharacteristics(sqlite3_file *pFile){
+int vlogDeviceCharacteristics(sqlite3_file *pFile){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogFile *p = (VLogFile *)pFile;
@@ -603,7 +603,7 @@ static int vlogDeviceCharacteristics(sqlite3_file *pFile){
 /*
 ** Open an vlog file handle.
 */
-static int vlogOpen(
+int vlogOpen(
   sqlite3_vfs *pVfs,
   const char *zName,
   sqlite3_file *pFile,
@@ -640,7 +640,7 @@ static int vlogOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int vlogDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
+int vlogDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
   int rc;
   sqlite3_uint64 tStart, tElapse;
   VLogLog *pLog;
@@ -657,7 +657,7 @@ static int vlogDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int vlogAccess(
+int vlogAccess(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
   int flags, 
@@ -680,7 +680,7 @@ static int vlogAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (INST_MAX_PATHNAME+1) bytes.
 */
-static int vlogFullPathname(
+int vlogFullPathname(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
   int nOut, 
@@ -692,7 +692,7 @@ static int vlogFullPathname(
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *vlogDlOpen(sqlite3_vfs *pVfs, const char *zPath){
+void *vlogDlOpen(sqlite3_vfs *pVfs, const char *zPath){
   return REALVFS(pVfs)->xDlOpen(REALVFS(pVfs), zPath);
 }
 
@@ -701,21 +701,21 @@ static void *vlogDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void vlogDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+void vlogDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
   REALVFS(pVfs)->xDlError(REALVFS(pVfs), nByte, zErrMsg);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*vlogDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
+void (*vlogDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
   return REALVFS(pVfs)->xDlSym(REALVFS(pVfs), p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void vlogDlClose(sqlite3_vfs *pVfs, void *pHandle){
+void vlogDlClose(sqlite3_vfs *pVfs, void *pHandle){
   REALVFS(pVfs)->xDlClose(REALVFS(pVfs), pHandle);
 }
 
@@ -723,7 +723,7 @@ static void vlogDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int vlogRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
+int vlogRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
   return REALVFS(pVfs)->xRandomness(REALVFS(pVfs), nByte, zBufOut);
 }
 
@@ -731,21 +731,21 @@ static int vlogRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int vlogSleep(sqlite3_vfs *pVfs, int nMicro){
+int vlogSleep(sqlite3_vfs *pVfs, int nMicro){
   return REALVFS(pVfs)->xSleep(REALVFS(pVfs), nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int vlogCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+int vlogCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
   return REALVFS(pVfs)->xCurrentTime(REALVFS(pVfs), pTimeOut);
 }
 
-static int vlogGetLastError(sqlite3_vfs *pVfs, int a, char *b){
+int vlogGetLastError(sqlite3_vfs *pVfs, int a, char *b){
   return REALVFS(pVfs)->xGetLastError(REALVFS(pVfs), a, b);
 }
-static int vlogCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
+int vlogCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
   return REALVFS(pVfs)->xCurrentTimeInt64(REALVFS(pVfs), p);
 }
 

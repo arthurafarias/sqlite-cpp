@@ -25,7 +25,7 @@
 **
 ** The available command-line options are described below:
 */
-static const char zHelp[] =
+const char zHelp[] =
   "Usage: %s [--options] DATABASE\n"
   "Options:\n"
   "  --autovacuum        Enable AUTOVACUUM mode\n"
@@ -112,7 +112,7 @@ struct HashContext {
 
 
 /* All global state is held in this structure */
-static struct Global {
+struct Global {
   sqlite3 *db;               /* The open database connection */
   const char *zDbName;       /* Name of the database file */
   const char *zVfs;          /* --vfs NAME */
@@ -149,12 +149,12 @@ static struct Global {
 
 /* Return " TEMP" or "", as appropriate for creating a table.
 */
-static const char *isTemp(int N){
+const char *isTemp(int N){
   return g.eTemp>=N ? " TEMP" : "";
 }
 
 /* Print an error message and exit */
-static void fatal_error(const char *zMsg, ...){
+void fatal_error(const char *zMsg, ...){
   va_list ap;
   va_start(ap, zMsg);
   vfprintf(stderr, zMsg, ap);
@@ -179,7 +179,7 @@ static void fatal_error(const char *zMsg, ...){
 ** in bits and should be one of 224, 256, 384, or 512.  Or iSize
 ** can be zero to use the default hash size of 256 bits.
 */
-static void HashInit(void){
+void HashInit(void){
   unsigned int k;
   g.hash.i = 0;
   g.hash.j = 0;
@@ -190,7 +190,7 @@ static void HashInit(void){
 ** Make consecutive calls to the HashUpdate function to add new content
 ** to the hash
 */
-static void HashUpdate(
+void HashUpdate(
   const unsigned char *aData,
   unsigned int nData
 ){
@@ -214,7 +214,7 @@ static void HashUpdate(
 ** After all content has been added, invoke HashFinal() to compute
 ** the final hash.  The hash result is stored in g.hash.r[].
 */
-static void HashFinal(void){
+void HashFinal(void){
   unsigned int k;
   unsigned char t, i, j;
   i = g.hash.i;
@@ -238,7 +238,7 @@ static void HashFinal(void){
 ** Return the value of a hexadecimal digit.  Return -1 if the input
 ** is not a hex digit.
 */
-static int hexDigitValue(char c){
+int hexDigitValue(char c){
   if( c>='0' && c<='9' ) return c - '0';
   if( c>='a' && c<='f' ) return c - 'a' + 10;
   if( c>='A' && c<='F' ) return c - 'A' + 10;
@@ -254,9 +254,9 @@ static int hexDigitValue(char c){
 /*
 ** Interpret zArg as an integer value, possibly with suffixes.
 */
-static int integerValue(const char *zArg){
+int integerValue(const char *zArg){
   sqlite3_int64 v = 0;
-  static const struct { char *zSuffix; int iMult; } aMult[] = {
+  const struct { char *zSuffix; int iMult; } aMult[] = {
     { "KiB", 1024 },
     { "MiB", 1024*1024 },
     { "GiB", 1024*1024*1024 },
@@ -303,7 +303,7 @@ sqlite3_int64 speedtest1_timestamp(void){
 #if SQLITE_VERSION_NUMBER<3005000
   return 0;
 #else
-  static sqlite3_vfs *clockVfs = 0;
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ) clockVfs = sqlite3_vfs_find(0);
 #if SQLITE_VERSION_NUMBER>=3007000
@@ -357,11 +357,11 @@ unsigned roundup_allones(unsigned limit){
 **     speedtest1_numbername(123)   ->  "one hundred twenty three"
 */
 int speedtest1_numbername(unsigned int n, char *zOut, int nOut){
-  static const char *ones[] = {  "zero", "one", "two", "three", "four", "five", 
+  const char *ones[] = {  "zero", "one", "two", "three", "four", "five", 
                   "six", "seven", "eight", "nine", "ten", "eleven", "twelve", 
                   "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
                   "eighteen", "nineteen" };
-  static const char *tens[] = { "", "ten", "twenty", "thirty", "forty",
+  const char *tens[] = { "", "ten", "twenty", "thirty", "forty",
                  "fifty", "sixty", "seventy", "eighty", "ninety" };
   int i = 0;
 
@@ -412,9 +412,9 @@ int speedtest1_numbername(unsigned int n, char *zOut, int nOut){
 
 /* Start a new test case */
 #define NAMEWIDTH 60
-static const char zDots[] =
+const char zDots[] =
   ".......................................................................";
-static int iTestNumber = 0;  /* Current test # for begin/end_test(). */
+int iTestNumber = 0;  /* Current test # for begin/end_test(). */
 void speedtest1_begin_test(int iTestNum, const char *zTestName, ...){
   int n = (int)strlen(zTestName);
   char *zName;
@@ -492,7 +492,7 @@ void speedtest1_final(void){
 }
 
 /* Print an SQL statement to standard output */
-static void printSql(const char *zSql){
+void printSql(const char *zSql){
   int n = (int)strlen(zSql);
   while( n>0 && (zSql[n-1]==';' || ISSPACE(zSql[n-1])) ){ n--; }
   if( g.bExplain ) printf("EXPLAIN ");
@@ -683,7 +683,7 @@ void speedtest1_run(void){
 
 #ifndef SQLITE_OMIT_DEPRECATED
 /* The sqlite3_trace() callback function */
-static void traceCallback(void *NotUsed, const char *zSql){
+void traceCallback(void *NotUsed, const char *zSql){
   int n = (int)strlen(zSql);
   while( n>0 && (zSql[n-1]==';' || ISSPACE(zSql[n-1])) ) n--;
   fprintf(stderr,"%.*s;\n", n, zSql);
@@ -692,7 +692,7 @@ static void traceCallback(void *NotUsed, const char *zSql){
 
 /* Substitute random() function that gives the same random
 ** sequence on each run, for repeatability. */
-static void randomFunc(
+void randomFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -701,7 +701,7 @@ static void randomFunc(
 }
 
 /* Estimate the square root of an integer */
-static int est_square_root(int x){
+int est_square_root(int x){
   int y0 = x/2;
   int y1;
   int n;
@@ -724,7 +724,7 @@ struct groupConcat {
   int nAlloc;
   int nUsed;
 };
-static void groupAppend(struct groupConcat *p, const char *z, int n){
+void groupAppend(struct groupConcat *p, const char *z, int n){
   if( p->nUsed+n >= p->nAlloc ){
     int n2 = (p->nAlloc+n+1)*2;
     char *z2 = sqlite3_realloc(p->z, n2);
@@ -735,7 +735,7 @@ static void groupAppend(struct groupConcat *p, const char *z, int n){
   memcpy(p->z+p->nUsed, z, n);
   p->nUsed += n;
 }
-static void groupStep(
+void groupStep(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -765,7 +765,7 @@ static void groupStep(
     if( zVal ) groupAppend(p, zVal, nVal);
   }
 }
-static void groupFinal(sqlite3_context *context){
+void groupFinal(sqlite3_context *context){
   struct groupConcat *p;
   p = sqlite3_aggregate_context(context, 0);
   if( p && p->z ){
@@ -1248,7 +1248,7 @@ void testset_main(void){
 ** for views, subqueries, co-routines, etc.
 */
 void testset_cte(void){
-  static const char *azPuzzle[] = {
+  const char *azPuzzle[] = {
     /* Easy */
     "534...9.."
     "67.195..."
@@ -1598,7 +1598,7 @@ void testset_star(void){
 ** The same database has no data, so the performance of sqlite3_step() is
 ** not significant to this testset.
 */
-static void testset_app(void){
+void testset_app(void){
   int i, n;
   speedtest1_begin_test(100, "Generate a Fossil-like database schema");
   speedtest1_exec(
@@ -2041,7 +2041,7 @@ static void testset_app(void){
 ** the second.  Usually the numbers are near each other but can sometimes
 ** be far apart.
 */
-static void twoCoords(
+void twoCoords(
   int p1, int p2,                   /* Parameters adjusting sizes */
   unsigned mx,                      /* Range of 1..mx */
   unsigned *pX0, unsigned *pX1      /* OUT: write results here */
@@ -2070,7 +2070,7 @@ static void twoCoords(
 **
 **     SELECT count(*) FROM rt1 WHERE y1>=10 AND y0<=20;
 */
-static int xsliceGeometryCallback(
+int xsliceGeometryCallback(
   sqlite3_rtree_geometry *p,
   int nCoord,
   double *aCoord,
@@ -2274,7 +2274,7 @@ void testset_orm(void){
   unsigned nRow;
   unsigned x1, len;
   char zNum[2000];              /* A number name */
-  static const char zType[] =   /* Types for all non-PK columns, in order */
+  const char zType[] =   /* Types for all non-PK columns, in order */
     "IBBIIITIVVITBTBFBFITTFBTBVBVIFTBBFITFFVBIFIVBVVVBTVTIBBFFIVIBTB"
     "TVTTFTVTVFFIITIFBITFTTFFFVBIIBTTITFTFFVVVFIIITVBBVFFTVVB";
 
@@ -2917,14 +2917,14 @@ void testset_parsenumber(void){
 /*
 ** Attempt to display I/O stats on Linux using /proc/PID/io
 */
-static void displayLinuxIoStats(FILE *out){
+void displayLinuxIoStats(FILE *out){
   FILE *in;
   char z[200];
   sqlite3_snprintf(sizeof(z), z, "/proc/%d/io", getpid());
   in = fopen(z, "rb");
   if( in==0 ) return;
   while( fgets(z, sizeof(z), in)!=0 ){
-    static const struct {
+    const struct {
       const char *zPattern;
       const char *zDesc;
     } aTrans[] = {
@@ -2957,7 +2957,7 @@ static void displayLinuxIoStats(FILE *out){
 int sqlite3_register_cksumvfs(const char*);
 #endif
 
-static int xCompileOptions(void *pCtx, int nVal, char **azVal, char **azCol){
+int xCompileOptions(void *pCtx, int nVal, char **azVal, char **azCol){
   printf("-- Compile option: %s\n", azVal[0]);
   return SQLITE_OK;
 }
@@ -2995,7 +2995,7 @@ int main(int argc, char **argv){
   int rc;                       /* API return code */
 
   /* "mix1" is a macro testset: */
-  static char zMix1Tests[] =
+  char zMix1Tests[] =
     "main,orm/25,cte/20,json,fp/3,parsenumber/25,rtree/10,star"
 #if !defined(SQLITE_SPEEDTEST1_WASM)
     ",app"

@@ -54,7 +54,7 @@
 ** The scalar function context passed as the first argument is 
 ** loaded with an error message based on the following two args.
 */
-static void icuFunctionError(
+void icuFunctionError(
   sqlite3_context *pCtx,       /* SQLite scalar function context */
   const char *zName,           /* Name of ICU function that failed */
   UErrorCode e                 /* Error code returned by ICU function */
@@ -78,7 +78,7 @@ static void icuFunctionError(
 /*
 ** Version of sqlite3_free() that is always a function, never a macro.
 */
-static void xFree(void *p){
+void xFree(void *p){
   sqlite3_free(p);
 }
 
@@ -87,7 +87,7 @@ static void xFree(void *p){
 ** a multi-byte UTF8 character. It is copied here from SQLite source
 ** code file utf8.c.
 */
-static const unsigned char icuUtf8Trans1[] = {
+const unsigned char icuUtf8Trans1[] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
   0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -119,13 +119,13 @@ static const unsigned char icuUtf8Trans1[] = {
 ** a "LIKE" expression. Return true (1) if they are the same and 
 ** false (0) if they are different.
 */
-static int icuLikeCompare(
+int icuLikeCompare(
   const uint8_t *zPattern,   /* LIKE pattern */
   const uint8_t *zString,    /* The UTF-8 string to compare against */
   const UChar32 uEsc         /* The escape character */
 ){
-  static const uint32_t MATCH_ONE = (uint32_t)'_';
-  static const uint32_t MATCH_ALL = (uint32_t)'%';
+  const uint32_t MATCH_ONE = (uint32_t)'_';
+  const uint32_t MATCH_ALL = (uint32_t)'%';
 
   int prevEscape = 0;     /* True if the previous character was uEsc */
 
@@ -207,7 +207,7 @@ static int icuLikeCompare(
 **
 ** is mapped to like(B, A, E).
 */
-static void icuLikeFunc(
+void icuLikeFunc(
   sqlite3_context *context, 
   int argc, 
   sqlite3_value **argv
@@ -250,7 +250,7 @@ static void icuLikeFunc(
 ** Function to delete compiled regexp objects. Registered as
 ** a destructor function with sqlite3_set_auxdata().
 */
-static void icuRegexpDelete(void *p){
+void icuRegexpDelete(void *p){
   URegularExpression *pExpr = (URegularExpression *)p;
   uregex_close(pExpr);
 }
@@ -274,7 +274,7 @@ static void icuRegexpDelete(void *p){
 **     uregex_matches()
 **     uregex_close()
 */
-static void icuRegexpFunc(sqlite3_context *p, int nArg, sqlite3_value **apArg){
+void icuRegexpFunc(sqlite3_context *p, int nArg, sqlite3_value **apArg){
   UErrorCode status = U_ZERO_ERROR;
   URegularExpression *pExpr;
   UBool res;
@@ -358,7 +358,7 @@ static void icuRegexpFunc(sqlite3_context *p, int nArg, sqlite3_value **apArg){
 **
 ** http://www.icu-project.org/userguide/posix.html#case_mappings
 */
-static void icuCaseFunc16(sqlite3_context *p, int nArg, sqlite3_value **apArg){
+void icuCaseFunc16(sqlite3_context *p, int nArg, sqlite3_value **apArg){
   const UChar *zInput;            /* Pointer to input string */
   UChar *zOutput = 0;             /* Pointer to output buffer */
   int nInput;                     /* Size of utf-16 input string in bytes */
@@ -418,7 +418,7 @@ static void icuCaseFunc16(sqlite3_context *p, int nArg, sqlite3_value **apArg){
 ** Collation sequence destructor function. The pCtx argument points to
 ** a UCollator structure previously allocated using ucol_open().
 */
-static void icuCollationDel(void *pCtx){
+void icuCollationDel(void *pCtx){
   UCollator *p = (UCollator *)pCtx;
   ucol_close(p);
 }
@@ -427,7 +427,7 @@ static void icuCollationDel(void *pCtx){
 ** Collation sequence comparison function. The pCtx argument points to
 ** a UCollator structure previously allocated using ucol_open().
 */
-static int icuCollationColl(
+int icuCollationColl(
   void *pCtx,
   int nLeft,
   const void *zLeft,
@@ -459,7 +459,7 @@ static int icuCollationColl(
 ** "en_AU", "tr_TR" etc.) and <collation-name> is the name of the
 ** collation sequence to create.
 */
-static void icuLoadCollation(
+void icuLoadCollation(
   sqlite3_context *p, 
   int nArg, 
   sqlite3_value **apArg
@@ -488,7 +488,7 @@ static void icuLoadCollation(
   assert(p);
   if(nArg==3){
     const char *zOption = (const char*)sqlite3_value_text(apArg[2]);
-    static const struct {
+    const struct {
        const char *zName;
        UColAttributeValue val;
     } aStrength[] = {
@@ -533,7 +533,7 @@ static void icuLoadCollation(
 */
 int sqlite3IcuInit(sqlite3 *db){
 # define SQLITEICU_EXTRAFLAGS (SQLITE_DETERMINISTIC|SQLITE_INNOCUOUS)
-  static const struct IcuScalar {
+  const struct IcuScalar {
     const char *zName;                        /* Function name */
     unsigned char nArg;                       /* Number of arguments */
     unsigned int enc;                         /* Optimal text encoding */

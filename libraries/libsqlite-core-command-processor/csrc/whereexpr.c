@@ -20,12 +20,12 @@
 #include "whereInt.h"
 
 /* Forward declarations */
-static void exprAnalyze(SrcList*, WhereClause*, int);
+void exprAnalyze(SrcList*, WhereClause*, int);
 
 /*
 ** Deallocate all memory associated with a WhereOrInfo object.
 */
-static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
+void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -33,7 +33,7 @@ static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
 /*
 ** Deallocate all memory associated with a WhereAndInfo object.
 */
-static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
+void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -57,7 +57,7 @@ static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
 ** calling this routine.  Such pointers may be reinitialized by referencing
 ** the pWC->a[] array.
 */
-static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
+int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
   WhereTerm *pTerm;
   int idx;
   testcase( wtFlags & TERM_VIRTUAL );
@@ -96,7 +96,7 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
 ** allowed for an indexable WHERE clause term.  The allowed operators are
 ** "=", "<", ">", "<=", ">=", "IN", "IS", and "IS NULL"
 */
-static int allowedOp(int op){
+int allowedOp(int op){
   assert( TK_GT>TK_EQ && TK_GT<TK_GE );
   assert( TK_LT>TK_EQ && TK_LT<TK_GE );
   assert( TK_LE>TK_EQ && TK_LE<TK_GE );
@@ -113,7 +113,7 @@ static int allowedOp(int op){
 ** Commute a comparison operator.  Expressions of the form "X op Y"
 ** are converted into "Y op X".
 */
-static u16 exprCommute(Parse *pParse, Expr *pExpr){
+u16 exprCommute(Parse *pParse, Expr *pExpr){
   if( pExpr->pLeft->op==TK_VECTOR
    || pExpr->pRight->op==TK_VECTOR
    || sqlite3BinaryCompareCollSeq(pParse, pExpr->pLeft, pExpr->pRight) !=
@@ -136,7 +136,7 @@ static u16 exprCommute(Parse *pParse, Expr *pExpr){
 /*
 ** Translate from TK_xx operator to WO_xx bitmask.
 */
-static u16 operatorMask(int op){
+u16 operatorMask(int op){
   u16 c;
   assert( allowedOp(op) );
   if( op>=TK_EQ ){
@@ -175,7 +175,7 @@ static u16 operatorMask(int op){
 ** collating sequence for the column on the LHS must be appropriate for
 ** the operator.
 */
-static int isLikeOrGlob(
+int isLikeOrGlob(
   Parse *pParse,    /* Parsing and code generating context */
   Expr *pExpr,      /* Test this expression */
   Expr **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
@@ -351,7 +351,7 @@ static int isLikeOrGlob(
 ** pExpr is guaranteed to be a TK_FUNCTION.
 */
 int sqlite3ExprIsLikeOperator(const Expr *pExpr){
-  static const struct {
+  const struct {
     const char *zOp;
     unsigned char eOp;
   } aOp[] = {
@@ -399,7 +399,7 @@ int sqlite3ExprIsLikeOperator(const Expr *pExpr){
 **
 ** If the expression matches none of the patterns above, return 0.
 */
-static int isAuxiliaryVtabOperator(
+int isAuxiliaryVtabOperator(
   sqlite3 *db,                    /* Parsing context */
   Expr *pExpr,                    /* Test this expression */
   unsigned char *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
@@ -502,7 +502,7 @@ static int isAuxiliaryVtabOperator(
 ** If the pBase expression originated in the ON or USING clause of
 ** a join, then transfer the appropriate markings over to derived.
 */
-static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
+void transferJoinMarkings(Expr *pDerived, Expr *pBase){
   if( pDerived && ExprHasProperty(pBase, EP_OuterON|EP_InnerON) ){
     pDerived->flags |= pBase->flags & (EP_OuterON|EP_InnerON);
     pDerived->w.iJoin = pBase->w.iJoin;
@@ -512,7 +512,7 @@ static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
 /*
 ** Mark term iChild as being a child of term iParent
 */
-static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
+void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
   pWC->a[iChild].iParent = iParent;
   pWC->a[iChild].truthProb = pWC->a[iParent].truthProb;
   assert(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
@@ -526,7 +526,7 @@ static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
 ** a conjunction, then return just pTerm when N==0.  If N is exceeds
 ** the number of available subterms, return NULL.
 */
-static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
+WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
   if( pTerm->eOperator!=WO_AND ){
     return N==0 ? pTerm : 0;
   }
@@ -556,7 +556,7 @@ static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
 **
 **    x<y OR x>y    -->     x!=y    
 */
-static void whereCombineDisjuncts(
+void whereCombineDisjuncts(
   SrcList *pSrc,         /* the FROM clause */
   WhereClause *pWC,      /* The complete WHERE clause */
   WhereTerm *pOne,       /* First disjunct */
@@ -689,7 +689,7 @@ static void whereCombineDisjuncts(
 ** If none of cases 1, 2, or 3 apply, then leave the eOperator set to
 ** zero.  This term is not useful for search.
 */
-static void exprAnalyzeOrTerm(
+void exprAnalyzeOrTerm(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the complete WHERE clause */
   int idxTerm               /* Index of the OR-term to be analyzed */
@@ -964,7 +964,7 @@ static void exprAnalyzeOrTerm(
 ** This is an optimization.  No harm comes from returning 0.  But if 1 is
 ** returned when it should not be, then incorrect answers might result.
 */
-static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
+int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
   char aff1, aff2;
   if( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) return 0;  /* (1) */
   if( pExpr->op!=TK_EQ && pExpr->op!=TK_IS ) return 0;                 /* (2) */
@@ -994,7 +994,7 @@ static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
 ** a bitmask indicating which tables are used in that expression
 ** tree.
 */
-static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
+Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
   Bitmask mask = 0;
   while( pS ){
     SrcList *pSrc = pS->pSrc;
@@ -1035,7 +1035,7 @@ static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
 ** true even if that particular column is not indexed, because the column
 ** might be added to an automatic index later.
 */
-static SQLITE_NOINLINE int exprMightBeIndexed2(
+SQLITE_NOINLINE int exprMightBeIndexed2(
   SrcList *pFrom,        /* The FROM clause */
   int *aiCurCol,         /* Write the referenced table cursor and column here */
   Expr *pExpr,           /* An operand of a comparison operator */
@@ -1063,7 +1063,7 @@ static SQLITE_NOINLINE int exprMightBeIndexed2(
   }while( ++j < pFrom->nSrc );
   return 0;
 }
-static int exprMightBeIndexed(
+int exprMightBeIndexed(
   SrcList *pFrom,        /* The FROM clause */
   int *aiCurCol,         /* Write the referenced table cursor & column here */
   Expr *pExpr,           /* An operand of a comparison operator */
@@ -1118,7 +1118,7 @@ static int exprMightBeIndexed(
 ** is a commuted copy of a prior term.)  The original term has nChild=1
 ** and the copy has idxParent set to the index of the original term.
 */
-static void exprAnalyze(
+void exprAnalyze(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the WHERE clause */
   int idxTerm               /* Index of the term to be analyzed */
@@ -1290,7 +1290,7 @@ static void exprAnalyze(
   else if( pExpr->op==TK_BETWEEN && pWC->op==TK_AND ){
     ExprList *pList;
     int i;
-    static const u8 ops[] = {TK_GE, TK_LE};
+    const u8 ops[] = {TK_GE, TK_LE};
     assert( ExprUseXList(pExpr) );
     pList = pExpr->x.pList;
     assert( pList!=0 );
@@ -1620,7 +1620,7 @@ void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
 ** TK_INTEGER so that it will be available to sqlite3_vtab_rhs_value().
 ** If not, then it codes as a TK_REGISTER expression.
 */
-static void whereAddLimitExpr(
+void whereAddLimitExpr(
   WhereClause *pWC,   /* Add the constraint to this WHERE clause */
   int iReg,           /* Register that will hold value of the limit/offset */
   Expr *pExpr,        /* Expression that defines the limit/offset */
@@ -1824,7 +1824,7 @@ void sqlite3WhereClauseClear(WhereClause *pWC){
 **       "no-inline" function to avoid the stack push overhead in the
 **       common case where it is not needed.
 */
-static SQLITE_NOINLINE Bitmask sqlite3WhereExprUsageFull(
+SQLITE_NOINLINE Bitmask sqlite3WhereExprUsageFull(
   WhereMaskSet *pMaskSet,
   Expr *p
 ){

@@ -236,9 +236,9 @@ per-FR verification recorded in §6.
   before this pass. Two deliberate departures from a literal one-file-one-library
   reading:
   - Generated files (`opcodes.h`/`.c`, `keywordhash.h`, `pragma.h`, `parse.c`/`.h`) are
-    **not** copied — they don't exist as static source, only as build output (§4 FR-6
+    **not** copied — they don't exist as source, only as build output (§4 FR-6
     wires each library's own generation step later); `sqlite-compiler-parser/csrc`
-    holds `parse.y` (the actual static grammar source) instead.
+    holds `parse.y` (the actual grammar source) instead.
   - `sqlite-compiler-code-generator`'s eight files (`select.c`, `expr.c`, `insert.c`,
     `update.c`, `delete.c`, `trigger.c`, `where.c`, `wherecode.c`) are duplicated from
     `sqlite-core-command-processor`'s copies rather than split — per §3.5.3, the
@@ -253,7 +253,7 @@ per-FR verification recorded in §6.
   §1.3 places *above* it. SQLite's C implementation was never written with per-subsystem
   link boundaries: every file shares one `sqliteInt.h` and calls freely across what §1.3
   treats as layers. CMake also refuses genuine target-level cycles between `SHARED`
-  library targets ("Cyclic dependencies are allowed only among static libraries"), which
+  library targets ("Cyclic dependencies are allowed only among libraries"), which
   a literal reading of FR-4 (acyclic per §1.3) can't satisfy given the real symbol graph
   is cyclic. Presented to the requester with the evidence; decision: build all 9 as real
   `.so`s anyway, with **no `target_link_libraries()` between sibling sqlite-cpp

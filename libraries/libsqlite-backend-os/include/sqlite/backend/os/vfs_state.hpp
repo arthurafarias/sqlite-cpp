@@ -8,7 +8,7 @@ class VfsState {
 public:
     explicit VfsState(sqlite3_vfs* vfs = nullptr) noexcept : vfs_(vfs) {}
 
-    [[nodiscard]] static VfsState find(const char* name = nullptr);
+    [[nodiscard]] VfsState find(const char* name = nullptr);
 
     int register_vfs(bool make_default = false);
     int unregister_vfs();

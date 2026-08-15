@@ -113,7 +113,7 @@ struct ParseContext {
 ** any values that fall outside of the range of the unsigned char type (i.e.
 ** negative values).
 */
-static int fts3isspace(char c){
+int fts3isspace(char c){
   return c==' ' || c=='\t' || c=='\n' || c=='\r' || c=='\v' || c=='\f';
 }
 
@@ -159,14 +159,14 @@ int sqlite3Fts3OpenTokenizer(
 ** Function getNextNode(), which is called by fts3ExprParse(), may itself
 ** call fts3ExprParse(). So this forward declaration is required.
 */
-static int fts3ExprParse(ParseContext *, const char *, int, Fts3Expr **, int *);
+int fts3ExprParse(ParseContext *, const char *, int, Fts3Expr **, int *);
 
 /*
 ** Search buffer z[], size n, for a '"' character. Or, if enable_parenthesis
 ** is defined, search for '(' and ')' as well. Return the index of the first
 ** such character in the buffer. If there is no such character, return -1.
 */
-static int findBarredChar(const char *z, int n){
+int findBarredChar(const char *z, int n){
   int ii;
   for(ii=0; ii<n; ii++){
     if( (z[ii]=='"')
@@ -190,7 +190,7 @@ static int findBarredChar(const char *z, int n){
 ** Return SQLITE_OK if successful, or SQLITE_NOMEM if a memory allocation
 ** fails.
 */
-static int getNextToken(
+int getNextToken(
   ParseContext *pParse,                   /* fts3 query parse context */
   int iCol,                               /* Value for Fts3Phrase.iColumn */
   const char *z, int n,                   /* Input string */
@@ -277,7 +277,7 @@ static int getNextToken(
 ** Enlarge a memory allocation.  If an out-of-memory allocation occurs,
 ** then free the old allocation.
 */
-static void *fts3ReallocOrFree(void *pOrig, sqlite3_int64 nNew){
+void *fts3ReallocOrFree(void *pOrig, sqlite3_int64 nNew){
   void *pRet = sqlite3_realloc64(pOrig, nNew);
   if( !pRet ){
     sqlite3_free(pOrig);
@@ -297,7 +297,7 @@ static void *fts3ReallocOrFree(void *pOrig, sqlite3_int64 nNew){
 ** error) or SQLITE_ERROR (tokenization error) is returned and *ppExpr set
 ** to 0.
 */
-static int getNextString(
+int getNextString(
   ParseContext *pParse,                   /* fts3 query parse context */
   const char *zInput, int nInput,         /* Input string */
   Fts3Expr **ppExpr                       /* OUT: expression */
@@ -414,13 +414,13 @@ static int getNextString(
 ** if a malloc failure occurs, or SQLITE_ERROR if a parse error is encountered.
 ** If SQLITE_ERROR is returned, pContext is populated with an error message.
 */
-static int getNextNode(
+int getNextNode(
   ParseContext *pParse,                   /* fts3 query parse context */
   const char *z, int n,                   /* Input string */
   Fts3Expr **ppExpr,                      /* OUT: expression */
   int *pnConsumed                         /* OUT: Number of bytes consumed */
 ){
-  static const struct Fts3Keyword {
+  const struct Fts3Keyword {
     char *z;                              /* Keyword text */
     unsigned char n;                      /* Length of the keyword */
     unsigned char parenOnly;              /* Only valid in paren mode */
@@ -582,7 +582,7 @@ static int getNextNode(
 ** Note that when using the old query syntax, the OR operator has a higher
 ** precedence than the AND operator.
 */
-static int opPrecedence(Fts3Expr *p){
+int opPrecedence(Fts3Expr *p){
   assert( p->eType!=FTSQUERY_PHRASE );
   if( sqlite3_fts3_enable_parentheses ){
     return p->eType;
@@ -603,7 +603,7 @@ static int opPrecedence(Fts3Expr *p){
 ** of pNew and the existing nodes of the tree. This may result in the head
 ** of the tree changing, in which case *ppHead is set to the new root node.
 */
-static void insertBinaryOperator(
+void insertBinaryOperator(
   Fts3Expr **ppHead,       /* Pointer to the root node of a tree */
   Fts3Expr *pPrev,         /* Node most recently inserted into the tree */
   Fts3Expr *pNew           /* New binary node to insert into expression tree */
@@ -634,7 +634,7 @@ static void insertBinaryOperator(
 ** bytes read from buffer z. Otherwise, *ppExpr is set to 0 and SQLITE_NOMEM
 ** (out of memory error) or SQLITE_ERROR (parse error) is returned.
 */
-static int fts3ExprParse(
+int fts3ExprParse(
   ParseContext *pParse,                   /* fts3 query parse context */
   const char *z, int n,                   /* Text of MATCH query */
   Fts3Expr **ppExpr,                      /* OUT: Parsed query structure */
@@ -783,7 +783,7 @@ exprparse_out:
 ** Return SQLITE_ERROR if the maximum depth of the expression tree passed 
 ** as the only argument is more than nMaxDepth.
 */
-static int fts3ExprCheckDepth(Fts3Expr *p, int nMaxDepth){
+int fts3ExprCheckDepth(Fts3Expr *p, int nMaxDepth){
   int rc = SQLITE_OK;
   if( p ){
     if( nMaxDepth<0 ){ 
@@ -809,7 +809,7 @@ static int fts3ExprCheckDepth(Fts3Expr *p, int nMaxDepth){
 ** Otherwise, if an error occurs, an SQLite error code is returned and 
 ** expression (*pp) freed.
 */
-static int fts3ExprBalance(Fts3Expr **pp, int nMaxDepth){
+int fts3ExprBalance(Fts3Expr **pp, int nMaxDepth){
   int rc = SQLITE_OK;             /* Return code */
   Fts3Expr *pRoot = *pp;          /* Initial root node */
   Fts3Expr *pFree = 0;            /* List of free nodes. Linked by pParent. */
@@ -983,7 +983,7 @@ static int fts3ExprBalance(Fts3Expr **pp, int nMaxDepth){
 **      expression tree. It should be deleted using sqlite3Fts3ExprFree()
 **      in this case.
 */
-static int fts3ExprParseUnbalanced(
+int fts3ExprParseUnbalanced(
   sqlite3_tokenizer *pTokenizer,      /* Tokenizer module */
   int iLangid,                        /* Language id for tokenizer */
   char **azCol,                       /* Array of column names for fts3 table */
@@ -1090,7 +1090,7 @@ int sqlite3Fts3ExprParse(
 /*
 ** Free a single node of an expression tree.
 */
-static void fts3FreeExprNode(Fts3Expr *p){
+void fts3FreeExprNode(Fts3Expr *p){
   assert( p->eType==FTSQUERY_PHRASE || p->pPhrase==0 );
   sqlite3Fts3EvalPhraseCleanup(p->pPhrase);
   sqlite3_free(p->aMI);
@@ -1144,7 +1144,7 @@ void sqlite3Fts3ExprFree(Fts3Expr *pDel){
 ** If the second argument is not NULL, then its contents are prepended to 
 ** the returned expression text and then freed using sqlite3_free().
 */
-static char *exprToString(Fts3Expr *pExpr, char *zBuf){
+char *exprToString(Fts3Expr *pExpr, char *zBuf){
   if( pExpr==0 ){
     return sqlite3_mprintf("");
   }
@@ -1201,7 +1201,7 @@ static char *exprToString(Fts3Expr *pExpr, char *zBuf){
 **
 **   SELECT fts3_exprtest('simple', 'Bill col2:Bloggs', 'col1', 'col2');
 */
-static void fts3ExprTestCommon(
+void fts3ExprTestCommon(
   int bRebalance,
   sqlite3_context *context,
   int argc,
@@ -1282,14 +1282,14 @@ exprtest_out:
   sqlite3_free(azCol);
 }
 
-static void fts3ExprTest(
+void fts3ExprTest(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
 ){
   fts3ExprTestCommon(0, context, argc, argv);
 }
-static void fts3ExprTestRebalance(
+void fts3ExprTestRebalance(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

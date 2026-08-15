@@ -31,7 +31,7 @@
 ** succeeds, except that it fails if the fault-simulation is set
 ** to 500.
 */
-static int sqlite3TestExtInit(sqlite3 *db){
+int sqlite3TestExtInit(sqlite3 *db){
   (void)db;
   return sqlite3FaultSim(500);
 }
@@ -54,7 +54,7 @@ int SQLITE_EXTRA_AUTOEXT(sqlite3*);
 ** An array of pointers to extension initializer functions for
 ** built-in extensions.
 */
-static int (*const sqlite3BuiltinExtensions[])(sqlite3*) = {
+int (*const sqlite3BuiltinExtensions[])(sqlite3*) = {
 #ifdef SQLITE_ENABLE_FTS3
   sqlite3Fts3Init,
 #endif
@@ -188,7 +188,7 @@ char *sqlite3_data_directory = 0;
 **       without blocking.
 */
 int sqlite3_initialize(void){
-  MUTEX_LOGIC( sqlite3_mutex *pMainMtx; )      /* The main static mutex */
+  MUTEX_LOGIC( sqlite3_mutex *pMainMtx; )      /* The main mutex */
   int rc;                                      /* Result code */
 #ifdef SQLITE_EXTRA_INIT
   int bRunExtraInit = 0;                       /* Extra initialization needed */
@@ -229,7 +229,7 @@ int sqlite3_initialize(void){
 
   /* Initialize the malloc() system and the recursive pInitMutex mutex.
   ** This operation is protected by the STATIC_MAIN mutex.  Note that
-  ** MutexAlloc() is called for a static mutex prior to initializing the
+  ** MutexAlloc() is called for a mutex prior to initializing the
   ** malloc subsystem - this implies that the allocation of a static
   ** mutex must not require support from the malloc subsystem.
   */
@@ -318,7 +318,7 @@ int sqlite3_initialize(void){
   }
   sqlite3_mutex_leave(sqlite3GlobalConfig.pInitMutex);
 
-  /* Go back under the static mutex and clean up the recursive
+  /* Go back under the mutex and clean up the recursive
   ** mutex to prevent a resource leak.
   */
   sqlite3_mutex_enter(pMainMtx);
@@ -432,7 +432,7 @@ int sqlite3_config(int op, ...){
   ** are allowed.
   */
   if( sqlite3GlobalConfig.isInit ){
-    static const u64 mAnytimeConfigOption = 0
+    const u64 mAnytimeConfigOption = 0
        | MASKBIT64( SQLITE_CONFIG_LOG )
        | MASKBIT64( SQLITE_CONFIG_PCACHE_HDRSZ )
     ;
@@ -769,7 +769,7 @@ int sqlite3_config(int op, ...){
 ** or similar.  If pBuf is not NULL then it is sz*cnt bytes of memory
 ** to use for the lookaside memory.
 */
-static int setupLookaside(
+int setupLookaside(
   sqlite3 *db,    /* Database connection being configured */
   void *pBuf,     /* Memory to use for lookaside.  May be NULL */
   int sz,         /* Desired size of each lookaside memory slot */
@@ -980,7 +980,7 @@ int sqlite3_db_config(sqlite3 *db, int op, ...){
       break;
     }
     default: {
-      static const struct {
+      const struct {
         int op;      /* The opcode */
         u64 mask;    /* Mask of the bit in sqlite3.flags to set/clear */
       } aFlagOp[] = {
@@ -1041,7 +1041,7 @@ int sqlite3_db_config(sqlite3 *db, int op, ...){
 ** This is the default collating function named "BINARY" which is always
 ** available.
 */
-static int binCollFunc(
+int binCollFunc(
   void *NotUsed,
   int nKey1, const void *pKey1,
   int nKey2, const void *pKey2
@@ -1064,7 +1064,7 @@ static int binCollFunc(
 ** This is the collating function named "RTRIM" which is always
 ** available.  Ignore trailing spaces.
 */
-static int rtrimCollFunc(
+int rtrimCollFunc(
   void *pUser,
   int nKey1, const void *pKey1,
   int nKey2, const void *pKey2
@@ -1093,7 +1093,7 @@ int sqlite3IsBinary(const CollSeq *p){
 **
 ** At the moment there is only a UTF-8 implementation.
 */
-static int nocaseCollatingFunc(
+int nocaseCollatingFunc(
   void *NotUsed,
   int nKey1, const void *pKey1,
   int nKey2, const void *pKey2
@@ -1201,7 +1201,7 @@ void sqlite3CloseSavepoints(sqlite3 *db){
 ** copies of a single function are created when create_function() is called
 ** with SQLITE_ANY as the encoding.
 */
-static void functionDestroy(sqlite3 *db, FuncDef *p){
+void functionDestroy(sqlite3 *db, FuncDef *p){
   FuncDestructor *pDestructor;
   assert( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
   pDestructor = p->u.pDestructor;
@@ -1218,7 +1218,7 @@ static void functionDestroy(sqlite3 *db, FuncDef *p){
 ** Disconnect all sqlite3_vtab objects that belong to database connection
 ** db. This is called when db is being closed.
 */
-static void disconnectAllVtab(sqlite3 *db){
+void disconnectAllVtab(sqlite3 *db){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   int i;
   HashElem *p;
@@ -1249,7 +1249,7 @@ static void disconnectAllVtab(sqlite3 *db){
 ** Return TRUE if database connection db has unfinalized prepared
 ** statements or unfinished sqlite3_backup objects. 
 */
-static int connectionIsBusy(sqlite3 *db){
+int connectionIsBusy(sqlite3 *db){
   int j;
   assert( sqlite3_mutex_held(db->mutex) );
   if( db->pVdbe ) return 1;
@@ -1263,7 +1263,7 @@ static int connectionIsBusy(sqlite3 *db){
 /*
 ** Close an existing SQLite database
 */
-static int sqlite3Close(sqlite3 *db, int forceZombie){
+int sqlite3Close(sqlite3 *db, int forceZombie){
   if( !db ){
     /* EVIDENCE-OF: R-63257-11740 Calling sqlite3_close() or
     ** sqlite3_close_v2() with a NULL pointer argument is a harmless no-op. */
@@ -1538,7 +1538,7 @@ void sqlite3RollbackAll(sqlite3 *db, int tripCode){
 }
 
 /*
-** Return a static string containing the name corresponding to the error code
+** Return a string containing the name corresponding to the error code
 ** specified in the argument.
 */
 #if defined(SQLITE_NEED_ERR_NAME)
@@ -1645,7 +1645,7 @@ const char *sqlite3ErrName(int rc){
     }
   }
   if( zName==0 ){
-    static char zBuf[50];
+    char zBuf[50];
     sqlite3_snprintf(sizeof(zBuf), zBuf, "SQLITE_UNKNOWN(%d)", origRc);
     zName = zBuf;
   }
@@ -1654,11 +1654,11 @@ const char *sqlite3ErrName(int rc){
 #endif
 
 /*
-** Return a static string that describes the kind of error specified in the
+** Return a string that describes the kind of error specified in the
 ** argument.
 */
 const char *sqlite3ErrStr(int rc){
-  static const char* const aMsg[] = {
+  const char* const aMsg[] = {
     /* SQLITE_OK          */ "not an error",
     /* SQLITE_ERROR       */ "SQL logic error",
     /* SQLITE_INTERNAL    */ 0,
@@ -1727,16 +1727,16 @@ const char *sqlite3ErrStr(int rc){
 ** Return non-zero to retry the lock.  Return zero to stop trying
 ** and cause SQLite to return SQLITE_BUSY.
 */
-static int sqliteDefaultBusyCallback(
+int sqliteDefaultBusyCallback(
   void *ptr,               /* Database connection */
   int count                /* Number of times table has been busy */
 ){
 #if SQLITE_OS_WIN || !defined(HAVE_NANOSLEEP) || HAVE_NANOSLEEP
   /* This case is for systems that have support for sleeping for fractions of
   ** a second.  Examples:  All windows systems, unix systems with nanosleep() */
-  static const u8 delays[] =
+  const u8 delays[] =
      { 1, 2, 5, 10, 15, 20, 25, 25,  25,  50,  50, 100 };
-  static const u8 totals[] =
+  const u8 totals[] =
      { 0, 1, 3,  8, 18, 33, 53, 78, 103, 128, 178, 228 };
 # define NDELAY ArraySize(delays)
   sqlite3 *db = (sqlite3 *)ptr;
@@ -2077,7 +2077,7 @@ int sqlite3CreateFunc(
 **    sqlite3_create_function_v2()
 **    sqlite3_create_window_function()
 */
-static int createFunctionApi(
+int createFunctionApi(
   sqlite3 *db,
   const char *zFunc,
   int nArg,
@@ -2208,7 +2208,7 @@ int sqlite3_create_function16(
 ** for name resolution but are actually overloaded by the xFindFunction
 ** method of virtual tables.
 */
-static void sqlite3InvalidFunction(
+void sqlite3InvalidFunction(
   sqlite3_context *context,  /* The function calling context */
   int NotUsed,               /* Number of arguments to the function */
   sqlite3_value **NotUsed2   /* Value of each argument */
@@ -2789,10 +2789,10 @@ int sqlite3_error_offset(sqlite3 *db){
 ** error.
 */
 const void *sqlite3_errmsg16(sqlite3 *db){
-  static const u16 outOfMem[] = {
+  const u16 outOfMem[] = {
     'o', 'u', 't', ' ', 'o', 'f', ' ', 'm', 'e', 'm', 'o', 'r', 'y', 0
   };
-  static const u16 misuse[] = {
+  const u16 misuse[] = {
     'b', 'a', 'd', ' ', 'p', 'a', 'r', 'a', 'm', 'e', 't', 'e', 'r', ' ',
     'o', 'r', ' ', 'o', 't', 'h', 'e', 'r', ' ', 'A', 'P', 'I', ' ',
     'm', 'i', 's', 'u', 's', 'e', 0
@@ -2883,7 +2883,7 @@ const char *sqlite3_errstr(int rc){
 ** Create a new collating function for database "db".  The name is zName
 ** and the encoding is enc.
 */
-static int createCollation(
+int createCollation(
   sqlite3* db,
   const char *zName,
   u8 enc,
@@ -2960,7 +2960,7 @@ static int createCollation(
 ** initializer must be kept in sync with the SQLITE_LIMIT_*
 ** #defines in sqlite3.h.
 */
-static const int aHardLimit[] = {
+const int aHardLimit[] = {
   SQLITE_MAX_LENGTH,
   SQLITE_MAX_SQL_LENGTH,
   SQLITE_MAX_COLUMN,
@@ -3253,7 +3253,7 @@ int sqlite3ParseUri(
         int limit = 0;
 
         if( nOpt==5 && memcmp("cache", zOpt, 5)==0 ){
-          static struct OpenMode aCacheMode[] = {
+          struct OpenMode aCacheMode[] = {
             { "shared",  SQLITE_OPEN_SHAREDCACHE },
             { "private", SQLITE_OPEN_PRIVATECACHE },
             { 0, 0 }
@@ -3265,7 +3265,7 @@ int sqlite3ParseUri(
           zModeType = "cache";
         }
         if( nOpt==4 && memcmp("mode", zOpt, 4)==0 ){
-          static struct OpenMode aOpenMode[] = {
+          struct OpenMode aOpenMode[] = {
             { "ro",  SQLITE_OPEN_READONLY },
             { "rw",  SQLITE_OPEN_READWRITE },
             { "rwc", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE },
@@ -3339,7 +3339,7 @@ int sqlite3ParseUri(
 ** This routine does the core work of extracting URI parameters from a
 ** database filename for the sqlite3_uri_parameter() interface.
 */
-static const char *uriParameter(const char *zFilename, const char *zParam){
+const char *uriParameter(const char *zFilename, const char *zParam){
   zFilename += sqlite3Strlen30(zFilename) + 1;
   while( ALWAYS(zFilename!=0) && zFilename[0] ){
     int x = strcmp(zFilename, zParam);
@@ -3357,7 +3357,7 @@ static const char *uriParameter(const char *zFilename, const char *zParam){
 ** sqlite3_open() and sqlite3_open16(). The database filename "zFilename" 
 ** is UTF-8 encoded.
 */
-static int openDatabase(
+int openDatabase(
   const char *zFilename, /* Database filename UTF-8 encoded */
   sqlite3 **ppDb,        /* OUT: Returned database handle */
   unsigned int flags,    /* Operational flags */
@@ -4832,7 +4832,7 @@ int sqlite3_test_control(int op, ...){
 **
 ** This only works if the filename passed in was obtained from the Pager.
 */
-static const char *databaseName(const char *zName){
+const char *databaseName(const char *zName){
   while( zName[-1]!=0 || zName[-2]!=0 || zName[-3]!=0 || zName[-4]!=0 ){
     zName--;
   }
@@ -4843,7 +4843,7 @@ static const char *databaseName(const char *zName){
 ** Append text z[] to the end of p[].  Return a pointer to the first
 ** character after then zero terminator on the new text in p[].
 */
-static char *appendText(char *p, const char *z){
+char *appendText(char *p, const char *z){
   size_t n = strlen(z);
   memcpy(p, z, n+1);
   return p+n+1;

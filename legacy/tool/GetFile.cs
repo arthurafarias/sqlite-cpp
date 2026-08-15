@@ -106,7 +106,7 @@ namespace GetFile
 
     ///////////////////////////////////////////////////////////////////////////
 
-    internal static class Program
+    internal class Program
     {
         #region Private Data
         /// <summary>
@@ -114,7 +114,7 @@ namespace GetFile
         /// <see cref="previousPercent" /> and <see cref="exitCode"/>
         /// fields.
         /// </summary>
-        private static readonly object syncRoot = new object();
+        private readonly object syncRoot = new object();
 
         ///////////////////////////////////////////////////////////////////////
 
@@ -122,7 +122,7 @@ namespace GetFile
         /// This event will be signed when the file download has completed,
         /// even if the file download itself was canceled or unsuccessful.
         /// </summary>
-        private static EventWaitHandle doneEvent;
+        private EventWaitHandle doneEvent;
 
         ///////////////////////////////////////////////////////////////////////
 
@@ -131,7 +131,7 @@ namespace GetFile
         /// <see cref="DownloadProgressChanged" /> event handler.  This value
         /// is never decreased, nor is it ever reset to zero.
         /// </summary>
-        private static int previousPercent = 0;
+        private int previousPercent = 0;
 
         ///////////////////////////////////////////////////////////////////////
 
@@ -140,7 +140,7 @@ namespace GetFile
         /// download completes, successfully or otherwise.  This value is only
         /// changed by the <see cref="DownloadFileCompleted" /> event handler.
         /// </summary>
-        private static ExitCode exitCode = ExitCode.Success;
+        private ExitCode exitCode = ExitCode.Success;
         #endregion
 
         ///////////////////////////////////////////////////////////////////////
@@ -156,7 +156,7 @@ namespace GetFile
         /// <param name="usage">
         /// Non-zero to display the command line usage information.
         /// </param>
-        private static void Error(
+        private void Error(
             string message,
             bool usage
             )
@@ -184,7 +184,7 @@ namespace GetFile
         /// The file name portion of the specified URI -OR- null if it cannot
         /// be determined.
         /// </returns>
-        private static string GetFileName(
+        private string GetFileName(
             Uri uri
             )
         {
@@ -221,7 +221,7 @@ namespace GetFile
         /// <param name="e">
         /// Information for the event being processed.
         /// </param>
-        private static void DownloadProgressChanged(
+        private void DownloadProgressChanged(
             object sender,
             DownloadProgressChangedEventArgs e
             )
@@ -262,7 +262,7 @@ namespace GetFile
         /// <param name="e">
         /// Information for the event being processed.
         /// </param>
-        private static void DownloadFileCompleted(
+        private void DownloadFileCompleted(
             object sender,
             AsyncCompletedEventArgs e
             )
@@ -324,7 +324,7 @@ namespace GetFile
         /// Zero upon success; non-zero on failure.  This will be one of the
         /// values from the <see cref="ExitCode" /> enumeration.
         /// </returns>
-        private static int Main(
+        private int Main(
             string[] args
             )
         {

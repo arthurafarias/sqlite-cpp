@@ -191,7 +191,7 @@ struct closure_avl {
 /* Recompute the closure_avl.height and closure_avl.imbalance fields for p.
 ** Assume that the children of p have correct heights.
 */
-static void closureAvlRecomputeHeight(closure_avl *p){
+void closureAvlRecomputeHeight(closure_avl *p){
   short int hBefore = p->pBefore ? p->pBefore->height : 0;
   short int hAfter = p->pAfter ? p->pAfter->height : 0;
   p->imbalance = hBefore - hAfter;  /* -: pAfter higher.  +: pBefore higher */
@@ -206,7 +206,7 @@ static void closureAvlRecomputeHeight(closure_avl *p){
 ** X   Y                Y   Z
 **
 */
-static closure_avl *closureAvlRotateBefore(closure_avl *pP){
+closure_avl *closureAvlRotateBefore(closure_avl *pP){
   closure_avl *pB = pP->pBefore;
   closure_avl *pY = pB->pAfter;
   pB->pUp = pP->pUp;
@@ -227,7 +227,7 @@ static closure_avl *closureAvlRotateBefore(closure_avl *pP){
 **     Y   Z        X   Y
 **
 */
-static closure_avl *closureAvlRotateAfter(closure_avl *pP){
+closure_avl *closureAvlRotateAfter(closure_avl *pP){
   closure_avl *pA = pP->pAfter;
   closure_avl *pY = pA->pBefore;
   pA->pUp = pP->pUp;
@@ -244,7 +244,7 @@ static closure_avl *closureAvlRotateAfter(closure_avl *pP){
 ** Return a pointer to the pBefore or pAfter pointer in the parent
 ** of p that points to p.  Or if p is the root node, return pp.
 */
-static closure_avl **closureAvlFromPtr(closure_avl *p, closure_avl **pp){
+closure_avl **closureAvlFromPtr(closure_avl *p, closure_avl **pp){
   closure_avl *pUp = p->pUp;
   if( pUp==0 ) return pp;
   if( pUp->pAfter==p ) return &pUp->pAfter;
@@ -255,7 +255,7 @@ static closure_avl **closureAvlFromPtr(closure_avl *p, closure_avl **pp){
 ** Rebalance all nodes starting with p and working up to the root.
 ** Return the new root.
 */
-static closure_avl *closureAvlBalance(closure_avl *p){
+closure_avl *closureAvlBalance(closure_avl *p){
   closure_avl *pTop = p;
   closure_avl **pp;
   while( p ){
@@ -280,7 +280,7 @@ static closure_avl *closureAvlBalance(closure_avl *p){
 /* Search the tree rooted at p for an entry with id.  Return a pointer
 ** to the entry or return NULL.
 */
-static closure_avl *closureAvlSearch(closure_avl *p, sqlite3_int64 id){
+closure_avl *closureAvlSearch(closure_avl *p, sqlite3_int64 id){
   while( p && id!=p->id ){
     p = (id<p->id) ? p->pBefore : p->pAfter;
   }
@@ -289,7 +289,7 @@ static closure_avl *closureAvlSearch(closure_avl *p, sqlite3_int64 id){
 
 /* Find the first node (the one with the smallest key).
 */
-static closure_avl *closureAvlFirst(closure_avl *p){
+closure_avl *closureAvlFirst(closure_avl *p){
   if( p ) while( p->pBefore ) p = p->pBefore;
   return p;
 }
@@ -312,7 +312,7 @@ closure_avl *closureAvlNext(closure_avl *p){
 ** unique, then do not perform the insert but instead leave pNew unchanged
 ** and return a pointer to an existing node with the same key.
 */
-static closure_avl *closureAvlInsert(
+closure_avl *closureAvlInsert(
   closure_avl **ppHead,  /* Head of the tree */
   closure_avl *pNew      /* New node to be inserted */
 ){
@@ -353,7 +353,7 @@ static closure_avl *closureAvlInsert(
 
 /* Walk the tree can call xDestroy on each node
 */
-static void closureAvlDestroy(closure_avl *p, void (*xDestroy)(closure_avl*)){
+void closureAvlDestroy(closure_avl *p, void (*xDestroy)(closure_avl*)){
   if( p ){
     closureAvlDestroy(p->pBefore, xDestroy);
     closureAvlDestroy(p->pAfter, xDestroy);
@@ -398,7 +398,7 @@ struct closure_queue {
 /*
 ** Add a node to the end of the queue
 */
-static void queuePush(closure_queue *pQueue, closure_avl *pNode){
+void queuePush(closure_queue *pQueue, closure_avl *pNode){
   pNode->pList = 0;
   if( pQueue->pLast ){
     pQueue->pLast->pList = pNode;
@@ -411,7 +411,7 @@ static void queuePush(closure_queue *pQueue, closure_avl *pNode){
 /*
 ** Extract the oldest element (the front element) from the queue.
 */
-static closure_avl *queuePull(closure_queue *pQueue){
+closure_avl *queuePull(closure_queue *pQueue){
   closure_avl *p = pQueue->pFirst;
   if( p ){
     pQueue->pFirst = p->pList;
@@ -433,7 +433,7 @@ static closure_avl *queuePull(closure_queue *pQueue){
 **     [pqr]   becomes   pqr
 **     `mno`   becomes   mno
 */
-static char *closureDequote(const char *zIn){
+char *closureDequote(const char *zIn){
   sqlite3_int64 nIn;              /* Size of input string, in bytes */
   char *zOut;                     /* Output (dequoted) string */
 
@@ -463,7 +463,7 @@ static char *closureDequote(const char *zIn){
 /*
 ** Deallocate an closure_vtab object
 */
-static void closureFree(closure_vtab *p){
+void closureFree(closure_vtab *p){
   if( p ){
     sqlite3_free(p->zDb);
     sqlite3_free(p->zSelf);
@@ -478,7 +478,7 @@ static void closureFree(closure_vtab *p){
 /*
 ** xDisconnect/xDestroy method for the closure module.
 */
-static int closureDisconnect(sqlite3_vtab *pVtab){
+int closureDisconnect(sqlite3_vtab *pVtab){
   closure_vtab *p = (closure_vtab*)pVtab;
   assert( p->nCursor==0 );
   closureFree(p);
@@ -493,7 +493,7 @@ static int closureDisconnect(sqlite3_vtab *pVtab){
 ** If it is, return a pointer to the first character of VALUE.
 ** If not, return NULL.  Spaces around the = are ignored.
 */
-static const char *closureValueOfKey(const char *zKey, const char *zStr){
+const char *closureValueOfKey(const char *zKey, const char *zStr){
   int nKey = (int)strlen(zKey);
   int nStr = (int)strlen(zStr);
   int i;
@@ -514,7 +514,7 @@ static const char *closureValueOfKey(const char *zKey, const char *zStr){
 **   argv[2]    -> table name
 **   argv[3...] -> arguments
 */
-static int closureConnect(
+int closureConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -589,7 +589,7 @@ closureConnectError:
 /*
 ** Open a new closure cursor.
 */
-static int closureOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+int closureOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   closure_vtab *p = (closure_vtab*)pVTab;
   closure_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
@@ -604,13 +604,13 @@ static int closureOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Wrapper around sqlite3_free
 */
-static void closureMemFree(closure_avl *p){ sqlite3_free(p); }
+void closureMemFree(closure_avl *p){ sqlite3_free(p); }
 
 /*
 ** Free up all the memory allocated by a cursor.  Set it rLimit to 0
 ** to indicate that it is at EOF.
 */
-static void closureClearCursor(closure_cursor *pCur){
+void closureClearCursor(closure_cursor *pCur){
   closureAvlDestroy(pCur->pClosure, closureMemFree);
   sqlite3_free(pCur->zTableName);
   sqlite3_free(pCur->zIdColumn);
@@ -625,7 +625,7 @@ static void closureClearCursor(closure_cursor *pCur){
 /*
 ** Close a closure cursor.
 */
-static int closureClose(sqlite3_vtab_cursor *cur){
+int closureClose(sqlite3_vtab_cursor *cur){
   closure_cursor *pCur = (closure_cursor *)cur;
   closureClearCursor(pCur);
   pCur->pVtab->nCursor--;
@@ -636,7 +636,7 @@ static int closureClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a cursor to its next row of output
 */
-static int closureNext(sqlite3_vtab_cursor *cur){
+int closureNext(sqlite3_vtab_cursor *cur){
   closure_cursor *pCur = (closure_cursor*)cur;
   pCur->pCurrent = closureAvlNext(pCur->pCurrent);
   return SQLITE_OK;
@@ -645,7 +645,7 @@ static int closureNext(sqlite3_vtab_cursor *cur){
 /*
 ** Allocate and insert a node
 */
-static int closureInsertNode(
+int closureInsertNode(
   closure_queue *pQueue,  /* Add new node to this queue */
   closure_cursor *pCur,   /* The cursor into which to add the node */
   sqlite3_int64 id,       /* The node ID */
@@ -672,7 +672,7 @@ static int closureInsertNode(
 ** description of the meaning of idxNum.  The idxStr parameter is
 ** not used.
 */
-static int closureFilter(
+int closureFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -758,7 +758,7 @@ static int closureFilter(
 ** Only the word and distance columns have values.  All other columns
 ** return NULL
 */
-static int closureColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+int closureColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   closure_cursor *pCur = (closure_cursor*)cur;
   switch( i ){
     case CLOSURE_COL_ID: {
@@ -798,7 +798,7 @@ static int closureColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
 /*
 ** The rowid.  For the closure table, this is the same as the "id" column.
 */
-static int closureRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int closureRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   closure_cursor *pCur = (closure_cursor*)cur;
   *pRowid = pCur->pCurrent->id;
   return SQLITE_OK;
@@ -807,7 +807,7 @@ static int closureRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 /*
 ** EOF indicator
 */
-static int closureEof(sqlite3_vtab_cursor *cur){
+int closureEof(sqlite3_vtab_cursor *cur){
   closure_cursor *pCur = (closure_cursor*)cur;
   return pCur->pCurrent==0;
 }
@@ -837,7 +837,7 @@ static int closureEof(sqlite3_vtab_cursor *cur){
 ** There must be a term of type (A).  If there is not, then the index type
 ** is 0 and the query will return an empty set.
 */
-static int closureBestIndex(
+int closureBestIndex(
   sqlite3_vtab *pTab,             /* The virtual table */
   sqlite3_index_info *pIdxInfo    /* Information about the query */
 ){
@@ -933,7 +933,7 @@ static int closureBestIndex(
 /*
 ** A virtual table module that implements the "transitive_closure".
 */
-static sqlite3_module closureModule = {
+sqlite3_module closureModule = {
   0,                      /* iVersion */
   closureConnect,         /* xCreate */
   closureConnect,         /* xConnect */

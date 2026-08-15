@@ -117,7 +117,7 @@ char *sqlite3ColumnType(Column *pCol, char *zDflt){
 ** a separate routine to avoid unnecessary register saves on entry to
 ** sqlite3Error().
 */
-static SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, int err_code){
+SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, int err_code){
   if( db->pErr ) sqlite3ValueSetNull(db->pErr);
   sqlite3SystemError(db, err_code);
 }
@@ -470,7 +470,7 @@ u8 sqlite3StrIHash(const char *z){
 ** lower 64-bits of the result into *pLo, and return the high-order
 ** 64 bits.
 */
-static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
+u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
 #if defined(SQLITE_USE_UINT128)
   __uint128_t r = (__uint128_t)a * b;
   *pLo = (u64)r;
@@ -504,7 +504,7 @@ static u64 sqlite3Multiply128(u64 a, u64 b, u64 *pLo){
 **
 ** The lower 64 bits of A*B are discarded.
 */
-static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
+u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
 #if defined(SQLITE_USE_UINT128)
   __uint128_t r = (__uint128_t)a * b;
   r += ((__uint128_t)aLo * b) >> 32;
@@ -582,8 +582,8 @@ static u64 sqlite3Multiply160(u64 a, u32 aLo, u64 b, u32 *pLo){
 ** The constant tables aBase[], aScale[], and aScaleLo[] are generated
 ** by the C program at ../tool/mkfptab.c run with the --round option.
 */
-static u64 powerOfTen(int p, u32 *pLo){
-  static const u64 aBase[] = {
+u64 powerOfTen(int p, u32 *pLo){
+  const u64 aBase[] = {
     UINT64_C(0x8000000000000000), /*  0: 1.0e+0 << 63 */
     UINT64_C(0xa000000000000000), /*  1: 1.0e+1 << 60 */
     UINT64_C(0xc800000000000000), /*  2: 1.0e+2 << 57 */
@@ -612,7 +612,7 @@ static u64 powerOfTen(int p, u32 *pLo){
     UINT64_C(0x84595161401484a0), /* 25: 1.0e+25 >> 20 */
     UINT64_C(0xa56fa5b99019a5c8), /* 26: 1.0e+26 >> 23 */
   };
-  static const u64 aScale[] = {
+  const u64 aScale[] = {
     UINT64_C(0x8049a4ac0c5811ae), /*  0: 1.0e-351 << 1229 */
     UINT64_C(0xcf42894a5dce35ea), /*  1: 1.0e-324 << 1140 */
     UINT64_C(0xa76c582338ed2621), /*  2: 1.0e-297 << 1050 */
@@ -640,7 +640,7 @@ static u64 powerOfTen(int p, u32 *pLo){
     UINT64_C(0xc3b8358109e84f07), /* 24: 1.0e+297 >> 923 */
     UINT64_C(0x9e19db92b4e31ba9), /* 25: 1.0e+324 >> 1013 */
   };
-  static const unsigned int aScaleLo[] = {
+  const unsigned int aScaleLo[] = {
     0x205b896d, /*  0: 1.0e-351 << 1229 */
     0x52064cad, /*  1: 1.0e-324 << 1140 */
     0xaf2af2b8, /*  2: 1.0e-297 << 1050 */
@@ -723,13 +723,13 @@ static u64 powerOfTen(int p, u32 *pLo){
 ** for division so that rounding of negative numbers happens in the
 ** right direction.
 */
-static int pwr10to2(int p){ return (p*108853) >> 15; }
-static int pwr2to10(int p){ return (p*78913) >> 18; }
+int pwr10to2(int p){ return (p*108853) >> 15; }
+int pwr2to10(int p){ return (p*78913) >> 18; }
 
 /*
 ** Count leading zeros for a 64-bit unsigned integer.
 */
-static int countLeadingZeros(u64 m){
+int countLeadingZeros(u64 m){
 #if (defined(__GNUC__) || defined(__clang__)) \
     && !defined(SQLITE_DISABLE_INTRINSIC)
   return __builtin_clzll(m);
@@ -753,7 +753,7 @@ static int countLeadingZeros(u64 m){
 ** The input m is required to have its highest bit set.  In other words,
 ** m should be left-shifted, and e decremented, to maximize the value of m.
 */
-static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
+void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
   int p;
   u64 h, d1;
   u32 d2;
@@ -777,7 +777,7 @@ static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
 ** The (current) algorithm is adapted from the work of Ross Cox at
 ** https://github.com/rsc/fpfmt
 */
-static double sqlite3Fp10Convert2(u64 d, int p){
+double sqlite3Fp10Convert2(u64 d, int p){
   int b, lp, e, adj, s;
   u32 pwr10l, mid1;
   u64 pwr10h, x, hi, lo, sticky, u, m;
@@ -990,7 +990,7 @@ int sqlite3AtoF(const char *zIn, double *pResult){
 ** Digit pairs used to convert a U64 or I64 into text, two digits
 ** at a time.
 */
-static const union {
+const union {
   char a[201];
   short int forceAlignment;
 } sqlite3DigitPairs = {
@@ -1028,7 +1028,7 @@ static const union {
 ** instead.  It is slower on platforms that have hardware u64 division,
 ** but much faster on platforms that do not.
 */
-static int sqlite3UInt64ToText(u64 v, char *zOut){
+int sqlite3UInt64ToText(u64 v, char *zOut){
   u32 x32, kk;
   int i;
   zOut[SQLITE_U64_DIGITS] = 0;
@@ -1130,7 +1130,7 @@ int sqlite3Int64ToText(i64 v, char *zOut){
 **
 ** will return -8.
 */
-static int compare2pow63(const char *zNum, int incr){
+int compare2pow63(const char *zNum, int incr){
   int c = 0;
   int i;
                     /* 012345678901234567 */
@@ -1576,7 +1576,7 @@ int sqlite3GetUInt32(const char *z, u32 *pI){
 ** bit clear.  Except, if we get to the 9th byte, it stores the full
 ** 8 bits and is the last byte.
 */
-static int SQLITE_NOINLINE putVarint64(unsigned char *p, u64 v){
+int SQLITE_NOINLINE putVarint64(unsigned char *p, u64 v){
   int i, j, n;
   u8 buf[10];
   if( v & (((u64)0xff000000)<<32) ){
@@ -1915,7 +1915,7 @@ void *sqlite3HexToBlob(sqlite3 *db, const char *z, int n){
 ** not have been used.  The "type" of connection pointer is given as the
 ** argument.  The zType is a word like "NULL" or "closed" or "invalid".
 */
-static void logBadConnection(const char *zType){
+void logBadConnection(const char *zType){
   sqlite3_log(SQLITE_MISUSE,
      "API call with %s database connection pointer",
      zType
@@ -2078,7 +2078,7 @@ void sqlite3FileSuffix3(const char *zBaseFilename, char *z){
 **
 */
 LogEst sqlite3LogEstAdd(LogEst a, LogEst b){
-  static const unsigned char x[] = {
+  const unsigned char x[] = {
      10, 10,                         /* 0,1 */
       9, 9,                          /* 2,3 */
       8, 8,                          /* 4,5 */
@@ -2105,7 +2105,7 @@ LogEst sqlite3LogEstAdd(LogEst a, LogEst b){
 ** approximation for 10*log2(x).
 */
 LogEst sqlite3LogEst(u64 x){
-  static LogEst a[] = { 0, 2, 3, 5, 6, 7, 8, 9 };
+  LogEst a[] = { 0, 2, 3, 5, 6, 7, 8, 9 };
   LogEst y = 40;
   if( x<8 ){
     if( x<2 ) return 0;

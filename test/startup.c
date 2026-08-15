@@ -31,7 +31,7 @@
 #include <ctype.h>
 #include "sqlite3.h"
 
-static const char zHelp[] =
+const char zHelp[] =
   "Usage: %s COMMAND\n"
   "Commands:\n"
   "  init                Initialized the startup.db database file\n"
@@ -56,7 +56,7 @@ static const char zHelp[] =
 */
 ;
 
-static void usage(const char *argv0){
+void usage(const char *argv0){
   printf(zHelp, argv0);
   exit(1);
 }
@@ -66,7 +66,7 @@ static void usage(const char *argv0){
 ** The schema covers the repository, the local checkout database, and
 ** the global configuration database.
 */
-static const char zTestSchema[] = 
+const char zTestSchema[] = 
   "CREATE TABLE repo_blob(\n"
   "  rid INTEGER PRIMARY KEY,\n"
   "  rcvid INTEGER,\n"
@@ -381,14 +381,14 @@ static const char zTestSchema[] =
 /*
 ** Attempt to display I/O stats on Linux using /proc/PID/io
 */
-static void displayLinuxIoStats(FILE *out){
+void displayLinuxIoStats(FILE *out){
   FILE *in;
   char z[200];
   sqlite3_snprintf(sizeof(z), z, "/proc/%d/io", getpid());
   in = fopen(z, "rb");
   if( in==0 ) return;
   while( fgets(z, sizeof(z), in)!=0 ){
-    static const struct {
+    const struct {
       const char *zPattern;
       const char *zDesc;
     } aTrans[] = {
@@ -417,7 +417,7 @@ static void displayLinuxIoStats(FILE *out){
 ** Return the value of a hexadecimal digit.  Return -1 if the input
 ** is not a hex digit.
 */
-static int hexDigitValue(char c){
+int hexDigitValue(char c){
   if( c>='0' && c<='9' ) return c - '0';
   if( c>='a' && c<='f' ) return c - 'a' + 10;
   if( c>='A' && c<='F' ) return c - 'A' + 10;
@@ -427,9 +427,9 @@ static int hexDigitValue(char c){
 /*
 ** Interpret zArg as an integer value, possibly with suffixes.
 */
-static int integerValue(const char *zArg){
+int integerValue(const char *zArg){
   sqlite3_int64 v = 0;
-  static const struct { char *zSuffix; int iMult; } aMult[] = {
+  const struct { char *zSuffix; int iMult; } aMult[] = {
     { "KiB", 1024 },
     { "MiB", 1024*1024 },
     { "GiB", 1024*1024*1024 },

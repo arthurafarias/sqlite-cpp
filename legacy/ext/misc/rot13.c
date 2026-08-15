@@ -21,7 +21,7 @@ SQLITE_EXTENSION_INIT1
 /*
 ** Perform rot13 encoding on a single ASCII character.
 */
-static unsigned char rot13(unsigned char c){
+unsigned char rot13(unsigned char c){
   if( c>='a' && c<='z' ){
     c += 13;
     if( c>'z' ) c -= 26;
@@ -39,7 +39,7 @@ static unsigned char rot13(unsigned char c){
 ** Non-ASCII characters are unchanged.  rot13(rot13(X)) should always
 ** equal X.
 */
-static void rot13func(
+void rot13func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -78,7 +78,7 @@ static void rot13func(
 **
 **      rot13(x)=rot13(y) COLLATE binary
 */
-static int rot13CollFunc(
+int rot13CollFunc(
   void *notUsed,
   int nKey1, const void *pKey1,
   int nKey2, const void *pKey2

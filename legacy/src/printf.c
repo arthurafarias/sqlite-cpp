@@ -89,9 +89,9 @@ for {set r 0} {$r<$mx} {incr r} {
 }
 #endif /***** End of script ********/
 
-static const char aDigits[] = "0123456789ABCDEF0123456789abcdef";
-static const char aPrefix[] = "-x0\000X0";
-static const et_info fmtinfo[23] = {
+const char aDigits[] = "0123456789ABCDEF0123456789abcdef";
+const char aPrefix[] = "-x0\000X0";
+const et_info fmtinfo[23] = {
   /*  0 */  {  's',  0, 4, etSTRING,     0,  0,  1 },
   /*  1 */  {  'E',  0, 1, etEXP,        14, 0,  0 },  /* Hash: 0 */
   /*  2 */  {  'u', 10, 0, etDECIMAL,    0,  0,  3 },
@@ -136,15 +136,15 @@ void sqlite3StrAccumSetError(StrAccum *p, u8 eError){
 /*
 ** Extra argument values from a PrintfArguments object
 */
-static sqlite3_int64 getIntArg(PrintfArguments *p){
+sqlite3_int64 getIntArg(PrintfArguments *p){
   if( p->nArg<=p->nUsed ) return 0;
   return sqlite3_value_int64(p->apArg[p->nUsed++]);
 }
-static double getDoubleArg(PrintfArguments *p){
+double getDoubleArg(PrintfArguments *p){
   if( p->nArg<=p->nUsed ) return 0.0;
   return sqlite3_value_double(p->apArg[p->nUsed++]);
 }
-static char *getTextArg(PrintfArguments *p){
+char *getTextArg(PrintfArguments *p){
   if( p->nArg<=p->nUsed ) return 0;
   return (char*)sqlite3_value_text(p->apArg[p->nUsed++]);
 }
@@ -158,7 +158,7 @@ static char *getTextArg(PrintfArguments *p){
 ** SQL from requesting large allocations using the precision or width
 ** field of the printf() function.
 */
-static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
+char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
   char *z;
   if( pAccum->accError ) return 0;
   if( n>pAccum->nAlloc && n>pAccum->mxAlloc ){
@@ -479,7 +479,7 @@ void sqlite3_str_vappendf(
         }
         bufpt = &zOut[nOut-1];
         if( xtype==etORDINAL ){
-          static const char zOrd[] = "thstndrd";
+          const char zOrd[] = "thstndrd";
           int x = (int)(longvalue % 10);
           if( x>=4 || (longvalue/10)%10==1 ){
             x = 0;
@@ -1178,7 +1178,7 @@ void sqlite3_str_appendchar(sqlite3_str *p, int N, char c){
 ** work (enlarging the buffer) using tail recursion, so that the
 ** sqlite3_str_append() routine can use fast calling semantics.
 */
-static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
+void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
   N = sqlite3StrAccumEnlarge(p, N);
   if( N>0 ){
     memcpy(&p->zText[p->nChar], z, N);
@@ -1217,7 +1217,7 @@ void sqlite3_str_appendall(sqlite3_str *p, const char *z){
 ** Return a pointer to the resulting string.  Return a NULL
 ** pointer if any kind of error was encountered.
 */
-static SQLITE_NOINLINE char *strAccumFinishRealloc(StrAccum *p){
+SQLITE_NOINLINE char *strAccumFinishRealloc(StrAccum *p){
   char *zText;
   assert( p->mxAlloc>0 && !isMalloced(p) );
   zText = sqlite3DbMallocRaw(p->db, 1+(u64)p->nChar );
@@ -1262,7 +1262,7 @@ void sqlite3ResultStrAccum(sqlite3_context *pCtx, StrAccum *p){
 ** sqlite3_str object accepts no new text and always returns
 ** an SQLITE_NOMEM error.
 */
-static sqlite3_str sqlite3OomStr = {
+sqlite3_str sqlite3OomStr = {
    0, 0, 0, 0, 0, SQLITE_NOMEM, 0
 };
 
@@ -1498,7 +1498,7 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
 ** We house it in a separate routine from sqlite3_log() to avoid using
 ** stack space on small-stack systems when logging is disabled.
 **
-** sqlite3_log() must render into a static buffer.  It cannot dynamically
+** sqlite3_log() must render into a buffer.  It cannot dynamically
 ** allocate memory because it might be called while the memory allocator
 ** mutex is held.
 **
@@ -1507,7 +1507,7 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
 ** Care must be taken that any sqlite3_log() calls that occur while the
 ** memory mutex is held do not use these mechanisms.
 */
-static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
+void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
   StrAccum acc;                          /* String accumulator */
   char zMsg[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
 

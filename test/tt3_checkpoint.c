@@ -50,7 +50,7 @@ struct CheckpointStarvationCtx {
 };
 typedef struct CheckpointStarvationCtx CheckpointStarvationCtx;
 
-static int checkpoint_starvation_walhook(
+int checkpoint_starvation_walhook(
   void *pCtx, 
   sqlite3 *db, 
   const char *zDb, 
@@ -66,7 +66,7 @@ static int checkpoint_starvation_walhook(
   return SQLITE_OK;
 }
 
-static char *checkpoint_starvation_reader(int iTid, void *pArg){
+char *checkpoint_starvation_reader(int iTid, void *pArg){
   Error err = {0};
   Sqlite db = {0};
 
@@ -89,7 +89,7 @@ static char *checkpoint_starvation_reader(int iTid, void *pArg){
   return 0;
 }
 
-static void checkpoint_starvation_main(int nMs, CheckpointStarvationCtx *p){
+void checkpoint_starvation_main(int nMs, CheckpointStarvationCtx *p){
   Error err = {0};
   Sqlite db = {0};
   Threadset threads = {0};
@@ -127,7 +127,7 @@ static void checkpoint_starvation_main(int nMs, CheckpointStarvationCtx *p){
   print_and_free_err(&err);
 }
 
-static void checkpoint_starvation_1(int nMs){
+void checkpoint_starvation_1(int nMs){
   Error err = {0};
   CheckpointStarvationCtx ctx = { SQLITE_CHECKPOINT_PASSIVE, 0 };
   checkpoint_starvation_main(nMs, &ctx);
@@ -137,7 +137,7 @@ static void checkpoint_starvation_1(int nMs){
   print_and_free_err(&err);
 }
 
-static void checkpoint_starvation_2(int nMs){
+void checkpoint_starvation_2(int nMs){
   Error err = {0};
   CheckpointStarvationCtx ctx = { SQLITE_CHECKPOINT_RESTART, 0 };
   checkpoint_starvation_main(nMs, &ctx);

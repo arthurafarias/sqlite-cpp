@@ -15,7 +15,7 @@
 #include <string.h>
 #include "sqlite3.h"
 
-static void usage(char *argv0){
+void usage(char *argv0){
   fprintf(stderr,
     "Usage: %s new [-utf8] [-utf16le] [-utf16be] [-pagesize=N] DATABASE\n"
     "       %s check DATABASE\n"
@@ -25,7 +25,7 @@ static void usage(char *argv0){
   exit(1);
 }
 
-static sqlite3 *openDb(const char *zFilename){
+sqlite3 *openDb(const char *zFilename){
   int rc;
   sqlite3 *db;
   rc = sqlite3_open(zFilename, &db);
@@ -38,10 +38,10 @@ static sqlite3 *openDb(const char *zFilename){
   return db;
 }
 
-static int nReply = 0;
-static char zReply[1000];
+int nReply = 0;
+char zReply[1000];
 
-static int execCallback(void *NotUsed, int nArg, char **azArg, char **azCol){
+int execCallback(void *NotUsed, int nArg, char **azArg, char **azCol){
   int i, n;
   char *z;
   for(i=0; i<nArg; i++){
@@ -57,7 +57,7 @@ static int execCallback(void *NotUsed, int nArg, char **azArg, char **azCol){
   return 0;
 }
 
-static void runSql(sqlite3 *db, const char *zSql){
+void runSql(sqlite3 *db, const char *zSql){
   char *zErr = 0;
   int rc;
   nReply = 0;

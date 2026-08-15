@@ -16,7 +16,7 @@
 **
 ** #include this file inside any C-code module that needs to use
 ** opendir()/readdir()/closedir().  This file is a no-op on non-Windows
-** machines.  On Windows, static functions are defined that implement
+** machines.  On Windows, functions are defined that implement
 ** those standard interfaces.
 */
 #if defined(_WIN32) && defined(_MSC_VER) && !defined(SQLITE_WINDIRENT_H)
@@ -72,7 +72,7 @@ struct DIR {
 /*
 ** Close a previously opened directory
 */
-static int closedir(DIR *pDir){
+int closedir(DIR *pDir){
   int rc = 0;
   if( pDir==0 ){
     return EINVAL;
@@ -88,7 +88,7 @@ static int closedir(DIR *pDir){
 ** Open a new directory.  The directory name should be UTF-8 encoded.
 ** appropriate translations happen automatically.
 */
-static DIR *opendir(const char *zDirName){
+DIR *opendir(const char *zDirName){
   DIR *pDir;
   wchar_t *b1;
   sqlite3_int64 sz;
@@ -142,7 +142,7 @@ static DIR *opendir(const char *zDirName){
 ** d_name[] field is meaningful.  The d_name[] value has been
 ** translated into UTF8.
 */
-static struct dirent *readdir(DIR *pDir){
+struct dirent *readdir(DIR *pDir){
   struct _wfinddata_t data;
   if( pDir==0 ) return 0;
   if( (pDir->cur.d_ino++)==0 ){

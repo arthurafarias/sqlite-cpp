@@ -68,7 +68,7 @@
 #include "sqlite3.c"
 
 /* Code to populate the database */
-static const char zFillSql[] = 
+const char zFillSql[] = 
   "INSERT INTO t1(a,b,c,d) VALUES\n"
   "  (1,2,3,4),\n"
   "  (2,3.5,'four',x'556677'),\n"
@@ -84,7 +84,7 @@ static const char zFillSql[] =
 ;
 
 /* A database file created by running the two scripts above */
-static const unsigned char aDbBytes[] = {
+const unsigned char aDbBytes[] = {
   83, 81, 76,105,116,101, 32,102,111,114,109, 97,116, 32, 51,  0,  2,  0,  1,
    1,  0, 64, 32, 32,  0,  0,  0, 13,  0,  0,  0, 22,  0,  0,  0,  0,  0,  0,
    0,  0,  0,  0,  0,  5,  0,  0,  0,  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -681,7 +681,7 @@ static const unsigned char aDbBytes[] = {
 };
 
 /* Help message */
-static const char zHelp[] =
+const char zHelp[] =
   "Usage:\n"
   "  sessionfuzz setup          -- Generate seed files c1.txt, c2.txt, etc.\n"
   "  sessionfuzz run FILE ...   -- Run against fuzzed changeset FILE\n"
@@ -705,7 +705,7 @@ static const char zHelp[] =
 ** utility function uncompress() and return the results (another
 ** blob).
 */
-static void sqlarUncompressFunc(
+void sqlarUncompressFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -738,7 +738,7 @@ static void sqlarUncompressFunc(
 /* Run a chunk of SQL.  If any errors happen, print an error message
 ** and exit.
 */
-static void runSql(sqlite3 *db, const char *zSql){
+void runSql(sqlite3 *db, const char *zSql){
   int rc;
   char *zErr = 0;
   rc = sqlite3_exec(db, zSql, 0, 0, &zErr);
@@ -752,7 +752,7 @@ static void runSql(sqlite3 *db, const char *zSql){
 /*
 ** Write buffer to disk
 */
-static void writeFile(const char *zFilename, const void *pData, int nData){
+void writeFile(const char *zFilename, const void *pData, int nData){
   FILE *out;
   int n;
   out = fopen(zFilename, "wb");
@@ -771,7 +771,7 @@ static void writeFile(const char *zFilename, const void *pData, int nData){
 /*
 ** Generate a changeset from session pSess and write it to zFile
 */
-static void makeChangeset(const char *zFile, sqlite3_session *pSess){
+void makeChangeset(const char *zFile, sqlite3_session *pSess){
   void *pChg;
   int nChg;
   int rc;
@@ -788,7 +788,7 @@ static void makeChangeset(const char *zFile, sqlite3_session *pSess){
 ** Read a file from disk.  Space to hold the answer is obtained from
 ** sqlite3_malloc64().
 */
-static void readFile(const char *zName, void **ppData, int *pnData){
+void readFile(const char *zName, void **ppData, int *pnData){
   FILE *in = fopen(zName, "rb");
   long nIn;
   size_t nRead;
@@ -822,7 +822,7 @@ static void readFile(const char *zName, void **ppData, int *pnData){
 /*
 ** The conflict callback
 */
-static int conflictCall(
+int conflictCall(
   void *NotUsed,
   int eConflict,
   sqlite3_changeset_iter *p
@@ -835,7 +835,7 @@ static int conflictCall(
 /*
 ** Reset the database file
 */
-static void db_reset(sqlite3 *db){
+void db_reset(sqlite3 *db){
   unsigned char *pData;
   int nData;
   int rc;
@@ -863,7 +863,7 @@ static void db_reset(sqlite3 *db){
 **   input:    /home/drh/sqlite/abc.db
 **   output:   abc.db
 */
-static const char *fileTail(const char *z){
+const char *fileTail(const char *z){
   const char *zOut = z;
   while( z[0] ){
     if( z[0]=='/' && z[1]!=0 ) zOut = &z[1];

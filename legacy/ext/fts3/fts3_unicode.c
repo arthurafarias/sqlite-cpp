@@ -32,7 +32,7 @@
 */
 #ifndef SQLITE_AMALGAMATION
 
-static const unsigned char sqlite3Utf8Trans1[] = {
+const unsigned char sqlite3Utf8Trans1[] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
   0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -101,7 +101,7 @@ struct unicode_cursor {
 /*
 ** Destroy a tokenizer allocated by unicodeCreate().
 */
-static int unicodeDestroy(sqlite3_tokenizer *pTokenizer){
+int unicodeDestroy(sqlite3_tokenizer *pTokenizer){
   if( pTokenizer ){
     unicode_tokenizer *p = (unicode_tokenizer *)pTokenizer;
     sqlite3_free(p->aiException);
@@ -128,7 +128,7 @@ static int unicodeDestroy(sqlite3_tokenizer *pTokenizer){
 ** It is not possible to change the behavior of the tokenizer with respect
 ** to these codepoints.
 */
-static int unicodeAddExceptions(
+int unicodeAddExceptions(
   unicode_tokenizer *p,           /* Tokenizer to add exceptions to */
   int bAlnum,                     /* Replace Isalnum() return value with this */
   const char *zIn,                /* Array of characters to make exceptions */
@@ -182,7 +182,7 @@ static int unicodeAddExceptions(
 /*
 ** Return true if the p->aiException[] array contains the value iCode.
 */
-static int unicodeIsException(unicode_tokenizer *p, int iCode){
+int unicodeIsException(unicode_tokenizer *p, int iCode){
   if( p->nException>0 ){
     int *a = p->aiException;
     int iLo = 0;
@@ -207,7 +207,7 @@ static int unicodeIsException(unicode_tokenizer *p, int iCode){
 ** Return true if, for the purposes of tokenization, codepoint iCode is
 ** considered a token character (not a separator).
 */
-static int unicodeIsAlnum(unicode_tokenizer *p, int iCode){
+int unicodeIsAlnum(unicode_tokenizer *p, int iCode){
   assert( (sqlite3FtsUnicodeIsalnum(iCode) & 0xFFFFFFFE)==0 );
   return sqlite3FtsUnicodeIsalnum(iCode) ^ unicodeIsException(p, iCode);
 }
@@ -215,7 +215,7 @@ static int unicodeIsAlnum(unicode_tokenizer *p, int iCode){
 /*
 ** Create a new tokenizer instance.
 */
-static int unicodeCreate(
+int unicodeCreate(
   int nArg,                       /* Size of array argv[] */
   const char * const *azArg,      /* Tokenizer creation arguments */
   sqlite3_tokenizer **pp          /* OUT: New tokenizer handle */
@@ -268,7 +268,7 @@ static int unicodeCreate(
 ** used to incrementally tokenize this string is returned in 
 ** *ppCursor.
 */
-static int unicodeOpen(
+int unicodeOpen(
   sqlite3_tokenizer *p,           /* The tokenizer */
   const char *aInput,             /* Input string */
   int nInput,                     /* Size of string aInput in bytes */
@@ -301,7 +301,7 @@ static int unicodeOpen(
 ** Close a tokenization cursor previously opened by a call to
 ** simpleOpen() above.
 */
-static int unicodeClose(sqlite3_tokenizer_cursor *pCursor){
+int unicodeClose(sqlite3_tokenizer_cursor *pCursor){
   unicode_cursor *pCsr = (unicode_cursor *) pCursor;
   sqlite3_free(pCsr->zToken);
   sqlite3_free(pCsr);
@@ -312,7 +312,7 @@ static int unicodeClose(sqlite3_tokenizer_cursor *pCursor){
 ** Extract the next token from a tokenization cursor.  The cursor must
 ** have been opened by a prior call to simpleOpen().
 */
-static int unicodeNext(
+int unicodeNext(
   sqlite3_tokenizer_cursor *pC,   /* Cursor returned by simpleOpen */
   const char **paToken,           /* OUT: Token text */
   int *pnToken,                   /* OUT: Number of bytes at *paToken */
@@ -381,7 +381,7 @@ static int unicodeNext(
 ** structure for the unicode tokenizer.
 */
 void sqlite3Fts3UnicodeTokenizer(sqlite3_tokenizer_module const **ppModule){
-  static const sqlite3_tokenizer_module module = {
+  const sqlite3_tokenizer_module module = {
     0,
     unicodeCreate,
     unicodeDestroy,

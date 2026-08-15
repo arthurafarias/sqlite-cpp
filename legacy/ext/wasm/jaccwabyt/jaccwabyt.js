@@ -145,7 +145,7 @@ function StructBinderFactory(config){
       return f;
     };
     SBF.debugFlags = SBF.__makeDebugFlags();
-  }/*static init*/
+  }/*init*/
 
   const isLittleEndian = true || (function() {
     const buffer = new ArrayBuffer(2);

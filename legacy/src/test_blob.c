@@ -30,8 +30,8 @@ extern void *sqlite3TestTextToPtr(const char *z);
 ** pointer passed as the only argument. The original pointer may be extracted
 ** from the text using sqlite3TestTextToPtr().
 */
-static char *ptrToText(void *p){
-  static char buf[100];
+char *ptrToText(void *p){
+  char buf[100];
   sqlite3_snprintf(sizeof(buf)-1, buf, "%p", p);
   return buf;
 }
@@ -48,7 +48,7 @@ static char *ptrToText(void *p){
 ** command (see tclsqlite.c). Otherwise, it is assumed to be a pointer 
 ** encoded using the ptrToText() routine or similar.
 */
-static int blobHandleFromObj(
+int blobHandleFromObj(
   Tcl_Interp *interp, 
   Tcl_Obj *pObj,
   sqlite3_blob **ppBlob
@@ -83,7 +83,7 @@ static int blobHandleFromObj(
 ** Like Tcl_GetString(), except that if the string is 0 bytes in size, a
 ** NULL Pointer is returned.
 */
-static char *blobStringFromObj(Tcl_Obj *pObj){
+char *blobStringFromObj(Tcl_Obj *pObj){
   Tcl_Size n;
   char *z;
   z = Tcl_GetStringFromObj(pObj, &n);
@@ -95,7 +95,7 @@ static char *blobStringFromObj(Tcl_Obj *pObj){
 **
 ** Tcl test harness for the sqlite3_blob_open() function.
 */
-static int SQLITE_TCLAPI test_blob_open(
+int SQLITE_TCLAPI test_blob_open(
   ClientData clientData,          /* Not used */
   Tcl_Interp *interp,             /* Calling TCL interpreter */
   int objc,                       /* Number of arguments */
@@ -146,7 +146,7 @@ static int SQLITE_TCLAPI test_blob_open(
 /*
 ** sqlite3_blob_close  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_close(
+int SQLITE_TCLAPI test_blob_close(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int objc,              /* Number of arguments */
@@ -174,7 +174,7 @@ static int SQLITE_TCLAPI test_blob_close(
 /*
 ** sqlite3_blob_bytes  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_bytes(
+int SQLITE_TCLAPI test_blob_bytes(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int objc,              /* Number of arguments */
@@ -210,7 +210,7 @@ static int SQLITE_TCLAPI test_blob_bytes(
 **   text representation of the returned error code (i.e. "SQLITE_NOMEM")
 **   and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_read(
+int SQLITE_TCLAPI test_blob_read(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int objc,              /* Number of arguments */
@@ -266,7 +266,7 @@ static int SQLITE_TCLAPI test_blob_read(
 **   result is set to the text representation of the returned error code 
 **   (i.e. "SQLITE_NOMEM") and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_write(
+int SQLITE_TCLAPI test_blob_write(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int objc,              /* Number of arguments */
@@ -309,7 +309,7 @@ static int SQLITE_TCLAPI test_blob_write(
 */
 int Sqlitetest_blob_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_INCRBLOB
-  static struct {
+  struct {
      char *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {

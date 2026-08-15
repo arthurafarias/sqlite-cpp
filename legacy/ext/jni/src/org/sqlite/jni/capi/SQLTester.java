@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.*;
-import static org.sqlite.jni.capi.CApi.*;
+import org.sqlite.jni.capi.CApi.*;
 
 /**
    Modes for how to escape (or not) column values and names from
@@ -112,7 +112,7 @@ class IncompatibleDirective extends SQLTesterException {
 class Outer {
   private int verbosity = 0;
 
-  static void out(Object val){
+  void out(Object val){
     System.out.print(val);
   }
 
@@ -238,13 +238,13 @@ public class SQLTester {
     }
   }
 
-  static final String[] startEmoji = {
+  final String[] startEmoji = {
     "🚴", "🏄", "🏇", "🤸", "⛹", "🏊", "⛷", "🧗", "🏋"
   };
-  static final int nStartEmoji = startEmoji.length;
-  static int iStartEmoji = 0;
+  final int nStartEmoji = startEmoji.length;
+  int iStartEmoji = 0;
 
-  private static String nextStartEmoji(){
+  private String nextStartEmoji(){
     return startEmoji[iStartEmoji++ % nStartEmoji];
   }
 
@@ -417,11 +417,11 @@ public class SQLTester {
   void incrementTestCounter(){ ++nTest; ++nTotalTest; }
 
   //! "Special" characters - we have to escape output if it contains any.
-  static final Pattern patternSpecial = Pattern.compile(
+  final Pattern patternSpecial = Pattern.compile(
     "[\\x00-\\x20\\x22\\x5c\\x7b\\x7d]"
   );
   //! Either of '{' or '}'.
-  static final Pattern patternSquiggly = Pattern.compile("[{}]");
+  final Pattern patternSquiggly = Pattern.compile("[{}]");
 
   /**
      Returns v or some escaped form of v, as defined in the tester's
@@ -592,7 +592,7 @@ public class SQLTester {
     return rc;
   }
 
-  public static void main(String[] argv) throws Exception{
+  public void main(String[] argv) throws Exception{
     installCustomExtensions();
     boolean dumpInternals = false;
     final SQLTester t = new SQLTester();
@@ -642,7 +642,7 @@ public class SQLTester {
      Internal impl of the public strglob() method. Neither argument
      may be NULL and both _MUST_ be NUL-terminated.
   */
-  private static native int strglob(byte[] glob, byte[] txt);
+  private native int strglob(byte[] glob, byte[] txt);
 
   /**
      Works essentially the same as sqlite3_strglob() except that the
@@ -651,7 +651,7 @@ public class SQLTester {
      of digits, e.g. "#23" or "1#3", but will match at the end,
      e.g. "12#".
   */
-  static int strglob(String glob, String txt){
+  int strglob(String glob, String txt){
     return strglob(
       (glob+"\0").getBytes(StandardCharsets.UTF_8),
       (txt+"\0").getBytes(StandardCharsets.UTF_8)
@@ -663,8 +663,8 @@ public class SQLTester {
      not be called until main() is triggered so that it does not
      interfere with library clients who don't use this class.
   */
-  static native void installCustomExtensions();
-  static {
+  native void installCustomExtensions();
+  {
     System.loadLibrary("sqlite3-jni")
       /* Interestingly, when SQLTester is the main app, we have to
          load that lib from here. The same load from CApi does
@@ -680,7 +680,7 @@ public class SQLTester {
 final class Util {
 
   //! Throws a new T, appending all msg args into a string for the message.
-  static void toss(Class<? extends Exception> errorType, Object... msg) throws Exception {
+  void toss(Class<? extends Exception> errorType, Object... msg) throws Exception {
     StringBuilder sb = new StringBuilder();
     for(Object s : msg) sb.append(s);
     final java.lang.reflect.Constructor<? extends Exception> ctor =
@@ -688,12 +688,12 @@ final class Util {
     throw ctor.newInstance(sb.toString());
   }
 
-  static void toss(Object... msg) throws Exception{
+  void toss(Object... msg) throws Exception{
     toss(RuntimeException.class, msg);
   }
 
   //! Tries to delete the given file, silently ignoring failure.
-  static void unlink(String filename){
+  void unlink(String filename){
     try{
       final java.io.File f = new java.io.File(filename);
       f.delete();
@@ -707,7 +707,7 @@ final class Util {
      string, argv[0] is not included because it's expected to be a
      command name.
   */
-  static String argvToString(String[] argv){
+  String argvToString(String[] argv){
     StringBuilder sb = new StringBuilder();
     for(int i = 1; i < argv.length; ++i ){
       if( i>1 ) sb.append(" ");
@@ -1019,14 +1019,14 @@ class VerbosityCommand extends Command {
 
 class CommandDispatcher {
 
-  private static final java.util.Map<String,Command> commandMap =
+  private final java.util.Map<String,Command> commandMap =
     new java.util.HashMap<>();
 
   /**
      Returns a (cached) instance mapped to name, or null if no match
      is found.
   */
-  static Command getCommandByName(String name){
+  Command getCommandByName(String name){
     Command rv = commandMap.get(name);
     if( null!=rv ) return rv;
     switch(name){
@@ -1060,7 +1060,7 @@ class CommandDispatcher {
      getCommandByName(), and calls process() on that instance, passing
      it arguments given to this function.
   */
-  static void dispatch(SQLTester tester, TestScript ts, String[] argv) throws Exception{
+  void dispatch(SQLTester tester, TestScript ts, String[] argv) throws Exception{
     final Command cmd = getCommandByName(argv[0]);
     if(null == cmd){
       throw new UnknownCommand(ts, argv[0]);
@@ -1088,7 +1088,7 @@ class TestScript {
   private final Outer outer = new Outer();
 
   //! File content and parse state.
-  private static final class Cursor {
+  private final class Cursor {
     private final StringBuilder sb = new StringBuilder();
     byte[] src = null;
     //! Current position in this.src.
@@ -1150,7 +1150,7 @@ class TestScript {
     return rc + " line "+ cur.lineNo;
   }
 
-  static final String[] verboseLabel = {"🔈",/*"🔉",*/"🔊","📢"};
+  final String[] verboseLabel = {"🔈",/*"🔉",*/"🔊","📢"};
   //! Output vals only if level<=current verbosity level.
   private TestScript verboseN(int level, Object... vals){
     final int verbosity = outer.getVerbosity();
@@ -1324,13 +1324,13 @@ class TestScript {
     return props.length == nOk;
   }
 
-  private static final Pattern patternRequiredProperties =
+  private final Pattern patternRequiredProperties =
     Pattern.compile(" REQUIRED_PROPERTIES:[ \\t]*(\\S.*)\\s*$");
-  private static final Pattern patternScriptModuleName =
+  private final Pattern patternScriptModuleName =
     Pattern.compile(" SCRIPT_MODULE_NAME:[ \\t]*(\\S+)\\s*$");
-  private static final Pattern patternMixedModuleName =
+  private final Pattern patternMixedModuleName =
     Pattern.compile(" ((MIXED_)?MODULE_NAME):[ \\t]*(\\S+)\\s*$");
-  private static final Pattern patternCommand =
+  private final Pattern patternCommand =
     Pattern.compile("^--(([a-z-]+)( .*)?)$");
 
   /**

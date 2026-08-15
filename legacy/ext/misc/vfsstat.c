@@ -73,7 +73,7 @@ SQLITE_EXTENSION_INIT1
 /* Names of the file types.  These are allowed values for the
 ** first column of the vfsstat virtual table.
 */
-static const char *azFile[] = {
+const char *azFile[] = {
   "database", "journal", "wal", "master-journal", "sub-journal",
   "temp-database", "temp-journal", "transient-db", "*"
 };
@@ -99,10 +99,10 @@ static const char *azFile[] = {
 
 /* Names for the second column of the vfsstat virtual table for all
 ** cases except when the first column is "*" or VFSSTAT_ANY. */
-static const char *azStat[] = {
+const char *azStat[] = {
   "bytes-in", "bytes-out", "read", "write", "sync", "open", "lock",
 };
-static const char *azStatAny[] = {
+const char *azStatAny[] = {
   "access", "delete", "fullpathname", "randomness", "sleep", "currenttimestamp",
   "not-used"
 };
@@ -114,7 +114,7 @@ static const char *azStatAny[] = {
 ** Performance stats are collected in an instance of the following
 ** global array.
 */
-static sqlite3_uint64 aVfsCnt[VFSSTAT_MXCNT];
+sqlite3_uint64 aVfsCnt[VFSSTAT_MXCNT];
 
 /*
 ** Access to a specific counter
@@ -145,43 +145,43 @@ struct VStatFile {
 /*
 ** Methods for VStatFile
 */
-static int vstatClose(sqlite3_file*);
-static int vstatRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int vstatWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int vstatTruncate(sqlite3_file*, sqlite3_int64 size);
-static int vstatSync(sqlite3_file*, int flags);
-static int vstatFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int vstatLock(sqlite3_file*, int);
-static int vstatUnlock(sqlite3_file*, int);
-static int vstatCheckReservedLock(sqlite3_file*, int *pResOut);
-static int vstatFileControl(sqlite3_file*, int op, void *pArg);
-static int vstatSectorSize(sqlite3_file*);
-static int vstatDeviceCharacteristics(sqlite3_file*);
-static int vstatShmMap(sqlite3_file*, int iPg, int pgsz, int, void volatile**);
-static int vstatShmLock(sqlite3_file*, int offset, int n, int flags);
-static void vstatShmBarrier(sqlite3_file*);
-static int vstatShmUnmap(sqlite3_file*, int deleteFlag);
-static int vstatFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
-static int vstatUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
+int vstatClose(sqlite3_file*);
+int vstatRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
+int vstatWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
+int vstatTruncate(sqlite3_file*, sqlite3_int64 size);
+int vstatSync(sqlite3_file*, int flags);
+int vstatFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+int vstatLock(sqlite3_file*, int);
+int vstatUnlock(sqlite3_file*, int);
+int vstatCheckReservedLock(sqlite3_file*, int *pResOut);
+int vstatFileControl(sqlite3_file*, int op, void *pArg);
+int vstatSectorSize(sqlite3_file*);
+int vstatDeviceCharacteristics(sqlite3_file*);
+int vstatShmMap(sqlite3_file*, int iPg, int pgsz, int, void volatile**);
+int vstatShmLock(sqlite3_file*, int offset, int n, int flags);
+void vstatShmBarrier(sqlite3_file*);
+int vstatShmUnmap(sqlite3_file*, int deleteFlag);
+int vstatFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
+int vstatUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
 
 /*
 ** Methods for VStatVfs
 */
-static int vstatOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int vstatDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int vstatAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int vstatFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *vstatDlOpen(sqlite3_vfs*, const char *zFilename);
-static void vstatDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*vstatDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
-static void vstatDlClose(sqlite3_vfs*, void*);
-static int vstatRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int vstatSleep(sqlite3_vfs*, int microseconds);
-static int vstatCurrentTime(sqlite3_vfs*, double*);
-static int vstatGetLastError(sqlite3_vfs*, int, char *);
-static int vstatCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+int vstatOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
+int vstatDelete(sqlite3_vfs*, const char *zName, int syncDir);
+int vstatAccess(sqlite3_vfs*, const char *zName, int flags, int *);
+int vstatFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+void *vstatDlOpen(sqlite3_vfs*, const char *zFilename);
+void vstatDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+void (*vstatDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
+void vstatDlClose(sqlite3_vfs*, void*);
+int vstatRandomness(sqlite3_vfs*, int nByte, char *zOut);
+int vstatSleep(sqlite3_vfs*, int microseconds);
+int vstatCurrentTime(sqlite3_vfs*, double*);
+int vstatGetLastError(sqlite3_vfs*, int, char *);
+int vstatCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
 
-static VStatVfs vstat_vfs = {
+VStatVfs vstat_vfs = {
   {
     2,                            /* iVersion */
     0,                            /* szOsFile (set by register_vstat()) */
@@ -206,7 +206,7 @@ static VStatVfs vstat_vfs = {
   0
 };
 
-static const sqlite3_io_methods vstat_io_methods = {
+const sqlite3_io_methods vstat_io_methods = {
   3,                              /* iVersion */
   vstatClose,                      /* xClose */
   vstatRead,                       /* xRead */
@@ -233,7 +233,7 @@ static const sqlite3_io_methods vstat_io_methods = {
 /*
 ** Close an vstat-file.
 */
-static int vstatClose(sqlite3_file *pFile){
+int vstatClose(sqlite3_file *pFile){
   VStatFile *p = (VStatFile *)pFile;
   int rc = SQLITE_OK;
 
@@ -247,7 +247,7 @@ static int vstatClose(sqlite3_file *pFile){
 /*
 ** Read data from an vstat-file.
 */
-static int vstatRead(
+int vstatRead(
   sqlite3_file *pFile, 
   void *zBuf, 
   int iAmt, 
@@ -267,7 +267,7 @@ static int vstatRead(
 /*
 ** Write data to an vstat-file.
 */
-static int vstatWrite(
+int vstatWrite(
   sqlite3_file *pFile,
   const void *z,
   int iAmt,
@@ -287,7 +287,7 @@ static int vstatWrite(
 /*
 ** Truncate an vstat-file.
 */
-static int vstatTruncate(sqlite3_file *pFile, sqlite_int64 size){
+int vstatTruncate(sqlite3_file *pFile, sqlite_int64 size){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xTruncate(p->pReal, size);
@@ -297,7 +297,7 @@ static int vstatTruncate(sqlite3_file *pFile, sqlite_int64 size){
 /*
 ** Sync an vstat-file.
 */
-static int vstatSync(sqlite3_file *pFile, int flags){
+int vstatSync(sqlite3_file *pFile, int flags){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xSync(p->pReal, flags);
@@ -308,7 +308,7 @@ static int vstatSync(sqlite3_file *pFile, int flags){
 /*
 ** Return the current file-size of an vstat-file.
 */
-static int vstatFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+int vstatFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xFileSize(p->pReal, pSize);
@@ -318,7 +318,7 @@ static int vstatFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
 /*
 ** Lock an vstat-file.
 */
-static int vstatLock(sqlite3_file *pFile, int eLock){
+int vstatLock(sqlite3_file *pFile, int eLock){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xLock(p->pReal, eLock);
@@ -329,7 +329,7 @@ static int vstatLock(sqlite3_file *pFile, int eLock){
 /*
 ** Unlock an vstat-file.
 */
-static int vstatUnlock(sqlite3_file *pFile, int eLock){
+int vstatUnlock(sqlite3_file *pFile, int eLock){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xUnlock(p->pReal, eLock);
@@ -340,7 +340,7 @@ static int vstatUnlock(sqlite3_file *pFile, int eLock){
 /*
 ** Check if another file-handle holds a RESERVED lock on an vstat-file.
 */
-static int vstatCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+int vstatCheckReservedLock(sqlite3_file *pFile, int *pResOut){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xCheckReservedLock(p->pReal, pResOut);
@@ -351,7 +351,7 @@ static int vstatCheckReservedLock(sqlite3_file *pFile, int *pResOut){
 /*
 ** File control method. For custom operations on an vstat-file.
 */
-static int vstatFileControl(sqlite3_file *pFile, int op, void *pArg){
+int vstatFileControl(sqlite3_file *pFile, int op, void *pArg){
   VStatFile *p = (VStatFile *)pFile;
   int rc;
   rc = p->pReal->pMethods->xFileControl(p->pReal, op, pArg);
@@ -364,7 +364,7 @@ static int vstatFileControl(sqlite3_file *pFile, int op, void *pArg){
 /*
 ** Return the sector-size in bytes for an vstat-file.
 */
-static int vstatSectorSize(sqlite3_file *pFile){
+int vstatSectorSize(sqlite3_file *pFile){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xSectorSize(p->pReal);
@@ -374,7 +374,7 @@ static int vstatSectorSize(sqlite3_file *pFile){
 /*
 ** Return the device characteristic flags supported by an vstat-file.
 */
-static int vstatDeviceCharacteristics(sqlite3_file *pFile){
+int vstatDeviceCharacteristics(sqlite3_file *pFile){
   int rc;
   VStatFile *p = (VStatFile *)pFile;
   rc = p->pReal->pMethods->xDeviceCharacteristics(p->pReal);
@@ -382,7 +382,7 @@ static int vstatDeviceCharacteristics(sqlite3_file *pFile){
 }
 
 /* Create a shared memory file mapping */
-static int vstatShmMap(
+int vstatShmMap(
   sqlite3_file *pFile,
   int iPg,
   int pgsz,
@@ -394,25 +394,25 @@ static int vstatShmMap(
 }
 
 /* Perform locking on a shared-memory segment */
-static int vstatShmLock(sqlite3_file *pFile, int offset, int n, int flags){
+int vstatShmLock(sqlite3_file *pFile, int offset, int n, int flags){
   VStatFile *p = (VStatFile *)pFile;
   return p->pReal->pMethods->xShmLock(p->pReal, offset, n, flags);
 }
 
 /* Memory barrier operation on shared memory */
-static void vstatShmBarrier(sqlite3_file *pFile){
+void vstatShmBarrier(sqlite3_file *pFile){
   VStatFile *p = (VStatFile *)pFile;
   p->pReal->pMethods->xShmBarrier(p->pReal);
 }
 
 /* Unmap a shared memory segment */
-static int vstatShmUnmap(sqlite3_file *pFile, int deleteFlag){
+int vstatShmUnmap(sqlite3_file *pFile, int deleteFlag){
   VStatFile *p = (VStatFile *)pFile;
   return p->pReal->pMethods->xShmUnmap(p->pReal, deleteFlag);
 }
 
 /* Fetch a page of a memory-mapped file */
-static int vstatFetch(
+int vstatFetch(
   sqlite3_file *pFile,
   sqlite3_int64 iOfst,
   int iAmt,
@@ -423,7 +423,7 @@ static int vstatFetch(
 }
 
 /* Release a memory-mapped page */
-static int vstatUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
+int vstatUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
   VStatFile *p = (VStatFile *)pFile;
   return p->pReal->pMethods->xUnfetch(p->pReal, iOfst, pPage);
 }
@@ -431,7 +431,7 @@ static int vstatUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
 /*
 ** Open an vstat file handle.
 */
-static int vstatOpen(
+int vstatOpen(
   sqlite3_vfs *pVfs,
   const char *zName,
   sqlite3_file *pFile,
@@ -470,7 +470,7 @@ static int vstatOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int vstatDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
+int vstatDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
   int rc;
   rc = REALVFS(pVfs)->xDelete(REALVFS(pVfs), zPath, dirSync);
   STATCNT(VFSSTAT_ANY,VFSSTAT_DELETE)++;
@@ -481,7 +481,7 @@ static int vstatDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int vstatAccess(
+int vstatAccess(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
   int flags, 
@@ -498,7 +498,7 @@ static int vstatAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (INST_MAX_PATHNAME+1) bytes.
 */
-static int vstatFullPathname(
+int vstatFullPathname(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
   int nOut, 
@@ -511,7 +511,7 @@ static int vstatFullPathname(
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *vstatDlOpen(sqlite3_vfs *pVfs, const char *zPath){
+void *vstatDlOpen(sqlite3_vfs *pVfs, const char *zPath){
   return REALVFS(pVfs)->xDlOpen(REALVFS(pVfs), zPath);
 }
 
@@ -520,21 +520,21 @@ static void *vstatDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void vstatDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+void vstatDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
   REALVFS(pVfs)->xDlError(REALVFS(pVfs), nByte, zErrMsg);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*vstatDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
+void (*vstatDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
   return REALVFS(pVfs)->xDlSym(REALVFS(pVfs), p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void vstatDlClose(sqlite3_vfs *pVfs, void *pHandle){
+void vstatDlClose(sqlite3_vfs *pVfs, void *pHandle){
   REALVFS(pVfs)->xDlClose(REALVFS(pVfs), pHandle);
 }
 
@@ -542,7 +542,7 @@ static void vstatDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int vstatRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
+int vstatRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
   STATCNT(VFSSTAT_ANY,VFSSTAT_RANDOM)++;
   return REALVFS(pVfs)->xRandomness(REALVFS(pVfs), nByte, zBufOut);
 }
@@ -551,7 +551,7 @@ static int vstatRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int vstatSleep(sqlite3_vfs *pVfs, int nMicro){
+int vstatSleep(sqlite3_vfs *pVfs, int nMicro){
   STATCNT(VFSSTAT_ANY,VFSSTAT_SLEEP)++;
   return REALVFS(pVfs)->xSleep(REALVFS(pVfs), nMicro);
 }
@@ -559,15 +559,15 @@ static int vstatSleep(sqlite3_vfs *pVfs, int nMicro){
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int vstatCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+int vstatCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
   STATCNT(VFSSTAT_ANY,VFSSTAT_CURTIME)++;
   return REALVFS(pVfs)->xCurrentTime(REALVFS(pVfs), pTimeOut);
 }
 
-static int vstatGetLastError(sqlite3_vfs *pVfs, int a, char *b){
+int vstatGetLastError(sqlite3_vfs *pVfs, int a, char *b){
   return REALVFS(pVfs)->xGetLastError(REALVFS(pVfs), a, b);
 }
-static int vstatCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
+int vstatCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
   STATCNT(VFSSTAT_ANY,VFSSTAT_CURTIME)++;
   return REALVFS(pVfs)->xCurrentTimeInt64(REALVFS(pVfs), p);
 }
@@ -575,19 +575,19 @@ static int vstatCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
 /*
 ** A virtual table for accessing the stats collected by this VFS shim
 */
-static int vstattabConnect(sqlite3*, void*, int, const char*const*, 
+int vstattabConnect(sqlite3*, void*, int, const char*const*, 
                            sqlite3_vtab**,char**);
-static int vstattabBestIndex(sqlite3_vtab*,sqlite3_index_info*);
-static int vstattabDisconnect(sqlite3_vtab*);
-static int vstattabOpen(sqlite3_vtab*, sqlite3_vtab_cursor**);
-static int vstattabClose(sqlite3_vtab_cursor*);
-static int vstattabFilter(sqlite3_vtab_cursor*, int idxNum, const char *idxStr,
+int vstattabBestIndex(sqlite3_vtab*,sqlite3_index_info*);
+int vstattabDisconnect(sqlite3_vtab*);
+int vstattabOpen(sqlite3_vtab*, sqlite3_vtab_cursor**);
+int vstattabClose(sqlite3_vtab_cursor*);
+int vstattabFilter(sqlite3_vtab_cursor*, int idxNum, const char *idxStr,
                           int argc, sqlite3_value **argv);
-static int vstattabNext(sqlite3_vtab_cursor*);
-static int vstattabEof(sqlite3_vtab_cursor*);
-static int vstattabColumn(sqlite3_vtab_cursor*,sqlite3_context*,int);
-static int vstattabRowid(sqlite3_vtab_cursor*,sqlite3_int64*);
-static int vstattabUpdate(sqlite3_vtab*,int,sqlite3_value**,sqlite3_int64*);
+int vstattabNext(sqlite3_vtab_cursor*);
+int vstattabEof(sqlite3_vtab_cursor*);
+int vstattabColumn(sqlite3_vtab_cursor*,sqlite3_context*,int);
+int vstattabRowid(sqlite3_vtab_cursor*,sqlite3_int64*);
+int vstattabUpdate(sqlite3_vtab*,int,sqlite3_value**,sqlite3_int64*);
 
 /* A cursor for the vfsstat virtual table */
 typedef struct VfsStatCursor {
@@ -596,7 +596,7 @@ typedef struct VfsStatCursor {
 } VfsStatCursor;
 
 
-static int vstattabConnect(
+int vstattabConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -623,7 +623,7 @@ static int vstattabConnect(
 /*
 ** This method is the destructor for vstat table object.
 */
-static int vstattabDisconnect(sqlite3_vtab *pVtab){
+int vstattabDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -631,7 +631,7 @@ static int vstattabDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new vstat table cursor object.
 */
-static int vstattabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int vstattabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   VfsStatCursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -644,7 +644,7 @@ static int vstattabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a VfsStatCursor.
 */
-static int vstattabClose(sqlite3_vtab_cursor *cur){
+int vstattabClose(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur);
   return SQLITE_OK;
 }
@@ -653,7 +653,7 @@ static int vstattabClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a VfsStatCursor to its next row of output.
 */
-static int vstattabNext(sqlite3_vtab_cursor *cur){
+int vstattabNext(sqlite3_vtab_cursor *cur){
   ((VfsStatCursor*)cur)->i++;
   return SQLITE_OK;
 }
@@ -662,7 +662,7 @@ static int vstattabNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the VfsStatCursor
 ** is currently pointing.
 */
-static int vstattabColumn(
+int vstattabColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -690,7 +690,7 @@ static int vstattabColumn(
 /*
 ** Return the rowid for the current row.
 */
-static int vstattabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int vstattabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   VfsStatCursor *pCur = (VfsStatCursor*)cur;
   *pRowid = pCur->i;
   return SQLITE_OK;
@@ -700,7 +700,7 @@ static int vstattabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int vstattabEof(sqlite3_vtab_cursor *cur){
+int vstattabEof(sqlite3_vtab_cursor *cur){
   VfsStatCursor *pCur = (VfsStatCursor*)cur;
   return pCur->i >= VFSSTAT_MXCNT;
 }
@@ -709,7 +709,7 @@ static int vstattabEof(sqlite3_vtab_cursor *cur){
 ** Only a full table scan is supported.  So xFilter simply rewinds to
 ** the beginning.
 */
-static int vstattabFilter(
+int vstattabFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -722,7 +722,7 @@ static int vstattabFilter(
 /*
 ** Only a forwards full table scan is supported.  xBestIndex is a no-op.
 */
-static int vstattabBestIndex(
+int vstattabBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -734,7 +734,7 @@ static int vstattabBestIndex(
 ** No deletions or insertions are allowed.  No changes to other
 ** columns are allowed.
 */
-static int vstattabUpdate(
+int vstattabUpdate(
   sqlite3_vtab *tab,
   int argc, sqlite3_value **argv,
   sqlite3_int64 *pRowid
@@ -754,7 +754,7 @@ static int vstattabUpdate(
   return SQLITE_OK;
 }
 
-static sqlite3_module VfsStatModule = {
+sqlite3_module VfsStatModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   vstattabConnect,           /* xConnect */
@@ -786,7 +786,7 @@ static sqlite3_module VfsStatModule = {
 ** This routine is an sqlite3_auto_extension() callback, invoked to register
 ** the vfsstat virtual table for all new database connections.
 */
-static int vstatRegister(
+int vstatRegister(
   sqlite3 *db,
   char **pzErrMsg,
   const sqlite3_api_routines *pThunk

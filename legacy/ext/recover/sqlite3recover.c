@@ -281,10 +281,10 @@ struct RecoverGlobal {
   const sqlite3_io_methods *pMethods;
   sqlite3_recover *p;
 };
-static RecoverGlobal recover_g;
+RecoverGlobal recover_g;
 
 /*
-** Use this static SQLite mutex to protect the globals during the
+** Use this SQLite mutex to protect the globals during the
 ** first call to sqlite3_recover_step().
 */ 
 #define RECOVER_MUTEX_ID SQLITE_MUTEX_STATIC_APP2
@@ -306,15 +306,15 @@ static RecoverGlobal recover_g;
 # define recoverEnterMutex()
 # define recoverLeaveMutex()
 #else
-static void recoverEnterMutex(void){
+void recoverEnterMutex(void){
   sqlite3_mutex_enter(sqlite3_mutex_alloc(RECOVER_MUTEX_ID));
 }
-static void recoverLeaveMutex(void){
+void recoverLeaveMutex(void){
   sqlite3_mutex_leave(sqlite3_mutex_alloc(RECOVER_MUTEX_ID));
 }
 #endif
 #if SQLITE_THREADSAFE+0>=1 && defined(SQLITE_DEBUG)
-static void recoverAssertMutexHeld(void){
+void recoverAssertMutexHeld(void){
   assert( sqlite3_mutex_held(sqlite3_mutex_alloc(RECOVER_MUTEX_ID)) );
 }
 #else
@@ -325,7 +325,7 @@ static void recoverAssertMutexHeld(void){
 /*
 ** Like strlen(). But handles NULL pointer arguments.
 */
-static int recoverStrlen(const char *zStr){
+int recoverStrlen(const char *zStr){
   if( zStr==0 ) return 0;
   return (int)(strlen(zStr)&0x7fffffff);
 }
@@ -339,7 +339,7 @@ static int recoverStrlen(const char *zStr){
 ** if an OOM error occurs, NULL is returned and the handle error code
 ** (p->errCode) set to SQLITE_NOMEM.
 */
-static void *recoverMalloc(sqlite3_recover *p, i64 nByte){
+void *recoverMalloc(sqlite3_recover *p, i64 nByte){
   void *pRet = 0;
   assert( nByte>0 );
   if( p->errCode==SQLITE_OK ){
@@ -366,7 +366,7 @@ static void *recoverMalloc(sqlite3_recover *p, i64 nByte){
 **
 **   recoverError(p, SQLITE_ERROR, "no such table: %s", zTablename);
 */
-static int recoverError(
+int recoverError(
   sqlite3_recover *p, 
   int errCode, 
   const char *zFmt, ...
@@ -393,7 +393,7 @@ static int recoverError(
 ** large enough to store a bit for all page numbers between 1 and nPg,
 ** inclusive. The bitmap is initially zeroed.
 */
-static RecoverBitmap *recoverBitmapAlloc(sqlite3_recover *p, i64 nPg){
+RecoverBitmap *recoverBitmapAlloc(sqlite3_recover *p, i64 nPg){
   int nElem = (nPg+1+31) / 32;
   int nByte = SZ_RECOVERBITMAP_32 + nElem*sizeof(u32);
   RecoverBitmap *pRet = (RecoverBitmap*)recoverMalloc(p, nByte);
@@ -407,14 +407,14 @@ static RecoverBitmap *recoverBitmapAlloc(sqlite3_recover *p, i64 nPg){
 /*
 ** Free a bitmap object allocated by recoverBitmapAlloc().
 */
-static void recoverBitmapFree(RecoverBitmap *pMap){
+void recoverBitmapFree(RecoverBitmap *pMap){
   sqlite3_free(pMap);
 }
 
 /*
 ** Set the bit associated with page iPg in bitvec pMap.
 */
-static void recoverBitmapSet(RecoverBitmap *pMap, i64 iPg){
+void recoverBitmapSet(RecoverBitmap *pMap, i64 iPg){
   if( iPg<=pMap->nPg ){
     int iElem = (iPg / 32);
     int iBit = (iPg % 32);
@@ -426,7 +426,7 @@ static void recoverBitmapSet(RecoverBitmap *pMap, i64 iPg){
 ** Query bitmap object pMap for the state of the bit associated with page
 ** iPg. Return 1 if it is set, or 0 otherwise.
 */
-static int recoverBitmapQuery(RecoverBitmap *pMap, i64 iPg){
+int recoverBitmapQuery(RecoverBitmap *pMap, i64 iPg){
   int ret = 1;
   if( iPg<=pMap->nPg && iPg>0 ){
     int iElem = (iPg / 32);
@@ -441,7 +441,7 @@ static int recoverBitmapQuery(RecoverBitmap *pMap, i64 iPg){
 ** calling sqlite3_errcode() and sqlite3_errmsg(), respectively, on database
 ** handle db.
 */
-static int recoverDbError(sqlite3_recover *p, sqlite3 *db){
+int recoverDbError(sqlite3_recover *p, sqlite3 *db){
   return recoverError(p, sqlite3_errcode(db), "%s", sqlite3_errmsg(db));
 }
 
@@ -454,7 +454,7 @@ static int recoverDbError(sqlite3_recover *p, sqlite3 *db){
 ** Or, if an error occurs, NULL is returned and an error left in the
 ** recover handle.
 */
-static sqlite3_stmt *recoverPrepare(
+sqlite3_stmt *recoverPrepare(
   sqlite3_recover *p,
   sqlite3 *db, 
   const char *zSql
@@ -479,7 +479,7 @@ static sqlite3_stmt *recoverPrepare(
 ** the printf() formatting or when preparing the resulting SQL - an
 ** error code and message are left in the recover handle.
 */
-static sqlite3_stmt *recoverPreparePrintf(
+sqlite3_stmt *recoverPreparePrintf(
   sqlite3_recover *p,
   sqlite3 *db, 
   const char *zFmt, ...
@@ -510,7 +510,7 @@ static sqlite3_stmt *recoverPreparePrintf(
 ** This function returns a copy of the statement handle pointer passed
 ** as the second argument.
 */
-static sqlite3_stmt *recoverReset(sqlite3_recover *p, sqlite3_stmt *pStmt){
+sqlite3_stmt *recoverReset(sqlite3_recover *p, sqlite3_stmt *pStmt){
   int rc = sqlite3_reset(pStmt);
   if( rc!=SQLITE_OK && rc!=SQLITE_CONSTRAINT && p->errCode==SQLITE_OK ){
     recoverDbError(p, sqlite3_db_handle(pStmt));
@@ -524,7 +524,7 @@ static sqlite3_stmt *recoverReset(sqlite3_recover *p, sqlite3_stmt *pStmt){
 ** in the recover handle passed as the first argument, set the error
 ** code and error message appropriately.
 */
-static void recoverFinalize(sqlite3_recover *p, sqlite3_stmt *pStmt){
+void recoverFinalize(sqlite3_recover *p, sqlite3_stmt *pStmt){
   sqlite3 *db = sqlite3_db_handle(pStmt);
   int rc = sqlite3_finalize(pStmt);
   if( rc!=SQLITE_OK && p->errCode==SQLITE_OK ){
@@ -539,7 +539,7 @@ static void recoverFinalize(sqlite3_recover *p, sqlite3_stmt *pStmt){
 ** Return the sqlite3_finalizer() or sqlite3_prepare() result code
 ** from running the zSql statement.
 */
-static int recoverOneStmt(sqlite3 *db, const char *zSql){
+int recoverOneStmt(sqlite3 *db, const char *zSql){
   sqlite3_stmt *pStmt = 0;
   int rc;
   if( zSql==0 ) return SQLITE_OK;
@@ -562,7 +562,7 @@ static int recoverOneStmt(sqlite3 *db, const char *zSql){
 ** If successful, return SQLITE_OK.  Or, if an error occurs, leave an error
 ** code and message in the recover handle and return a copy of the error code.
 */
-static int recoverExec(sqlite3_recover *p, sqlite3 *db, const char *zSql){
+int recoverExec(sqlite3_recover *p, sqlite3 *db, const char *zSql){
   if( p->errCode==SQLITE_OK ){
     int rc = recoverOneStmt(db, zSql);
     if( rc ){
@@ -577,7 +577,7 @@ static int recoverExec(sqlite3_recover *p, sqlite3 *db, const char *zSql){
 ** error in the recover handle passed as the first argument if an error
 ** (e.g. an OOM) occurs.
 */
-static void recoverBindValue(
+void recoverBindValue(
   sqlite3_recover *p, 
   sqlite3_stmt *pStmt, 
   int iBind, 
@@ -603,7 +603,7 @@ static void recoverBindValue(
 ** Or, if an error occurs, an error code and message is left in the recover
 ** handle and NULL returned.
 */
-static char *recoverMPrintf(sqlite3_recover *p, const char *zFmt, ...){
+char *recoverMPrintf(sqlite3_recover *p, const char *zFmt, ...){
   va_list ap;
   char *z;
   va_start(ap, zFmt);
@@ -627,7 +627,7 @@ static char *recoverMPrintf(sqlite3_recover *p, const char *zFmt, ...){
 ** error code and error message in the sqlite3_recover handle and return
 ** zero.
 */
-static i64 recoverPageCount(sqlite3_recover *p){
+i64 recoverPageCount(sqlite3_recover *p){
   i64 nPg = 0;
   if( p->errCode==SQLITE_OK ){
     sqlite3_stmt *pStmt = 0;
@@ -649,7 +649,7 @@ static i64 recoverPageCount(sqlite3_recover *p){
 **
 **     SELECT read_i32(<blob>, <idx>)
 */
-static void recoverReadI32(
+void recoverReadI32(
   sqlite3_context *context, 
   int argc, 
   sqlite3_value **argv
@@ -685,7 +685,7 @@ static void recoverReadI32(
 **
 **     SELECT page_is_used(<pgno>);
 */
-static void recoverPageIsUsed(
+void recoverPageIsUsed(
   sqlite3_context *pCtx,
   int nArg,
   sqlite3_value **apArg
@@ -710,7 +710,7 @@ static void recoverPageIsUsed(
 **     SELECT getpage(0);       -- return number of pages in db
 **     SELECT getpage(4);       -- return page 4 of db as a blob of data 
 */
-static void recoverGetPage(
+void recoverGetPage(
   sqlite3_context *pCtx,
   int nArg,
   sqlite3_value **apArg
@@ -763,7 +763,7 @@ static void recoverGetPage(
 ** Try to use zA and zB first.  If both of those are already found in z[]
 ** then make up some string and store it in the buffer zBuf.
 */
-static const char *recoverUnusedString(
+const char *recoverUnusedString(
   const char *z,                    /* Result must not appear anywhere in z */
   const char *zA, const char *zB,   /* Try these first */
   char *zBuf                        /* Space to store a generated string */
@@ -789,7 +789,7 @@ static const char *recoverUnusedString(
 ** Or, if the first character of the input is not "'", then a copy of the input
 ** is returned.
 */
-static void recoverEscapeCrlf(
+void recoverEscapeCrlf(
   sqlite3_context *context, 
   int argc, 
   sqlite3_value **argv
@@ -880,7 +880,7 @@ static void recoverEscapeCrlf(
 ** error code returned. It is not considered an error if part of all of
 ** the database schema cannot be recovered due to corruption.
 */
-static int recoverCacheSchema(sqlite3_recover *p){
+int recoverCacheSchema(sqlite3_recover *p){
   return recoverExec(p, p->dbOut,
     "WITH RECURSIVE pages(p) AS ("
     "  SELECT 1"
@@ -908,7 +908,7 @@ static int recoverCacheSchema(sqlite3_recover *p){
 ** If the callback returns non-zero, set the recover handle error code to
 ** the value returned (so that the caller will abandon processing).
 */
-static void recoverSqlCallback(sqlite3_recover *p, const char *zSql){
+void recoverSqlCallback(sqlite3_recover *p, const char *zSql){
   if( p->errCode==SQLITE_OK && p->xSql ){
     int res = p->xSql(p->pSqlCtx, zSql);
     if( res ){
@@ -927,7 +927,7 @@ static void recoverSqlCallback(sqlite3_recover *p, const char *zSql){
 **   + user-version (PRAGMA user_version), and
 **   + application-id (PRAGMA application_id), and
 */
-static void recoverTransferSettings(sqlite3_recover *p){
+void recoverTransferSettings(sqlite3_recover *p){
   const char *aPragma[] = {
     "encoding",
     "page_size",
@@ -996,7 +996,7 @@ static void recoverTransferSettings(sqlite3_recover *p){
 ** and error message are left in the recover handle and a copy of the
 ** error code returned.
 */
-static int recoverOpenOutput(sqlite3_recover *p){
+int recoverOpenOutput(sqlite3_recover *p){
   struct Func {
     const char *zName;
     int nArg;
@@ -1044,7 +1044,7 @@ static int recoverOpenOutput(sqlite3_recover *p){
 ** This temporary database is used during the recovery process and then 
 ** discarded.
 */
-static void recoverOpenRecovery(sqlite3_recover *p){
+void recoverOpenRecovery(sqlite3_recover *p){
   char *zSql = recoverMPrintf(p, "ATTACH %Q AS recovery;", p->zStateDb);
   recoverExec(p, p->dbOut, zSql);
   sqlite3_free(zSql);
@@ -1069,7 +1069,7 @@ static void recoverOpenRecovery(sqlite3_recover *p){
 ** Parameter iRoot must be the root page of table zName in the INPUT 
 ** database.
 */
-static void recoverAddTable(
+void recoverAddTable(
   sqlite3_recover *p, 
   const char *zName,              /* Name of table created in output db */
   i64 iRoot                       /* Root page of same table in INPUT db */
@@ -1178,7 +1178,7 @@ static void recoverAddTable(
 ** If the handle is in SQL callback mode, then callbacks are invoked 
 ** with equivalent SQL statements.
 */
-static int recoverWriteSchema1(sqlite3_recover *p){
+int recoverWriteSchema1(sqlite3_recover *p){
   sqlite3_stmt *pSelect = 0;
   sqlite3_stmt *pTblname = 0;
 
@@ -1253,7 +1253,7 @@ static int recoverWriteSchema1(sqlite3_recover *p){
 ** If the recover handle is in SQL callback mode, then equivalent callbacks
 ** are issued to create the schema elements.
 */
-static int recoverWriteSchema2(sqlite3_recover *p){
+int recoverWriteSchema2(sqlite3_recover *p){
   sqlite3_stmt *pSelect = 0;
 
   pSelect = recoverPrepare(p, p->dbOut,
@@ -1318,7 +1318,7 @@ static int recoverWriteSchema2(sqlite3_recover *p){
 ** In either case, it is the responsibility of the caller to eventually
 ** free the statement handle using sqlite3_finalize().
 */
-static sqlite3_stmt *recoverInsertStmt(
+sqlite3_stmt *recoverInsertStmt(
   sqlite3_recover *p, 
   RecoverTable *pTab,
   int nField
@@ -1392,7 +1392,7 @@ static sqlite3_stmt *recoverInsertStmt(
 ** has root page iRoot in the input database. If such an object is found,
 ** return a pointer to it. Otherwise, return NULL.
 */
-static RecoverTable *recoverFindTable(sqlite3_recover *p, u32 iRoot){
+RecoverTable *recoverFindTable(sqlite3_recover *p, u32 iRoot){
   RecoverTable *pRet = 0;
   for(pRet=p->pTblList; pRet && pRet->iRoot!=iRoot; pRet=pRet->pNext);
   return pRet;
@@ -1407,7 +1407,7 @@ static RecoverTable *recoverFindTable(sqlite3_recover *p, u32 iRoot){
 ** If an error occurs, NULL is returned and an error code and error 
 ** message left in the recover handle.
 */
-static char *recoverLostAndFoundCreate(
+char *recoverLostAndFoundCreate(
   sqlite3_recover *p,             /* Recover object */
   int nField                      /* Number of column fields in new table */
 ){
@@ -1473,7 +1473,7 @@ static char *recoverLostAndFoundCreate(
 ** table in the output database. The name of the table is zTab, and it has
 ** nField c* fields.
 */
-static sqlite3_stmt *recoverLostAndFoundInsert(
+sqlite3_stmt *recoverLostAndFoundInsert(
   sqlite3_recover *p,
   const char *zTab,
   int nField
@@ -1514,7 +1514,7 @@ static sqlite3_stmt *recoverLostAndFoundInsert(
 ** an SQLite error code is returned and the final value of *piRoot 
 ** undefined.
 */
-static int recoverLostAndFoundFindRoot(
+int recoverLostAndFoundFindRoot(
   sqlite3_recover *p, 
   i64 iPg,
   i64 *piRoot
@@ -1548,7 +1548,7 @@ static int recoverLostAndFoundFindRoot(
 ** Recover data from page iPage of the input database and write it to
 ** the lost-and-found table in the output database.
 */
-static void recoverLostAndFoundOnePage(sqlite3_recover *p, i64 iPage){
+void recoverLostAndFoundOnePage(sqlite3_recover *p, i64 iPage){
   RecoverStateLAF *pLaf = &p->laf;
   sqlite3_value **apVal = pLaf->apVal;
   sqlite3_stmt *pPageData = pLaf->pPageData;
@@ -1627,7 +1627,7 @@ static void recoverLostAndFoundOnePage(sqlite3_recover *p, i64 iPage){
 ** table of the output database is populated with recovered data that can 
 ** not be assigned to any recovered schema object.
 */ 
-static int recoverLostAndFound3Step(sqlite3_recover *p){
+int recoverLostAndFound3Step(sqlite3_recover *p){
   RecoverStateLAF *pLaf = &p->laf;
   if( p->errCode==SQLITE_OK ){
     if( pLaf->pInsert==0 ){
@@ -1656,7 +1656,7 @@ static int recoverLostAndFound3Step(sqlite3_recover *p){
 ** is populated with recovered data that can not be assigned to any 
 ** recovered schema object.
 */ 
-static void recoverLostAndFound3Init(sqlite3_recover *p){
+void recoverLostAndFound3Init(sqlite3_recover *p){
   RecoverStateLAF *pLaf = &p->laf;
 
   if( pLaf->nMaxField>0 ){
@@ -1690,7 +1690,7 @@ static void recoverLostAndFound3Init(sqlite3_recover *p){
 ** tables recovered from the schema of the input database are populated with
 ** recovered data.
 */ 
-static int recoverWriteDataInit(sqlite3_recover *p){
+int recoverWriteDataInit(sqlite3_recover *p){
   RecoverStateW1 *p1 = &p->w1;
   RecoverTable *pTbl = 0;
   int nByte = 0;
@@ -1734,7 +1734,7 @@ static int recoverWriteDataInit(sqlite3_recover *p){
 ** Clean up resources allocated by recoverWriteDataInit() (stuff in 
 ** sqlite3_recover.w1).
 */
-static void recoverWriteDataCleanup(sqlite3_recover *p){
+void recoverWriteDataCleanup(sqlite3_recover *p){
   RecoverStateW1 *p1 = &p->w1;
   int ii;
   for(ii=0; ii<p1->nVal; ii++){
@@ -1753,7 +1753,7 @@ static void recoverWriteDataCleanup(sqlite3_recover *p){
 ** RECOVER_STATE_WRITING state - during which tables recovered from the
 ** schema of the input database are populated with recovered data.
 */ 
-static int recoverWriteDataStep(sqlite3_recover *p){
+int recoverWriteDataStep(sqlite3_recover *p){
   RecoverStateW1 *p1 = &p->w1;
   sqlite3_stmt *pSel = p1->pSel;
   sqlite3_value **apVal = p1->apVal;
@@ -1881,7 +1881,7 @@ static int recoverWriteDataStep(sqlite3_recover *p){
 ** RECOVER_STATE_LOSTANDFOUND1 state - during which the set of pages not
 ** already allocated to a recovered schema element is determined.
 */ 
-static void recoverLostAndFound1Init(sqlite3_recover *p){
+void recoverLostAndFound1Init(sqlite3_recover *p){
   RecoverStateLAF *pLaf = &p->laf;
   sqlite3_stmt *pStmt = 0;
 
@@ -1933,7 +1933,7 @@ static void recoverLostAndFound1Init(sqlite3_recover *p){
 ** RECOVER_STATE_LOSTANDFOUND1 state - during which the set of pages not
 ** already allocated to a recovered schema element is determined.
 */ 
-static int recoverLostAndFound1Step(sqlite3_recover *p){
+int recoverLostAndFound1Step(sqlite3_recover *p){
   RecoverStateLAF *pLaf = &p->laf;
   int rc = p->errCode;
   if( rc==SQLITE_OK ){
@@ -1955,7 +1955,7 @@ static int recoverLostAndFound1Step(sqlite3_recover *p){
 ** state - during which the pages identified in RECOVER_STATE_LOSTANDFOUND1
 ** are sorted into sets that likely belonged to the same database tree.
 */ 
-static void recoverLostAndFound2Init(sqlite3_recover *p){
+void recoverLostAndFound2Init(sqlite3_recover *p){
   RecoverStateLAF *pLaf = &p->laf;
 
   assert( p->laf.pAllAndParent==0 );
@@ -1986,7 +1986,7 @@ static void recoverLostAndFound2Init(sqlite3_recover *p){
 ** in RECOVER_STATE_LOSTANDFOUND1 are sorted into sets that likely belonged 
 ** to the same database tree.
 */ 
-static int recoverLostAndFound2Step(sqlite3_recover *p){
+int recoverLostAndFound2Step(sqlite3_recover *p){
   RecoverStateLAF *pLaf = &p->laf;
   if( p->errCode==SQLITE_OK ){
     int res = sqlite3_step(pLaf->pAllAndParent);
@@ -2019,7 +2019,7 @@ static int recoverLostAndFound2Step(sqlite3_recover *p){
 ** Free all resources allocated as part of sqlite3_recover_step() calls
 ** in one of the RECOVER_STATE_LOSTANDFOUND[123] states.
 */
-static void recoverLostAndFoundCleanup(sqlite3_recover *p){
+void recoverLostAndFoundCleanup(sqlite3_recover *p){
   recoverBitmapFree(p->laf.pUsed);
   p->laf.pUsed = 0;
   sqlite3_finalize(p->laf.pUsedPages);
@@ -2045,7 +2045,7 @@ static void recoverLostAndFoundCleanup(sqlite3_recover *p){
 /*
 ** Free all resources allocated as part of sqlite3_recover_step() calls.
 */
-static void recoverFinalCleanup(sqlite3_recover *p){
+void recoverFinalCleanup(sqlite3_recover *p){
   RecoverTable *pTab = 0;
   RecoverTable *pNext = 0;
 
@@ -2075,7 +2075,7 @@ static void recoverFinalCleanup(sqlite3_recover *p){
 ** Decode and return an unsigned 16-bit big-endian integer value from 
 ** buffer a[].
 */
-static u32 recoverGetU16(const u8 *a){
+u32 recoverGetU16(const u8 *a){
   return (((u32)a[0])<<8) + ((u32)a[1]);
 }
 
@@ -2083,7 +2083,7 @@ static u32 recoverGetU16(const u8 *a){
 ** Decode and return an unsigned 32-bit big-endian integer value from 
 ** buffer a[].
 */
-static u32 recoverGetU32(const u8 *a){
+u32 recoverGetU32(const u8 *a){
   return (((u32)a[0])<<24) + (((u32)a[1])<<16) + (((u32)a[2])<<8) + ((u32)a[3]);
 }
 
@@ -2091,7 +2091,7 @@ static u32 recoverGetU32(const u8 *a){
 ** Decode an SQLite varint from buffer a[]. Write the decoded value to (*pVal)
 ** and return the number of bytes consumed.
 */
-static int recoverGetVarint(const u8 *a, i64 *pVal){
+int recoverGetVarint(const u8 *a, i64 *pVal){
   sqlite3_uint64 u = 0;
   int i;
   for(i=0; i<8; i++){
@@ -2109,7 +2109,7 @@ static int recoverGetVarint(const u8 *a, i64 *pVal){
 ** return the page-size in bytes. Otherwise, if the buffer does not 
 ** appear to contain a well-formed b-tree page, return 0.
 */
-static int recoverIsValidPage(u8 *aTmp, const u8 *a, int n){
+int recoverIsValidPage(u8 *aTmp, const u8 *a, int n){
   u8 *aUsed = aTmp;
   int nFrag = 0;
   int nActual = 0;
@@ -2202,26 +2202,26 @@ static int recoverIsValidPage(u8 *aTmp, const u8 *a, int n){
 }
 
 
-static int recoverVfsClose(sqlite3_file*);
-static int recoverVfsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int recoverVfsWrite(sqlite3_file*, const void*, int, sqlite3_int64);
-static int recoverVfsTruncate(sqlite3_file*, sqlite3_int64 size);
-static int recoverVfsSync(sqlite3_file*, int flags);
-static int recoverVfsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int recoverVfsLock(sqlite3_file*, int);
-static int recoverVfsUnlock(sqlite3_file*, int);
-static int recoverVfsCheckReservedLock(sqlite3_file*, int *pResOut);
-static int recoverVfsFileControl(sqlite3_file*, int op, void *pArg);
-static int recoverVfsSectorSize(sqlite3_file*);
-static int recoverVfsDeviceCharacteristics(sqlite3_file*);
-static int recoverVfsShmMap(sqlite3_file*, int, int, int, void volatile**);
-static int recoverVfsShmLock(sqlite3_file*, int offset, int n, int flags);
-static void recoverVfsShmBarrier(sqlite3_file*);
-static int recoverVfsShmUnmap(sqlite3_file*, int deleteFlag);
-static int recoverVfsFetch(sqlite3_file*, sqlite3_int64, int, void**);
-static int recoverVfsUnfetch(sqlite3_file *pFd, sqlite3_int64 iOff, void *p);
+int recoverVfsClose(sqlite3_file*);
+int recoverVfsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
+int recoverVfsWrite(sqlite3_file*, const void*, int, sqlite3_int64);
+int recoverVfsTruncate(sqlite3_file*, sqlite3_int64 size);
+int recoverVfsSync(sqlite3_file*, int flags);
+int recoverVfsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+int recoverVfsLock(sqlite3_file*, int);
+int recoverVfsUnlock(sqlite3_file*, int);
+int recoverVfsCheckReservedLock(sqlite3_file*, int *pResOut);
+int recoverVfsFileControl(sqlite3_file*, int op, void *pArg);
+int recoverVfsSectorSize(sqlite3_file*);
+int recoverVfsDeviceCharacteristics(sqlite3_file*);
+int recoverVfsShmMap(sqlite3_file*, int, int, int, void volatile**);
+int recoverVfsShmLock(sqlite3_file*, int offset, int n, int flags);
+void recoverVfsShmBarrier(sqlite3_file*);
+int recoverVfsShmUnmap(sqlite3_file*, int deleteFlag);
+int recoverVfsFetch(sqlite3_file*, sqlite3_int64, int, void**);
+int recoverVfsUnfetch(sqlite3_file *pFd, sqlite3_int64 iOff, void *p);
 
-static sqlite3_io_methods recover_methods = {
+sqlite3_io_methods recover_methods = {
   2, /* iVersion */
   recoverVfsClose,
   recoverVfsRead,
@@ -2243,7 +2243,7 @@ static sqlite3_io_methods recover_methods = {
   recoverVfsUnfetch
 };
 
-static int recoverVfsClose(sqlite3_file *pFd){
+int recoverVfsClose(sqlite3_file *pFd){
   assert( pFd->pMethods!=&recover_methods );
   return pFd->pMethods->xClose(pFd);
 }
@@ -2251,7 +2251,7 @@ static int recoverVfsClose(sqlite3_file *pFd){
 /*
 ** Write value v to buffer a[] as a 16-bit big-endian unsigned integer.
 */
-static void recoverPutU16(u8 *a, u32 v){
+void recoverPutU16(u8 *a, u32 v){
   a[0] = (v>>8) & 0x00FF;
   a[1] = (v>>0) & 0x00FF;
 }
@@ -2259,7 +2259,7 @@ static void recoverPutU16(u8 *a, u32 v){
 /*
 ** Write value v to buffer a[] as a 32-bit big-endian unsigned integer.
 */
-static void recoverPutU32(u8 *a, u32 v){
+void recoverPutU32(u8 *a, u32 v){
   a[0] = (v>>24) & 0x00FF;
   a[1] = (v>>16) & 0x00FF;
   a[2] = (v>>8) & 0x00FF;
@@ -2280,7 +2280,7 @@ static void recoverPutU32(u8 *a, u32 v){
 ** is returned. The final value of p->detected_pgsz is undefined in this
 ** case.
 */
-static int recoverVfsDetectPagesize(
+int recoverVfsDetectPagesize(
   sqlite3_recover *p,             /* Recover handle */
   sqlite3_file *pFd,              /* File-handle open on input database */
   u32 nReserve,                   /* Possible nReserve value */
@@ -2338,7 +2338,7 @@ static int recoverVfsDetectPagesize(
 ** The xRead() method of the wrapper VFS. This is used to intercept calls
 ** to read page 1 of the input database.
 */
-static int recoverVfsRead(sqlite3_file *pFd, void *aBuf, int nByte, i64 iOff){
+int recoverVfsRead(sqlite3_file *pFd, void *aBuf, int nByte, i64 iOff){
   int rc = SQLITE_OK;
   if( pFd->pMethods==&recover_methods ){
     pFd->pMethods = recover_g.pMethods;
@@ -2469,71 +2469,71 @@ static int recoverVfsRead(sqlite3_file *pFd, void *aBuf, int nByte, i64 iOff){
 ** method on the lower level VFS, then reinstall the wrapper before returning.
 ** Those that return an integer value use the RECOVER_VFS_WRAPPER macro.
 */
-static int recoverVfsWrite(
+int recoverVfsWrite(
   sqlite3_file *pFd, const void *aBuf, int nByte, i64 iOff
 ){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xWrite(pFd, aBuf, nByte, iOff)
   );
 }
-static int recoverVfsTruncate(sqlite3_file *pFd, sqlite3_int64 size){
+int recoverVfsTruncate(sqlite3_file *pFd, sqlite3_int64 size){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xTruncate(pFd, size)
   );
 }
-static int recoverVfsSync(sqlite3_file *pFd, int flags){
+int recoverVfsSync(sqlite3_file *pFd, int flags){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xSync(pFd, flags)
   );
 }
-static int recoverVfsFileSize(sqlite3_file *pFd, sqlite3_int64 *pSize){
+int recoverVfsFileSize(sqlite3_file *pFd, sqlite3_int64 *pSize){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xFileSize(pFd, pSize)
   );
 }
-static int recoverVfsLock(sqlite3_file *pFd, int eLock){
+int recoverVfsLock(sqlite3_file *pFd, int eLock){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xLock(pFd, eLock)
   );
 }
-static int recoverVfsUnlock(sqlite3_file *pFd, int eLock){
+int recoverVfsUnlock(sqlite3_file *pFd, int eLock){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xUnlock(pFd, eLock)
   );
 }
-static int recoverVfsCheckReservedLock(sqlite3_file *pFd, int *pResOut){
+int recoverVfsCheckReservedLock(sqlite3_file *pFd, int *pResOut){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xCheckReservedLock(pFd, pResOut)
   );
 }
-static int recoverVfsFileControl(sqlite3_file *pFd, int op, void *pArg){
+int recoverVfsFileControl(sqlite3_file *pFd, int op, void *pArg){
   RECOVER_VFS_WRAPPER (
     (pFd->pMethods ?  pFd->pMethods->xFileControl(pFd, op, pArg) : SQLITE_NOTFOUND)
   );
 }
-static int recoverVfsSectorSize(sqlite3_file *pFd){
+int recoverVfsSectorSize(sqlite3_file *pFd){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xSectorSize(pFd)
   );
 }
-static int recoverVfsDeviceCharacteristics(sqlite3_file *pFd){
+int recoverVfsDeviceCharacteristics(sqlite3_file *pFd){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xDeviceCharacteristics(pFd)
   );
 }
-static int recoverVfsShmMap(
+int recoverVfsShmMap(
   sqlite3_file *pFd, int iPg, int pgsz, int bExtend, void volatile **pp
 ){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xShmMap(pFd, iPg, pgsz, bExtend, pp)
   );
 }
-static int recoverVfsShmLock(sqlite3_file *pFd, int offset, int n, int flags){
+int recoverVfsShmLock(sqlite3_file *pFd, int offset, int n, int flags){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xShmLock(pFd, offset, n, flags)
   );
 }
-static void recoverVfsShmBarrier(sqlite3_file *pFd){
+void recoverVfsShmBarrier(sqlite3_file *pFd){
   if( pFd->pMethods==&recover_methods ){
     pFd->pMethods = recover_g.pMethods;
     pFd->pMethods->xShmBarrier(pFd);
@@ -2542,13 +2542,13 @@ static void recoverVfsShmBarrier(sqlite3_file *pFd){
     pFd->pMethods->xShmBarrier(pFd);
   }
 }
-static int recoverVfsShmUnmap(sqlite3_file *pFd, int deleteFlag){
+int recoverVfsShmUnmap(sqlite3_file *pFd, int deleteFlag){
   RECOVER_VFS_WRAPPER (
       pFd->pMethods->xShmUnmap(pFd, deleteFlag)
   );
 }
 
-static int recoverVfsFetch(
+int recoverVfsFetch(
   sqlite3_file *pFd, 
   sqlite3_int64 iOff, 
   int iAmt, 
@@ -2560,7 +2560,7 @@ static int recoverVfsFetch(
   *pp = 0;
   return SQLITE_OK;
 }
-static int recoverVfsUnfetch(sqlite3_file *pFd, sqlite3_int64 iOff, void *p){
+int recoverVfsUnfetch(sqlite3_file *pFd, sqlite3_int64 iOff, void *p){
   (void)pFd;
   (void)iOff;
   (void)p;
@@ -2572,7 +2572,7 @@ static int recoverVfsUnfetch(sqlite3_file *pFd, sqlite3_int64 iOff, void *p){
 ** database for recover handle p. Mutex RECOVER_MUTEX_ID must be held
 ** when this function is called.
 */
-static void recoverInstallWrapper(sqlite3_recover *p){
+void recoverInstallWrapper(sqlite3_recover *p){
   sqlite3_file *pFd = 0;
   assert( recover_g.pMethods==0 );
   recoverAssertMutexHeld();
@@ -2592,7 +2592,7 @@ static void recoverInstallWrapper(sqlite3_recover *p){
 ** on the input database for recover handle p. Mutex RECOVER_MUTEX_ID must be
 ** held when this function is called.
 */
-static void recoverUninstallWrapper(sqlite3_recover *p){
+void recoverUninstallWrapper(sqlite3_recover *p){
   sqlite3_file *pFd = 0;
   recoverAssertMutexHeld();
   sqlite3_file_control(p->dbIn, p->zDb,SQLITE_FCNTL_FILE_POINTER,(void*)&pFd);
@@ -2608,7 +2608,7 @@ static void recoverUninstallWrapper(sqlite3_recover *p){
 ** is guaranteed that the handle is not in an error state when this
 ** function is called.
 */
-static void recoverStep(sqlite3_recover *p){
+void recoverStep(sqlite3_recover *p){
   assert( p && p->errCode==SQLITE_OK );
   switch( p->eState ){
     case RECOVER_STATE_INIT: {

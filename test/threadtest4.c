@@ -66,7 +66,7 @@ struct WorkerInfo {
 /*
 ** Report an OOM error and die if the argument is NULL
 */
-static void check_oom(void *x){
+void check_oom(void *x){
   if( x==0 ){
     fprintf(stderr, "out of memory\n");
     exit(1);
@@ -77,7 +77,7 @@ static void check_oom(void *x){
 ** Allocate memory.  If the allocation fails, print an error message and
 ** kill the process.
 */
-static void *safe_malloc(int sz){
+void *safe_malloc(int sz){
   void *x = sqlite3_malloc(sz>0?sz:1);
   check_oom(x);
   return x;
@@ -86,7 +86,7 @@ static void *safe_malloc(int sz){
 /*
 ** Print a trace message for a worker
 */
-static void worker_trace(WorkerInfo *p, const char *zFormat, ...){
+void worker_trace(WorkerInfo *p, const char *zFormat, ...){
   va_list ap;
   char *zMsg;
   if( (p->wkrFlags & TT4_TRACE)==0 ) return;
@@ -101,7 +101,7 @@ static void worker_trace(WorkerInfo *p, const char *zFormat, ...){
 /*
 ** Prepare a single SQL query
 */
-static sqlite3_stmt *prep_sql(sqlite3 *db, const char *zFormat, ...){
+sqlite3_stmt *prep_sql(sqlite3 *db, const char *zFormat, ...){
   va_list ap;
   char *zSql;
   int rc;
@@ -124,7 +124,7 @@ static sqlite3_stmt *prep_sql(sqlite3 *db, const char *zFormat, ...){
 /*
 ** Run a SQL statements.  Panic if unable.
 */
-static void run_sql(WorkerInfo *p, const char *zFormat, ...){
+void run_sql(WorkerInfo *p, const char *zFormat, ...){
   va_list ap;
   char *zSql;
   int rc;
@@ -171,11 +171,11 @@ static void run_sql(WorkerInfo *p, const char *zFormat, ...){
 ** Open the database connection for WorkerInfo.  The order in which
 ** the files are opened is a function of the tid value.
 */
-static void worker_open_connection(WorkerInfo *p, int iCnt){
+void worker_open_connection(WorkerInfo *p, int iCnt){
   char *zFile;
   int x;
   int rc;
-  static const unsigned char aOrder[6][3] = {
+  const unsigned char aOrder[6][3] = {
     { 1, 2, 3},
     { 1, 3, 2},
     { 2, 1, 3},
@@ -205,7 +205,7 @@ static void worker_open_connection(WorkerInfo *p, int iCnt){
 /*
 ** Close the worker database connection
 */
-static void worker_close_connection(WorkerInfo *p){
+void worker_close_connection(WorkerInfo *p){
   if( p->db ){
     worker_trace(p, "close");
     sqlite3_close(p->db);
@@ -219,7 +219,7 @@ static void worker_close_connection(WorkerInfo *p){
 ** inTrans is true, or separately for each database if inTrans is
 ** false.
 */
-static void worker_delete_all_content(WorkerInfo *p, int inTrans){
+void worker_delete_all_content(WorkerInfo *p, int inTrans){
   if( inTrans ){
     pthread_mutex_lock(p->pWrMutex);
     run_sql(p, "BEGIN");
@@ -248,7 +248,7 @@ static void worker_delete_all_content(WorkerInfo *p, int inTrans){
 /*
 ** Create rows mn through mx in table iTab for the given worker
 */
-static void worker_add_content(WorkerInfo *p, int mn, int mx, int iTab){
+void worker_add_content(WorkerInfo *p, int mn, int mx, int iTab){
   char *zTabDef;
   switch( iTab ){
     case 1:  zTabDef = "t1(tid,sp,a,b,c)";  break;
@@ -269,7 +269,7 @@ static void worker_add_content(WorkerInfo *p, int mn, int mx, int iTab){
 /*
 ** Set an error message on a worker
 */
-static void worker_error(WorkerInfo *p, const char *zFormat, ...){
+void worker_error(WorkerInfo *p, const char *zFormat, ...){
   va_list ap;
   p->nErr++;
   sqlite3_free(p->zMsg);
@@ -281,7 +281,7 @@ static void worker_error(WorkerInfo *p, const char *zFormat, ...){
 /*
 ** Each thread runs the following function.
 */
-static void *worker_thread(void *pArg){
+void *worker_thread(void *pArg){
   WorkerInfo *p = (WorkerInfo*)pArg;
   int iOuter;
   int i;

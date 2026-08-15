@@ -21,7 +21,7 @@
 /* All threads share a single random number generator.
 ** This structure is the current state of the generator.
 */
-static SQLITE_WSD struct sqlite3PrngType {
+SQLITE_WSD struct sqlite3PrngType {
   u32 s[16];                 /* 64 bytes of chacha20 state */
   u8 out[64];                /* Output bytes */
   u8 n;                      /* Output bytes remaining */
@@ -36,7 +36,7 @@ static SQLITE_WSD struct sqlite3PrngType {
     c += d, b ^= c, b = ROTL(b,12), \
     a += b, d ^= a, d = ROTL(d, 8), \
     c += d, b ^= c, b = ROTL(b, 7))
-static void chacha_block(u32 *out, const u32 *in){
+void chacha_block(u32 *out, const u32 *in){
   int i;
   u32 x[16];
   memcpy(x, in, 64);
@@ -60,9 +60,9 @@ void sqlite3_randomness(int N, void *pBuf){
   unsigned char *zBuf = pBuf;
 
   /* The "wsdPrng" macro will resolve to the pseudo-random number generator
-  ** state vector.  If writable static data is unsupported on the target,
+  ** state vector.  If writable data is unsupported on the target,
   ** we have to locate the state vector at run-time.  In the more common
-  ** case where writable static data is supported, wsdPrng can refer directly
+  ** case where writable data is supported, wsdPrng can refer directly
   ** to the "sqlite3Prng" state vector declared above.
   */
 #ifdef SQLITE_OMIT_WSD
@@ -96,7 +96,7 @@ void sqlite3_randomness(int N, void *pBuf){
   */
   if( wsdPrng.s[0]==0 ){
     sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-    static const u32 chacha20_init[] = {
+    const u32 chacha20_init[] = {
       0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
     };
     memcpy(&wsdPrng.s[0], chacha20_init, 16);
@@ -139,7 +139,7 @@ void sqlite3_randomness(int N, void *pBuf){
 ** The sqlite3_test_control() interface calls these routines to
 ** control the PRNG.
 */
-static SQLITE_WSD struct sqlite3PrngType sqlite3SavedPrng;
+SQLITE_WSD struct sqlite3PrngType sqlite3SavedPrng;
 void sqlite3PrngSaveState(void){
   memcpy(
     &GLOBAL(struct sqlite3PrngType, sqlite3SavedPrng),

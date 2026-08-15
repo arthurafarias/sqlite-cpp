@@ -33,14 +33,14 @@ struct BoxQueryCtx {
   Tcl_Obj *pScript;
 };
 
-static void testDelUser(void *pCtx){
+void testDelUser(void *pCtx){
   BoxGeomCtx *p = (BoxGeomCtx*)pCtx;
   Tcl_EvalObjEx(p->interp, p->pScript, 0);
   Tcl_DecrRefCount(p->pScript);
   sqlite3_free(p);
 }
 
-static int invokeTclGeomCb(
+int invokeTclGeomCb(
   const char *zName, 
   sqlite3_rtree_geometry *p, 
   int nCoord,
@@ -138,7 +138,7 @@ static int invokeTclGeomCb(
 # the callback result should be written.
 
 */
-static int box_geom(
+int box_geom(
   sqlite3_rtree_geometry *p,      /* R-50437-53270 */
   int nCoord,                     /* R-02424-24769 */
   sqlite3_rtree_dbl *aCoord,      /* R-00090-24248 */
@@ -166,7 +166,7 @@ static int box_geom(
   return SQLITE_OK;
 }
 
-static int SQLITE_TCLAPI register_box_geom(
+int SQLITE_TCLAPI register_box_geom(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -196,7 +196,7 @@ static int SQLITE_TCLAPI register_box_geom(
   return TCL_OK;
 }
 
-static int box_query(sqlite3_rtree_query_info *pInfo){
+int box_query(sqlite3_rtree_query_info *pInfo){
   const char *azParentWithin[] = {"not", "partly", "fully", 0};
   BoxQueryCtx *pCtx = (BoxQueryCtx*)pInfo->pContext;
   Tcl_Interp *interp = pCtx->interp;
@@ -297,13 +297,13 @@ static int box_query(sqlite3_rtree_query_info *pInfo){
   return rc;
 }
 
-static void box_query_destroy(void *p){
+void box_query_destroy(void *p){
   BoxQueryCtx *pCtx = (BoxQueryCtx*)p;
   Tcl_DecrRefCount(pCtx->pScript);
   ckfree((char*)pCtx);
 }
 
-static int SQLITE_TCLAPI register_box_query(
+int SQLITE_TCLAPI register_box_query(
   void * clientData,
   Tcl_Interp *interp,
   int objc,

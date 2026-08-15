@@ -102,7 +102,7 @@ struct completion_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against completion will look like.
 */
-static int completionConnect(
+int completionConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -144,7 +144,7 @@ static int completionConnect(
 /*
 ** This method is the destructor for completion_cursor objects.
 */
-static int completionDisconnect(sqlite3_vtab *pVtab){
+int completionDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -152,7 +152,7 @@ static int completionDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new completion_cursor object.
 */
-static int completionOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int completionOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   completion_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -165,7 +165,7 @@ static int completionOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Reset the completion_cursor.
 */
-static void completionCursorReset(completion_cursor *pCur){
+void completionCursorReset(completion_cursor *pCur){
   sqlite3_free(pCur->zPrefix);   pCur->zPrefix = 0;  pCur->nPrefix = 0;
   sqlite3_free(pCur->zLine);     pCur->zLine = 0;    pCur->nLine = 0;
   sqlite3_finalize(pCur->pStmt); pCur->pStmt = 0;
@@ -175,7 +175,7 @@ static void completionCursorReset(completion_cursor *pCur){
 /*
 ** Destructor for a completion_cursor.
 */
-static int completionClose(sqlite3_vtab_cursor *cur){
+int completionClose(sqlite3_vtab_cursor *cur){
   completionCursorReset((completion_cursor*)cur);
   sqlite3_free(cur);
   return SQLITE_OK;
@@ -195,7 +195,7 @@ static int completionClose(sqlite3_vtab_cursor *cur){
 ** take zLine into account to try to restrict the set of identifiers and
 ** keywords based on what would be legal at the current point of input.
 */
-static int completionNext(sqlite3_vtab_cursor *cur){
+int completionNext(sqlite3_vtab_cursor *cur){
   completion_cursor *pCur = (completion_cursor*)cur;
   int eNextPhase = 0;  /* Next phase to try if current phase reaches end */
   int iCol = -1;       /* If >=0, step pCur->pStmt and use the i-th column */
@@ -315,7 +315,7 @@ static int completionNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the completion_cursor
 ** is currently pointing.
 */
-static int completionColumn(
+int completionColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -346,7 +346,7 @@ static int completionColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int completionRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int completionRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   completion_cursor *pCur = (completion_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -356,7 +356,7 @@ static int completionRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int completionEof(sqlite3_vtab_cursor *cur){
+int completionEof(sqlite3_vtab_cursor *cur){
   completion_cursor *pCur = (completion_cursor*)cur;
   return pCur->ePhase >= COMPLETION_EOF;
 }
@@ -367,7 +367,7 @@ static int completionEof(sqlite3_vtab_cursor *cur){
 ** once prior to any call to completionColumn() or completionRowid() or 
 ** completionEof().
 */
-static int completionFilter(
+int completionFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -421,7 +421,7 @@ static int completionFilter(
 ** function:  "prefix" and "wholeline".  Bit 0 of idxNum is set if "prefix"
 ** is available and bit 1 is set if "wholeline" is available.
 */
-static int completionBestIndex(
+int completionBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -466,7 +466,7 @@ static int completionBestIndex(
 ** This following structure defines all the methods for the 
 ** completion virtual table.
 */
-static sqlite3_module completionModule = {
+sqlite3_module completionModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   completionConnect,         /* xConnect */

@@ -29,7 +29,7 @@
 ** The execSqlF() routine does the same thing, except it accepts
 ** a format string as its third argument
 */
-static int execSql(sqlite3 *db, char **pzErrMsg, const char *zSql){
+int execSql(sqlite3 *db, char **pzErrMsg, const char *zSql){
   sqlite3_stmt *pStmt;
   int rc;
 
@@ -59,7 +59,7 @@ static int execSql(sqlite3 *db, char **pzErrMsg, const char *zSql){
   (void)sqlite3_finalize(pStmt);
   return rc;
 }
-static int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...){
+int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...){
   char *z;
   va_list ap;
   int rc;
@@ -355,7 +355,7 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
     ** The increment is used to increase the schema cookie so that other
     ** connections to the same database will know to reread the schema.
     */
-    static const unsigned char aCopy[] = {
+    const unsigned char aCopy[] = {
        BTREE_SCHEMA_VERSION,     1,  /* Add one to the old schema cookie */
        BTREE_DEFAULT_CACHE_SIZE, 0,  /* Preserve the default page cache size */
        BTREE_TEXT_ENCODING,      0,  /* Preserve the text encoding */

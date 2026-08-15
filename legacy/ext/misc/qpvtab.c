@@ -101,7 +101,7 @@ struct qpvtab_cursor {
 /*
 ** Names of columns
 */
-static const char *azColname[] = {
+const char *azColname[] = {
   "vn",
   "ix",
   "cn",
@@ -117,7 +117,7 @@ static const char *azColname[] = {
 ** The qpvtabConnect() method is invoked to create a new
 ** qpvtab virtual table.
 */
-static int qpvtabConnect(
+int qpvtabConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -163,7 +163,7 @@ static int qpvtabConnect(
 /*
 ** This method is the destructor for qpvtab_vtab objects.
 */
-static int qpvtabDisconnect(sqlite3_vtab *pVtab){
+int qpvtabDisconnect(sqlite3_vtab *pVtab){
   qpvtab_vtab *p = (qpvtab_vtab*)pVtab;
   sqlite3_free(p);
   return SQLITE_OK;
@@ -172,7 +172,7 @@ static int qpvtabDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new qpvtab_cursor object.
 */
-static int qpvtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int qpvtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   qpvtab_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -184,7 +184,7 @@ static int qpvtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a qpvtab_cursor.
 */
-static int qpvtabClose(sqlite3_vtab_cursor *cur){
+int qpvtabClose(sqlite3_vtab_cursor *cur){
   qpvtab_cursor *pCur = (qpvtab_cursor*)cur;
   sqlite3_free(pCur);
   return SQLITE_OK;
@@ -194,7 +194,7 @@ static int qpvtabClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a qpvtab_cursor to its next row of output.
 */
-static int qpvtabNext(sqlite3_vtab_cursor *cur){
+int qpvtabNext(sqlite3_vtab_cursor *cur){
   qpvtab_cursor *pCur = (qpvtab_cursor*)cur;
   if( pCur->iRowid<pCur->nData ){
     const char *z = &pCur->zData[pCur->iRowid];
@@ -209,7 +209,7 @@ static int qpvtabNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the qpvtab_cursor
 ** is currently pointing.
 */
-static int qpvtabColumn(
+int qpvtabColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -250,7 +250,7 @@ static int qpvtabColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int qpvtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int qpvtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   qpvtab_cursor *pCur = (qpvtab_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -260,7 +260,7 @@ static int qpvtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int qpvtabEof(sqlite3_vtab_cursor *cur){
+int qpvtabEof(sqlite3_vtab_cursor *cur){
   qpvtab_cursor *pCur = (qpvtab_cursor*)cur;
   return pCur->iRowid>=pCur->nData;
 }
@@ -271,7 +271,7 @@ static int qpvtabEof(sqlite3_vtab_cursor *cur){
 ** once prior to any call to qpvtabColumn() or qpvtabRowid() or 
 ** qpvtabEof().
 */
-static int qpvtabFilter(
+int qpvtabFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -287,7 +287,7 @@ static int qpvtabFilter(
 /*
 ** Append the text of a value to pStr
 */
-static void qpvtabStrAppendValue(
+void qpvtabStrAppendValue(
   sqlite3_str *pStr,
   sqlite3_value *pVal
 ){
@@ -335,7 +335,7 @@ static void qpvtabStrAppendValue(
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int qpvtabBestIndex(
+int qpvtabBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -415,7 +415,7 @@ static int qpvtabBestIndex(
 ** This following structure defines all the methods for the 
 ** virtual table.
 */
-static sqlite3_module qpvtabModule = {
+sqlite3_module qpvtabModule = {
   /* iVersion    */ 0,
   /* xCreate     */ 0,
   /* xConnect    */ qpvtabConnect,

@@ -84,7 +84,7 @@ struct templatevtab_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against the virtual table will look like.
 */
-static int templatevtabConnect(
+int templatevtabConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -112,7 +112,7 @@ static int templatevtabConnect(
 /*
 ** This method is the destructor for templatevtab_vtab objects.
 */
-static int templatevtabDisconnect(sqlite3_vtab *pVtab){
+int templatevtabDisconnect(sqlite3_vtab *pVtab){
   templatevtab_vtab *p = (templatevtab_vtab*)pVtab;
   sqlite3_free(p);
   return SQLITE_OK;
@@ -121,7 +121,7 @@ static int templatevtabDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new templatevtab_cursor object.
 */
-static int templatevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int templatevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   templatevtab_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -133,7 +133,7 @@ static int templatevtabOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a templatevtab_cursor.
 */
-static int templatevtabClose(sqlite3_vtab_cursor *cur){
+int templatevtabClose(sqlite3_vtab_cursor *cur){
   templatevtab_cursor *pCur = (templatevtab_cursor*)cur;
   sqlite3_free(pCur);
   return SQLITE_OK;
@@ -143,7 +143,7 @@ static int templatevtabClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a templatevtab_cursor to its next row of output.
 */
-static int templatevtabNext(sqlite3_vtab_cursor *cur){
+int templatevtabNext(sqlite3_vtab_cursor *cur){
   templatevtab_cursor *pCur = (templatevtab_cursor*)cur;
   pCur->iRowid++;
   return SQLITE_OK;
@@ -153,7 +153,7 @@ static int templatevtabNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the templatevtab_cursor
 ** is currently pointing.
 */
-static int templatevtabColumn(
+int templatevtabColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -175,7 +175,7 @@ static int templatevtabColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int templatevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int templatevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   templatevtab_cursor *pCur = (templatevtab_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -185,7 +185,7 @@ static int templatevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int templatevtabEof(sqlite3_vtab_cursor *cur){
+int templatevtabEof(sqlite3_vtab_cursor *cur){
   templatevtab_cursor *pCur = (templatevtab_cursor*)cur;
   return pCur->iRowid>=10;
 }
@@ -196,7 +196,7 @@ static int templatevtabEof(sqlite3_vtab_cursor *cur){
 ** once prior to any call to templatevtabColumn() or templatevtabRowid() or 
 ** templatevtabEof().
 */
-static int templatevtabFilter(
+int templatevtabFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -212,7 +212,7 @@ static int templatevtabFilter(
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int templatevtabBestIndex(
+int templatevtabBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -225,7 +225,7 @@ static int templatevtabBestIndex(
 ** This following structure defines all the methods for the 
 ** virtual table.
 */
-static sqlite3_module templatevtabModule = {
+sqlite3_module templatevtabModule = {
   /* iVersion    */ 0,
   /* xCreate     */ 0,
   /* xConnect    */ templatevtabConnect,

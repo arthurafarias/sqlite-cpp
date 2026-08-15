@@ -18,7 +18,7 @@ typedef unsigned char uint8_t;
 ** off.  But if LLVMFuzzerTestOneInput() is called interactively from
 ** the ossshell utility program, then these flags might be set.
 */
-static unsigned mDebug = 0;
+unsigned mDebug = 0;
 #define FUZZ_SQL_TRACE       0x0001   /* Set an sqlite3_trace() callback */
 #define FUZZ_SHOW_MAX_DELAY  0x0002   /* Show maximum progress callback delay */
 #define FUZZ_SHOW_ERRORS     0x0004   /* Print error messages from SQLite */
@@ -33,8 +33,8 @@ void ossfuzz_set_debug_flags(unsigned x){
 /* Return the current real-world time in milliseconds since the
 ** Julian epoch (-4714-11-24).
 */
-static sqlite3_int64 timeOfDay(void){
-  static sqlite3_vfs *clockVfs = 0;
+sqlite3_int64 timeOfDay(void){
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ){
     clockVfs = sqlite3_vfs_find(0);
@@ -68,7 +68,7 @@ typedef struct FuzzCtx {
 ** The argument is the cutoff-time after which all processing should
 ** stop.  So return non-zero if the cut-off time is exceeded.
 */
-static int progress_handler(void *pClientData) {
+int progress_handler(void *pClientData) {
   FuzzCtx *p = (FuzzCtx*)pClientData;
   sqlite3_int64 iNow = timeOfDay();
   int rc = iNow>=p->iCutoffTime;
@@ -83,7 +83,7 @@ static int progress_handler(void *pClientData) {
 ** "PRAGMA parser_trace" since they can dramatically increase the
 ** amount of output without actually testing anything useful.
 */
-static int block_debug_pragmas(
+int block_debug_pragmas(
   void *Notused,
   int eCode,
   const char *zArg1,
@@ -103,7 +103,7 @@ static int block_debug_pragmas(
 /*
 ** Callback for sqlite3_exec().
 */
-static int exec_handler(void *pClientData, int argc, char **argv, char **namev){
+int exec_handler(void *pClientData, int argc, char **argv, char **namev){
   FuzzCtx *p = (FuzzCtx*)pClientData;
   int i;
   if( argv ){

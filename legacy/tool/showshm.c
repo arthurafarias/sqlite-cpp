@@ -21,11 +21,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int fd = -1;             /* The open SHM file */
+int fd = -1;             /* The open SHM file */
 
 /* Report an out-of-memory error and die.
 */
-static void out_of_memory(void){
+void out_of_memory(void){
   fprintf(stderr,"Out of memory...\n");
   exit(1);
 }
@@ -36,7 +36,7 @@ static void out_of_memory(void){
 ** Space to hold the content is obtained from malloc() and needs to be
 ** freed by the caller.
 */
-static unsigned char *getContent(int ofst, int nByte){
+unsigned char *getContent(int ofst, int nByte){
   unsigned char *aData;
   aData = malloc(nByte);
   if( aData==0 ) out_of_memory();
@@ -54,7 +54,7 @@ static unsigned char *getContent(int ofst, int nByte){
 
 /* Print a line of decode output showing a 4-byte integer.
 */
-static void print_decode_line(
+void print_decode_line(
   unsigned char *aData,      /* Content being decoded */
   int ofst, int nByte,       /* Start and size of decode */
   unsigned flg,              /* Display flags */
@@ -102,7 +102,7 @@ static void print_decode_line(
 ** Print an instance of the WalIndexHdr object.  ix is either 0 or 1
 ** to select which header to print.
 */
-static void print_index_hdr(unsigned char *aData, int ix){
+void print_index_hdr(unsigned char *aData, int ix){
   int i;
   assert( ix==0 || ix==1 );
   i = ix ? 48 : 0;
@@ -122,7 +122,7 @@ static void print_index_hdr(unsigned char *aData, int ix){
 /*
 ** Print the WalCkptInfo object
 */
-static void print_ckpt_info(unsigned char *aData){
+void print_ckpt_info(unsigned char *aData){
   const int i = 96;
   int j;
   print_decode_line(aData, 0+i, 4, FG_NBO,  "nBackfill");

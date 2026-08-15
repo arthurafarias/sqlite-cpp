@@ -29,7 +29,7 @@ SQLITE_EXTENSION_INIT1
 **
 ** The function returns its argument, unchanged.
 */
-static void noopfunc(
+void noopfunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -45,7 +45,7 @@ static void noopfunc(
 ** TEXT value.  But if the original input is numeric, it will also
 ** have that numeric value.
 */
-static void multitypeTextFunc(
+void multitypeTextFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

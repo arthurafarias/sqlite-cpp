@@ -282,7 +282,7 @@ struct Fts5Auxdata {
 #define FTS5_SAVEPOINT  5
 #define FTS5_RELEASE    6
 #define FTS5_ROLLBACKTO 7
-static void fts5CheckTransactionState(Fts5FullTable *p, int op, int iSavepoint){
+void fts5CheckTransactionState(Fts5FullTable *p, int op, int iSavepoint){
   switch( op ){
     case FTS5_BEGIN:
       assert( p->ts.eState==0 );
@@ -339,7 +339,7 @@ static void fts5CheckTransactionState(Fts5FullTable *p, int op, int iSavepoint){
 ** is true, this includes contentless tables that store UNINDEXED columns
 ** only.
 */
-static int fts5IsContentless(Fts5FullTable *pTab, int bIncludeUnindexed){
+int fts5IsContentless(Fts5FullTable *pTab, int bIncludeUnindexed){
   int eContent = pTab->p.pConfig->eContent;
   return (
     eContent==FTS5_CONTENT_NONE 
@@ -350,7 +350,7 @@ static int fts5IsContentless(Fts5FullTable *pTab, int bIncludeUnindexed){
 /*
 ** Delete a virtual table handle allocated by fts5InitVtab(). 
 */
-static void fts5FreeVtab(Fts5FullTable *pTab){
+void fts5FreeVtab(Fts5FullTable *pTab){
   if( pTab ){
     sqlite3Fts5IndexClose(pTab->p.pIndex);
     sqlite3Fts5StorageClose(pTab->pStorage);
@@ -362,7 +362,7 @@ static void fts5FreeVtab(Fts5FullTable *pTab){
 /*
 ** The xDisconnect() virtual table method.
 */
-static int fts5DisconnectMethod(sqlite3_vtab *pVtab){
+int fts5DisconnectMethod(sqlite3_vtab *pVtab){
   fts5FreeVtab((Fts5FullTable*)pVtab);
   return SQLITE_OK;
 }
@@ -370,7 +370,7 @@ static int fts5DisconnectMethod(sqlite3_vtab *pVtab){
 /*
 ** The xDestroy() virtual table method.
 */
-static int fts5DestroyMethod(sqlite3_vtab *pVtab){
+int fts5DestroyMethod(sqlite3_vtab *pVtab){
   Fts5Table *pTab = (Fts5Table*)pVtab;
   int rc = sqlite3Fts5DropAll(pTab->pConfig);
   if( rc==SQLITE_OK ){
@@ -390,7 +390,7 @@ static int fts5DestroyMethod(sqlite3_vtab *pVtab){
 **   argv[2]   -> table name
 **   argv[...] -> "column name" and other module argument fields.
 */
-static int fts5InitVtab(
+int fts5InitVtab(
   int bCreate,                    /* True for xCreate, false for xConnect */
   sqlite3 *db,                    /* The SQLite database connection */
   void *pAux,                     /* Hash table containing tokenizers */
@@ -464,7 +464,7 @@ static int fts5InitVtab(
 ** The xConnect() and xCreate() methods for the virtual table. All the
 ** work is done in function fts5InitVtab().
 */
-static int fts5ConnectMethod(
+int fts5ConnectMethod(
   sqlite3 *db,                    /* Database connection */
   void *pAux,                     /* Pointer to tokenizer hash table */
   int argc,                       /* Number of elements in argv array */
@@ -474,7 +474,7 @@ static int fts5ConnectMethod(
 ){
   return fts5InitVtab(0, db, pAux, argc, argv, ppVtab, pzErr);
 }
-static int fts5CreateMethod(
+int fts5CreateMethod(
   sqlite3 *db,                    /* Database connection */
   void *pAux,                     /* Pointer to tokenizer hash table */
   int argc,                       /* Number of elements in argv array */
@@ -500,7 +500,7 @@ static int fts5CreateMethod(
 ** extension is currently being used by a version of SQLite too old to
 ** support index-info flags. In that case this function is a no-op.
 */
-static void fts5SetUniqueFlag(sqlite3_index_info *pIdxInfo){
+void fts5SetUniqueFlag(sqlite3_index_info *pIdxInfo){
 #if SQLITE_VERSION_NUMBER>=3008012
 #ifndef SQLITE_CORE
   if( sqlite3_libversion_number()>=3008012 )
@@ -511,7 +511,7 @@ static void fts5SetUniqueFlag(sqlite3_index_info *pIdxInfo){
 #endif
 }
 
-static void fts5SetEstimatedRows(sqlite3_index_info *pIdxInfo, i64 nRow){
+void fts5SetEstimatedRows(sqlite3_index_info *pIdxInfo, i64 nRow){
 #if SQLITE_VERSION_NUMBER>=3008002
 #ifndef SQLITE_CORE
   if( sqlite3_libversion_number()>=3008002 )
@@ -522,7 +522,7 @@ static void fts5SetEstimatedRows(sqlite3_index_info *pIdxInfo, i64 nRow){
 #endif
 }
 
-static int fts5UsePatternMatch(
+int fts5UsePatternMatch(
   Fts5Config *pConfig, 
   struct sqlite3_index_constraint *p
 ){
@@ -611,7 +611,7 @@ static int fts5UsePatternMatch(
 ** more complex queries that use multiple terms the number of rows might
 ** be far fewer than this. So we compromise and use cost/40.
 */
-static int fts5BestIndexMethod(sqlite3_vtab *pVTab, sqlite3_index_info *pInfo){
+int fts5BestIndexMethod(sqlite3_vtab *pVTab, sqlite3_index_info *pInfo){
   Fts5Table *pTab = (Fts5Table*)pVTab;
   Fts5Config *pConfig = pTab->pConfig;
   const int nCol = pConfig->nCol;
@@ -770,7 +770,7 @@ static int fts5BestIndexMethod(sqlite3_vtab *pVTab, sqlite3_index_info *pInfo){
   return SQLITE_OK;
 }
 
-static int fts5NewTransaction(Fts5FullTable *pTab){
+int fts5NewTransaction(Fts5FullTable *pTab){
   Fts5Cursor *pCsr;
   for(pCsr=pTab->pGlobal->pCsr; pCsr; pCsr=pCsr->pNext){
     if( pCsr->base.pVtab==(sqlite3_vtab*)pTab ) return SQLITE_OK;
@@ -781,7 +781,7 @@ static int fts5NewTransaction(Fts5FullTable *pTab){
 /*
 ** Implementation of xOpen method.
 */
-static int fts5OpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
+int fts5OpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
   Fts5FullTable *pTab = (Fts5FullTable*)pVTab;
   Fts5Config *pConfig = pTab->p.pConfig;
   Fts5Cursor *pCsr = 0;           /* New cursor object */
@@ -807,7 +807,7 @@ static int fts5OpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
   return rc;
 }
 
-static int fts5StmtType(Fts5Cursor *pCsr){
+int fts5StmtType(Fts5Cursor *pCsr){
   if( pCsr->ePlan==FTS5_PLAN_SCAN ){
     return (pCsr->bDesc) ? FTS5_STMT_SCAN_DESC : FTS5_STMT_SCAN_ASC;
   }
@@ -819,7 +819,7 @@ static int fts5StmtType(Fts5Cursor *pCsr){
 ** is moved to point at a different row. It clears all cached data 
 ** specific to the previous row stored by the cursor object.
 */
-static void fts5CsrNewrow(Fts5Cursor *pCsr){
+void fts5CsrNewrow(Fts5Cursor *pCsr){
   CsrFlagSet(pCsr, 
       FTS5CSR_REQUIRE_CONTENT 
     | FTS5CSR_REQUIRE_DOCSIZE 
@@ -828,7 +828,7 @@ static void fts5CsrNewrow(Fts5Cursor *pCsr){
   );
 }
 
-static void fts5FreeCursorComponents(Fts5Cursor *pCsr){
+void fts5FreeCursorComponents(Fts5Cursor *pCsr){
   Fts5FullTable *pTab = (Fts5FullTable*)(pCsr->base.pVtab);
   Fts5Auxdata *pData;
   Fts5Auxdata *pNext;
@@ -872,7 +872,7 @@ static void fts5FreeCursorComponents(Fts5Cursor *pCsr){
 ** Close the cursor.  For additional information see the documentation
 ** on the xClose method of the virtual table interface.
 */
-static int fts5CloseMethod(sqlite3_vtab_cursor *pCursor){
+int fts5CloseMethod(sqlite3_vtab_cursor *pCursor){
   if( pCursor ){
     Fts5FullTable *pTab = (Fts5FullTable*)(pCursor->pVtab);
     Fts5Cursor *pCsr = (Fts5Cursor*)pCursor;
@@ -888,7 +888,7 @@ static int fts5CloseMethod(sqlite3_vtab_cursor *pCursor){
   return SQLITE_OK;
 }
 
-static int fts5SorterNext(Fts5Cursor *pCsr){
+int fts5SorterNext(Fts5Cursor *pCsr){
   Fts5Sorter *pSorter = pCsr->pSorter;
   int rc;
 
@@ -931,7 +931,7 @@ static int fts5SorterNext(Fts5Cursor *pCsr){
 ** Set the FTS5CSR_REQUIRE_RESEEK flag on all FTS5_PLAN_MATCH cursors 
 ** open on table pTab.
 */
-static void fts5TripCursors(Fts5FullTable *pTab){
+void fts5TripCursors(Fts5FullTable *pTab){
   Fts5Cursor *pCsr;
   for(pCsr=pTab->pGlobal->pCsr; pCsr; pCsr=pCsr->pNext){
     if( pCsr->ePlan==FTS5_PLAN_MATCH
@@ -954,7 +954,7 @@ static void fts5TripCursors(Fts5FullTable *pTab){
 ** Return SQLITE_OK if successful or if no reseek was required, or an 
 ** error code if an error occurred.
 */
-static int fts5CursorReseek(Fts5Cursor *pCsr, int *pbSkip){
+int fts5CursorReseek(Fts5Cursor *pCsr, int *pbSkip){
   int rc = SQLITE_OK;
   assert( *pbSkip==0 );
   if( CsrFlagTest(pCsr, FTS5CSR_REQUIRE_RESEEK) ){
@@ -988,7 +988,7 @@ static int fts5CursorReseek(Fts5Cursor *pCsr, int *pbSkip){
 ** even if we reach end-of-file.  The fts5EofMethod() will be called
 ** subsequently to determine whether or not an EOF was hit.
 */
-static int fts5NextMethod(sqlite3_vtab_cursor *pCursor){
+int fts5NextMethod(sqlite3_vtab_cursor *pCursor){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCursor;
   int rc;
 
@@ -1052,7 +1052,7 @@ static int fts5NextMethod(sqlite3_vtab_cursor *pCursor){
 }
 
 
-static int fts5PrepareStatement(
+int fts5PrepareStatement(
   sqlite3_stmt **ppStmt,
   Fts5Config *pConfig, 
   const char *zFmt,
@@ -1081,7 +1081,7 @@ static int fts5PrepareStatement(
   return rc;
 } 
 
-static int fts5CursorFirstSorted(
+int fts5CursorFirstSorted(
   Fts5FullTable *pTab, 
   Fts5Cursor *pCsr, 
   int bDesc
@@ -1133,7 +1133,7 @@ static int fts5CursorFirstSorted(
   return rc;
 }
 
-static int fts5CursorFirst(Fts5FullTable *pTab, Fts5Cursor *pCsr, int bDesc){
+int fts5CursorFirst(Fts5FullTable *pTab, Fts5Cursor *pCsr, int bDesc){
   int rc;
   Fts5Expr *pExpr = pCsr->pExpr;
   rc = sqlite3Fts5ExprFirst(
@@ -1152,7 +1152,7 @@ static int fts5CursorFirst(Fts5FullTable *pTab, Fts5Cursor *pCsr, int bDesc){
 ** the text passed to the MATCH operator are used as  the special query
 ** parameters.
 */
-static int fts5SpecialMatch(
+int fts5SpecialMatch(
   Fts5FullTable *pTab, 
   Fts5Cursor *pCsr, 
   const char *zQuery
@@ -1187,7 +1187,7 @@ static int fts5SpecialMatch(
 ** pTab. If one is found, return a pointer to the corresponding Fts5Auxiliary
 ** structure. Otherwise, if no such function exists, return NULL.
 */
-static Fts5Auxiliary *fts5FindAuxiliary(Fts5FullTable *pTab, const char *zName){
+Fts5Auxiliary *fts5FindAuxiliary(Fts5FullTable *pTab, const char *zName){
   Fts5Auxiliary *pAux;
 
   for(pAux=pTab->pGlobal->pAux; pAux; pAux=pAux->pNext){
@@ -1199,7 +1199,7 @@ static Fts5Auxiliary *fts5FindAuxiliary(Fts5FullTable *pTab, const char *zName){
 }
 
 
-static int fts5FindRankFunction(Fts5Cursor *pCsr){
+int fts5FindRankFunction(Fts5Cursor *pCsr){
   Fts5FullTable *pTab = (Fts5FullTable*)(pCsr->base.pVtab);
   Fts5Config *pConfig = pTab->p.pConfig;
   int rc = SQLITE_OK;
@@ -1250,7 +1250,7 @@ static int fts5FindRankFunction(Fts5Cursor *pCsr){
 }
 
 
-static int fts5CursorParseRank(
+int fts5CursorParseRank(
   Fts5Config *pConfig,
   Fts5Cursor *pCsr, 
   sqlite3_value *pRank
@@ -1287,7 +1287,7 @@ static int fts5CursorParseRank(
   return rc;
 }
 
-static i64 fts5GetRowidLimit(sqlite3_value *pVal, i64 iDefault){
+i64 fts5GetRowidLimit(sqlite3_value *pVal, i64 iDefault){
   if( pVal ){
     int eType = sqlite3_value_numeric_type(pVal);
     if( eType==SQLITE_INTEGER ){
@@ -1300,7 +1300,7 @@ static i64 fts5GetRowidLimit(sqlite3_value *pVal, i64 iDefault){
 /*
 ** Set the error message on the virtual table passed as the first argument.
 */
-static void fts5SetVtabError(Fts5FullTable *p, const char *zFormat, ...){
+void fts5SetVtabError(Fts5FullTable *p, const char *zFormat, ...){
   va_list ap;                     /* ... printf arguments */
   va_start(ap, zFormat);
   sqlite3_free(p->p.base.zErrMsg);
@@ -1314,7 +1314,7 @@ static void fts5SetVtabError(Fts5FullTable *p, const char *zFormat, ...){
 ** valid until after the final call to sqlite3Fts5Tokenize() that will use
 ** the locale.
 */
-static void sqlite3Fts5SetLocale(
+void sqlite3Fts5SetLocale(
   Fts5Config *pConfig, 
   const char *zLocale, 
   int nLocale
@@ -1408,7 +1408,7 @@ int sqlite3Fts5DecodeLocaleValue(
 ** is required to (a) call sqlite3Fts5ClearLocale() to reset the tokenizer 
 ** locale, and (b) call sqlite3_free() to free (*pzText).
 */
-static int fts5ExtractExprText(
+int fts5ExtractExprText(
   Fts5Config *pConfig,            /* Fts5 configuration */
   sqlite3_value *pVal,            /* Value to extract expression text from */
   char **pzText,                  /* OUT: nul-terminated buffer of text */
@@ -1447,7 +1447,7 @@ static int fts5ExtractExprText(
 **   2. A by-rowid lookup.
 **   3. A full-table scan.
 */
-static int fts5FilterMethod(
+int fts5FilterMethod(
   sqlite3_vtab_cursor *pCursor,   /* The cursor used for this query */
   int idxNum,                     /* Strategy index */
   const char *idxStr,             /* Unused */
@@ -1653,7 +1653,7 @@ static int fts5FilterMethod(
 ** This is the xEof method of the virtual table. SQLite calls this 
 ** routine to find out if it has reached the end of a result set.
 */
-static int fts5EofMethod(sqlite3_vtab_cursor *pCursor){
+int fts5EofMethod(sqlite3_vtab_cursor *pCursor){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCursor;
   return (CsrFlagTest(pCsr, FTS5CSR_EOF) ? 1 : 0);
 }
@@ -1661,7 +1661,7 @@ static int fts5EofMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** Return the rowid that the cursor currently points to.
 */
-static i64 fts5CursorRowid(Fts5Cursor *pCsr){
+i64 fts5CursorRowid(Fts5Cursor *pCsr){
   assert( pCsr->ePlan==FTS5_PLAN_MATCH 
        || pCsr->ePlan==FTS5_PLAN_SORTED_MATCH 
        || pCsr->ePlan==FTS5_PLAN_SOURCE 
@@ -1683,7 +1683,7 @@ static i64 fts5CursorRowid(Fts5Cursor *pCsr){
 ** exposes %_content.rowid as the rowid for the virtual table. The
 ** rowid should be written to *pRowid.
 */
-static int fts5RowidMethod(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+int fts5RowidMethod(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCursor;
   int ePlan = pCsr->ePlan;
   
@@ -1705,7 +1705,7 @@ static int fts5RowidMethod(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
 ** If argument bErrormsg is true and an error occurs, an error message may
 ** be left in sqlite3_vtab.zErrMsg.
 */
-static int fts5SeekCursor(Fts5Cursor *pCsr, int bErrormsg){
+int fts5SeekCursor(Fts5Cursor *pCsr, int bErrormsg){
   int rc = SQLITE_OK;
 
   /* If the cursor does not yet have a statement handle, obtain one now. */ 
@@ -1764,7 +1764,7 @@ static int fts5SeekCursor(Fts5Cursor *pCsr, int bErrormsg){
 ** INSERT Directives" section of the documentation. It should be updated if
 ** more commands are added to this function.
 */
-static int fts5SpecialInsert(
+int fts5SpecialInsert(
   Fts5FullTable *pTab,            /* Fts5 table object */
   const char *zCmd,               /* Text inserted into table-name column */
   sqlite3_value *pVal             /* Value inserted into rank column */
@@ -1834,7 +1834,7 @@ static int fts5SpecialInsert(
   return rc;
 }
 
-static int fts5SpecialDelete(
+int fts5SpecialDelete(
   Fts5FullTable *pTab, 
   sqlite3_value **apVal
 ){
@@ -1847,7 +1847,7 @@ static int fts5SpecialDelete(
   return rc;
 }
 
-static void fts5StorageInsert(
+void fts5StorageInsert(
   int *pRc, 
   Fts5FullTable *pTab, 
   sqlite3_value **apVal, 
@@ -1886,7 +1886,7 @@ static void fts5StorageInsert(
 **   * The contentless_delete=1 option was specified and all of the indexed
 **     columns (not a subset) have been modified.
 */
-static int fts5ContentlessUpdate(
+int fts5ContentlessUpdate(
   Fts5Config *pConfig,
   sqlite3_value **apVal,
   int bRowidModified,
@@ -1938,7 +1938,7 @@ static int fts5ContentlessUpdate(
 **   3. Values for each of the nCol matchable columns.
 **   4. Values for the two hidden columns (<tablename> and "rank").
 */
-static int fts5UpdateMethod(
+int fts5UpdateMethod(
   sqlite3_vtab *pVtab,            /* Virtual table handle */
   int nArg,                       /* Size of argument array */
   sqlite3_value **apVal,          /* Array of arguments */
@@ -2114,7 +2114,7 @@ static int fts5UpdateMethod(
 /*
 ** Implementation of xSync() method. 
 */
-static int fts5SyncMethod(sqlite3_vtab *pVtab){
+int fts5SyncMethod(sqlite3_vtab *pVtab){
   int rc;
   Fts5FullTable *pTab = (Fts5FullTable*)pVtab;
   fts5CheckTransactionState(pTab, FTS5_SYNC, 0);
@@ -2127,7 +2127,7 @@ static int fts5SyncMethod(sqlite3_vtab *pVtab){
 /*
 ** Implementation of xBegin() method. 
 */
-static int fts5BeginMethod(sqlite3_vtab *pVtab){
+int fts5BeginMethod(sqlite3_vtab *pVtab){
   int rc = fts5NewTransaction((Fts5FullTable*)pVtab);
   if( rc==SQLITE_OK ){
     fts5CheckTransactionState((Fts5FullTable*)pVtab, FTS5_BEGIN, 0);
@@ -2140,7 +2140,7 @@ static int fts5BeginMethod(sqlite3_vtab *pVtab){
 ** the pending-terms hash-table have already been flushed into the database
 ** by fts5SyncMethod().
 */
-static int fts5CommitMethod(sqlite3_vtab *pVtab){
+int fts5CommitMethod(sqlite3_vtab *pVtab){
   UNUSED_PARAM(pVtab);  /* Call below is a no-op for NDEBUG builds */
   fts5CheckTransactionState((Fts5FullTable*)pVtab, FTS5_COMMIT, 0);
   return SQLITE_OK;
@@ -2150,7 +2150,7 @@ static int fts5CommitMethod(sqlite3_vtab *pVtab){
 ** Implementation of xRollback(). Discard the contents of the pending-terms
 ** hash-table. Any changes made to the database are reverted by SQLite.
 */
-static int fts5RollbackMethod(sqlite3_vtab *pVtab){
+int fts5RollbackMethod(sqlite3_vtab *pVtab){
   int rc;
   Fts5FullTable *pTab = (Fts5FullTable*)pVtab;
   fts5CheckTransactionState(pTab, FTS5_ROLLBACK, 0);
@@ -2159,19 +2159,19 @@ static int fts5RollbackMethod(sqlite3_vtab *pVtab){
   return rc;
 }
 
-static int fts5CsrPoslist(Fts5Cursor*, int, const u8**, int*);
+int fts5CsrPoslist(Fts5Cursor*, int, const u8**, int*);
 
-static void *fts5ApiUserData(Fts5Context *pCtx){
+void *fts5ApiUserData(Fts5Context *pCtx){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   return pCsr->pAux->pUserData;
 }
 
-static int fts5ApiColumnCount(Fts5Context *pCtx){
+int fts5ApiColumnCount(Fts5Context *pCtx){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   return ((Fts5Table*)(pCsr->base.pVtab))->pConfig->nCol;
 }
 
-static int fts5ApiColumnTotalSize(
+int fts5ApiColumnTotalSize(
   Fts5Context *pCtx, 
   int iCol, 
   sqlite3_int64 *pnToken
@@ -2181,7 +2181,7 @@ static int fts5ApiColumnTotalSize(
   return sqlite3Fts5StorageSize(pTab->pStorage, iCol, pnToken);
 }
 
-static int fts5ApiRowCount(Fts5Context *pCtx, i64 *pnRow){
+int fts5ApiRowCount(Fts5Context *pCtx, i64 *pnRow){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   Fts5FullTable *pTab = (Fts5FullTable*)(pCsr->base.pVtab);
   return sqlite3Fts5StorageRowCount(pTab->pStorage, pnRow);
@@ -2190,7 +2190,7 @@ static int fts5ApiRowCount(Fts5Context *pCtx, i64 *pnRow){
 /*
 ** Implementation of xTokenize_v2() API.
 */
-static int fts5ApiTokenize_v2(
+int fts5ApiTokenize_v2(
   Fts5Context *pCtx, 
   const char *pText, int nText, 
   const char *pLoc, int nLoc, 
@@ -2214,7 +2214,7 @@ static int fts5ApiTokenize_v2(
 ** Implementation of xTokenize() API. This is just xTokenize_v2() with NULL/0
 ** passed as the locale.
 */
-static int fts5ApiTokenize(
+int fts5ApiTokenize(
   Fts5Context *pCtx, 
   const char *pText, int nText, 
   void *pUserData,
@@ -2223,12 +2223,12 @@ static int fts5ApiTokenize(
   return fts5ApiTokenize_v2(pCtx, pText, nText, 0, 0, pUserData, xToken);
 }
 
-static int fts5ApiPhraseCount(Fts5Context *pCtx){
+int fts5ApiPhraseCount(Fts5Context *pCtx){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   return sqlite3Fts5ExprPhraseCount(pCsr->pExpr);
 }
 
-static int fts5ApiPhraseSize(Fts5Context *pCtx, int iPhrase){
+int fts5ApiPhraseSize(Fts5Context *pCtx, int iPhrase){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   return sqlite3Fts5ExprPhraseSize(pCsr->pExpr, iPhrase);
 }
@@ -2247,7 +2247,7 @@ static int fts5ApiPhraseSize(Fts5Context *pCtx, int iPhrase){
 ** occurs, an SQLite error code is returned. The final values of the two
 ** output parameters are undefined in this case.
 */
-static int fts5TextFromStmt(
+int fts5TextFromStmt(
   Fts5Config *pConfig,
   sqlite3_stmt *pStmt,
   int iCol,
@@ -2276,7 +2276,7 @@ static int fts5TextFromStmt(
   return rc;
 }
 
-static int fts5ApiColumnText(
+int fts5ApiColumnText(
   Fts5Context *pCtx, 
   int iCol, 
   const char **pz, 
@@ -2309,7 +2309,7 @@ static int fts5ApiColumnText(
 ** which case the position-list was read from the fts index) or for other
 ** detail= modes if the row content is available.
 */
-static int fts5CsrPoslist(
+int fts5CsrPoslist(
   Fts5Cursor *pCsr,               /* Fts5 cursor object */
   int iPhrase,                    /* Phrase to find position list for */
   const u8 **pa,                  /* OUT: Pointer to position list buffer */
@@ -2379,7 +2379,7 @@ static int fts5CsrPoslist(
 ** correctly for the current view. Return SQLITE_OK if successful, or an
 ** SQLite error code otherwise.
 */
-static int fts5CacheInstArray(Fts5Cursor *pCsr){
+int fts5CacheInstArray(Fts5Cursor *pCsr){
   int rc = SQLITE_OK;
   Fts5PoslistReader *aIter;       /* One iterator for each phrase */
   int nIter;                      /* Number of iterators/phrases */
@@ -2454,7 +2454,7 @@ static int fts5CacheInstArray(Fts5Cursor *pCsr){
   return rc;
 }
 
-static int fts5ApiInstCount(Fts5Context *pCtx, int *pnInst){
+int fts5ApiInstCount(Fts5Context *pCtx, int *pnInst){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   int rc = SQLITE_OK;
   if( CsrFlagTest(pCsr, FTS5CSR_REQUIRE_INST)==0 
@@ -2464,7 +2464,7 @@ static int fts5ApiInstCount(Fts5Context *pCtx, int *pnInst){
   return rc;
 }
 
-static int fts5ApiInst(
+int fts5ApiInst(
   Fts5Context *pCtx, 
   int iIdx, 
   int *piPhrase, 
@@ -2487,11 +2487,11 @@ static int fts5ApiInst(
   return rc;
 }
 
-static sqlite3_int64 fts5ApiRowid(Fts5Context *pCtx){
+sqlite3_int64 fts5ApiRowid(Fts5Context *pCtx){
   return fts5CursorRowid((Fts5Cursor*)pCtx);
 }
 
-static int fts5ColumnSizeCb(
+int fts5ColumnSizeCb(
   void *pContext,                 /* Pointer to int */
   int tflags,
   const char *pUnused,            /* Buffer containing token */
@@ -2508,7 +2508,7 @@ static int fts5ColumnSizeCb(
   return SQLITE_OK;
 }
 
-static int fts5ApiColumnSize(Fts5Context *pCtx, int iCol, int *pnToken){
+int fts5ApiColumnSize(Fts5Context *pCtx, int iCol, int *pnToken){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   Fts5FullTable *pTab = (Fts5FullTable*)(pCsr->base.pVtab);
   Fts5Config *pConfig = pTab->p.pConfig;
@@ -2563,7 +2563,7 @@ static int fts5ApiColumnSize(Fts5Context *pCtx, int iCol, int *pnToken){
 /*
 ** Implementation of the xSetAuxdata() method.
 */
-static int fts5ApiSetAuxdata(
+int fts5ApiSetAuxdata(
   Fts5Context *pCtx,              /* Fts5 context */
   void *pPtr,                     /* Pointer to save as auxdata */
   void(*xDelete)(void*)           /* Destructor for pPtr (or NULL) */
@@ -2598,7 +2598,7 @@ static int fts5ApiSetAuxdata(
   return SQLITE_OK;
 }
 
-static void *fts5ApiGetAuxdata(Fts5Context *pCtx, int bClear){
+void *fts5ApiGetAuxdata(Fts5Context *pCtx, int bClear){
   Fts5Cursor *pCsr = (Fts5Cursor*)pCtx;
   Fts5Auxdata *pData;
   void *pRet = 0;
@@ -2618,7 +2618,7 @@ static void *fts5ApiGetAuxdata(Fts5Context *pCtx, int bClear){
   return pRet;
 }
 
-static void fts5ApiPhraseNext(
+void fts5ApiPhraseNext(
   Fts5Context *pCtx, 
   Fts5PhraseIter *pIter, 
   int *piCol, int *piOff
@@ -2643,7 +2643,7 @@ static void fts5ApiPhraseNext(
   }
 }
 
-static int fts5ApiPhraseFirst(
+int fts5ApiPhraseFirst(
   Fts5Context *pCtx, 
   int iPhrase, 
   Fts5PhraseIter *pIter, 
@@ -2662,7 +2662,7 @@ static int fts5ApiPhraseFirst(
   return rc;
 }
 
-static void fts5ApiPhraseNextColumn(
+void fts5ApiPhraseNextColumn(
   Fts5Context *pCtx, 
   Fts5PhraseIter *pIter, 
   int *piCol
@@ -2692,7 +2692,7 @@ static void fts5ApiPhraseNextColumn(
   }
 }
 
-static int fts5ApiPhraseFirstColumn(
+int fts5ApiPhraseFirstColumn(
   Fts5Context *pCtx, 
   int iPhrase, 
   Fts5PhraseIter *pIter, 
@@ -2744,7 +2744,7 @@ static int fts5ApiPhraseFirstColumn(
 /*
 ** xQueryToken() API implemenetation.
 */
-static int fts5ApiQueryToken(
+int fts5ApiQueryToken(
   Fts5Context* pCtx, 
   int iPhrase, 
   int iToken, 
@@ -2758,7 +2758,7 @@ static int fts5ApiQueryToken(
 /*
 ** xInstToken() API implemenetation.
 */
-static int fts5ApiInstToken(
+int fts5ApiInstToken(
   Fts5Context *pCtx,
   int iIdx, 
   int iToken,
@@ -2785,14 +2785,14 @@ static int fts5ApiInstToken(
 }
 
 
-static int fts5ApiQueryPhrase(Fts5Context*, int, void*, 
+int fts5ApiQueryPhrase(Fts5Context*, int, void*, 
     int(*)(const Fts5ExtensionApi*, Fts5Context*, void*)
 );
 
 /*
 ** The xColumnLocale() API.
 */
-static int fts5ApiColumnLocale(
+int fts5ApiColumnLocale(
   Fts5Context *pCtx, 
   int iCol, 
   const char **pzLocale, 
@@ -2829,7 +2829,7 @@ static int fts5ApiColumnLocale(
   return rc;
 }
 
-static const Fts5ExtensionApi sFts5Api = {
+const Fts5ExtensionApi sFts5Api = {
   4,                            /* iVersion */
   fts5ApiUserData,
   fts5ApiColumnCount,
@@ -2859,7 +2859,7 @@ static const Fts5ExtensionApi sFts5Api = {
 /*
 ** Implementation of API function xQueryPhrase().
 */
-static int fts5ApiQueryPhrase(
+int fts5ApiQueryPhrase(
   Fts5Context *pCtx, 
   int iPhrase, 
   void *pUserData,
@@ -2896,7 +2896,7 @@ static int fts5ApiQueryPhrase(
   return rc;
 }
 
-static void fts5ApiInvoke(
+void fts5ApiInvoke(
   Fts5Auxiliary *pAux,
   Fts5Cursor *pCsr,
   sqlite3_context *context,
@@ -2910,7 +2910,7 @@ static void fts5ApiInvoke(
   pCsr->pAux = 0;
 }
 
-static Fts5Cursor *fts5CursorFromCsrid(Fts5Global *pGlobal, i64 iCsrId){
+Fts5Cursor *fts5CursorFromCsrid(Fts5Global *pGlobal, i64 iCsrId){
   Fts5Cursor *pCsr;
   for(pCsr=pGlobal->pCsr; pCsr; pCsr=pCsr->pNext){
     if( pCsr->iCsrId==iCsrId ) break;
@@ -2923,7 +2923,7 @@ static Fts5Cursor *fts5CursorFromCsrid(Fts5Global *pGlobal, i64 iCsrId){
 ** formats it using the trailing arguments and returns the result as
 ** an error message to the context passed as the first argument.
 */
-static void fts5ResultError(sqlite3_context *pCtx, const char *zFmt, ...){
+void fts5ResultError(sqlite3_context *pCtx, const char *zFmt, ...){
   char *zErr = 0;
   va_list ap;
   va_start(ap, zFmt);
@@ -2933,7 +2933,7 @@ static void fts5ResultError(sqlite3_context *pCtx, const char *zFmt, ...){
   va_end(ap);
 }
 
-static void fts5ApiCallback(
+void fts5ApiCallback(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -2990,7 +2990,7 @@ Fts5Table *sqlite3Fts5TableFromCsrid(
 ** list 1. And so on. There is no size field for the final position list,
 ** as it can be derived from the total size of the blob.
 */
-static int fts5PoslistBlob(sqlite3_context *pCtx, Fts5Cursor *pCsr){
+int fts5PoslistBlob(sqlite3_context *pCtx, Fts5Cursor *pCsr){
   int i;
   int rc = SQLITE_OK;
   int nPhrase = sqlite3Fts5ExprPhraseCount(pCsr->pExpr);
@@ -3047,7 +3047,7 @@ static int fts5PoslistBlob(sqlite3_context *pCtx, Fts5Cursor *pCsr){
 ** This is the xColumn method, called by SQLite to request a value from
 ** the row that the supplied cursor currently points to.
 */
-static int fts5ColumnMethod(
+int fts5ColumnMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite3_context *pCtx,          /* Context for sqlite3_result_xxx() calls */
   int iCol                        /* Index of column to read value from */
@@ -3118,7 +3118,7 @@ static int fts5ColumnMethod(
 ** This routine implements the xFindFunction method for the FTS3
 ** virtual table.
 */
-static int fts5FindFunctionMethod(
+int fts5FindFunctionMethod(
   sqlite3_vtab *pVtab,            /* Virtual table handle */
   int nUnused,                    /* Number of SQL function arguments */
   const char *zName,              /* Name of SQL function */
@@ -3143,7 +3143,7 @@ static int fts5FindFunctionMethod(
 /*
 ** Implementation of FTS5 xRename method. Rename an fts5 table.
 */
-static int fts5RenameMethod(
+int fts5RenameMethod(
   sqlite3_vtab *pVtab,            /* Virtual table handle */
   const char *zName               /* New name of table */
 ){
@@ -3163,7 +3163,7 @@ int sqlite3Fts5FlushToDisk(Fts5Table *pTab){
 **
 ** Flush the contents of the pending-terms table to disk.
 */
-static int fts5SavepointMethod(sqlite3_vtab *pVtab, int iSavepoint){
+int fts5SavepointMethod(sqlite3_vtab *pVtab, int iSavepoint){
   Fts5FullTable *pTab = (Fts5FullTable*)pVtab;
   int rc = SQLITE_OK;
 
@@ -3180,7 +3180,7 @@ static int fts5SavepointMethod(sqlite3_vtab *pVtab, int iSavepoint){
 **
 ** This is a no-op.
 */
-static int fts5ReleaseMethod(sqlite3_vtab *pVtab, int iSavepoint){
+int fts5ReleaseMethod(sqlite3_vtab *pVtab, int iSavepoint){
   Fts5FullTable *pTab = (Fts5FullTable*)pVtab;
   int rc = SQLITE_OK;
   fts5CheckTransactionState(pTab, FTS5_RELEASE, iSavepoint);
@@ -3198,7 +3198,7 @@ static int fts5ReleaseMethod(sqlite3_vtab *pVtab, int iSavepoint){
 **
 ** Discard the contents of the pending terms table.
 */
-static int fts5RollbackToMethod(sqlite3_vtab *pVtab, int iSavepoint){
+int fts5RollbackToMethod(sqlite3_vtab *pVtab, int iSavepoint){
   Fts5FullTable *pTab = (Fts5FullTable*)pVtab;
   int rc = SQLITE_OK;
   fts5CheckTransactionState(pTab, FTS5_ROLLBACKTO, iSavepoint);
@@ -3213,7 +3213,7 @@ static int fts5RollbackToMethod(sqlite3_vtab *pVtab, int iSavepoint){
 /*
 ** Register a new auxiliary function with global context pGlobal.
 */
-static int fts5CreateAux(
+int fts5CreateAux(
   fts5_api *pApi,                 /* Global context (one per db handle) */
   const char *zName,              /* Name of new function */
   void *pUserData,                /* User data for aux. function */
@@ -3263,7 +3263,7 @@ static int fts5CreateAux(
 ** If an error occurs, an SQLite error code is returned and the final value
 ** of (*ppNew) undefined.
 */
-static int fts5NewTokenizerModule(
+int fts5NewTokenizerModule(
   Fts5Global *pGlobal,            /* Global context (one per db handle) */
   const char *zName,              /* Name of new function */
   void *pUserData,                /* User data for aux. function */
@@ -3311,7 +3311,7 @@ struct Fts5VtoVTokenizer {
 ** Create a wrapper tokenizer. The context argument pCtx points to the
 ** Fts5TokenizerModule object.
 */
-static int fts5VtoVCreate(
+int fts5VtoVCreate(
   void *pCtx, 
   const char **azArg, 
   int nArg, 
@@ -3344,7 +3344,7 @@ static int fts5VtoVCreate(
 /*
 ** Delete an Fts5VtoVTokenizer wrapper tokenizer. 
 */
-static void fts5VtoVDelete(Fts5Tokenizer *pTok){
+void fts5VtoVDelete(Fts5Tokenizer *pTok){
   Fts5VtoVTokenizer *p = (Fts5VtoVTokenizer*)pTok;
   if( p ){
     if( p->bV2Native ){
@@ -3361,7 +3361,7 @@ static void fts5VtoVDelete(Fts5Tokenizer *pTok){
 ** xTokenizer method for a wrapper tokenizer that offers the v1 interface
 ** (no support for locales).
 */
-static int fts5V1toV2Tokenize(
+int fts5V1toV2Tokenize(
   Fts5Tokenizer *pTok, 
   void *pCtx, int flags,
   const char *pText, int nText, 
@@ -3376,7 +3376,7 @@ static int fts5V1toV2Tokenize(
 ** xTokenizer method for a wrapper tokenizer that offers the v2 interface
 ** (with locale support).
 */
-static int fts5V2toV1Tokenize(
+int fts5V2toV1Tokenize(
   Fts5Tokenizer *pTok, 
   void *pCtx, int flags,
   const char *pText, int nText, 
@@ -3393,7 +3393,7 @@ static int fts5V2toV1Tokenize(
 ** Register a new tokenizer. This is the implementation of the 
 ** fts5_api.xCreateTokenizer_v2() method.
 */
-static int fts5CreateTokenizer_v2(
+int fts5CreateTokenizer_v2(
   fts5_api *pApi,                 /* Global context (one per db handle) */
   const char *zName,              /* Name of new function */
   void *pUserData,                /* User data for aux. function */
@@ -3423,7 +3423,7 @@ static int fts5CreateTokenizer_v2(
 /*
 ** The fts5_api.xCreateTokenizer() method.
 */
-static int fts5CreateTokenizer(
+int fts5CreateTokenizer(
   fts5_api *pApi,                 /* Global context (one per db handle) */
   const char *zName,              /* Name of new function */
   void *pUserData,                /* User data for aux. function */
@@ -3450,7 +3450,7 @@ static int fts5CreateTokenizer(
 ** module named zName. If found, return a pointer to the Fts5TokenizerModule
 ** object. Otherwise, return NULL.
 */
-static Fts5TokenizerModule *fts5LocateTokenizer(
+Fts5TokenizerModule *fts5LocateTokenizer(
   Fts5Global *pGlobal,            /* Global (one per db handle) object */
   const char *zName               /* Name of tokenizer module to find */
 ){
@@ -3471,7 +3471,7 @@ static Fts5TokenizerModule *fts5LocateTokenizer(
 ** Find a tokenizer. This is the implementation of the 
 ** fts5_api.xFindTokenizer_v2() method.
 */
-static int fts5FindTokenizer_v2(
+int fts5FindTokenizer_v2(
   fts5_api *pApi,                 /* Global context (one per db handle) */
   const char *zName,              /* Name of tokenizer */
   void **ppUserData,
@@ -3501,7 +3501,7 @@ static int fts5FindTokenizer_v2(
 ** Find a tokenizer. This is the implementation of the 
 ** fts5_api.xFindTokenizer() method.
 */
-static int fts5FindTokenizer(
+int fts5FindTokenizer(
   fts5_api *pApi,                 /* Global context (one per db handle) */
   const char *zName,              /* Name of new function */
   void **ppUserData,
@@ -3581,7 +3581,7 @@ int sqlite3Fts5LoadTokenizer(Fts5Config *pConfig){
 ** when the db handle is being closed. Free memory associated with 
 ** tokenizers and aux functions registered with this db handle.
 */
-static void fts5ModuleDestroy(void *pCtx){
+void fts5ModuleDestroy(void *pCtx){
   Fts5TokenizerModule *pTok, *pNextTok;
   Fts5Auxiliary *pAux, *pNextAux;
   Fts5Global *pGlobal = (Fts5Global*)pCtx;
@@ -3605,7 +3605,7 @@ static void fts5ModuleDestroy(void *pCtx){
 ** Implementation of the fts5() function used by clients to obtain the
 ** API pointer.
 */
-static void fts5Fts5Func(
+void fts5Fts5Func(
   sqlite3_context *pCtx,          /* Function call context */
   int nArg,                       /* Number of args */
   sqlite3_value **apArg           /* Function arguments */
@@ -3621,7 +3621,7 @@ static void fts5Fts5Func(
 /*
 ** Implementation of fts5_source_id() function.
 */
-static void fts5SourceIdFunc(
+void fts5SourceIdFunc(
   sqlite3_context *pCtx,          /* Function call context */
   int nArg,                       /* Number of args */
   sqlite3_value **apUnused        /* Function arguments */
@@ -3645,7 +3645,7 @@ static void fts5SourceIdFunc(
 **
 ** There is no final nul-terminator following the TEXT value.
 */
-static void fts5LocaleFunc(
+void fts5LocaleFunc(
   sqlite3_context *pCtx,          /* Function call context */
   int nArg,                       /* Number of args */
   sqlite3_value **apArg           /* Function arguments */
@@ -3695,7 +3695,7 @@ static void fts5LocaleFunc(
 /*
 ** Implementation of fts5_insttoken() function.
 */
-static void fts5InsttokenFunc(
+void fts5InsttokenFunc(
   sqlite3_context *pCtx,          /* Function call context */
   int nArg,                       /* Number of args */
   sqlite3_value **apArg           /* Function arguments */
@@ -3710,8 +3710,8 @@ static void fts5InsttokenFunc(
 ** Return true if zName is the extension on one of the shadow tables used
 ** by this module.
 */
-static int fts5ShadowName(const char *zName){
-  static const char *azName[] = {
+int fts5ShadowName(const char *zName){
+  const char *azName[] = {
     "config", "content", "data", "docsize", "idx"
   };
   unsigned int i;
@@ -3726,7 +3726,7 @@ static int fts5ShadowName(const char *zName){
 ** if anything is found amiss.  Return a NULL pointer if everything is
 ** OK.
 */
-static int fts5IntegrityMethod(
+int fts5IntegrityMethod(
   sqlite3_vtab *pVtab,    /* the FTS5 virtual table to check */
   const char *zSchema,    /* Name of schema in which this table lives */
   const char *zTabname,   /* Name of the table itself */
@@ -3760,8 +3760,8 @@ static int fts5IntegrityMethod(
   return rc;
 }
 
-static int fts5Init(sqlite3 *db){
-  static const sqlite3_module fts5Mod = {
+int fts5Init(sqlite3 *db){
+  const sqlite3_module fts5Mod = {
     /* iVersion      */ 4,
     /* xCreate       */ fts5CreateMethod,
     /* xConnect      */ fts5ConnectMethod,

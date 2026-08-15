@@ -138,7 +138,7 @@ struct ReCompiled {
 };
 
 /* Add a state to the given state set if it is not already there */
-static void re_add_state(ReStateSet *pSet, int newState){
+void re_add_state(ReStateSet *pSet, int newState){
   unsigned i;
   for(i=0; i<pSet->nState; i++) if( pSet->aState[i]==newState ) return;
   pSet->aState[pSet->nState++] = (ReStateNumber)newState;
@@ -149,7 +149,7 @@ static void re_add_state(ReStateSet *pSet, int newState){
 ** be clear:  this routine converts utf8 to unicode.  This routine is 
 ** optimized for the common case where the next character is a single byte.
 */
-static unsigned re_next_char(ReInput *p){
+unsigned re_next_char(ReInput *p){
   unsigned c;
   if( p->i>=p->mx ) return 0;
   c = p->z[p->i++];
@@ -174,32 +174,32 @@ static unsigned re_next_char(ReInput *p){
   }
   return c;
 }
-static unsigned re_next_char_nocase(ReInput *p){
+unsigned re_next_char_nocase(ReInput *p){
   unsigned c = re_next_char(p);
   if( c>='A' && c<='Z' ) c += 'a' - 'A';
   return c;
 }
 
 /* Return true if c is a perl "word" character:  [A-Za-z0-9_] */
-static int re_word_char(int c){
+int re_word_char(int c){
   return (c>='0' && c<='9') || (c>='a' && c<='z')
       || (c>='A' && c<='Z') || c=='_';
 }
 
 /* Return true if c is a "digit" character:  [0-9] */
-static int re_digit_char(int c){
+int re_digit_char(int c){
   return (c>='0' && c<='9');
 }
 
 /* Return true if c is a perl "space" character:  [ \t\r\n\v\f] */
-static int re_space_char(int c){
+int re_space_char(int c){
   return c==' ' || c=='\t' || c=='\n' || c=='\r' || c=='\v' || c=='\f';
 }
 
 /* Run a compiled regular expression on the zero-terminated input
 ** string zIn[].  Return true on a match and false if there is no match.
 */
-static int re_match(ReCompiled *pRe, const unsigned char *zIn, int nIn){
+int re_match(ReCompiled *pRe, const unsigned char *zIn, int nIn){
   ReStateSet aStateSet[2], *pThis, *pNext;
   ReStateNumber aSpace[100];
   ReStateNumber *pToFree;
@@ -349,7 +349,7 @@ re_match_end:
 
 /* Resize the opcode and argument arrays for an RE under construction.
 */
-static int re_resize(ReCompiled *p, unsigned int N){
+int re_resize(ReCompiled *p, unsigned int N){
   char *aOp;
   int *aArg;
   if( N>p->mxAlloc ){ p->zErr = "REGEXP pattern too big"; return 1; }
@@ -366,7 +366,7 @@ static int re_resize(ReCompiled *p, unsigned int N){
 /* Insert a new opcode and argument into an RE under construction.  The
 ** insertion point is just prior to existing opcode iBefore.
 */
-static int re_insert(ReCompiled *p, int iBefore, int op, int arg){
+int re_insert(ReCompiled *p, int iBefore, int op, int arg){
   int i;
   if( p->nAlloc<=p->nState && re_resize(p, p->nAlloc*2) ) return 0;
   for(i=p->nState; i>iBefore; i--){
@@ -381,14 +381,14 @@ static int re_insert(ReCompiled *p, int iBefore, int op, int arg){
 
 /* Append a new opcode and argument to the end of the RE under construction.
 */
-static int re_append(ReCompiled *p, int op, int arg){
+int re_append(ReCompiled *p, int op, int arg){
   return re_insert(p, p->nState, op, arg);
 }
 
 /* Make a copy of N opcodes starting at iStart onto the end of the RE
 ** under construction.
 */
-static void re_copy(ReCompiled *p, int iStart, unsigned int N){
+void re_copy(ReCompiled *p, int iStart, unsigned int N){
   if( p->nState+N>=p->nAlloc && re_resize(p, p->nAlloc*2+N) ) return;
   memcpy(&p->aOp[p->nState], &p->aOp[iStart], N*sizeof(p->aOp[0]));
   memcpy(&p->aArg[p->nState], &p->aArg[iStart], N*sizeof(p->aArg[0]));
@@ -399,7 +399,7 @@ static void re_copy(ReCompiled *p, int iStart, unsigned int N){
 ** If c is a hex digit, also set *pV = (*pV)*16 + valueof(c).  If
 ** c is not a hex digit *pV is unchanged.
 */
-static int re_hex(int c, int *pV){
+int re_hex(int c, int *pV){
   if( c>='0' && c<='9' ){
     c -= '0';
   }else if( c>='a' && c<='f' ){
@@ -416,9 +416,9 @@ static int re_hex(int c, int *pV){
 /* A backslash character has been seen, read the next character and
 ** return its interpretation.
 */
-static unsigned re_esc_char(ReCompiled *p){
-  static const char zEsc[] = "afnrtv\\()*.+?[$^{|}]-";
-  static const char zTrans[] = "\a\f\n\r\t\v";
+unsigned re_esc_char(ReCompiled *p){
+  const char zEsc[] = "afnrtv\\()*.+?[$^{|}]-";
+  const char zTrans[] = "\a\f\n\r\t\v";
   int i, v = 0;
   char c;
   if( p->sIn.i>=p->sIn.mx ) return 0;
@@ -454,10 +454,10 @@ static unsigned re_esc_char(ReCompiled *p){
 }
 
 /* Forward declaration */
-static const char *re_subcompile_string(ReCompiled*);
+const char *re_subcompile_string(ReCompiled*);
 
 /* Peek at the next byte of input */
-static unsigned char rePeek(ReCompiled *p){
+unsigned char rePeek(ReCompiled *p){
   return p->sIn.i<p->sIn.mx ? p->sIn.z[p->sIn.i] : 0;
 }
 
@@ -465,7 +465,7 @@ static unsigned char rePeek(ReCompiled *p){
 ** first unmatched ")" character, then return.  If an error is found,
 ** return a pointer to the error message string.
 */
-static const char *re_subcompile_re(ReCompiled *p){
+const char *re_subcompile_re(ReCompiled *p){
   const char *zErr;
   int iStart, iEnd, iGoto;
   iStart = p->nState;
@@ -487,7 +487,7 @@ static const char *re_subcompile_re(ReCompiled *p){
 ** an operand to the "|" operator).  Return NULL on success or a pointer
 ** to the error message if there is a problem.
 */
-static const char *re_subcompile_string(ReCompiled *p){
+const char *re_subcompile_string(ReCompiled *p){
   int iPrev = -1;
   int iStart;
   unsigned c;
@@ -642,7 +642,7 @@ static const char *re_subcompile_string(ReCompiled *p){
 ** regular expression.  Applications should invoke this routine once
 ** for every call to re_compile() to avoid memory leaks.
 */
-static void re_free(ReCompiled *pRe){
+void re_free(ReCompiled *pRe){
   if( pRe ){
     sqlite3_free(pRe->aOp);
     sqlite3_free(pRe->aArg);
@@ -655,7 +655,7 @@ static void re_free(ReCompiled *pRe){
 ** to satisfy sanitizers when the re_free() function is called via a
 ** function pointer.
 */
-static void re_free_voidptr(void *p){
+void re_free_voidptr(void *p){
   re_free((ReCompiled*)p);
 }
 
@@ -665,7 +665,7 @@ static void re_free_voidptr(void *p){
 ** compiled regular expression in *ppRe.  Return NULL on success or an
 ** error message if something goes wrong.
 */
-static const char *re_compile(
+const char *re_compile(
   ReCompiled **ppRe,      /* OUT: write compiled NFA here */
   const char *zIn,        /* Input regular expression */
   int mxRe,               /* Complexity limit */
@@ -742,7 +742,7 @@ static const char *re_compile(
 /*
 ** The value of LIMIT_MAX_PATTERN_LENGTH.
 */
-static int re_maxlen(sqlite3_context *context){
+int re_maxlen(sqlite3_context *context){
   sqlite3 *db = sqlite3_context_db_handle(context);
   return sqlite3_limit(db, SQLITE_LIMIT_LIKE_PATTERN_LENGTH,-1);
 }
@@ -750,7 +750,7 @@ static int re_maxlen(sqlite3_context *context){
 /*
 ** Maximum NFA size given a maximum pattern length.
 */
-static int re_maxnfa(int mxlen){
+int re_maxnfa(int mxlen){
   return 75+mxlen/2;
 }
 
@@ -763,7 +763,7 @@ static int re_maxnfa(int mxlen){
 **
 ** is implemented as regexp(B,A).
 */
-static void re_sql_func(
+void re_sql_func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -816,7 +816,7 @@ static void re_sql_func(
 ** Compile a regular expression and then convert the compiled expression into
 ** text and return that text.
 */
-static void re_bytecode_func(
+void re_bytecode_func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -828,7 +828,7 @@ static void re_bytecode_func(
   int i;
   int n;
   char *z;
-  static const char *ReOpName[] = {
+  const char *ReOpName[] = {
     "EOF",
     "MATCH",
     "ANY",

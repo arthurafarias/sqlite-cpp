@@ -483,7 +483,7 @@ do_malloc_test 19 -tclprep {
   unset -nocomplain ::STMT
   set r [catch {
     set ::STMT [sqlite3_prepare db {SELECT ?} -1 DUMMY]
-    sqlite3_bind_text16 -static $::STMT 1 $static_string 112
+    sqlite3_bind_text16 -$::STMT 1 $static_string 112
   } msg]
   if {$r} {error [string range $msg 4 end]}
   set msg

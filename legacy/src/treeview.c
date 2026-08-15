@@ -24,7 +24,7 @@
 ** Add a new subitem to the tree.  The moreToFollow flag indicates that this
 ** is not the last item in the tree.
 */
-static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
+void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
   TreeView *p = *pp;
   if( p==0 ){
     *pp = p = sqlite3_malloc64( sizeof(*p) );
@@ -40,7 +40,7 @@ static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
 /*
 ** Finished with one layer of the tree
 */
-static void sqlite3TreeViewPop(TreeView **pp){
+void sqlite3TreeViewPop(TreeView **pp){
   TreeView *p = *pp;
   if( p==0 ) return;
   p->iLevel--;
@@ -81,7 +81,7 @@ void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
 /*
 ** Shorthand for starting a new tree item that consists of a single label
 */
-static void sqlite3TreeViewItem(TreeView *p, const char *zLabel,u8 moreFollows){
+void sqlite3TreeViewItem(TreeView *p, const char *zLabel,u8 moreFollows){
   sqlite3TreeViewPush(&p, moreFollows);
   sqlite3TreeViewLine(p, "%s", zLabel);
 }
@@ -215,7 +215,7 @@ void sqlite3TreeViewSrcList(TreeView *pView, const SrcList *pSrc){
       sqlite3_str_appendf(&x, " DDL");
     }
     if( pItem->fg.isCte ){
-      static const char *aMat[] = {",MAT", "", ",NO-MAT"};
+      const char *aMat[] = {",MAT", "", ",NO-MAT"};
       sqlite3_str_appendf(&x, " CteUse=%d%s",
                           pItem->u2.pCteUse->nUse,
                           aMat[pItem->u2.pCteUse->eM10d]);

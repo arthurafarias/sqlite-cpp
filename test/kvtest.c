@@ -60,7 +60,7 @@
 **       ./kvtest run x1.db --count 10000 --max-id 1000000
 **       ./kvtest run x1 --count 10000 --max-id 1000000
 */
-static const char zHelp[] = 
+const char zHelp[] = 
 "Usage: kvtest COMMAND ARGS...\n"
 "\n"
 "   kvtest init DBFILE --count N --size M --pagesize X\n"
@@ -163,7 +163,7 @@ static const char zHelp[] =
 /*
 ** Show the help text and quit.
 */
-static void showHelp(void){
+void showHelp(void){
   fprintf(stdout, "%s", zHelp);
   exit(1);
 }
@@ -171,7 +171,7 @@ static void showHelp(void){
 /*
 ** Show an error message an quit.
 */
-static void fatalError(const char *zFormat, ...){
+void fatalError(const char *zFormat, ...){
   va_list ap;
   fprintf(stdout, "ERROR: ");
   va_start(ap, zFormat);
@@ -185,7 +185,7 @@ static void fatalError(const char *zFormat, ...){
 ** Return the value of a hexadecimal digit.  Return -1 if the input
 ** is not a hex digit.
 */
-static int hexDigitValue(char c){
+int hexDigitValue(char c){
   if( c>='0' && c<='9' ) return c - '0';
   if( c>='a' && c<='f' ) return c - 'a' + 10;
   if( c>='A' && c<='F' ) return c - 'A' + 10;
@@ -195,9 +195,9 @@ static int hexDigitValue(char c){
 /*
 ** Interpret zArg as an integer value, possibly with suffixes.
 */
-static int integerValue(const char *zArg){
+int integerValue(const char *zArg){
   int v = 0;
-  static const struct { char *zSuffix; int iMult; } aMult[] = {
+  const struct { char *zSuffix; int iMult; } aMult[] = {
     { "KiB", 1024 },
     { "MiB", 1024*1024 },
     { "GiB", 1024*1024*1024 },
@@ -261,7 +261,7 @@ static int integerValue(const char *zArg){
 #define PATH_DB      3
 #define PATH_NEXIST  0
 #define PATH_OTHER   99
-static int pathType(const char *zPath){
+int pathType(const char *zPath){
   struct stat x;
   int rc;
   if( access(zPath,R_OK) ) return PATH_NEXIST;
@@ -285,7 +285,7 @@ static int pathType(const char *zPath){
 ** Return the size of a file in bytes.  Or return -1 if the
 ** named object is not a regular file or does not exist.
 */
-static sqlite3_int64 fileSize(const char *zPath){
+sqlite3_int64 fileSize(const char *zPath){
   struct stat x;
   int rc;
   memset(&x, 0, sizeof(x));
@@ -300,9 +300,9 @@ static sqlite3_int64 fileSize(const char *zPath){
 ** that the same sequence of "random" numbers are generated on each
 ** run, for repeatability.
 */
-static unsigned int randInt(void){
-  static unsigned int x = 0x333a13cd;
-  static unsigned int y = 0xecb2adea;
+unsigned int randInt(void){
+  unsigned int x = 0x333a13cd;
+  unsigned int y = 0xecb2adea;
   x = (x>>1) ^ ((1+~(x&1)) & 0xd0000001);
   y = y*1103515245 + 12345;
   return x^y;
@@ -311,7 +311,7 @@ static unsigned int randInt(void){
 /*
 ** Do database initialization.
 */
-static int initMain(int argc, char **argv){
+int initMain(int argc, char **argv){
   char *zDb;
   int i, rc;
   int nCount = 1000;
@@ -381,7 +381,7 @@ static int initMain(int argc, char **argv){
 /*
 ** Analyze an existing database file.  Report its content.
 */
-static int statMain(int argc, char **argv){
+int statMain(int argc, char **argv){
   char *zDb;
   int i, rc;
   sqlite3 *db;
@@ -467,7 +467,7 @@ static int statMain(int argc, char **argv){
 ** Return the integer value V.  Also save the value of V in a
 ** C-language variable whose address is PTR.
 */
-static void rememberFunc(
+void rememberFunc(
   sqlite3_context *pCtx,
   int argc,
   sqlite3_value **argv
@@ -484,7 +484,7 @@ static void rememberFunc(
 /*
 ** Make sure a directory named zDir exists.
 */
-static void kvtest_mkdir(const char *zDir){
+void kvtest_mkdir(const char *zDir){
 #if defined(_WIN32)
   (void)mkdir(zDir);
 #else
@@ -495,7 +495,7 @@ static void kvtest_mkdir(const char *zDir){
 /*
 ** Export the kv table to individual files in the filesystem
 */
-static int exportMain(int argc, char **argv){
+int exportMain(int argc, char **argv){
   char *zDb;
   char *zDir;
   sqlite3 *db;
@@ -589,7 +589,7 @@ static int exportMain(int argc, char **argv){
 ** NULL is returned if any error is encountered. The final value of *pnByte
 ** is undefined in this case.
 */
-static unsigned char *readFile(const char *zName, sqlite3_int64 *pnByte){
+unsigned char *readFile(const char *zName, sqlite3_int64 *pnByte){
   FILE *in;               /* FILE from which to read content of zName */
   sqlite3_int64 nIn;      /* Size of zName in bytes */
   size_t nRead;           /* Number of bytes actually read */
@@ -615,7 +615,7 @@ static unsigned char *readFile(const char *zName, sqlite3_int64 *pnByte){
 ** Overwrite a file with randomness.  Do not change the size of the
 ** file.
 */
-static void updateFile(const char *zName, sqlite3_int64 *pnByte, int doFsync){
+void updateFile(const char *zName, sqlite3_int64 *pnByte, int doFsync){
   FILE *out;              /* FILE from which to read content of zName */
   sqlite3_int64 sz;       /* Size of zName in bytes */
   size_t nWritten;        /* Number of bytes actually read */
@@ -660,8 +660,8 @@ static void updateFile(const char *zName, sqlite3_int64 *pnByte, int doFsync){
 ** Return the current time in milliseconds since the beginning of
 ** the Julian epoch.
 */
-static sqlite3_int64 timeOfDay(void){
-  static sqlite3_vfs *clockVfs = 0;
+sqlite3_int64 timeOfDay(void){
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ) clockVfs = sqlite3_vfs_find(0);
   if( clockVfs->iVersion>=2 && clockVfs->xCurrentTimeInt64!=0 ){
@@ -678,14 +678,14 @@ static sqlite3_int64 timeOfDay(void){
 /*
 ** Attempt to display I/O stats on Linux using /proc/PID/io
 */
-static void displayLinuxIoStats(FILE *out){
+void displayLinuxIoStats(FILE *out){
   FILE *in;
   char z[200];
   sqlite3_snprintf(sizeof(z), z, "/proc/%d/io", getpid());
   in = fopen(z, "rb");
   if( in==0 ) return;
   while( fgets(z, sizeof(z), in)!=0 ){
-    static const struct {
+    const struct {
       const char *zPattern;
       const char *zDesc;
     } aTrans[] = {
@@ -713,7 +713,7 @@ static void displayLinuxIoStats(FILE *out){
 /*
 ** Display memory stats.
 */
-static int display_stats(
+int display_stats(
   sqlite3 *db,                    /* Database to query */
   int bReset                      /* True to reset SQLite stats */
 ){
@@ -782,7 +782,7 @@ static int display_stats(
 /*
 ** Run a performance test
 */
-static int runMain(int argc, char **argv){
+int runMain(int argc, char **argv){
   int eType;                  /* Is zDb a database or a directory? */
   char *zDb;                  /* Database or directory name */
   int i;                      /* Loop counter */

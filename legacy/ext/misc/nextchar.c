@@ -77,7 +77,7 @@ struct nextCharContext {
 ** Append a result character if the character is not already in the
 ** result.
 */
-static void nextCharAppend(nextCharContext *p, unsigned c){
+void nextCharAppend(nextCharContext *p, unsigned c){
   int i;
   for(i=0; i<p->nUsed; i++){
     if( p->aResult[i]==c ) return;
@@ -101,7 +101,7 @@ static void nextCharAppend(nextCharContext *p, unsigned c){
 ** Write a character into z[] as UTF8.  Return the number of bytes needed
 ** to hold the character
 */
-static int writeUtf8(unsigned char *z, unsigned c){
+int writeUtf8(unsigned char *z, unsigned c){
   if( c<0x00080 ){
     z[0] = (unsigned char)(c&0xff);
     return 1;
@@ -128,8 +128,8 @@ static int writeUtf8(unsigned char *z, unsigned c){
 ** Read a UTF8 character out of z[] and write it into *pOut.  Return
 ** the number of bytes in z[] that were used to construct the character.
 */
-static int readUtf8(const unsigned char *z, unsigned *pOut){
-  static const unsigned char validBits[] = {
+int readUtf8(const unsigned char *z, unsigned *pOut){
+  const unsigned char validBits[] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -161,7 +161,7 @@ static int readUtf8(const unsigned char *z, unsigned *pOut){
 ** The nextCharContext structure has been set up.  Add all "next" characters
 ** to the result set.
 */
-static void findNextChars(nextCharContext *p){
+void findNextChars(nextCharContext *p){
   unsigned cPrev = 0;
   unsigned char zPrev[8];
   int n, rc;
@@ -202,7 +202,7 @@ static void findNextChars(nextCharContext *p){
 ** A for elements of T.F.  If W is supplied, then it is an SQL expression
 ** that limits the elements in T.F that are considered.
 */
-static void nextCharFunc(
+void nextCharFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

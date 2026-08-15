@@ -98,7 +98,7 @@ SQLITE_EXTENSION_INIT1;
 #  define setmode(fd,m)
 # endif
 
-static char *zHelp =
+char *zHelp =
   "Usage: base85 <dirFlag> <binFile>\n"
   " <dirFlag> is either -r to read or -w to write <binFile>,\n"
   "   content to be converted to/from base85 on stdout/stdin.\n"
@@ -106,7 +106,7 @@ static char *zHelp =
   "   Or, the name '-' refers to the stdin or stdout stream.\n"
   ;
 
-static void sayHelp(){
+void sayHelp(){
   printf("%s", zHelp);
 }
 #endif
@@ -122,14 +122,14 @@ typedef unsigned char u8;
 #define B85_CLASS( c ) (((c)>='#')+((c)>'&')+((c)>='*')+((c)>'z'))
 
 /* Provide digitValue to b85Numeral offset as a function of above class. */
-static u8 b85_cOffset[] = { 0, '#', 0, '*'-4, 0 };
+u8 b85_cOffset[] = { 0, '#', 0, '*'-4, 0 };
 #define B85_DNOS( c ) b85_cOffset[B85_CLASS(c)]
 
 /* Say whether c is a base85 numeral. */
 #define IS_B85( c ) (B85_CLASS(c) & 1)
 
 #if 0 /* Not used, */
-static u8 base85DigitValue( char c ){
+u8 base85DigitValue( char c ){
   u8 dv = (u8)(c - '#');
   if( dv>87 ) return 0xff;
   return (dv > 3)? dv-3 : dv;
@@ -140,7 +140,7 @@ static u8 base85DigitValue( char c ){
 #define B85_DARK_MAX 80
 
 
-static char * skipNonB85( char *s, int nc ){
+char * skipNonB85( char *s, int nc ){
   char c;
   while( nc-- > 0 && (c = *s) && !IS_B85(c) ) ++s;
   return s;
@@ -149,7 +149,7 @@ static char * skipNonB85( char *s, int nc ){
 /* Convert small integer, known to be in 0..84 inclusive, to base85 numeral.
  * Do not use the macro form with argument expression having a side-effect.*/
 #if 0
-static char base85Numeral( u8 b ){
+char base85Numeral( u8 b ){
   return (b < 4)? (char)(b + '#') : (char)(b - 4 + '*');
 }
 #else
@@ -157,7 +157,7 @@ static char base85Numeral( u8 b ){
   ((char)(((dn) < 4)? (char)((dn) + '#') : (char)((dn) - 4 + '*')))
 #endif
 
-static char *putcs(char *pc, char *s){
+char *putcs(char *pc, char *s){
   char c;
   while( (c = *s++)!=0 ) *pc++ = c;
   return pc;
@@ -167,7 +167,7 @@ static char *putcs(char *pc, char *s){
 ** to be appended to encoded groups to limit their length to B85_DARK_MAX
 ** or to terminate the last group (to aid concatenation.)
 */
-static char* toBase85( u8 *pIn, int nbIn, char *pOut, char *pSep ){
+char* toBase85( u8 *pIn, int nbIn, char *pOut, char *pSep ){
   int nCol = 0;
   while( nbIn >= 4 ){
     int nco = 5;
@@ -208,10 +208,10 @@ static char* toBase85( u8 *pIn, int nbIn, char *pOut, char *pSep ){
 }
 
 /* Decode base85 text into a byte buffer. */
-static u8* fromBase85( char *pIn, int ncIn, u8 *pOut ){
+u8* fromBase85( char *pIn, int ncIn, u8 *pOut ){
   if( ncIn>0 && pIn[ncIn-1]=='\n' ) --ncIn;
   while( ncIn>0 ){
-    static signed char nboi[] = { 0, 0, 1, 2, 3, 4 };
+    signed char nboi[] = { 0, 0, 1, 2, 3, 4 };
     char *pUse = skipNonB85(pIn, ncIn);
     unsigned long qv = 0L;
     int nti, nbo;
@@ -251,7 +251,7 @@ static u8* fromBase85( char *pIn, int ncIn, u8 *pOut ){
 
 #ifndef OMIT_BASE85_CHECKER
 /* Say whether input char sequence is all (base85 and/or whitespace).*/
-static int allBase85( char *p, int len ){
+int allBase85( char *p, int len ){
   char c;
   while( len-- > 0 && (c = *p++) != 0 ){
     if( !IS_B85(c) && !isspace(c) ) return 0;
@@ -264,7 +264,7 @@ static int allBase85( char *p, int len ){
 
 #ifndef OMIT_BASE85_CHECKER
 /* This function does the work for the SQLite is_base85(t) UDF. */
-static void is_base85(sqlite3_context *context, int na, sqlite3_value *av[]){
+void is_base85(sqlite3_context *context, int na, sqlite3_value *av[]){
   assert(na==1);
   switch( sqlite3_value_type(av[0]) ){
   case SQLITE_TEXT:
@@ -285,7 +285,7 @@ static void is_base85(sqlite3_context *context, int na, sqlite3_value *av[]){
 #endif
 
 /* This function does the work for the SQLite base85(x) UDF. */
-static void base85(sqlite3_context *context, int na, sqlite3_value *av[]){
+void base85(sqlite3_context *context, int na, sqlite3_value *av[]){
   sqlite3_int64 nb, nc, nv = sqlite3_value_bytes(av[0]);
   int nvMax = sqlite3_limit(sqlite3_context_db_handle(context),
                             SQLITE_LIMIT_LENGTH, -1);
@@ -354,7 +354,7 @@ __declspec(dllexport)
 #endif
 int sqlite3_base85_init
 #else
-static int sqlite3_base85_init
+int sqlite3_base85_init
 #endif
 (sqlite3 *db, char **pzErr, const sqlite3_api_routines *pApi){
   SQLITE_EXTENSION_INIT2(pApi);

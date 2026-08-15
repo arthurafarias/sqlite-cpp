@@ -1785,7 +1785,7 @@ globalThis.sqlite3ApiBootstrap.initializers.push(function(sqlite3){
           return f(stmt.pointer, ndx, pStr, n, capi.SQLITE_WASM_DEALLOC);
         }
       };
-    }/* static init */
+    }/* init */
     affirmSupportedBindType(val);
     ndx = affirmParamIndex(stmt,ndx);
     let rc = 0;

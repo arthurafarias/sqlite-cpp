@@ -19,16 +19,16 @@
 #include "sqlite3expert.h"
 
 
-static void option_requires_argument(const char *zOpt){
+void option_requires_argument(const char *zOpt){
   fprintf(stderr, "Option requires an argument: %s\n", zOpt);
   exit(-3);
 }
 
-static int option_integer_arg(const char *zVal){
+int option_integer_arg(const char *zVal){
   return atoi(zVal);
 }
 
-static void usage(char **argv){
+void usage(char **argv){
   fprintf(stderr, "\n");
   fprintf(stderr, "Usage %s ?OPTIONS? DATABASE\n", argv[0]);
   fprintf(stderr, "\n");
@@ -40,7 +40,7 @@ static void usage(char **argv){
   exit(-1);
 }
 
-static int readSqlFromFile(sqlite3expert *p, const char *zFile, char **pzErr){
+int readSqlFromFile(sqlite3expert *p, const char *zFile, char **pzErr){
   FILE *in = fopen(zFile, "rb");
   long nIn;
   size_t nRead;

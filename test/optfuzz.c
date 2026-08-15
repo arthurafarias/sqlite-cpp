@@ -34,7 +34,7 @@
 /*
 ** Prepare a single SQL statement.  Panic if anything goes wrong
 */
-static sqlite3_stmt *prepare_sql(sqlite3 *db, const char *zFormat, ...){
+sqlite3_stmt *prepare_sql(sqlite3 *db, const char *zFormat, ...){
   char *zSql;
   int rc;
   sqlite3_stmt *pStmt = 0;
@@ -56,7 +56,7 @@ static sqlite3_stmt *prepare_sql(sqlite3 *db, const char *zFormat, ...){
 /*
 ** Run SQL.  Panic if anything goes wrong
 */
-static void run_sql(sqlite3 *db, const char *zFormat, ...){
+void run_sql(sqlite3 *db, const char *zFormat, ...){
   char *zSql;
   int rc;
   char *zErr = 0;
@@ -78,7 +78,7 @@ static void run_sql(sqlite3 *db, const char *zFormat, ...){
 ** Run one or more SQL statements contained in zSql against database dbRun.
 ** Store the input in database dbOut.
 */
-static int optfuzz_exec(
+int optfuzz_exec(
   sqlite3 *dbRun,             /* The database on which the SQL executes */
   const char *zSql,           /* The SQL to be executed */
   sqlite3 *dbOut,             /* Store results in this database */
@@ -178,7 +178,7 @@ static int optfuzz_exec(
 ** NULL is returned if any error is encountered. The final value of *pnByte
 ** is undefined in this case.
 */
-static char *readFile(const char *zName, int *pnByte){
+char *readFile(const char *zName, int *pnByte){
   FILE *in = fopen(zName, "rb");
   long nIn;
   size_t nRead;

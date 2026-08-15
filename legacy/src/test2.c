@@ -24,12 +24,12 @@ extern const char *sqlite3ErrName(int);
 /*
 ** Page size and reserved size used for testing.
 */
-static int test_pagesize = 1024;
+int test_pagesize = 1024;
 
 /*
 ** Dummy page reinitializer
 */
-static void pager_test_reiniter(DbPage *pNotUsed){
+void pager_test_reiniter(DbPage *pNotUsed){
   return;
 }
 
@@ -38,7 +38,7 @@ static void pager_test_reiniter(DbPage *pNotUsed){
 **
 ** Open a new pager
 */
-static int SQLITE_TCLAPI pager_open(
+int SQLITE_TCLAPI pager_open(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -75,7 +75,7 @@ static int SQLITE_TCLAPI pager_open(
 **
 ** Close the given pager.
 */
-static int SQLITE_TCLAPI pager_close(
+int SQLITE_TCLAPI pager_close(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -102,7 +102,7 @@ static int SQLITE_TCLAPI pager_close(
 **
 ** Rollback changes
 */
-static int SQLITE_TCLAPI pager_rollback(
+int SQLITE_TCLAPI pager_rollback(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -129,7 +129,7 @@ static int SQLITE_TCLAPI pager_rollback(
 **
 ** Commit all changes
 */
-static int SQLITE_TCLAPI pager_commit(
+int SQLITE_TCLAPI pager_commit(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -161,7 +161,7 @@ static int SQLITE_TCLAPI pager_commit(
 **
 ** Start a new checkpoint.
 */
-static int SQLITE_TCLAPI pager_stmt_begin(
+int SQLITE_TCLAPI pager_stmt_begin(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -188,7 +188,7 @@ static int SQLITE_TCLAPI pager_stmt_begin(
 **
 ** Rollback changes to a checkpoint
 */
-static int SQLITE_TCLAPI pager_stmt_rollback(
+int SQLITE_TCLAPI pager_stmt_rollback(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -216,7 +216,7 @@ static int SQLITE_TCLAPI pager_stmt_rollback(
 **
 ** Commit changes to a checkpoint
 */
-static int SQLITE_TCLAPI pager_stmt_commit(
+int SQLITE_TCLAPI pager_stmt_commit(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -243,7 +243,7 @@ static int SQLITE_TCLAPI pager_stmt_commit(
 **
 ** Return pager statistics.
 */
-static int SQLITE_TCLAPI pager_stats(
+int SQLITE_TCLAPI pager_stats(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -259,7 +259,7 @@ static int SQLITE_TCLAPI pager_stats(
   pPager = sqlite3TestTextToPtr(argv[1]);
   a = sqlite3PagerStats(pPager);
   for(i=0; i<9; i++){
-    static char *zName[] = {
+    char *zName[] = {
       "ref", "page", "max", "size", "state", "err",
       "hit", "miss", "ovfl",
     };
@@ -276,7 +276,7 @@ static int SQLITE_TCLAPI pager_stats(
 **
 ** Return the size of the database file.
 */
-static int SQLITE_TCLAPI pager_pagecount(
+int SQLITE_TCLAPI pager_pagecount(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -302,7 +302,7 @@ static int SQLITE_TCLAPI pager_pagecount(
 **
 ** Return a pointer to a page from the database.
 */
-static int SQLITE_TCLAPI page_get(
+int SQLITE_TCLAPI page_get(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -339,7 +339,7 @@ static int SQLITE_TCLAPI page_get(
 ** Return a pointer to a page if the page is already in cache.
 ** If not in cache, return an empty string.
 */
-static int SQLITE_TCLAPI page_lookup(
+int SQLITE_TCLAPI page_lookup(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -367,7 +367,7 @@ static int SQLITE_TCLAPI page_lookup(
 /*
 ** Usage:   pager_truncate ID PGNO
 */
-static int SQLITE_TCLAPI pager_truncate(
+int SQLITE_TCLAPI pager_truncate(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -392,7 +392,7 @@ static int SQLITE_TCLAPI pager_truncate(
 **
 ** Drop a pointer to a page.
 */
-static int SQLITE_TCLAPI page_unref(
+int SQLITE_TCLAPI page_unref(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -414,7 +414,7 @@ static int SQLITE_TCLAPI page_unref(
 **
 ** Return the content of a page
 */
-static int SQLITE_TCLAPI page_read(
+int SQLITE_TCLAPI page_read(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -438,7 +438,7 @@ static int SQLITE_TCLAPI page_read(
 **
 ** Return the page number for a page.
 */
-static int SQLITE_TCLAPI page_number(
+int SQLITE_TCLAPI page_number(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -462,7 +462,7 @@ static int SQLITE_TCLAPI page_number(
 **
 ** Write something into a page.
 */
-static int SQLITE_TCLAPI page_write(
+int SQLITE_TCLAPI page_write(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -498,7 +498,7 @@ static int SQLITE_TCLAPI page_write(
 ** new pages after N.  If N is 2096 or bigger, this will test the
 ** ability of SQLite to write to large files.
 */
-static int SQLITE_TCLAPI fake_big_file(
+int SQLITE_TCLAPI fake_big_file(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -559,7 +559,7 @@ static int SQLITE_TCLAPI fake_big_file(
 **
 ** Set the PENDING_BYTE using the sqlite3_test_control() interface.
 */
-static int SQLITE_TCLAPI testPendingByte(
+int SQLITE_TCLAPI testPendingByte(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -581,10 +581,10 @@ static int SQLITE_TCLAPI testPendingByte(
 /*
 ** The sqlite3FaultSim() callback:
 */
-static Tcl_Interp *faultSimInterp = 0;
-static int faultSimScriptSize = 0;
-static char *faultSimScript;
-static int faultSimCallback(int x){
+Tcl_Interp *faultSimInterp = 0;
+int faultSimScriptSize = 0;
+char *faultSimScript;
+int faultSimCallback(int x){
   char zInt[30];
   int i;
   int isNeg;
@@ -624,7 +624,7 @@ static int faultSimCallback(int x){
 ** appended, whenever sqlite3FaultSim() is called.  Or, if SCRIPT is the
 ** empty string, cancel the sqlite3FaultSim() callback.
 */
-static int SQLITE_TCLAPI faultInstallCmd(
+int SQLITE_TCLAPI faultInstallCmd(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -668,7 +668,7 @@ static int SQLITE_TCLAPI faultInstallCmd(
 ** Invoke the SQLITE_TESTCTRL_BITVEC_TEST operator on test_control.
 ** See comments on sqlite3BitvecBuiltinTest() for additional information.
 */
-static int SQLITE_TCLAPI testBitvecBuiltinTest(
+int SQLITE_TCLAPI testBitvecBuiltinTest(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -706,7 +706,7 @@ int Sqlitetest2_Init(Tcl_Interp *interp){
   extern int sqlite3_io_error_hardhit;
   extern int sqlite3_diskfull_pending;
   extern int sqlite3_diskfull;
-  static struct {
+  struct {
     char *zName;
     Tcl_CmdProc *xProc;
   } aCmd[] = {

@@ -10,10 +10,10 @@
 /*
 ** The six bytes at a[] are a big-endian unsigned integer which is the
 ** number of milliseconds since 1970.  Decode that value into an ISO 8601
-** date/time string stored in static space and return a pointer to that
+** date/time string stored in space and return a pointer to that
 ** string.
 */
-static const char *decodeTimestamp(const unsigned char *a){
+const char *decodeTimestamp(const unsigned char *a){
   uint64_t ms;               /* Milliseconds since 1970 */
   uint64_t days;             /* Days since 1970-01-01 */
   uint64_t sod;              /* Start of date specified by ms */
@@ -32,7 +32,7 @@ static const char *decodeTimestamp(const unsigned char *a){
   unsigned int yoe;          /* year of 400-year era */
   unsigned int doy;          /* day of year */
   unsigned int mp;           /* month with March==0 */
-  static char zOut[50];      /* Return results here */
+  char zOut[50];      /* Return results here */
 
   for(ms=0, i=0; i<=5; i++) ms = (ms<<8) + a[i];
   if( ms==0 ){
@@ -69,7 +69,7 @@ static const char *decodeTimestamp(const unsigned char *a){
 **
 ** Columns: tmstmp,fileno,op,pid,pgno,frame,salt,txn
 */
-static void renderCSV(int iFile, unsigned char *a){
+void renderCSV(int iFile, unsigned char *a){
   unsigned int a2, a3;
   int j;
   uint64_t ms;
@@ -130,7 +130,7 @@ static void renderCSV(int iFile, unsigned char *a){
 ** Render a single 16-byte tmstmpvfs log record as human-readable text
 ** on stdout.
 */
-static void renderText(unsigned char *a){
+void renderText(unsigned char *a){
   unsigned int a2, a3;
   int j;
 
@@ -186,7 +186,7 @@ static void renderText(unsigned char *a){
   }
 }
 
-static void usage(const char *argv0){
+void usage(const char *argv0){
   printf("Usage: %s [--csv] LOGFILE ...\n", argv0);
   printf("Decode one or more tmstmpvfs log files and display the results\n"
          "on stdout.  Render as CSV if the --csv option is used.\n");

@@ -75,10 +75,10 @@ struct DText {
 /*
 ** Initialize and destroy a DText object
 */
-static void initText(DText *p){
+void initText(DText *p){
   memset(p, 0, sizeof(*p));
 }
-static void freeText(DText *p){
+void freeText(DText *p){
   sqlite3_free(p->z);
   initText(p);
 }
@@ -91,7 +91,7 @@ static void freeText(DText *p){
 ** If the third argument, quote, is not '\0', then it is used as a
 ** quote character for zAppend.
 */
-static void appendText(DText *p, char const *zAppend, char quote){
+void appendText(DText *p, char const *zAppend, char quote){
   int len;
   int i;
   int nAppend = (int)(strlen(zAppend) & 0x3fffffff);
@@ -140,7 +140,7 @@ static void appendText(DText *p, char const *zAppend, char quote){
 **
 ** Return '"' if quoting is required.  Return 0 if no quoting is required.
 */
-static char quoteChar(const char *zName){
+char quoteChar(const char *zName){
   int i;
   if( !isalpha((unsigned char)zName[0]) && zName[0]!='_' ) return '"';
   for(i=0; zName[i]; i++){
@@ -153,12 +153,12 @@ static char quoteChar(const char *zName){
 /*
 ** Release memory previously allocated by tableColumnList().
 */
-static void freeColumnList(char **azCol){
+void freeColumnList(char **azCol){
   int i;
   for(i=1; azCol[i]; i++){
     sqlite3_free(azCol[i]);
   }
-  /* azCol[0] is a static string */
+  /* azCol[0] is a string */
   sqlite3_free(azCol);
 }
 
@@ -175,7 +175,7 @@ static void freeColumnList(char **azCol){
 ** The first regular column in the table is azCol[1].  The list is terminated
 ** by an entry with azCol[i]==0.
 */
-static char **tableColumnList(DState *p, const char *zTab){
+char **tableColumnList(DState *p, const char *zTab){
   char **azCol = 0;
   sqlite3_stmt *pStmt = 0;
   char *zSql;
@@ -249,7 +249,7 @@ static char **tableColumnList(DState *p, const char *zTab){
   if( preserveRowid ){
     /* Only preserve the rowid if we can find a name to use for the
     ** rowid */
-    static char *azRowid[] = { "rowid", "_rowid_", "oid" };
+    char *azRowid[] = { "rowid", "_rowid_", "oid" };
     int i, j;
     for(j=0; j<3; j++){
       for(i=1; i<=nCol; i++){
@@ -279,7 +279,7 @@ col_oom:
 /*
 ** Send mprintf-formatted content to the output callback.
 */
-static void output_formatted(DState *p, const char *zFormat, ...){
+void output_formatted(DState *p, const char *zFormat, ...){
   va_list ap;
   char *z;
   va_start(ap, zFormat);
@@ -296,7 +296,7 @@ static void output_formatted(DState *p, const char *zFormat, ...){
 ** Try to use zA and zB first.  If both of those are already found in z[]
 ** then make up some string and store it in the buffer zBuf.
 */
-static const char *unused_string(
+const char *unused_string(
   const char *z,                    /* Result must not appear anywhere in z */
   const char *zA, const char *zB,   /* Try these first */
   char *zBuf                        /* Space to store a generated string */
@@ -316,7 +316,7 @@ static const char *unused_string(
 ** get corrupted by end-of-line translation facilities in some operating
 ** systems.
 */
-static void output_quoted_escaped_string(DState *p, const char *z){
+void output_quoted_escaped_string(DState *p, const char *z){
   int i;
   char c;
   for(i=0; (c = z[i])!=0 && c!='\'' && c!='\n' && c!='\r'; i++){}
@@ -378,7 +378,7 @@ static void output_quoted_escaped_string(DState *p, const char *z){
 ** the table type ("index" or "table") and SQL to create the table.
 ** This routine should print text sufficient to recreate the table.
 */
-static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol){
+int dump_callback(void *pArg, int nArg, char **azArg, char **azCol){
   int rc;
   const char *zTable;
   const char *zType;
@@ -543,7 +543,7 @@ static int dump_callback(void *pArg, int nArg, char **azArg, char **azCol){
 ** "--" comment occurs at the end of the statement, the comment
 ** won't consume the semicolon terminator.
 */
-static void output_sql_from_query(
+void output_sql_from_query(
   DState *p,               /* Query context */
   const char *zSelect,     /* SELECT statement to extract content */
   ...
@@ -604,7 +604,7 @@ static void output_sql_from_query(
 ** If we get a SQLITE_CORRUPT error, rerun the query after appending
 ** "ORDER BY rowid DESC" to the end.
 */
-static void run_schema_dump_query(
+void run_schema_dump_query(
   DState *p,
   const char *zQuery,
   ...

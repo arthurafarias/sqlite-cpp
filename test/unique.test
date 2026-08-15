@@ -226,7 +226,7 @@ verify_ex_errcode unique-4.10b SQLITE_CONSTRAINT_UNIQUE
 integrity_check unique-4.99
 
 # Test the error message generation logic.  In particular, make sure we
-# do not overflow the static buffer used to generate the error message.
+# do not overflow the buffer used to generate the error message.
 #
 do_test unique-5.1 {
   execsql {

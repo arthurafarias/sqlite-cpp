@@ -1,5 +1,5 @@
 /*
-** The program does some simple static analysis of the sqlite3.c source
+** The program does some simple analysis of the sqlite3.c source
 ** file looking for mistakes.
 **
 ** Usage:
@@ -27,7 +27,7 @@
 /* Read the complete text of a file into memory.  Return a pointer to
 ** the result.  Panic if unable to read the file or allocate memory.
 */
-static char *readFile(const char *zFilename){
+char *readFile(const char *zFilename){
   FILE *in;
   char *z;
   long n;
@@ -77,7 +77,7 @@ static char *readFile(const char *zFilename){
 **
 ** Return true if a side effect is seen.  Return false if not.
 */
-static int hasSideEffect(const char *z, unsigned int n){
+int hasSideEffect(const char *z, unsigned int n){
   unsigned int i;
   for(i=0; i<n; i++){
     if( z[i]=='/' && strncmp(&z[i], "/*side-effects-ok*/", 19)==0 ) return 0;
@@ -92,7 +92,7 @@ static int hasSideEffect(const char *z, unsigned int n){
 /* Return the number of bytes in string z[] prior to the first unmatched ')'
 ** character.
 */
-static unsigned int findCloseParen(const char *z){
+unsigned int findCloseParen(const char *z){
   unsigned int nOpen = 0;
   unsigned i;
   for(i=0; z[i]; i++){
@@ -111,7 +111,7 @@ static unsigned int findCloseParen(const char *z){
 ** Print error messages whenever a side effect is found.  Return the number
 ** of problems seen.
 */
-static unsigned int findAllSideEffects(const char *z){
+unsigned int findAllSideEffects(const char *z){
   unsigned int lineno = 1;   /* Line number */
   unsigned int i;
   unsigned int nErr = 0;

@@ -153,12 +153,12 @@ struct SHA3Context {
 /*
 ** A single step of the Keccak mixing function for a 1600-bit state
 */
-static void KeccakF1600Step(SHA3Context *p){
+void KeccakF1600Step(SHA3Context *p){
   int i;
   u64 b0, b1, b2, b3, b4;
   u64 c0, c1, c2, c3, c4;
   u64 d0, d1, d2, d3, d4;
-  static const u64 RC[] = {
+  const u64 RC[] = {
     0x0000000000000001ULL,  0x0000000000008082ULL,
     0x800000000000808aULL,  0x8000000080008000ULL,
     0x000000000000808bULL,  0x0000000080000001ULL,
@@ -475,7 +475,7 @@ static void KeccakF1600Step(SHA3Context *p){
 ** in bits and should be one of 224, 256, 384, or 512.  Or iSize
 ** can be zero to use the default hash size of 256 bits.
 */
-static void SHA3Init(SHA3Context *p, int iSize){
+void SHA3Init(SHA3Context *p, int iSize){
   memset(p, 0, sizeof(*p));
   p->iSize = iSize;
   if( iSize>=128 && iSize<=512 ){
@@ -489,7 +489,7 @@ static void SHA3Init(SHA3Context *p, int iSize){
   p->ixMask = 7;  /* Big-endian */
 #else
   {
-    static unsigned int one = 1;
+    unsigned int one = 1;
     if( 1==*(unsigned char*)&one ){
       /* Little endian.  No byte swapping. */
       p->ixMask = 0;
@@ -505,7 +505,7 @@ static void SHA3Init(SHA3Context *p, int iSize){
 ** Make consecutive calls to the SHA3Update function to add new content
 ** to the hash
 */
-static void SHA3Update(
+void SHA3Update(
   SHA3Context *p,
   const unsigned char *aData,
   unsigned int nData
@@ -545,7 +545,7 @@ static void SHA3Update(
 ** the final hash.  The function returns a pointer to the binary
 ** hash value.
 */
-static unsigned char *SHA3Final(SHA3Context *p){
+unsigned char *SHA3Final(SHA3Context *p){
   unsigned int i;
   if( p->nLoaded==p->nRate-1 ){
     const unsigned char c1 = 0x86;
@@ -574,7 +574,7 @@ static unsigned char *SHA3Final(SHA3Context *p){
 ** and the string is hashed without the trailing 0x00 terminator.  The hash
 ** of a NULL value is NULL.
 */
-static void sha3Func(
+void sha3Func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -606,7 +606,7 @@ static void sha3Func(
 /* Compute a string using sqlite3_vsnprintf() with a maximum length
 ** of 50 bytes and add it to the hash.
 */
-static void sha3_step_vformat(
+void sha3_step_vformat(
   SHA3Context *p,                 /* Add content to this context */
   const char *zFormat,
   ...
@@ -624,7 +624,7 @@ static void sha3_step_vformat(
 /*
 ** Update a SHA3Context using a single sqlite3_value.
 */
-static void sha3UpdateFromValue(SHA3Context *p, sqlite3_value *pVal){
+void sha3UpdateFromValue(SHA3Context *p, sqlite3_value *pVal){
   switch( sqlite3_value_type(pVal) ){
     case SQLITE_NULL: {
       SHA3Update(p, (const unsigned char*)"N",1);
@@ -707,7 +707,7 @@ static void sha3UpdateFromValue(SHA3Context *p, sqlite3_value *pVal){
 ** one for each column in the result set.  Segments are concatentated directly
 ** with no delimiters of any kind.
 */
-static void sha3QueryFunc(
+void sha3QueryFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -775,7 +775,7 @@ static void sha3QueryFunc(
 /*
 ** xStep function for sha3_agg().
 */
-static void sha3AggStep(
+void sha3AggStep(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -800,7 +800,7 @@ static void sha3AggStep(
 /*
 ** xFinal function for sha3_agg().
 */
-static void sha3AggFinal(sqlite3_context *context){
+void sha3AggFinal(sqlite3_context *context){
   SHA3Context *p;
   p = (SHA3Context*)sqlite3_aggregate_context(context, sizeof(*p));
   if( p==0 ) return;

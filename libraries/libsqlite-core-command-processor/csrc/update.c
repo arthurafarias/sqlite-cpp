@@ -16,7 +16,7 @@
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 /* Forward declaration */
-static void updateVirtualTable(
+void updateVirtualTable(
   Parse *pParse,       /* The parsing context */
   SrcList *pSrc,       /* The virtual table to be modified */
   Table *pTab,         /* The virtual table */
@@ -94,7 +94,7 @@ void sqlite3ColumnDefault(Vdbe *v, Table *pTab, int i, int iReg){
 ** being updated.  chngRowid will be true if the rowid of the table is
 ** being updated.
 */
-static int indexColumnIsBeingUpdated(
+int indexColumnIsBeingUpdated(
   Index *pIdx,      /* The index to check */
   int iCol,         /* Which column of the index to check */
   int *aXRef,       /* aXRef[j]>=0 if column j is being updated */
@@ -124,7 +124,7 @@ static int indexColumnIsBeingUpdated(
 ** being updated.  chngRowid will be true if the rowid of the table is
 ** being updated.
 */
-static int indexWhereClauseMightChange(
+int indexWhereClauseMightChange(
   Index *pIdx,      /* The index to check */
   int *aXRef,       /* aXRef[j]>=0 if column j is being updated */
   int chngRowid     /* true if the rowid is being updated */
@@ -140,7 +140,7 @@ static int indexWhereClauseMightChange(
 ** expression to be a TK_COLUMN reading column iCol of the first
 ** table in the source-list (pSrc->a[0]).
 */
-static Expr *exprRowColumn(Parse *pParse, int iCol){
+Expr *exprRowColumn(Parse *pParse, int iCol){
   Expr *pRet = sqlite3PExpr(pParse, TK_ROW, 0, 0);
   if( pRet ) pRet->iColumn = iCol+1;
   return pRet;
@@ -184,7 +184,7 @@ static Expr *exprRowColumn(Parse *pParse, int iCol){
 ** rowid value in <other-columns> is used as the integer key, and the
 ** remaining fields make up the table record.
 */
-static void updateFromSelect(
+void updateFromSelect(
   Parse *pParse,                  /* Parse context */
   int iEph,                       /* Cursor for open eph. table */
   Index *pPk,                     /* PK if table 0 is WITHOUT ROWID */
@@ -1193,7 +1193,7 @@ update_cleanup:
 ** stores the same values (A, B and C above) in a register array and
 ** makes a single invocation of VUpdate.
 */
-static void updateVirtualTable(
+void updateVirtualTable(
   Parse *pParse,       /* The parsing context */
   SrcList *pSrc,       /* The virtual table to be modified */
   Table *pTab,         /* The virtual table */

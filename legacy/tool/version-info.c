@@ -22,7 +22,7 @@
 #endif
 #include <stdio.h>
 #include <string.h>
-static void usage(const char *zAppName){
+void usage(const char *zAppName){
   puts("Emits version info about the sqlite3 it is built against.");
   printf("Usage: %s [--quote] --INFO-FLAG:\n\n", zAppName);
   puts("  --version          Emit SQLITE_VERSION (3.X.Y)");

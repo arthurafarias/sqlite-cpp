@@ -27,11 +27,11 @@
 /* Maximum allowed page size */
 #define FTS5_MAX_PAGE_SIZE (64*1024)
 
-static int fts5_iswhitespace(char x){
+int fts5_iswhitespace(char x){
   return (x==' ');
 }
 
-static int fts5_isopenquote(char x){
+int fts5_isopenquote(char x){
   return (x=='"' || x=='\'' || x=='[' || x=='`');
 }
 
@@ -40,7 +40,7 @@ static int fts5_isopenquote(char x){
 ** string. Return a pointer to the first character following *pIn in 
 ** the string that is not a white-space character.
 */
-static const char *fts5ConfigSkipWhitespace(const char *pIn){
+const char *fts5ConfigSkipWhitespace(const char *pIn){
   const char *p = pIn;
   if( p ){
     while( fts5_iswhitespace(*p) ){ p++; }
@@ -53,20 +53,20 @@ static const char *fts5ConfigSkipWhitespace(const char *pIn){
 ** string. Return a pointer to the first character following *pIn in 
 ** the string that is not a "bareword" character.
 */
-static const char *fts5ConfigSkipBareword(const char *pIn){
+const char *fts5ConfigSkipBareword(const char *pIn){
   const char *p = pIn;
   while ( sqlite3Fts5IsBareword(*p) ) p++;
   if( p==pIn ) p = 0;
   return p;
 }
 
-static int fts5_isdigit(char a){
+int fts5_isdigit(char a){
   return (a>='0' && a<='9');
 }
 
 
 
-static const char *fts5ConfigSkipLiteral(const char *pIn){
+const char *fts5ConfigSkipLiteral(const char *pIn){
   const char *p = pIn;
   switch( *p ){
     case 'n': case 'N':
@@ -142,7 +142,7 @@ static const char *fts5ConfigSkipLiteral(const char *pIn){
 ** found, -1 is returned. If -1 is returned, the buffer is left in an 
 ** undefined state.
 */
-static int fts5Dequote(char *z){
+int fts5Dequote(char *z){
   char q;
   int iIn = 1;
   int iOut = 0;
@@ -204,7 +204,7 @@ struct Fts5Enum {
 };
 typedef struct Fts5Enum Fts5Enum;
 
-static int fts5ConfigSetEnum(
+int fts5ConfigSetEnum(
   const Fts5Enum *aEnum, 
   const char *zEnum, 
   int *peVal
@@ -233,7 +233,7 @@ static int fts5ConfigSetEnum(
 ** may be left in *pzErr. It is the responsibility of the caller to
 ** eventually free any such error message using sqlite3_free().
 */
-static int fts5ConfigParseSpecial(
+int fts5ConfigParseSpecial(
   Fts5Config *pConfig,            /* Configuration object to update */
   const char *zCmd,               /* Special command to parse */
   const char *zArg,               /* Argument to parse */
@@ -444,7 +444,7 @@ static int fts5ConfigParseSpecial(
 ** function, *pRc is set to SQLITE_NOMEM before returning. *pRc is *not*
 ** set if a parse error (failed to find close quote) occurs.
 */
-static const char *fts5ConfigGobbleWord(
+const char *fts5ConfigGobbleWord(
   int *pRc,                       /* IN/OUT: Error code */
   const char *zIn,                /* Buffer to gobble string/bareword from */
   char **pzOut,                   /* OUT: malloc'd buffer containing str/bw */
@@ -484,7 +484,7 @@ static const char *fts5ConfigGobbleWord(
   return zRet;
 }
 
-static int fts5ConfigParseColumn(
+int fts5ConfigParseColumn(
   Fts5Config *p, 
   char *zCol, 
   char *zArg, 
@@ -514,7 +514,7 @@ static int fts5ConfigParseColumn(
 /*
 ** Populate the Fts5Config.zContentExprlist string.
 */
-static int fts5ConfigMakeExprlist(Fts5Config *p){
+int fts5ConfigMakeExprlist(Fts5Config *p){
   int i;
   int rc = SQLITE_OK;
   Fts5Buffer buf = {0, 0, 0};
@@ -831,7 +831,7 @@ int sqlite3Fts5Tokenize(
 ** If it actually is this, return a pointer to the ')'. Otherwise, return
 ** NULL to indicate a parse error.
 */
-static const char *fts5ConfigSkipArgs(const char *pIn){
+const char *fts5ConfigSkipArgs(const char *pIn){
   const char *p = pIn;
   
   while( 1 ){

@@ -22,7 +22,7 @@
 ** For tokenizers with no "unicode" modifier, the set of token characters
 ** is the same as the set of ASCII range alphanumeric characters. 
 */
-static unsigned char aAsciiTokenChar[128] = {
+unsigned char aAsciiTokenChar[128] = {
   0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,   /* 0x00..0x0F */
   0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,   /* 0x10..0x1F */
   0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0,   /* 0x20..0x2F */
@@ -38,7 +38,7 @@ struct AsciiTokenizer {
   unsigned char aTokenChar[128];
 };
 
-static void fts5AsciiAddExceptions(
+void fts5AsciiAddExceptions(
   AsciiTokenizer *p, 
   const char *zArg, 
   int bTokenChars
@@ -54,14 +54,14 @@ static void fts5AsciiAddExceptions(
 /*
 ** Delete a "ascii" tokenizer.
 */
-static void fts5AsciiDelete(Fts5Tokenizer *p){
+void fts5AsciiDelete(Fts5Tokenizer *p){
   sqlite3_free(p);
 }
 
 /*
 ** Create an "ascii" tokenizer.
 */
-static int fts5AsciiCreate(
+int fts5AsciiCreate(
   void *pUnused, 
   const char **azArg, int nArg,
   Fts5Tokenizer **ppOut
@@ -102,7 +102,7 @@ static int fts5AsciiCreate(
 }
 
 
-static void asciiFold(char *aOut, const char *aIn, int nByte){
+void asciiFold(char *aOut, const char *aIn, int nByte){
   int i;
   for(i=0; i<nByte; i++){
     char c = aIn[i];
@@ -114,7 +114,7 @@ static void asciiFold(char *aOut, const char *aIn, int nByte){
 /*
 ** Tokenize some text using the ascii tokenizer.
 */
-static int fts5AsciiTokenize(
+int fts5AsciiTokenize(
   Fts5Tokenizer *pTokenizer,
   void *pCtx,
   int iUnused,
@@ -183,7 +183,7 @@ static int fts5AsciiTokenize(
 */
 #ifndef SQLITE_AMALGAMATION
 
-static const unsigned char sqlite3Utf8Trans1[] = {
+const unsigned char sqlite3Utf8Trans1[] = {
   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
   0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
   0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -252,7 +252,7 @@ struct Unicode61Tokenizer {
 #define FTS5_REMOVE_DIACRITICS_SIMPLE  1
 #define FTS5_REMOVE_DIACRITICS_COMPLEX 2
 
-static int fts5UnicodeAddExceptions(
+int fts5UnicodeAddExceptions(
   Unicode61Tokenizer *p,          /* Tokenizer object */
   const char *z,                  /* Characters to treat as exceptions */
   int bTokenChars                 /* 1 for 'tokenchars', 0 for 'separators' */
@@ -302,7 +302,7 @@ static int fts5UnicodeAddExceptions(
 /*
 ** Return true if the p->aiException[] array contains the value iCode.
 */
-static int fts5UnicodeIsException(Unicode61Tokenizer *p, int iCode){
+int fts5UnicodeIsException(Unicode61Tokenizer *p, int iCode){
   if( p->nException>0 ){
     int *a = p->aiException;
     int iLo = 0;
@@ -326,7 +326,7 @@ static int fts5UnicodeIsException(Unicode61Tokenizer *p, int iCode){
 /*
 ** Delete a "unicode61" tokenizer.
 */
-static void fts5UnicodeDelete(Fts5Tokenizer *pTok){
+void fts5UnicodeDelete(Fts5Tokenizer *pTok){
   if( pTok ){
     Unicode61Tokenizer *p = (Unicode61Tokenizer*)pTok;
     sqlite3_free(p->aiException);
@@ -336,7 +336,7 @@ static void fts5UnicodeDelete(Fts5Tokenizer *pTok){
   return;
 }
 
-static int unicodeSetCategories(Unicode61Tokenizer *p, const char *zCat){
+int unicodeSetCategories(Unicode61Tokenizer *p, const char *zCat){
   const char *z = zCat;
 
   while( *z ){
@@ -354,7 +354,7 @@ static int unicodeSetCategories(Unicode61Tokenizer *p, const char *zCat){
 /*
 ** Create a "unicode61" tokenizer.
 */
-static int fts5UnicodeCreate(
+int fts5UnicodeCreate(
   void *pUnused, 
   const char **azArg, int nArg,
   Fts5Tokenizer **ppOut
@@ -432,14 +432,14 @@ static int fts5UnicodeCreate(
 ** passed as the first argument, codepoint iCode is considered a token 
 ** character (not a separator).
 */
-static int fts5UnicodeIsAlnum(Unicode61Tokenizer *p, int iCode){
+int fts5UnicodeIsAlnum(Unicode61Tokenizer *p, int iCode){
   return (
     p->aCategory[sqlite3Fts5UnicodeCategory((u32)iCode)]
     ^ fts5UnicodeIsException(p, iCode)
   );
 }
 
-static int fts5UnicodeTokenize(
+int fts5UnicodeTokenize(
   Fts5Tokenizer *pTokenizer,
   void *pCtx,
   int iUnused,
@@ -561,7 +561,7 @@ struct PorterTokenizer {
 /*
 ** Delete a "porter" tokenizer.
 */
-static void fts5PorterDelete(Fts5Tokenizer *pTok){
+void fts5PorterDelete(Fts5Tokenizer *pTok){
   if( pTok ){
     PorterTokenizer *p = (PorterTokenizer*)pTok;
     if( p->pTokenizer ){
@@ -574,7 +574,7 @@ static void fts5PorterDelete(Fts5Tokenizer *pTok){
 /*
 ** Create a "porter" tokenizer.
 */
-static int fts5PorterCreate(
+int fts5PorterCreate(
   void *pCtx, 
   const char **azArg, int nArg,
   Fts5Tokenizer **ppOut
@@ -635,7 +635,7 @@ struct PorterRule {
 };
 
 #if 0
-static int fts5PorterApply(char *aBuf, int *pnBuf, PorterRule *aRule){
+int fts5PorterApply(char *aBuf, int *pnBuf, PorterRule *aRule){
   int ret = -1;
   int nBuf = *pnBuf;
   PorterRule *p;
@@ -660,13 +660,13 @@ static int fts5PorterApply(char *aBuf, int *pnBuf, PorterRule *aRule){
 }
 #endif
 
-static int fts5PorterIsVowel(char c, int bYIsVowel){
+int fts5PorterIsVowel(char c, int bYIsVowel){
   return (
       c=='a' || c=='e' || c=='i' || c=='o' || c=='u' || (bYIsVowel && c=='y')
   );
 }
 
-static int fts5PorterGobbleVC(char *zStem, int nStem, int bPrevCons){
+int fts5PorterGobbleVC(char *zStem, int nStem, int bPrevCons){
   int i;
   int bCons = bPrevCons;
 
@@ -683,12 +683,12 @@ static int fts5PorterGobbleVC(char *zStem, int nStem, int bPrevCons){
 }
 
 /* porter rule condition: (m > 0) */
-static int fts5Porter_MGt0(char *zStem, int nStem){
+int fts5Porter_MGt0(char *zStem, int nStem){
   return !!fts5PorterGobbleVC(zStem, nStem, 0);
 }
 
 /* porter rule condition: (m > 1) */
-static int fts5Porter_MGt1(char *zStem, int nStem){
+int fts5Porter_MGt1(char *zStem, int nStem){
   int n;
   n = fts5PorterGobbleVC(zStem, nStem, 0);
   if( n && fts5PorterGobbleVC(&zStem[n], nStem-n, 1) ){
@@ -698,7 +698,7 @@ static int fts5Porter_MGt1(char *zStem, int nStem){
 }
 
 /* porter rule condition: (m = 1) */
-static int fts5Porter_MEq1(char *zStem, int nStem){
+int fts5Porter_MEq1(char *zStem, int nStem){
   int n;
   n = fts5PorterGobbleVC(zStem, nStem, 0);
   if( n && 0==fts5PorterGobbleVC(&zStem[n], nStem-n, 1) ){
@@ -708,7 +708,7 @@ static int fts5Porter_MEq1(char *zStem, int nStem){
 }
 
 /* porter rule condition: (*o) */
-static int fts5Porter_Ostar(char *zStem, int nStem){
+int fts5Porter_Ostar(char *zStem, int nStem){
   if( zStem[nStem-1]=='w' || zStem[nStem-1]=='x' || zStem[nStem-1]=='y' ){
     return 0;
   }else{
@@ -725,14 +725,14 @@ static int fts5Porter_Ostar(char *zStem, int nStem){
 }
 
 /* porter rule condition: (m > 1 and (*S or *T)) */
-static int fts5Porter_MGt1_and_S_or_T(char *zStem, int nStem){
+int fts5Porter_MGt1_and_S_or_T(char *zStem, int nStem){
   assert( nStem>0 );
   return (zStem[nStem-1]=='s' || zStem[nStem-1]=='t') 
       && fts5Porter_MGt1(zStem, nStem);
 }
 
 /* porter rule condition: (*v*) */
-static int fts5Porter_Vowel(char *zStem, int nStem){
+int fts5Porter_Vowel(char *zStem, int nStem){
   int i;
   for(i=0; i<nStem; i++){
     if( fts5PorterIsVowel(zStem[i], i>0) ){
@@ -748,7 +748,7 @@ static int fts5Porter_Vowel(char *zStem, int nStem){
 ** GENERATED CODE STARTS HERE (mkportersteps.tcl)
 */
 
-static int fts5PorterStep4(char *aBuf, int *pnBuf){
+int fts5PorterStep4(char *aBuf, int *pnBuf){
   int ret = 0;
   int nBuf = *pnBuf;
   switch( aBuf[nBuf-2] ){
@@ -882,7 +882,7 @@ static int fts5PorterStep4(char *aBuf, int *pnBuf){
 }
   
 
-static int fts5PorterStep1B2(char *aBuf, int *pnBuf){
+int fts5PorterStep1B2(char *aBuf, int *pnBuf){
   int ret = 0;
   int nBuf = *pnBuf;
   switch( aBuf[nBuf-2] ){
@@ -916,7 +916,7 @@ static int fts5PorterStep1B2(char *aBuf, int *pnBuf){
 }
   
 
-static int fts5PorterStep2(char *aBuf, int *pnBuf){
+int fts5PorterStep2(char *aBuf, int *pnBuf){
   int ret = 0;
   int nBuf = *pnBuf;
   switch( aBuf[nBuf-2] ){
@@ -1063,7 +1063,7 @@ static int fts5PorterStep2(char *aBuf, int *pnBuf){
 }
   
 
-static int fts5PorterStep3(char *aBuf, int *pnBuf){
+int fts5PorterStep3(char *aBuf, int *pnBuf){
   int ret = 0;
   int nBuf = *pnBuf;
   switch( aBuf[nBuf-2] ){
@@ -1129,7 +1129,7 @@ static int fts5PorterStep3(char *aBuf, int *pnBuf){
 }
   
 
-static int fts5PorterStep1B(char *aBuf, int *pnBuf){
+int fts5PorterStep1B(char *aBuf, int *pnBuf){
   int ret = 0;
   int nBuf = *pnBuf;
   switch( aBuf[nBuf-2] ){
@@ -1166,7 +1166,7 @@ static int fts5PorterStep1B(char *aBuf, int *pnBuf){
 ***************************************************************************
 **************************************************************************/
 
-static void fts5PorterStep1A(char *aBuf, int *pnBuf){
+void fts5PorterStep1A(char *aBuf, int *pnBuf){
   int nBuf = *pnBuf;
   if( aBuf[nBuf-1]=='s' ){
     if( aBuf[nBuf-2]=='e' ){
@@ -1184,7 +1184,7 @@ static void fts5PorterStep1A(char *aBuf, int *pnBuf){
   }
 }
 
-static int fts5PorterCb(
+int fts5PorterCb(
   void *pCtx, 
   int tflags,
   const char *pToken, 
@@ -1253,7 +1253,7 @@ static int fts5PorterCb(
 /*
 ** Tokenize using the porter tokenizer.
 */
-static int fts5PorterTokenize(
+int fts5PorterTokenize(
   Fts5Tokenizer *pTokenizer,
   void *pCtx,
   int flags,
@@ -1283,14 +1283,14 @@ struct TrigramTokenizer {
 /*
 ** Free a trigram tokenizer.
 */
-static void fts5TriDelete(Fts5Tokenizer *p){
+void fts5TriDelete(Fts5Tokenizer *p){
   sqlite3_free(p);
 }
 
 /*
 ** Allocate a trigram tokenizer.
 */
-static int fts5TriCreate(
+int fts5TriCreate(
   void *pUnused,
   const char **azArg,
   int nArg,
@@ -1346,7 +1346,7 @@ static int fts5TriCreate(
 /*
 ** Trigram tokenizer tokenize routine.
 */
-static int fts5TriTokenize(
+int fts5TriTokenize(
   Fts5Tokenizer *pTok,
   void *pCtx,
   int unusedFlags,

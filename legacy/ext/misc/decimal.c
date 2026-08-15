@@ -50,14 +50,14 @@ struct Decimal {
 /*
 ** Release memory held by a Decimal, but do not free the object itself.
 */
-static void decimal_clear(Decimal *p){
+void decimal_clear(Decimal *p){
   sqlite3_free(p->a);
 }
 
 /*
 ** Destroy a Decimal object
 */
-static void decimal_free(Decimal *p){
+void decimal_free(Decimal *p){
   if( p ){
     decimal_clear(p);
     sqlite3_free(p);
@@ -71,7 +71,7 @@ static void decimal_free(Decimal *p){
 ** Note that zIn[] is not necessarily zero-terminated.  Always
 ** respect the boundary imposed by the n argument.
 */
-static Decimal *decimalNewFromText(const char *zIn, int n){
+Decimal *decimalNewFromText(const char *zIn, int n){
   Decimal *p = 0;
   int i;
   int iExp = 0;
@@ -183,7 +183,7 @@ new_from_text_failed:
 }
 
 /* Forward reference */
-static Decimal *decimalFromDouble(double);
+Decimal *decimalFromDouble(double);
 
 /*
 ** Allocate a new Decimal object from an sqlite3_value.  Return a pointer
@@ -196,7 +196,7 @@ static Decimal *decimalFromDouble(double);
 ** If pIn is NULL or if it is a BLOB that is not exactly 8 bytes in length,
 ** then NULL is returned.
 */
-static Decimal *decimal_new(
+Decimal *decimal_new(
   sqlite3_context *pCtx,       /* Report error here, if not null */
   sqlite3_value *pIn,          /* Construct the decimal object from this */
   int bTextOnly                /* Always interpret pIn as text if true */
@@ -252,7 +252,7 @@ new_failed:
 /*
 ** Make the given Decimal the result.
 */
-static void decimal_result(sqlite3_context *pCtx, Decimal *p){
+void decimal_result(sqlite3_context *pCtx, Decimal *p){
   char *z;
   int i, j;
   int n;
@@ -303,12 +303,12 @@ static void decimal_result(sqlite3_context *pCtx, Decimal *p){
 }
 
 /* Forward declaration */
-static void decimal_expand(Decimal *p, int nDigit, int nFrac);
+void decimal_expand(Decimal *p, int nDigit, int nFrac);
 
 /*
 ** Round a decimal value to N significant digits.  N must be positive.
 */
-static void decimal_round(Decimal *p, int N){
+void decimal_round(Decimal *p, int N){
   int i;
   int nZero;  /* Number of leading zeros */
   if( N<1 ) return;
@@ -342,7 +342,7 @@ static void decimal_round(Decimal *p, int N){
 ** In other words, show exponential notation with leading and trailing
 ** zeros omitted.
 */
-static void decimal_result_sci(sqlite3_context *pCtx, Decimal *p, int N){
+void decimal_result_sci(sqlite3_context *pCtx, Decimal *p, int N){
   char *z;       /* The output buffer */
   int i;         /* Loop counter */
   int nZero;     /* Number of leading zeros */
@@ -410,7 +410,7 @@ static void decimal_result_sci(sqlite3_context *pCtx, Decimal *p, int N){
 **    pB!=0
 **    pB->isNull==0
 */
-static int decimal_cmp(Decimal *pA, Decimal *pB){
+int decimal_cmp(Decimal *pA, Decimal *pB){
   int nASig, nBSig, rc, n;
   while( pA->nFrac>0 && pA->a[pA->nDigit-1]==0 ){
     pA->nDigit--;
@@ -448,7 +448,7 @@ static int decimal_cmp(Decimal *pA, Decimal *pB){
 ** Return negative, zero, or positive if X is less then, equal to, or
 ** greater than Y.
 */
-static void decimalCmpFunc(
+void decimalCmpFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -474,7 +474,7 @@ cmp_done:
 ** Expand the Decimal so that it has a least nDigit digits and nFrac
 ** digits to the right of the decimal point.
 */
-static void decimal_expand(Decimal *p, int nDigit, int nFrac){
+void decimal_expand(Decimal *p, int nDigit, int nFrac){
   int nAddSig;
   int nAddFrac;
   signed char *a;
@@ -507,7 +507,7 @@ static void decimal_expand(Decimal *p, int nDigit, int nFrac){
 **
 ** Both pA and pB might become denormalized by this routine.
 */
-static void decimal_add(Decimal *pA, Decimal *pB){
+void decimal_add(Decimal *pA, Decimal *pB){
   int nSig, nFrac, nDigit;
   int i, rc;
   if( pA==0 ){
@@ -580,7 +580,7 @@ static void decimal_add(Decimal *pA, Decimal *pB){
 ** the number of digits after the decimal point is no less than
 ** either the number of digits in either input.
 */
-static void decimalMul(Decimal *pA, Decimal *pB){
+void decimalMul(Decimal *pA, Decimal *pB){
   signed char *acc = 0;
   int i, j, k;
   int minFrac;
@@ -633,7 +633,7 @@ mul_end:
 /*
 ** Create a new Decimal object that contains an integer power of 2.
 */
-static Decimal *decimalPow2(int N){
+Decimal *decimalPow2(int N){
   Decimal *pA = 0;      /* The result to be returned */
   Decimal *pX = 0;      /* Multiplier */
   if( N<-20000 || N>20000 ) goto pow2_fault;
@@ -668,7 +668,7 @@ pow2_fault:
 /*
 ** Use an IEEE754 binary64 ("double") to generate a new Decimal object.
 */
-static Decimal *decimalFromDouble(double r){
+Decimal *decimalFromDouble(double r){
   sqlite3_int64 m, a;
   int e;
   int isNeg;
@@ -726,7 +726,7 @@ static Decimal *decimalFromDouble(double r){
 ** The decimal_exp(X) function returns the result in exponential notation.
 ** decimal(X) returns a complete decimal, without the e+NNN at the end.
 */
-static void decimalFunc(
+void decimalFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -752,7 +752,7 @@ static void decimalFunc(
 /*
 ** Compare text in decimal order.
 */
-static int decimalCollFunc(
+int decimalCollFunc(
   void *notUsed,
   int nKey1, const void *pKey1,
   int nKey2, const void *pKey2
@@ -780,7 +780,7 @@ static int decimalCollFunc(
 **
 ** Return the sum or difference of X and Y.
 */
-static void decimalAddFunc(
+void decimalAddFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -793,7 +793,7 @@ static void decimalAddFunc(
   decimal_free(pA);
   decimal_free(pB);
 }
-static void decimalSubFunc(
+void decimalSubFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -815,7 +815,7 @@ static void decimalSubFunc(
 ** Works like sum() except that it uses decimal arithmetic for unlimited
 ** precision.
 */
-static void decimalSumStep(
+void decimalSumStep(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -841,7 +841,7 @@ static void decimalSumStep(
   decimal_add(p, pArg);
   decimal_free(pArg);
 }
-static void decimalSumInverse(
+void decimalSumInverse(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -857,12 +857,12 @@ static void decimalSumInverse(
   decimal_add(p, pArg);
   decimal_free(pArg);
 }
-static void decimalSumValue(sqlite3_context *context){
+void decimalSumValue(sqlite3_context *context){
   Decimal *p = sqlite3_aggregate_context(context, 0);
   if( p==0 ) return;
   decimal_result(context, p);
 }
-static void decimalSumFinalize(sqlite3_context *context){
+void decimalSumFinalize(sqlite3_context *context){
   Decimal *p = sqlite3_aggregate_context(context, 0);
   if( p==0 ) return;
   decimal_result(context, p);
@@ -874,7 +874,7 @@ static void decimalSumFinalize(sqlite3_context *context){
 **
 ** Return the product of X and Y.
 */
-static void decimalMulFunc(
+void decimalMulFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -903,7 +903,7 @@ mul_end:
 **
 ** Return the N-th power of 2.  N must be an integer.
 */
-static void decimalPow2Func(
+void decimalPow2Func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -925,7 +925,7 @@ int sqlite3_decimal_init(
   const sqlite3_api_routines *pApi
 ){
   int rc = SQLITE_OK;
-  static const struct {
+  const struct {
     const char *zFuncName;
     int nArg;
     int iArg;

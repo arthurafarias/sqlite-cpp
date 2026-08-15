@@ -72,7 +72,7 @@ void sqlite3OpenTable(
 ** is managed along with the rest of the Index structure. It will be
 ** released when sqlite3DeleteIndex() is called.
 */
-static SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
+SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
   /* The first time a column affinity string for a particular index is
   ** required, it is allocated and populated here. It is then stored as
   ** a member of the Index structure for subsequent use.
@@ -229,7 +229,7 @@ void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg){
 ** a statement of the form  "INSERT INTO <iDb, pTab> SELECT ..." can
 ** run without using a temporary table for the results of the SELECT.
 */
-static int readsTable(Parse *p, int iDb, Table *pTab){
+int readsTable(Parse *p, int iDb, Table *pTab){
   Vdbe *v = sqlite3GetVdbe(p);
   int i;
   int iEnd = sqlite3VdbeCurrentAddr(v);
@@ -266,7 +266,7 @@ static int readsTable(Parse *p, int iDb, Table *pTab){
 /* This walker callback will compute the union of colFlags flags for all
 ** referenced columns in a CHECK constraint or generated column expression.
 */
-static int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
+int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
   if( pExpr->op==TK_COLUMN && pExpr->iColumn>=0 ){
     assert( pExpr->iColumn < pWalker->u.pTab->nCol );
     pWalker->eCode |= pWalker->u.pTab->aCol[pExpr->iColumn].colFlags;
@@ -406,7 +406,7 @@ void sqlite3ComputeGeneratedColumns(
 ** The 2nd register is the one that is returned.  That is all the
 ** insert routine needs to know about.
 */
-static int autoIncBegin(
+int autoIncBegin(
   Parse *pParse,      /* Parsing context */
   int iDb,            /* Index of the database holding pTab */
   Table *pTab         /* The table we are writing to */
@@ -471,8 +471,8 @@ void sqlite3AutoincrementBegin(Parse *pParse){
 
   assert( v );   /* We failed long ago if this is not so */
   for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoInc[] = {
+    const int iLn = VDBE_OFFSET_LINENO(2);
+    const VdbeOpList autoInc[] = {
       /* 0  */ {OP_Null,    0,  0, 0},
       /* 1  */ {OP_Rewind,  0, 10, 0},
       /* 2  */ {OP_Column,  0,  0, 0},
@@ -518,7 +518,7 @@ void sqlite3AutoincrementBegin(Parse *pParse){
 ** larger than the maximum rowid in the memId memory cell, then the
 ** memory cell is updated.
 */
-static void autoIncStep(Parse *pParse, int memId, int regRowid){
+void autoIncStep(Parse *pParse, int memId, int regRowid){
   if( memId>0 ){
     sqlite3VdbeAddOp2(pParse->pVdbe, OP_MemMax, memId, regRowid);
   }
@@ -531,15 +531,15 @@ static void autoIncStep(Parse *pParse, int memId, int regRowid){
 ** table (either directly or through triggers) needs to call this
 ** routine just before the "exit" code.
 */
-static SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
+SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
   AutoincInfo *p;
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
 
   assert( v );
   for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoIncEnd[] = {
+    const int iLn = VDBE_OFFSET_LINENO(2);
+    const VdbeOpList autoIncEnd[] = {
       /* 0 */ {OP_NotNull,     0, 2, 0},
       /* 1 */ {OP_NewRowid,    0, 0, 0},
       /* 2 */ {OP_MakeRecord,  0, 2, 0},
@@ -600,7 +600,7 @@ void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal){
 ** Return true if all expressions in the expression-list passed as the
 ** only argument are constant.
 */
-static int exprListIsConstant(Parse *pParse, ExprList *pRow){
+int exprListIsConstant(Parse *pParse, ExprList *pRow){
   int ii;
   for(ii=0; ii<pRow->nExpr; ii++){
     if( 0==sqlite3ExprIsConstant(pParse, pRow->a[ii].pExpr) ) return 0;
@@ -612,7 +612,7 @@ static int exprListIsConstant(Parse *pParse, ExprList *pRow){
 ** Return true if all expressions in the expression-list passed as the
 ** only argument are both constant and have no affinity.
 */
-static int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
+int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
   int ii;
   if( exprListIsConstant(pParse,pRow)==0 ) return 0;
   for(ii=0; ii<pRow->nExpr; ii++){
@@ -786,7 +786,7 @@ Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
 }
 
 /* Forward declaration */
-static int xferOptimization(
+int xferOptimization(
   Parse *pParse,        /* Parser context */
   Table *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */
@@ -1686,7 +1686,7 @@ insert_cleanup:
 ** expression node references any of the
 ** columns that are being modified by an UPDATE statement.
 */
-static int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
+int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
   if( pExpr->op==TK_COLUMN ){
     assert( pExpr->iColumn>=0 || pExpr->iColumn==-1 );
     if( pExpr->iColumn>=0 ){
@@ -1773,7 +1773,7 @@ struct IndexListTerm {
 };
 
 /* Return the first index on the list */
-static Index *indexIteratorFirst(IndexIterator *pIter, int *pIx){
+Index *indexIteratorFirst(IndexIterator *pIter, int *pIx){
   assert( pIter->i==0 );
   if( pIter->eType ){
     *pIx = pIter->u.ax.aIdx[0].ix;
@@ -1785,7 +1785,7 @@ static Index *indexIteratorFirst(IndexIterator *pIter, int *pIx){
 }
 
 /* Return the next index from the list.  Return NULL when out of indexes */
-static Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
+Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
   if( pIter->eType ){
     int i = ++pIter->i;
     if( i>=pIter->u.ax.nIdx ){
@@ -2751,7 +2751,7 @@ void sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
 ** if one is registered.
 */
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-static void codeWithoutRowidPreupdate(
+void codeWithoutRowidPreupdate(
   Parse *pParse,                  /* Parse context */
   Table *pTab,                    /* Table being updated */
   int iCur,                       /* Cursor number for table */
@@ -2948,7 +2948,7 @@ int sqlite3_xferopt_count;
 **    *   The same collating sequence on each column
 **    *   The index has the exact same WHERE clause
 */
-static int xferCompatibleIndex(Index *pDest, Index *pSrc){
+int xferCompatibleIndex(Index *pDest, Index *pSrc){
   int i;
   assert( pDest && pSrc );
   assert( pDest->pTable!=pSrc->pTable );
@@ -3009,7 +3009,7 @@ static int xferCompatibleIndex(Index *pDest, Index *pSrc){
 **
 ** This optimization is particularly useful at making VACUUM run faster.
 */
-static int xferOptimization(
+int xferOptimization(
   Parse *pParse,        /* Parser context */
   Table *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */

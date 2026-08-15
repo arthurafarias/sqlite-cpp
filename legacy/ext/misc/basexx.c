@@ -40,7 +40,7 @@
 SQLITE_EXTENSION_INIT1;
 #endif
 
-static void init_api_ptr(const sqlite3_api_routines *pApi){
+void init_api_ptr(const sqlite3_api_routines *pApi){
   SQLITE_EXTENSION_INIT2(pApi);
 }
 

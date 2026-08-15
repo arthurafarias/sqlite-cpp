@@ -68,7 +68,7 @@ public abstract class AggregateFunction<T> implements SQLFunction {
      approaches. The provided {@link AggregateFunction} and {@link
      WindowFunction} classes use this.
   */
-  public static final class PerContextState<T> {
+  public final class PerContextState<T> {
     private final java.util.Map<Long,ValueHolder<T>> map
       = new java.util.HashMap<>();
 

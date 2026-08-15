@@ -249,7 +249,7 @@ class Outer {
     }
   }
 
-  static #verboseLabel = ["🔈",/*"🔉",*/"🔊","📢"];
+  #verboseLabel = ["🔈",/*"🔉",*/"🔊","📢"];
   verboseN(lvl, args){
     if( this.#verbosity>=lvl ){
       this.#outlnImpl(lvl, Outer.#verboseLabel[lvl-1],': ',...args);
@@ -1283,9 +1283,9 @@ class VerbosityCommand extends Command {
 }
 
 class CommandDispatcher {
-  static map = newObj();
+  map = newObj();
 
-  static getCommandByName(name){
+  getCommandByName(name){
     let rv = CommandDispatcher.map[name];
     if( rv ) return rv;
     switch(name){
@@ -1313,7 +1313,7 @@ class CommandDispatcher {
     return rv;
   }
 
-  static dispatch(tester, testScript, argv){
+  dispatch(tester, testScript, argv){
     const cmd = CommandDispatcher.getCommandByName(argv[0]);
     if( !cmd ){
       toss(UnknownCommand,testScript,argv[0]);

@@ -24,7 +24,7 @@ SQLITE_EXTENSION_INIT1
 /*
 ** Display the authorization request
 */
-static int authCallback(
+int authCallback(
   void *pClientData,
   int op,
   const char *z1,

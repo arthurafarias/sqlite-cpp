@@ -21,7 +21,7 @@
 ** Print all locks on the inode of "fd" that occur in between
 ** lwr and upr, inclusive.
 */
-static int showLocksInRange(int fd, off_t lwr, off_t upr){
+int showLocksInRange(int fd, off_t lwr, off_t upr){
   int cnt = 0;
   struct flock x;
   struct lockRange {

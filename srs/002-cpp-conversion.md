@@ -114,7 +114,7 @@ strategy*.
 SRS 002 is implemented through the first five dependency leaves, ending with
 `sqlite-core-virtual-machine`:
 
-- Every static file in all five libraries' `csrc` directories is now `.cpp` or
+- Every file in all five libraries' `csrc` directories is now `.cpp` or
   `.hpp` (`sqlite-core-virtual-machine`'s generated `opcodes.c` stays plain C,
   compiled separately from the facade -- see below), and all five shared
   targets require C++17. The other five split libraries remain C targets at

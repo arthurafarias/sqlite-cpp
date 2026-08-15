@@ -52,7 +52,7 @@ enum BuildDefFlags {
   ** (who is responsible for any testing of these).
   **
   ** The only difference beween bundler-friendly and esm builds is
-  ** that bundlers require static filename strings in a few places due
+  ** that bundlers require filename strings in a few places due
   ** to limitations of bundler tooling, whereas vanilla and JS can
   ** both work with dynamic strings.
   */
@@ -430,7 +430,7 @@ const BuildDefs oBuildDefs = {
 ** Emits common vars needed by the rest of the emitted code (but not
 ** needed by makefile code outside of these generated pieces).
 */
-static void mk_prologue(void){
+void mk_prologue(void){
   /* A 0-terminated list of makefile vars which we expect to have been
   ** set up by this point in the build process. */
   char const * aRequiredVars[] = {
@@ -583,11 +583,11 @@ static void mk_prologue(void){
 #define C_PP_D_CUSTOM_INSTANTIATE
 #endif
 
-static char const * BuildDef_jsext(const BuildDef * pB){
+char const * BuildDef_jsext(const BuildDef * pB){
   return (F_ESM & pB->flags) ? ".mjs" : ".js";
 }
 
-static char const * BuildDef_basename(const BuildDef * pB){
+char const * BuildDef_basename(const BuildDef * pB){
   return pB->zBaseName ? pB->zBaseName : oBuildDefs.vanilla.zBaseName;
 }
 
@@ -600,7 +600,7 @@ static char const * BuildDef_basename(const BuildDef * pB){
 **
 ** pB may be NULL.
 */
-static void mk_pre_post(char const *zBuildName, BuildDef const * pB){
+void mk_pre_post(char const *zBuildName, BuildDef const * pB){
   char const * const zBaseName = pB
     ? BuildDef_basename(pB) : 0;
 
@@ -714,13 +714,13 @@ static void mk_pre_post(char const *zBuildName, BuildDef const * pB){
   pf("# End --pre/--post flags for %s%s", zBuildName, zBanner);
 }
 
-static void emit_compile_start(char const *zBuildName){
+void emit_compile_start(char const *zBuildName){
   pf("\t@$(call b.mkdir@);"
      " $(call b.echo,%s,$(emo.compile) building ...)\n",
      zBuildName);
 }
 
-static void emit_logtag(char const *zBuildName){
+void emit_logtag(char const *zBuildName){
 #if 1
   pf("logtag.%s ?= [$(emo.b.%s)$(if $@, $@,)]:\n",
      zBuildName, zBuildName);
@@ -735,7 +735,7 @@ static void emit_logtag(char const *zBuildName){
 /**
    Emit rules for sqlite3-api.${zBuildName}.js.
 */
-static void emit_api_js(char const *zBuildName){
+void emit_api_js(char const *zBuildName){
   pf("sqlite3-api.%s.js = $(dir.tmp)/sqlite3-api.%s.js\n",
      zBuildName, zBuildName);
   pf("$(eval $(call b.c-pp.target,"
@@ -758,7 +758,7 @@ static void emit_api_js(char const *zBuildName){
 /*
 ** Emits makefile code for one build of the library.
 */
-static void mk_lib_mode(const char *zBuildName, const BuildDef * pB){
+void mk_lib_mode(const char *zBuildName, const BuildDef * pB){
   const char * zJsExt = BuildDef_jsext(pB);
   char const * const zBaseName = BuildDef_basename(pB);
 
@@ -957,7 +957,7 @@ static void mk_lib_mode(const char *zBuildName, const BuildDef * pB){
 }
 
 
-static void emit_gz(char const *zBuildName,
+void emit_gz(char const *zBuildName,
                     char const *zFileExt){
   pf("\n$(out.%s.%s).gz: $(out.%s.%s)\n"
      "\t@$(call b.echo,%s,$(emo.disk))\n"
@@ -970,7 +970,7 @@ static void emit_gz(char const *zBuildName,
 /*
 ** Emits rules for the fiddle builds.
 */
-static void mk_fiddle(void){
+void mk_fiddle(void){
   for(int i = 0; i < 2; ++i ){
     /* 0==normal, 1==debug */
     int const isDebug = i>0;

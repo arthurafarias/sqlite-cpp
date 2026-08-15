@@ -85,7 +85,7 @@ int sqlite3VdbeCheckMemInvariants(Mem *p){
   **   (1) Memory in Mem.zMalloc and managed by the Mem object
   **   (2) Memory to be freed using Mem.xDel
   **   (3) An ephemeral string or blob
-  **   (4) A static string or blob
+  **   (4) A string or blob
   */
   if( (p->flags & (MEM_Str|MEM_Blob)) && p->n>0 ){
     assert( 
@@ -103,7 +103,7 @@ int sqlite3VdbeCheckMemInvariants(Mem *p){
 ** Render a Mem object which is one of MEM_Int, MEM_Real, or MEM_IntReal
 ** into a buffer.
 */
-static void vdbeMemRenderNum(int sz, char *zBuf, Mem *p){
+void vdbeMemRenderNum(int sz, char *zBuf, Mem *p){
   StrAccum acc;
   assert( p->flags & (MEM_Int|MEM_Real|MEM_IntReal) );
   assert( sz>22 );
@@ -335,7 +335,7 @@ int sqlite3VdbeMemClearAndResize(Mem *pMem, int szNew){
 */
 int sqlite3VdbeMemZeroTerminateIfAble(Mem *pMem){
   if( (pMem->flags & (MEM_Str|MEM_Term|MEM_Ephem|MEM_Static))!=MEM_Str ){
-    /* pMem must be a string, and it cannot be an ephemeral or static string */
+    /* pMem must be a string, and it cannot be an ephemeral or string */
     return 0;
   }
   if( pMem->enc!=SQLITE_UTF8 ) return 0;
@@ -370,7 +370,7 @@ int sqlite3VdbeMemZeroTerminateIfAble(Mem *pMem){
 ** terminate a UTF16 string, even if the initial size of the buffer
 ** is an odd number of bytes.
 */
-static SQLITE_NOINLINE int vdbeMemAddTerminator(Mem *pMem){
+SQLITE_NOINLINE int vdbeMemAddTerminator(Mem *pMem){
   if( sqlite3VdbeMemGrow(pMem, pMem->n+3, 1) ){
     return SQLITE_NOMEM_BKPT;
   }
@@ -563,7 +563,7 @@ int sqlite3VdbeMemAggValue(Mem *pAccum, Mem *pOut, FuncDef *pFunc){
 ** for sqlite3VdbeMemRelease().  Use those other routines as the
 ** entry point for releasing Mem resources.
 */
-static SQLITE_NOINLINE void vdbeMemClearExternAndSetNull(Mem *p){
+SQLITE_NOINLINE void vdbeMemClearExternAndSetNull(Mem *p){
   assert( p->db==0 || sqlite3_mutex_held(p->db->mutex) );
   assert( VdbeMemDynamic(p) );
   if( p->flags&MEM_Agg ){
@@ -586,7 +586,7 @@ static SQLITE_NOINLINE void vdbeMemClearExternAndSetNull(Mem *p){
 ** the unusual case where there really is memory in p that needs
 ** to be freed.
 */
-static SQLITE_NOINLINE void vdbeMemClear(Mem *p){
+SQLITE_NOINLINE void vdbeMemClear(Mem *p){
   if( VdbeMemDynamic(p) ){
     vdbeMemClearExternAndSetNull(p);
   }
@@ -633,7 +633,7 @@ void sqlite3VdbeMemReleaseMalloc(Mem *p){
 **
 ** If pMem represents a string value, its encoding might be changed.
 */
-static SQLITE_NOINLINE i64 memIntValue(const Mem *pMem){
+SQLITE_NOINLINE i64 memIntValue(const Mem *pMem){
   i64 value = 0;
   sqlite3Atoi64(pMem->z, &value, pMem->n, pMem->enc);
   return value;
@@ -674,7 +674,7 @@ i64 sqlite3VdbeIntValue(const Mem *pMem){
 **    (rc&2)==0     =>   The number is expressed as an integer, with no
 **                       decimal point or eNNN suffix.
 */
-static SQLITE_NOINLINE int sqlite3MemRealValueRCSlowPath(
+SQLITE_NOINLINE int sqlite3MemRealValueRCSlowPath(
   Mem *pMem,
   double *pValue
 ){
@@ -755,7 +755,7 @@ int sqlite3MemRealValueRC(Mem *pMem, double *pValue){
 ** sqlite3VdbeRealValueRC, allowing sqlite3VdbeRealValue() to avoid
 ** stuffing values onto the stack.
 */
-static SQLITE_NOINLINE double sqlite3MemRealValueNoRC(Mem *pMem){
+SQLITE_NOINLINE double sqlite3MemRealValueNoRC(Mem *pMem){
   double r;
   (void)sqlite3MemRealValueRC(pMem, &r);
   return r;
@@ -1036,7 +1036,7 @@ int sqlite3VdbeMemSetZeroBlob(Mem *pMem, int n){
 ** to a value change.  So invoke the destructor, then set the value to
 ** a 64-bit integer.
 */
-static SQLITE_NOINLINE void vdbeReleaseAndSetInt64(Mem *pMem, i64 val){
+SQLITE_NOINLINE void vdbeReleaseAndSetInt64(Mem *pMem, i64 val){
   sqlite3VdbeMemSetNull(pMem);
   pMem->u.i = val;
   pMem->flags = MEM_Int;
@@ -1193,7 +1193,7 @@ void sqlite3VdbeMemAboutToChange(Vdbe *pVdbe, Mem *pMem){
 ** pFrom->z is used, then pTo->z points to the same thing as pFrom->z
 ** and flags gets srcType (either MEM_Ephem or MEM_Static).
 */
-static SQLITE_NOINLINE void vdbeClrCopy(Mem *pTo, const Mem *pFrom, int eType){
+SQLITE_NOINLINE void vdbeClrCopy(Mem *pTo, const Mem *pFrom, int eType){
   vdbeMemClearExternAndSetNull(pTo);
   assert( !VdbeMemDynamic(pTo) );
   sqlite3VdbeMemShallowCopy(pTo, pFrom, eType);
@@ -1519,7 +1519,7 @@ int sqlite3VdbeMemFromBtreeZeroOffset(
 ** Convert it into a string with encoding enc and return a pointer
 ** to a zero-terminated version of that string.
 */
-static SQLITE_NOINLINE const void *valueToText(sqlite3_value* pVal, u8 enc){
+SQLITE_NOINLINE const void *valueToText(sqlite3_value* pVal, u8 enc){
   assert( pVal!=0 );
   assert( pVal->db==0 || sqlite3_mutex_held(pVal->db->mutex) );
   assert( (enc&3)==(enc&~SQLITE_UTF16_ALIGNED) );
@@ -1629,7 +1629,7 @@ struct ValueNewStat4Ctx {
 ** that function will return to its caller here. Then return a pointer to
 ** an sqlite3_value within the UnpackedRecord.a[] array.
 */
-static sqlite3_value *valueNew(sqlite3 *db, struct ValueNewStat4Ctx *p){
+sqlite3_value *valueNew(sqlite3 *db, struct ValueNewStat4Ctx *p){
 #ifdef SQLITE_ENABLE_STAT4
   if( p ){
     UnpackedRecord *pRec = p->ppRec[0];
@@ -1692,7 +1692,7 @@ static sqlite3_value *valueNew(sqlite3 *db, struct ValueNewStat4Ctx *p){
 ** NULL and an SQLite error code returned.
 */
 #ifdef SQLITE_ENABLE_STAT4
-static int valueFromFunction(
+int valueFromFunction(
   sqlite3 *db,                    /* The database connection */
   const Expr *p,                  /* The expression to evaluate */
   u8 enc,                         /* Encoding to use */
@@ -1792,7 +1792,7 @@ static int valueFromFunction(
 ** NULL, it is assumed that the caller will free any allocated object
 ** in all cases.
 */
-static int valueFromExpr(
+int valueFromExpr(
   sqlite3 *db,                    /* The database connection */
   const Expr *pExpr,              /* The expression to evaluate */
   u8 enc,                         /* Encoding to use */
@@ -2004,7 +2004,7 @@ int sqlite3ValueFromExpr(
 ** On success, *ppVal is made to point to the extracted value.  The caller
 ** is responsible for ensuring that the value is eventually freed.
 */
-static int stat4ValueFromExpr(
+int stat4ValueFromExpr(
   Parse *pParse,                  /* Parse context */
   Expr *pExpr,                    /* The expression to extract a value from */
   u8 affinity,                    /* Affinity to use */
@@ -2233,7 +2233,7 @@ void sqlite3ValueFree(sqlite3_value *v){
 ** sqlite3_value object assuming that it uses the encoding "enc".
 ** The valueBytes() routine is a helper function.
 */
-static SQLITE_NOINLINE int valueBytes(sqlite3_value *pVal, u8 enc){
+SQLITE_NOINLINE int valueBytes(sqlite3_value *pVal, u8 enc){
   return valueToText(pVal, enc)!=0 ? pVal->n : 0;
 }
 int sqlite3ValueBytes(sqlite3_value *pVal, u8 enc){

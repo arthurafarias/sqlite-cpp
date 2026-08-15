@@ -25,7 +25,7 @@
 # SQLITE_ENABLE_STMTVTAB are deliberately NOT included, unlike the shell's
 # original flag set: main.c references sqlite3Fts3Init/sqlite3RtreeInit/
 # sqlite3StmtVtabInit unconditionally once those macros are defined (a
-# static per-connection init-function array), and those functions live in
+# per-connection init-function array), and those functions live in
 # ext/fts3/fts3.c, ext/rtree/rtree.c, and ext/misc/stmt.c respectively --
 # extensions SRS 001 S3.6 explicitly defers, not part of any of the 9
 # libraries. Defining the macro without the implementation is an unresolved
@@ -54,7 +54,7 @@ set(SQLITE_CPP_LIBRARY_NAMES
 # one dependency leaf at a time. No
 # target_link_libraries() is declared between sibling sqlite-cpp libraries --
 # CMake refuses genuine target-level cycles between SHARED_LIBRARY targets
-# ("Cyclic dependencies are allowed only among static libraries"), and the
+# ("Cyclic dependencies are allowed only among libraries"), and the
 # real C symbol graph *is* cyclic across the SRS 001 S1.3 boundaries (see
 # that document's FR-4 status note): sqlite-utils itself reaches into
 # Btree/Pager/Vdbe symbols nominally "above" it. Each .so is therefore built

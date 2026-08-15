@@ -119,7 +119,7 @@ proc fts5c_printfile {zIn} {
          ![regexp { sqlite3Fts5Init\(} $line] 
        && [regexp {^(const )?[a-zA-Z][a-zA-Z0-9]* [*]?sqlite3Fts5} $line]
     } {
-      set line "static $line"
+      set line "$line"
     }
     set line [string map $sub_map $line]
     puts $G(fd) $line

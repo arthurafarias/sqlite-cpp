@@ -38,22 +38,22 @@ import org.sqlite.jni.capi.CApi;
 
 public class Tester2 implements Runnable {
   //! True when running in multi-threaded mode.
-  private static boolean mtMode = false;
+  private boolean mtMode = false;
   //! True to sleep briefly between tests.
-  private static boolean takeNaps = false;
+  private boolean takeNaps = false;
   //! True to shuffle the order of the tests.
-  private static boolean shuffle = false;
+  private boolean shuffle = false;
   //! True to dump the list of to-run tests to stdout.
-  private static int listRunTests = 0;
+  private int listRunTests = 0;
   //! True to squelch all out() and outln() output.
-  private static boolean quietMode = false;
+  private boolean quietMode = false;
   //! Total number of runTests() calls.
-  private static int nTestRuns = 0;
+  private int nTestRuns = 0;
   //! List of test*() methods to run.
-  private static List<java.lang.reflect.Method> testMethods = null;
+  private List<java.lang.reflect.Method> testMethods = null;
   //! List of exceptions collected by run()
-  private static final List<Exception> listErrors = new ArrayList<>();
-  private static final class Metrics {
+  private final List<Exception> listErrors = new ArrayList<>();
+  private final class Metrics {
     //! Number of times createNewDb() (or equivalent) is invoked.
     volatile int dbOpen = 0;
   }
@@ -65,35 +65,35 @@ public class Tester2 implements Runnable {
     tId = id;
   }
 
-  static final Metrics metrics = new Metrics();
+  final Metrics metrics = new Metrics();
 
-  public static synchronized void outln(){
+  public synchronized void outln(){
     if( !quietMode ){
       System.out.println();
     }
   }
 
-  public static synchronized void outPrefix(){
+  public synchronized void outPrefix(){
     if( !quietMode ){
       System.out.print(Thread.currentThread().getName()+": ");
     }
   }
 
-  public static synchronized void outln(Object val){
+  public synchronized void outln(Object val){
     if( !quietMode ){
       outPrefix();
       System.out.println(val);
     }
   }
 
-  public static synchronized void out(Object val){
+  public synchronized void out(Object val){
     if( !quietMode ){
       System.out.print(val);
     }
   }
 
   @SuppressWarnings("unchecked")
-  public static synchronized void out(Object... vals){
+  public synchronized void out(Object... vals){
     if( !quietMode ){
       outPrefix();
       for(Object v : vals) out(v);
@@ -101,14 +101,14 @@ public class Tester2 implements Runnable {
   }
 
   @SuppressWarnings("unchecked")
-  public static synchronized void outln(Object... vals){
+  public synchronized void outln(Object... vals){
     if( !quietMode ){
       out(vals); out("\n");
     }
   }
 
-  static volatile int affirmCount = 0;
-  public static synchronized int affirm(Boolean v, String comment){
+  volatile int affirmCount = 0;
+  public synchronized int affirm(Boolean v, String comment){
     ++affirmCount;
     if( false ) assert( v /* prefer assert over exception if it's enabled because
                  the JNI layer sometimes has to suppress exceptions,
@@ -118,12 +118,12 @@ public class Tester2 implements Runnable {
     return affirmCount;
   }
 
-  public static void affirm(Boolean v){
+  public void affirm(Boolean v){
     affirm(v, "Affirmation failed.");
   }
 
 
-  public static void execSql(Sqlite db, String sql[]){
+  public void execSql(Sqlite db, String sql[]){
     execSql(db, String.join("", sql));
   }
 
@@ -132,7 +132,7 @@ public class Tester2 implements Runnable {
      is true then it will throw for any prepare/step errors, else it
      will return the corresponding non-0 result code.
   */
-  public static int execSql(Sqlite dbw, boolean throwOnError, String sql){
+  public int execSql(Sqlite dbw, boolean throwOnError, String sql){
     final ValueHolder<Integer> rv = new ValueHolder<>(0);
     final Sqlite.PrepareMulti pm = new Sqlite.PrepareMulti(){
         @Override public void call(Sqlite.Stmt stmt){
@@ -156,7 +156,7 @@ public class Tester2 implements Runnable {
     return (rv.value==Sqlite.DONE) ? 0 : rv.value;
   }
 
-  static void execSql(Sqlite db, String sql){
+  void execSql(Sqlite db, String sql){
     execSql(db, true, sql);
   }
 
@@ -1036,7 +1036,7 @@ public class Tester2 implements Runnable {
 
      -v: emit some developer-mode info at the end.
   */
-  public static void main(String[] args) throws Exception {
+  public void main(String[] args) throws Exception {
     int nThread = 1;
     int nRepeat = 1;
     boolean doSomethingForDev = false;

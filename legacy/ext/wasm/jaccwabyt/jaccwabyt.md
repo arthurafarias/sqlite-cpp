@@ -1144,7 +1144,7 @@ The approach used in developing and testing _this_ software is...
 
 Below is a complete copy/pastable example of how we can use a small
 set of macros to generate struct descriptions from C99 or later into
-static string memory. Simply add such a file to your WASM build,
+string memory. Simply add such a file to your WASM build,
 arrange for its function to be exported[^export-func], and call it
 from JS (noting that it requires environment-specific JS glue to
 convert the returned pointer to a JS-side string). Use `JSON.parse()`
@@ -1169,7 +1169,7 @@ struct ExampleStruct {
 typedef struct ExampleStruct ExampleStruct;
 
 const char * wasm__ctype_json(void){
-  static char strBuf[512 * 8] = {0}
+  char strBuf[512 * 8] = {0}
     /* Static buffer which must be sized large enough for
        our JSON. The string-generation macros try very
        hard to assert() if this buffer is too small. */;

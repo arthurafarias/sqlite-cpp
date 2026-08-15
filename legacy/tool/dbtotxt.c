@@ -47,7 +47,7 @@
 #include <ctype.h>
  
 /* Return true if the line is all zeros */
-static int allZero(unsigned char *aLine){
+int allZero(unsigned char *aLine){
   int i;
   for(i=0; i<16 && aLine[i]==0; i++){}
   return i==16;

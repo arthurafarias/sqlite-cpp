@@ -1283,7 +1283,7 @@ struct BusyHandler {
 
 /*
 ** When SQLITE_OMIT_WSD is defined, it means that the target platform does
-** not support Writable Static Data (WSD) such as global and static variables.
+** not support Writable Static Data (WSD) such as global and variables.
 ** All variables must either be on the stack or dynamically allocated from
 ** the heap.  When WSD is unsupported, the variable declarations scattered
 ** throughout the SQLite code must become constants instead.  The SQLITE_WSD
@@ -2882,7 +2882,7 @@ struct IndexSample {
 ** that the owner of the "z" string does not deallocate the string before
 ** the Token goes out of scope!  Very often, the "z" points to some place
 ** in the middle of the Parse.zSql text.  But it might also point to a
-** static string.
+** string.
 */
 struct Token {
   const char *z;     /* Text of the token.  Not NULL-terminated! */

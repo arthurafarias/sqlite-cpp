@@ -172,7 +172,7 @@ struct sqlite3expert {
 ** Allocate and return nByte bytes of zeroed memory using sqlite3_malloc(). 
 ** If the allocation fails, set *pRc to SQLITE_NOMEM and return NULL.
 */
-static void *idxMalloc(int *pRc, i64 nByte){
+void *idxMalloc(int *pRc, i64 nByte){
   void *pRet;
   assert( *pRc==SQLITE_OK );
   assert( nByte>0 );
@@ -188,14 +188,14 @@ static void *idxMalloc(int *pRc, i64 nByte){
 /*
 ** Initialize an IdxHash hash table.
 */
-static void idxHashInit(IdxHash *pHash){
+void idxHashInit(IdxHash *pHash){
   memset(pHash, 0, sizeof(IdxHash));
 }
 
 /*
 ** Reset an IdxHash hash table.
 */
-static void idxHashClear(IdxHash *pHash){
+void idxHashClear(IdxHash *pHash){
   int i;
   for(i=0; i<IDX_HASH_SIZE; i++){
     IdxHashEntry *pEntry;
@@ -213,7 +213,7 @@ static void idxHashClear(IdxHash *pHash){
 ** Return the index of the hash bucket that the string specified by the
 ** arguments to this function belongs.
 */
-static int idxHashString(const char *z, int n){
+int idxHashString(const char *z, int n){
   unsigned int ret = 0;
   int i;
   for(i=0; i<n; i++){
@@ -227,7 +227,7 @@ static int idxHashString(const char *z, int n){
 ** nothing. Otherwise, add an entry with key zKey and payload string zVal to
 ** the hash table passed as the second argument. 
 */
-static int idxHashAdd(
+int idxHashAdd(
   int *pRc, 
   IdxHash *pHash, 
   const char *zKey,
@@ -264,7 +264,7 @@ static int idxHashAdd(
 ** If zKey/nKey is present in the hash table, return a pointer to the 
 ** hash-entry object.
 */
-static IdxHashEntry *idxHashFind(IdxHash *pHash, const char *zKey, int nKey){
+IdxHashEntry *idxHashFind(IdxHash *pHash, const char *zKey, int nKey){
   int iHash;
   IdxHashEntry *pEntry;
   if( nKey<0 ) nKey = STRLEN(zKey);
@@ -284,7 +284,7 @@ static IdxHashEntry *idxHashFind(IdxHash *pHash, const char *zKey, int nKey){
 ** to the payload string. Otherwise, if zKey/nKey is not present in the
 ** hash table, return NULL.
 */
-static const char *idxHashSearch(IdxHash *pHash, const char *zKey, int nKey){
+const char *idxHashSearch(IdxHash *pHash, const char *zKey, int nKey){
   IdxHashEntry *pEntry = idxHashFind(pHash, zKey, nKey);
   if( pEntry ) return pEntry->zVal;
   return 0;
@@ -294,7 +294,7 @@ static const char *idxHashSearch(IdxHash *pHash, const char *zKey, int nKey){
 ** Allocate and return a new IdxConstraint object. Set the IdxConstraint.zColl
 ** variable to point to a copy of nul-terminated string zColl.
 */
-static IdxConstraint *idxNewConstraint(int *pRc, const char *zColl){
+IdxConstraint *idxNewConstraint(int *pRc, const char *zColl){
   IdxConstraint *pNew;
   int nColl = STRLEN(zColl);
 
@@ -311,7 +311,7 @@ static IdxConstraint *idxNewConstraint(int *pRc, const char *zColl){
 ** An error associated with database handle db has just occurred. Pass
 ** the error message to callback function xOut.
 */
-static void idxDatabaseError(
+void idxDatabaseError(
   sqlite3 *db,                    /* Database handle */
   char **pzErrmsg                 /* Write error here */
 ){
@@ -321,7 +321,7 @@ static void idxDatabaseError(
 /*
 ** Prepare an SQL statement.
 */
-static int idxPrepareStmt(
+int idxPrepareStmt(
   sqlite3 *db,                    /* Database handle to compile against */
   sqlite3_stmt **ppStmt,          /* OUT: Compiled SQL statement */
   char **pzErrmsg,                /* OUT: sqlite3_malloc()ed error message */
@@ -338,7 +338,7 @@ static int idxPrepareStmt(
 /*
 ** Prepare an SQL statement using the results of a printf() formatting.
 */
-static int idxPrintfPrepareStmt(
+int idxPrintfPrepareStmt(
   sqlite3 *db,                    /* Database handle to compile against */
   sqlite3_stmt **ppStmt,          /* OUT: Compiled SQL statement */
   char **pzErrmsg,                /* OUT: sqlite3_malloc()ed error message */
@@ -377,7 +377,7 @@ struct ExpertCsr {
   sqlite3_stmt *pData;
 };
 
-static char *expertDequote(const char *zIn){
+char *expertDequote(const char *zIn){
   i64 n = STRLEN(zIn);
   char *zRet = sqlite3_malloc64(n);
 
@@ -409,7 +409,7 @@ static char *expertDequote(const char *zIn){
 **   argv[2]   -> table name
 **   argv[...] -> column names...
 */
-static int expertConnect(
+int expertConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -445,13 +445,13 @@ static int expertConnect(
   return rc;
 }
 
-static int expertDisconnect(sqlite3_vtab *pVtab){
+int expertDisconnect(sqlite3_vtab *pVtab){
   ExpertVtab *p = (ExpertVtab*)pVtab;
   sqlite3_free(p);
   return SQLITE_OK;
 }
 
-static int expertBestIndex(sqlite3_vtab *pVtab, sqlite3_index_info *pIdxInfo){
+int expertBestIndex(sqlite3_vtab *pVtab, sqlite3_index_info *pIdxInfo){
   ExpertVtab *p = (ExpertVtab*)pVtab;
   int rc = SQLITE_OK;
   int n = 0;
@@ -518,7 +518,7 @@ static int expertBestIndex(sqlite3_vtab *pVtab, sqlite3_index_info *pIdxInfo){
   return rc;
 }
 
-static int expertUpdate(
+int expertUpdate(
   sqlite3_vtab *pVtab, 
   int nData, 
   sqlite3_value **azData, 
@@ -534,7 +534,7 @@ static int expertUpdate(
 /* 
 ** Virtual table module xOpen method.
 */
-static int expertOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+int expertOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   int rc = SQLITE_OK;
   ExpertCsr *pCsr;
   (void)pVTab;
@@ -546,7 +546,7 @@ static int expertOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 /* 
 ** Virtual table module xClose method.
 */
-static int expertClose(sqlite3_vtab_cursor *cur){
+int expertClose(sqlite3_vtab_cursor *cur){
   ExpertCsr *pCsr = (ExpertCsr*)cur;
   sqlite3_finalize(pCsr->pData);
   sqlite3_free(pCsr);
@@ -559,7 +559,7 @@ static int expertClose(sqlite3_vtab_cursor *cur){
 ** Return non-zero if the cursor does not currently point to a valid 
 ** record (i.e if the scan has finished), or zero otherwise.
 */
-static int expertEof(sqlite3_vtab_cursor *cur){
+int expertEof(sqlite3_vtab_cursor *cur){
   ExpertCsr *pCsr = (ExpertCsr*)cur;
   return pCsr->pData==0;
 }
@@ -567,7 +567,7 @@ static int expertEof(sqlite3_vtab_cursor *cur){
 /* 
 ** Virtual table module xNext method.
 */
-static int expertNext(sqlite3_vtab_cursor *cur){
+int expertNext(sqlite3_vtab_cursor *cur){
   ExpertCsr *pCsr = (ExpertCsr*)cur;
   int rc = SQLITE_OK;
 
@@ -586,7 +586,7 @@ static int expertNext(sqlite3_vtab_cursor *cur){
 /* 
 ** Virtual table module xRowid method.
 */
-static int expertRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int expertRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   (void)cur;
   *pRowid = 0;
   return SQLITE_OK;
@@ -595,7 +595,7 @@ static int expertRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 /* 
 ** Virtual table module xColumn method.
 */
-static int expertColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+int expertColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   ExpertCsr *pCsr = (ExpertCsr*)cur;
   sqlite3_value *pVal;
   pVal = sqlite3_column_value(pCsr->pData, i);
@@ -608,7 +608,7 @@ static int expertColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
 /* 
 ** Virtual table module xFilter method.
 */
-static int expertFilter(
+int expertFilter(
   sqlite3_vtab_cursor *cur, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -636,8 +636,8 @@ static int expertFilter(
   return rc;
 }
 
-static int idxRegisterVtab(sqlite3expert *p){
-  static sqlite3_module expertModule = {
+int idxRegisterVtab(sqlite3expert *p){
+  sqlite3_module expertModule = {
     2,                            /* iVersion */
     expertConnect,                /* xCreate - create a table */
     expertConnect,                /* xConnect - connect to an existing table */
@@ -675,7 +675,7 @@ static int idxRegisterVtab(sqlite3expert *p){
 ** is called, set it to the return value of sqlite3_finalize() before
 ** returning. Otherwise, discard the sqlite3_finalize() return value.
 */
-static void idxFinalize(int *pRc, sqlite3_stmt *pStmt){
+void idxFinalize(int *pRc, sqlite3_stmt *pStmt){
   int rc = sqlite3_finalize(pStmt);
   if( *pRc==SQLITE_OK ) *pRc = rc;
 }
@@ -690,7 +690,7 @@ static void idxFinalize(int *pRc, sqlite3_stmt *pStmt){
 ** It is the responsibility of the caller to eventually free either the
 ** IdxTable object or error message using sqlite3_free().
 */
-static int idxGetTableInfo(
+int idxGetTableInfo(
   sqlite3 *db,                    /* Database connection to read details from */
   const char *zTab,               /* Table name */
   IdxTable **ppOut,               /* OUT: New object (if successful) */
@@ -787,7 +787,7 @@ static int idxGetTableInfo(
 ** in a buffer allocated by sqlite3_malloc(). sqlite3_free() is called on
 ** zIn before returning.
 */
-static char *idxAppendText(int *pRc, char *zIn, const char *zFmt, ...){
+char *idxAppendText(int *pRc, char *zIn, const char *zFmt, ...){
   va_list ap;
   char *zAppend = 0;
   char *zRet = 0;
@@ -819,7 +819,7 @@ static char *idxAppendText(int *pRc, char *zIn, const char *zFmt, ...){
 ** Return true if zId must be quoted in order to use it as an SQL
 ** identifier, or false otherwise.
 */
-static int idxIdentifierRequiresQuotes(const char *zId){
+int idxIdentifierRequiresQuotes(const char *zId){
   int i;
   int nId = STRLEN(zId);
   
@@ -841,7 +841,7 @@ static int idxIdentifierRequiresQuotes(const char *zId){
 ** This function appends an index column definition suitable for constraint
 ** pCons to the string passed as zIn and returns the result.
 */
-static char *idxAppendColDefn(
+char *idxAppendColDefn(
   int *pRc,                       /* IN/OUT: Error code */
   char *zIn,                      /* Column defn accumulated so far */
   IdxTable *pTab,                 /* Table index will be created on */
@@ -879,7 +879,7 @@ static char *idxAppendColDefn(
 **
 ** If an error occurs, set *pRc to an SQLite error code and return zero.
 */
-static int idxFindCompatible(
+int idxFindCompatible(
   int *pRc,                       /* OUT: Error code */
   sqlite3* dbm,                   /* Database to search */
   IdxScan *pScan,                 /* Scan for table to search for index on */
@@ -951,7 +951,7 @@ static int idxFindCompatible(
  * The first argument is expected to be an int*, referent to be incremented
  * if that leading column is not exactly '0'.
  */
-static int countNonzeros(void* pCount, int nc,
+int countNonzeros(void* pCount, int nc,
                          char* azResults[], char* azColumns[]){
   (void)azColumns;  /* Suppress unused parameter warning */
   if( nc>0 && (azResults[0][0]!='0' || azResults[0][1]!=0) ){
@@ -960,7 +960,7 @@ static int countNonzeros(void* pCount, int nc,
   return 0;
 }
 
-static int idxCreateFromCons(
+int idxCreateFromCons(
   sqlite3expert *p,
   IdxScan *pScan,
   IdxConstraint *pEq, 
@@ -1048,7 +1048,7 @@ static int idxCreateFromCons(
 ** Return true if list pList (linked by IdxConstraint.pLink) contains
 ** a constraint compatible with *p. Otherwise return false.
 */
-static int idxFindConstraint(IdxConstraint *pList, IdxConstraint *p){
+int idxFindConstraint(IdxConstraint *pList, IdxConstraint *p){
   IdxConstraint *pCmp;
   for(pCmp=pList; pCmp; pCmp=pCmp->pLink){
     if( p->iCol==pCmp->iCol ) return 1;
@@ -1056,7 +1056,7 @@ static int idxFindConstraint(IdxConstraint *pList, IdxConstraint *p){
   return 0;
 }
 
-static int idxCreateFromWhere(
+int idxCreateFromWhere(
   sqlite3expert *p, 
   IdxScan *pScan,                 /* Create indexes for this scan */
   IdxConstraint *pTail            /* range/ORDER BY constraints for inclusion */
@@ -1095,7 +1095,7 @@ static int idxCreateFromWhere(
 ** Create candidate indexes in database [dbm] based on the data in 
 ** linked-list pScan.
 */
-static int idxCreateCandidates(sqlite3expert *p){
+int idxCreateCandidates(sqlite3expert *p){
   int rc = SQLITE_OK;
   IdxScan *pIter;
 
@@ -1112,7 +1112,7 @@ static int idxCreateCandidates(sqlite3expert *p){
 /*
 ** Free all elements of the linked list starting at pConstraint.
 */
-static void idxConstraintFree(IdxConstraint *pConstraint){
+void idxConstraintFree(IdxConstraint *pConstraint){
   IdxConstraint *pNext;
   IdxConstraint *p;
 
@@ -1126,7 +1126,7 @@ static void idxConstraintFree(IdxConstraint *pConstraint){
 ** Free all elements of the linked list starting from pScan up until pLast
 ** (pLast is not freed).
 */
-static void idxScanFree(IdxScan *pScan, IdxScan *pLast){
+void idxScanFree(IdxScan *pScan, IdxScan *pLast){
   IdxScan *p;
   IdxScan *pNext;
   for(p=pScan; p!=pLast; p=pNext){
@@ -1142,7 +1142,7 @@ static void idxScanFree(IdxScan *pScan, IdxScan *pLast){
 ** Free all elements of the linked list starting from pStatement up 
 ** until pLast (pLast is not freed).
 */
-static void idxStatementFree(IdxStatement *pStatement, IdxStatement *pLast){
+void idxStatementFree(IdxStatement *pStatement, IdxStatement *pLast){
   IdxStatement *p;
   IdxStatement *pNext;
   for(p=pStatement; p!=pLast; p=pNext){
@@ -1156,7 +1156,7 @@ static void idxStatementFree(IdxStatement *pStatement, IdxStatement *pLast){
 /*
 ** Free the linked list of IdxTable objects starting at pTab.
 */
-static void idxTableFree(IdxTable *pTab){
+void idxTableFree(IdxTable *pTab){
   IdxTable *pIter;
   IdxTable *pNext;
   for(pIter=pTab; pIter; pIter=pNext){
@@ -1168,7 +1168,7 @@ static void idxTableFree(IdxTable *pTab){
 /*
 ** Free the linked list of IdxWrite objects starting at pTab.
 */
-static void idxWriteFree(IdxWrite *pTab){
+void idxWriteFree(IdxWrite *pTab){
   IdxWrite *pIter;
   IdxWrite *pNext;
   for(pIter=pTab; pIter; pIter=pNext){
@@ -1184,7 +1184,7 @@ static void idxWriteFree(IdxWrite *pTab){
 ** runs all the queries to see which indexes they prefer, and populates
 ** IdxStatement.zIdx and IdxStatement.zEQP with the results.
 */
-static int idxFindIndexes(
+int idxFindIndexes(
   sqlite3expert *p,
   char **pzErr                         /* OUT: Error message (sqlite3_malloc) */
 ){
@@ -1254,7 +1254,7 @@ static int idxFindIndexes(
   return rc;
 }
 
-static int idxAuthCallback(
+int idxAuthCallback(
   void *pCtx,
   int eOp,
   const char *z3,
@@ -1292,13 +1292,13 @@ static int idxAuthCallback(
   return rc;
 }
 
-static int idxProcessOneTrigger(
+int idxProcessOneTrigger(
   sqlite3expert *p, 
   IdxWrite *pWrite, 
   char **pzErr
 ){
-  static const char *zInt = UNIQUE_TABLE_NAME;
-  static const char *zDrop = "DROP TABLE " UNIQUE_TABLE_NAME;
+  const char *zInt = UNIQUE_TABLE_NAME;
+  const char *zDrop = "DROP TABLE " UNIQUE_TABLE_NAME;
   IdxTable *pTab = pWrite->pTab;
   const char *zTab = pTab->zName;
   const char *zSql = 
@@ -1375,7 +1375,7 @@ static int idxProcessOneTrigger(
   return rc;
 }
 
-static int idxProcessTriggers(sqlite3expert *p, char **pzErr){
+int idxProcessTriggers(sqlite3expert *p, char **pzErr){
   int rc = SQLITE_OK;
   IdxWrite *pEnd = 0;
   IdxWrite *pFirst = p->pWrite;
@@ -1400,7 +1400,7 @@ static int idxProcessTriggers(sqlite3expert *p, char **pzErr){
 ** Or, if an error occurs, an SQLite error code is returned. The final value
 ** of (*pbContains) is undefined in this case.
 */
-static int expertDbContainsObject(
+int expertDbContainsObject(
   sqlite3 *db, 
   const char *zTab, 
   int *pbContains                 /* OUT: True if object exists */
@@ -1435,7 +1435,7 @@ static int expertDbContainsObject(
 ** This is used to copy as much of the database schema as possible while 
 ** ignoring any errors related to missing virtual table modules.
 */
-static int expertSchemaSql(sqlite3 *db, const char *zSql, char **pzErr){
+int expertSchemaSql(sqlite3 *db, const char *zSql, char **pzErr){
   int rc = SQLITE_OK;
   char *zErr = 0;
 
@@ -1453,7 +1453,7 @@ static int expertSchemaSql(sqlite3 *db, const char *zSql, char **pzErr){
   return rc;
 }
 
-static int idxCreateVtabSchema(sqlite3expert *p, char **pzErrmsg){
+int idxCreateVtabSchema(sqlite3expert *p, char **pzErrmsg){
   int rc = idxRegisterVtab(p);
   sqlite3_stmt *pSchema = 0;
 
@@ -1530,7 +1530,7 @@ struct IdxSampleCtx {
   double nRet;                    /* Number of rows returned */
 };
 
-static void idxSampleFunc(
+void idxSampleFunc(
   sqlite3_context *pCtx,
   int argc,
   sqlite3_value **argv
@@ -1571,7 +1571,7 @@ struct IdxRemCtx {
 /*
 ** Implementation of scalar function sqlite_expert_rem().
 */
-static void idxRemFunc(
+void idxRemFunc(
   sqlite3_context *pCtx,
   int argc,
   sqlite3_value **argv
@@ -1649,7 +1649,7 @@ static void idxRemFunc(
   }
 }
 
-static int idxLargestIndex(sqlite3 *db, int *pnMax, char **pzErr){
+int idxLargestIndex(sqlite3 *db, int *pnMax, char **pzErr){
   int rc = SQLITE_OK;
   const char *zMax = 
     "SELECT max(i.seqno) FROM "
@@ -1669,7 +1669,7 @@ static int idxLargestIndex(sqlite3 *db, int *pnMax, char **pzErr){
   return rc;
 }
 
-static int idxPopulateOneStat1(
+int idxPopulateOneStat1(
   sqlite3expert *p,
   sqlite3_stmt *pIndexXInfo,
   sqlite3_stmt *pWriteStat,
@@ -1776,7 +1776,7 @@ static int idxPopulateOneStat1(
   return rc;
 }
 
-static int idxBuildSampleTable(sqlite3expert *p, const char *zTab){
+int idxBuildSampleTable(sqlite3expert *p, const char *zTab){
   int rc;
   char *zSql;
 
@@ -1800,7 +1800,7 @@ static int idxBuildSampleTable(sqlite3expert *p, const char *zTab){
 **
 ** The stat1 data is generated by querying the 
 */
-static int idxPopulateStat1(sqlite3expert *p, char **pzErr){
+int idxPopulateStat1(sqlite3expert *p, char **pzErr){
   int rc = SQLITE_OK;
   int nMax =0;
   struct IdxRemCtx *pCtx = 0;

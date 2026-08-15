@@ -364,46 +364,46 @@ struct TmstmpFile {
 /*
 ** Methods for TmstmpFile
 */
-static int tmstmpClose(sqlite3_file*);
-static int tmstmpRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int tmstmpWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int tmstmpTruncate(sqlite3_file*, sqlite3_int64 size);
-static int tmstmpSync(sqlite3_file*, int flags);
-static int tmstmpFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int tmstmpLock(sqlite3_file*, int);
-static int tmstmpUnlock(sqlite3_file*, int);
-static int tmstmpCheckReservedLock(sqlite3_file*, int *pResOut);
-static int tmstmpFileControl(sqlite3_file*, int op, void *pArg);
-static int tmstmpSectorSize(sqlite3_file*);
-static int tmstmpDeviceCharacteristics(sqlite3_file*);
-static int tmstmpShmMap(sqlite3_file*, int iPg, int pgsz, int, void volatile**);
-static int tmstmpShmLock(sqlite3_file*, int offset, int n, int flags);
-static void tmstmpShmBarrier(sqlite3_file*);
-static int tmstmpShmUnmap(sqlite3_file*, int deleteFlag);
-static int tmstmpFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
-static int tmstmpUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
+int tmstmpClose(sqlite3_file*);
+int tmstmpRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
+int tmstmpWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
+int tmstmpTruncate(sqlite3_file*, sqlite3_int64 size);
+int tmstmpSync(sqlite3_file*, int flags);
+int tmstmpFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+int tmstmpLock(sqlite3_file*, int);
+int tmstmpUnlock(sqlite3_file*, int);
+int tmstmpCheckReservedLock(sqlite3_file*, int *pResOut);
+int tmstmpFileControl(sqlite3_file*, int op, void *pArg);
+int tmstmpSectorSize(sqlite3_file*);
+int tmstmpDeviceCharacteristics(sqlite3_file*);
+int tmstmpShmMap(sqlite3_file*, int iPg, int pgsz, int, void volatile**);
+int tmstmpShmLock(sqlite3_file*, int offset, int n, int flags);
+void tmstmpShmBarrier(sqlite3_file*);
+int tmstmpShmUnmap(sqlite3_file*, int deleteFlag);
+int tmstmpFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
+int tmstmpUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
 
 /*
 ** Methods for TmstmpVfs
 */
-static int tmstmpOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int tmstmpDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int tmstmpAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int tmstmpFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *tmstmpDlOpen(sqlite3_vfs*, const char *zFilename);
-static void tmstmpDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*tmstmpDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
-static void tmstmpDlClose(sqlite3_vfs*, void*);
-static int tmstmpRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int tmstmpSleep(sqlite3_vfs*, int microseconds);
-static int tmstmpCurrentTime(sqlite3_vfs*, double*);
-static int tmstmpGetLastError(sqlite3_vfs*, int, char *);
-static int tmstmpCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
-static int tmstmpSetSystemCall(sqlite3_vfs*, const char*,sqlite3_syscall_ptr);
-static sqlite3_syscall_ptr tmstmpGetSystemCall(sqlite3_vfs*, const char *z);
-static const char *tmstmpNextSystemCall(sqlite3_vfs*, const char *zName);
+int tmstmpOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
+int tmstmpDelete(sqlite3_vfs*, const char *zName, int syncDir);
+int tmstmpAccess(sqlite3_vfs*, const char *zName, int flags, int *);
+int tmstmpFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+void *tmstmpDlOpen(sqlite3_vfs*, const char *zFilename);
+void tmstmpDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+void (*tmstmpDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
+void tmstmpDlClose(sqlite3_vfs*, void*);
+int tmstmpRandomness(sqlite3_vfs*, int nByte, char *zOut);
+int tmstmpSleep(sqlite3_vfs*, int microseconds);
+int tmstmpCurrentTime(sqlite3_vfs*, double*);
+int tmstmpGetLastError(sqlite3_vfs*, int, char *);
+int tmstmpCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+int tmstmpSetSystemCall(sqlite3_vfs*, const char*,sqlite3_syscall_ptr);
+sqlite3_syscall_ptr tmstmpGetSystemCall(sqlite3_vfs*, const char *z);
+const char *tmstmpNextSystemCall(sqlite3_vfs*, const char *zName);
 
-static sqlite3_vfs tmstmp_vfs = {
+sqlite3_vfs tmstmp_vfs = {
   3,                            /* iVersion (set when registered) */
   0,                            /* szOsFile (set when registered) */
   1024,                         /* mxPathname */
@@ -428,7 +428,7 @@ static sqlite3_vfs tmstmp_vfs = {
   tmstmpNextSystemCall          /* xNextSystemCall */
 };
 
-static const sqlite3_io_methods tmstmp_io_methods = {
+const sqlite3_io_methods tmstmp_io_methods = {
   3,                            /* iVersion */
   tmstmpClose,                  /* xClose */
   tmstmpRead,                   /* xRead */
@@ -453,7 +453,7 @@ static const sqlite3_io_methods tmstmp_io_methods = {
 /*
 ** Write a 6-byte millisecond timestamp into aOut[]
 */
-static void tmstmpPutTS(TmstmpFile *p, unsigned char *aOut){
+void tmstmpPutTS(TmstmpFile *p, unsigned char *aOut){
   sqlite3_uint64 tm = 0;
   p->pSubVfs->xCurrentTimeInt64(p->pSubVfs, (sqlite3_int64*)&tm);
   tm -= 210866760000000LL;
@@ -468,13 +468,13 @@ static void tmstmpPutTS(TmstmpFile *p, unsigned char *aOut){
 /*
 ** Read a 32-bit big-endian unsigned integer and return it.
 */
-static u32 tmstmpGetU32(const unsigned char *a){
+u32 tmstmpGetU32(const unsigned char *a){
   return (a[0]<<24) + (a[1]<<16) + (a[2]<<8) + a[3];
 }
 
 /* Write a 32-bit integer as big-ending into a[]
 */
-static void tmstmpPutU32(u32 v, unsigned char *a){
+void tmstmpPutU32(u32 v, unsigned char *a){
   a[0] = (v>>24) & 0xff;
   a[1] = (v>>16) & 0xff;
   a[2] = (v>>8) & 0xff;
@@ -482,7 +482,7 @@ static void tmstmpPutU32(u32 v, unsigned char *a){
 }
 
 /* Free a TmstmpLog object */
-static void tmstmpLogFree(TmstmpLog *pLog){
+void tmstmpLogFree(TmstmpLog *pLog){
   if( pLog==0 ) return;
   if( pLog->log ) fclose(pLog->log);
   sqlite3_free(pLog->zLogname);
@@ -491,7 +491,7 @@ static void tmstmpLogFree(TmstmpLog *pLog){
 
 /* Flush log content.  Open the file if necessary. Return the
 ** number of errors. */
-static int tmstmpLogFlush(TmstmpFile *p){
+int tmstmpLogFlush(TmstmpFile *p){
   TmstmpLog *pLog = p->pLog;
   assert( pLog!=0 );
   if( pLog->log==0 ){
@@ -511,7 +511,7 @@ static int tmstmpLogFlush(TmstmpFile *p){
 /*
 ** Write a record onto the event log
 */
-static void tmstmpEvent(
+void tmstmpEvent(
   TmstmpFile *p,
   u8 op,
   u8 a1,
@@ -550,7 +550,7 @@ static void tmstmpEvent(
 /*
 ** Close a connection
 */
-static int tmstmpClose(sqlite3_file *pFile){
+int tmstmpClose(sqlite3_file *pFile){
   TmstmpFile *p = (TmstmpFile *)pFile;
   if( p->hasCorrectReserve ){
     tmstmpEvent(p, p->isDb ? ELOG_CLOSE_DB : ELOG_CLOSE_WAL, 0, 0, 0, 0);
@@ -568,7 +568,7 @@ static int tmstmpClose(sqlite3_file *pFile){
 /*
 ** Read bytes from a file
 */
-static int tmstmpRead(
+int tmstmpRead(
   sqlite3_file *pFile, 
   void *zBuf, 
   int iAmt, 
@@ -604,7 +604,7 @@ static int tmstmpRead(
 /*
 ** Write data to a tmstmp-file.
 */
-static int tmstmpWrite(
+int tmstmpWrite(
   sqlite3_file *pFile,
   const void *zBuf,
   int iAmt,
@@ -657,7 +657,7 @@ static int tmstmpWrite(
 /*
 ** Truncate a tmstmp-file.
 */
-static int tmstmpTruncate(sqlite3_file *pFile, sqlite_int64 size){
+int tmstmpTruncate(sqlite3_file *pFile, sqlite_int64 size){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xTruncate(pFile, size);
 }
@@ -665,7 +665,7 @@ static int tmstmpTruncate(sqlite3_file *pFile, sqlite_int64 size){
 /*
 ** Sync a tmstmp-file.
 */
-static int tmstmpSync(sqlite3_file *pFile, int flags){
+int tmstmpSync(sqlite3_file *pFile, int flags){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xSync(pFile, flags);
 }
@@ -673,7 +673,7 @@ static int tmstmpSync(sqlite3_file *pFile, int flags){
 /*
 ** Return the current file-size of a tmstmp-file.
 */
-static int tmstmpFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+int tmstmpFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   TmstmpFile *p = (TmstmpFile *)pFile;
   pFile = ORIGFILE(p);
   return pFile->pMethods->xFileSize(pFile, pSize);
@@ -682,7 +682,7 @@ static int tmstmpFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
 /*
 ** Lock a tmstmp-file.
 */
-static int tmstmpLock(sqlite3_file *pFile, int eLock){
+int tmstmpLock(sqlite3_file *pFile, int eLock){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xLock(pFile, eLock);
 }
@@ -690,7 +690,7 @@ static int tmstmpLock(sqlite3_file *pFile, int eLock){
 /*
 ** Unlock a tmstmp-file.
 */
-static int tmstmpUnlock(sqlite3_file *pFile, int eLock){
+int tmstmpUnlock(sqlite3_file *pFile, int eLock){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xUnlock(pFile, eLock);
 }
@@ -698,7 +698,7 @@ static int tmstmpUnlock(sqlite3_file *pFile, int eLock){
 /*
 ** Check if another file-handle holds a RESERVED lock on a tmstmp-file.
 */
-static int tmstmpCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+int tmstmpCheckReservedLock(sqlite3_file *pFile, int *pResOut){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xCheckReservedLock(pFile, pResOut);
 }
@@ -706,7 +706,7 @@ static int tmstmpCheckReservedLock(sqlite3_file *pFile, int *pResOut){
 /*
 ** File control method. For custom operations on a tmstmp-file.
 */
-static int tmstmpFileControl(sqlite3_file *pFile, int op, void *pArg){
+int tmstmpFileControl(sqlite3_file *pFile, int op, void *pArg){
   int rc;
   TmstmpFile *p = (TmstmpFile*)pFile;
   pFile = ORIGFILE(pFile);
@@ -747,7 +747,7 @@ static int tmstmpFileControl(sqlite3_file *pFile, int op, void *pArg){
 /*
 ** Return the sector-size in bytes for a tmstmp-file.
 */
-static int tmstmpSectorSize(sqlite3_file *pFile){
+int tmstmpSectorSize(sqlite3_file *pFile){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xSectorSize(pFile);
 }
@@ -755,7 +755,7 @@ static int tmstmpSectorSize(sqlite3_file *pFile){
 /*
 ** Return the device characteristic flags supported by a tmstmp-file.
 */
-static int tmstmpDeviceCharacteristics(sqlite3_file *pFile){
+int tmstmpDeviceCharacteristics(sqlite3_file *pFile){
   int devchar = 0;
   pFile = ORIGFILE(pFile);
   devchar = pFile->pMethods->xDeviceCharacteristics(pFile);
@@ -763,7 +763,7 @@ static int tmstmpDeviceCharacteristics(sqlite3_file *pFile){
 }
 
 /* Create a shared memory file mapping */
-static int tmstmpShmMap(
+int tmstmpShmMap(
   sqlite3_file *pFile,
   int iPg,
   int pgsz,
@@ -775,25 +775,25 @@ static int tmstmpShmMap(
 }
 
 /* Perform locking on a shared-memory segment */
-static int tmstmpShmLock(sqlite3_file *pFile, int offset, int n, int flags){
+int tmstmpShmLock(sqlite3_file *pFile, int offset, int n, int flags){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xShmLock(pFile,offset,n,flags);
 }
 
 /* Memory barrier operation on shared memory */
-static void tmstmpShmBarrier(sqlite3_file *pFile){
+void tmstmpShmBarrier(sqlite3_file *pFile){
   pFile = ORIGFILE(pFile);
   pFile->pMethods->xShmBarrier(pFile);
 }
 
 /* Unmap a shared memory segment */
-static int tmstmpShmUnmap(sqlite3_file *pFile, int deleteFlag){
+int tmstmpShmUnmap(sqlite3_file *pFile, int deleteFlag){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xShmUnmap(pFile,deleteFlag);
 }
 
 /* Fetch a page of a memory-mapped file */
-static int tmstmpFetch(
+int tmstmpFetch(
   sqlite3_file *pFile,
   sqlite3_int64 iOfst,
   int iAmt,
@@ -804,7 +804,7 @@ static int tmstmpFetch(
 }
 
 /* Release a memory-mapped page */
-static int tmstmpUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
+int tmstmpUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xUnfetch(pFile, iOfst, pPage);
 }
@@ -813,7 +813,7 @@ static int tmstmpUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
 /*
 ** Open a tmstmp file handle.
 */
-static int tmstmpOpen(
+int tmstmpOpen(
   sqlite3_vfs *pVfs,
   const char *zName,
   sqlite3_file *pFile,
@@ -922,64 +922,64 @@ tmstmp_open_done:
 /*
 ** All VFS interfaces other than xOpen are passed down into the Sub-VFS.
 */
-static int tmstmpDelete(sqlite3_vfs *p, const char *zName, int syncDir){
+int tmstmpDelete(sqlite3_vfs *p, const char *zName, int syncDir){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xDelete(pSub,zName,syncDir);
 }
-static int tmstmpAccess(sqlite3_vfs *p, const char *zName, int flags, int *pR){
+int tmstmpAccess(sqlite3_vfs *p, const char *zName, int flags, int *pR){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xAccess(pSub,zName,flags,pR);
 }
-static int tmstmpFullPathname(sqlite3_vfs*p,const char *zName,int n,char *zOut){
+int tmstmpFullPathname(sqlite3_vfs*p,const char *zName,int n,char *zOut){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xFullPathname(pSub,zName,n,zOut);
 }
-static void *tmstmpDlOpen(sqlite3_vfs *p, const char *zFilename){
+void *tmstmpDlOpen(sqlite3_vfs *p, const char *zFilename){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xDlOpen(pSub,zFilename);
 }
-static void tmstmpDlError(sqlite3_vfs *p, int nByte, char *zErrMsg){
+void tmstmpDlError(sqlite3_vfs *p, int nByte, char *zErrMsg){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xDlError(pSub,nByte,zErrMsg);
 }
-static void(*tmstmpDlSym(sqlite3_vfs *p, void *pDl, const char *zSym))(void){
+void(*tmstmpDlSym(sqlite3_vfs *p, void *pDl, const char *zSym))(void){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xDlSym(pSub,pDl,zSym);
 }
-static void tmstmpDlClose(sqlite3_vfs *p, void *pDl){
+void tmstmpDlClose(sqlite3_vfs *p, void *pDl){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xDlClose(pSub,pDl);
 }
-static int tmstmpRandomness(sqlite3_vfs *p, int nByte, char *zOut){
+int tmstmpRandomness(sqlite3_vfs *p, int nByte, char *zOut){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xRandomness(pSub,nByte,zOut);
 }
-static int tmstmpSleep(sqlite3_vfs *p, int microseconds){
+int tmstmpSleep(sqlite3_vfs *p, int microseconds){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xSleep(pSub,microseconds);
 }
-static int tmstmpCurrentTime(sqlite3_vfs *p, double *prNow){
+int tmstmpCurrentTime(sqlite3_vfs *p, double *prNow){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xCurrentTime(pSub,prNow);
 }
-static int tmstmpGetLastError(sqlite3_vfs *p, int a, char *b){
+int tmstmpGetLastError(sqlite3_vfs *p, int a, char *b){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xGetLastError(pSub,a,b);
 }
-static int tmstmpCurrentTimeInt64(sqlite3_vfs *p, sqlite3_int64 *piNow){
+int tmstmpCurrentTimeInt64(sqlite3_vfs *p, sqlite3_int64 *piNow){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xCurrentTimeInt64(pSub,piNow);
 }
-static int tmstmpSetSystemCall(sqlite3_vfs *p, const char *zName,
+int tmstmpSetSystemCall(sqlite3_vfs *p, const char *zName,
                                sqlite3_syscall_ptr x){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xSetSystemCall(pSub,zName,x);
 }
-static sqlite3_syscall_ptr tmstmpGetSystemCall(sqlite3_vfs *p, const char *z){
+sqlite3_syscall_ptr tmstmpGetSystemCall(sqlite3_vfs *p, const char *z){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xGetSystemCall(pSub,z);
 }
-static const char *tmstmpNextSystemCall(sqlite3_vfs *p, const char *zName){
+const char *tmstmpNextSystemCall(sqlite3_vfs *p, const char *zName){
   sqlite3_vfs *pSub = ORIGVFS(p);
   return pSub->xNextSystemCall(pSub,zName);
 }
@@ -987,7 +987,7 @@ static const char *tmstmpNextSystemCall(sqlite3_vfs *p, const char *zName){
 /*
 ** Register the tmstmp VFS as the default VFS for the system.
 */
-static int tmstmpRegisterVfs(void){
+int tmstmpRegisterVfs(void){
   int rc = SQLITE_OK;
   sqlite3_vfs *pOrig = sqlite3_vfs_find(0);
   if( pOrig==0 ) return SQLITE_ERROR;

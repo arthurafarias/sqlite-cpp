@@ -258,7 +258,7 @@ struct fuzzer_cursor {
 ** cost.  Merge them together into a single list, sorted by cost, and
 ** return a pointer to the head of that list.
 */
-static fuzzer_rule *fuzzerMergeRules(fuzzer_rule *pA, fuzzer_rule *pB){
+fuzzer_rule *fuzzerMergeRules(fuzzer_rule *pA, fuzzer_rule *pB){
   fuzzer_rule head;
   fuzzer_rule *pTail;
 
@@ -291,7 +291,7 @@ static fuzzer_rule *fuzzerMergeRules(fuzzer_rule *pA, fuzzer_rule *pB){
 ** is returned. Otherwise, *ppRule is zeroed, *pzErr may be set to point
 ** to an error message and an SQLite error code returned.
 */
-static int fuzzerLoadOneRule(
+int fuzzerLoadOneRule(
   fuzzer_vtab *p,                 /* Fuzzer virtual table handle */
   sqlite3_stmt *pStmt,            /* Base rule on statements current row */
   fuzzer_rule **ppRule,           /* OUT: New rule object */
@@ -360,7 +360,7 @@ static int fuzzerLoadOneRule(
 /*
 ** Load the content of the fuzzer data table into memory.
 */
-static int fuzzerLoadRules(
+int fuzzerLoadRules(
   sqlite3 *db,                    /* Database handle */
   fuzzer_vtab *p,                 /* Virtual fuzzer table to configure */
   const char *zDb,                /* Database containing rules data */
@@ -446,7 +446,7 @@ static int fuzzerLoadRules(
 **     [pqr]   becomes   pqr
 **     `mno`   becomes   mno
 */
-static char *fuzzerDequote(const char *zIn){
+char *fuzzerDequote(const char *zIn){
   sqlite3_int64 nIn;              /* Size of input string, in bytes */
   char *zOut;                     /* Output (dequoted) string */
 
@@ -477,7 +477,7 @@ static char *fuzzerDequote(const char *zIn){
 /*
 ** xDisconnect/xDestroy method for the fuzzer module.
 */
-static int fuzzerDisconnect(sqlite3_vtab *pVtab){
+int fuzzerDisconnect(sqlite3_vtab *pVtab){
   fuzzer_vtab *p = (fuzzer_vtab*)pVtab;
   assert( p->nCursor==0 );
   while( p->pRule ){
@@ -497,7 +497,7 @@ static int fuzzerDisconnect(sqlite3_vtab *pVtab){
 **   argv[2]   -> table name
 **   argv[3]   -> fuzzer rule table name
 */
-static int fuzzerConnect(
+int fuzzerConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -555,7 +555,7 @@ static int fuzzerConnect(
 /*
 ** Open a new fuzzer cursor.
 */
-static int fuzzerOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+int fuzzerOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   fuzzer_vtab *p = (fuzzer_vtab*)pVTab;
   fuzzer_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
@@ -570,7 +570,7 @@ static int fuzzerOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Free all stems in a list.
 */
-static void fuzzerClearStemList(fuzzer_stem *pStem){
+void fuzzerClearStemList(fuzzer_stem *pStem){
   while( pStem ){
     fuzzer_stem *pNext = pStem->pNext;
     sqlite3_free(pStem);
@@ -582,7 +582,7 @@ static void fuzzerClearStemList(fuzzer_stem *pStem){
 ** Free up all the memory allocated by a cursor.  Set it rLimit to 0
 ** to indicate that it is at EOF.
 */
-static void fuzzerClearCursor(fuzzer_cursor *pCur, int clearHash){
+void fuzzerClearCursor(fuzzer_cursor *pCur, int clearHash){
   int i;
   fuzzerClearStemList(pCur->pStem);
   fuzzerClearStemList(pCur->pDone);
@@ -601,7 +601,7 @@ static void fuzzerClearCursor(fuzzer_cursor *pCur, int clearHash){
 /*
 ** Close a fuzzer cursor.
 */
-static int fuzzerClose(sqlite3_vtab_cursor *cur){
+int fuzzerClose(sqlite3_vtab_cursor *cur){
   fuzzer_cursor *pCur = (fuzzer_cursor *)cur;
   fuzzerClearCursor(pCur, 0);
   sqlite3_free(pCur->zBuf);
@@ -613,7 +613,7 @@ static int fuzzerClose(sqlite3_vtab_cursor *cur){
 /*
 ** Compute the current output term for a fuzzer_stem.
 */
-static int fuzzerRender(
+int fuzzerRender(
   fuzzer_stem *pStem,   /* The stem to be rendered */
   char **pzBuf,         /* Write results into this buffer.  realloc if needed */
   int *pnBuf            /* Size of the buffer */
@@ -646,7 +646,7 @@ static int fuzzerRender(
 /*
 ** Compute a hash on zBasis.
 */
-static unsigned int fuzzerHash(const char *z){
+unsigned int fuzzerHash(const char *z){
   unsigned int h = 0;
   while( *z ){ h = (h<<3) ^ (h>>29) ^ *(z++); }
   return h % FUZZER_HASH;
@@ -655,7 +655,7 @@ static unsigned int fuzzerHash(const char *z){
 /*
 ** Current cost of a stem
 */
-static fuzzer_cost fuzzerCost(fuzzer_stem *pStem){
+fuzzer_cost fuzzerCost(fuzzer_stem *pStem){
   return pStem->rCostX = pStem->rBaseCost + pStem->pRule->rCost;
 }
 
@@ -663,7 +663,7 @@ static fuzzer_cost fuzzerCost(fuzzer_stem *pStem){
 /*
 ** Print a description of a fuzzer_stem on stderr.
 */
-static void fuzzerStemPrint(
+void fuzzerStemPrint(
   const char *zPrefix,
   fuzzer_stem *pStem,
   const char *zSuffix
@@ -693,7 +693,7 @@ static void fuzzerStemPrint(
 ** been emitted.  Return 0 if not.  Return -1 on a memory allocation
 ** failures.
 */
-static int fuzzerSeen(fuzzer_cursor *pCur, fuzzer_stem *pStem){
+int fuzzerSeen(fuzzer_cursor *pCur, fuzzer_stem *pStem){
   unsigned int h;
   fuzzer_stem *pLookup;
 
@@ -716,7 +716,7 @@ static int fuzzerSeen(fuzzer_cursor *pCur, fuzzer_stem *pStem){
 ** applying it to stem pStem would create a string longer than 
 ** FUZZER_MX_OUTPUT_LENGTH bytes.
 */
-static int fuzzerSkipRule(
+int fuzzerSkipRule(
   const fuzzer_rule *pRule,       /* Determine whether or not to skip this */
   fuzzer_stem *pStem,             /* Stem rule may be applied to */
   int iRuleset                    /* Rule-set used by the current query */
@@ -732,7 +732,7 @@ static int fuzzerSkipRule(
 ** no more values that can be generated by this fuzzer_stem.  Return
 ** -1 on a memory allocation failure.
 */
-static int fuzzerAdvance(fuzzer_cursor *pCur, fuzzer_stem *pStem){
+int fuzzerAdvance(fuzzer_cursor *pCur, fuzzer_stem *pStem){
   const fuzzer_rule *pRule;
   while( (pRule = pStem->pRule)!=0 ){
     assert( pRule==&pCur->nullRule || pRule->iRuleset==pCur->iRuleset );
@@ -765,7 +765,7 @@ static int fuzzerAdvance(fuzzer_cursor *pCur, fuzzer_stem *pStem){
 ** rCostX.  Merge them together into a single list, sorted by rCostX, and
 ** return a pointer to the head of that new list.
 */
-static fuzzer_stem *fuzzerMergeStems(fuzzer_stem *pA, fuzzer_stem *pB){
+fuzzer_stem *fuzzerMergeStems(fuzzer_stem *pA, fuzzer_stem *pB){
   fuzzer_stem head;
   fuzzer_stem *pTail;
 
@@ -793,7 +793,7 @@ static fuzzer_stem *fuzzerMergeStems(fuzzer_stem *pA, fuzzer_stem *pB){
 ** Load pCur->pStem with the lowest-cost stem.  Return a pointer
 ** to the lowest-cost stem.
 */
-static fuzzer_stem *fuzzerLowestCostStem(fuzzer_cursor *pCur){
+fuzzer_stem *fuzzerLowestCostStem(fuzzer_cursor *pCur){
   fuzzer_stem *pBest, *pX;
   int iBest;
   int i;
@@ -824,7 +824,7 @@ static fuzzer_stem *fuzzerLowestCostStem(fuzzer_cursor *pCur){
 ** list.  The insert is done such the pNew is in the correct order
 ** according to fuzzer_stem.zBaseCost+fuzzer_stem.pRule->rCost.
 */
-static fuzzer_stem *fuzzerInsert(fuzzer_cursor *pCur, fuzzer_stem *pNew){
+fuzzer_stem *fuzzerInsert(fuzzer_cursor *pCur, fuzzer_stem *pNew){
   fuzzer_stem *pX;
   int i;
 
@@ -867,7 +867,7 @@ static fuzzer_stem *fuzzerInsert(fuzzer_cursor *pCur, fuzzer_stem *pNew){
 ** Allocate a new fuzzer_stem.  Add it to the hash table but do not
 ** link it into either the pCur->pStem or pCur->pDone lists.
 */
-static fuzzer_stem *fuzzerNewStem(
+fuzzer_stem *fuzzerNewStem(
   fuzzer_cursor *pCur,
   const char *zWord,
   fuzzer_cost rBaseCost
@@ -900,7 +900,7 @@ static fuzzer_stem *fuzzerNewStem(
 /*
 ** Advance a cursor to its next row of output
 */
-static int fuzzerNext(sqlite3_vtab_cursor *cur){
+int fuzzerNext(sqlite3_vtab_cursor *cur){
   fuzzer_cursor *pCur = (fuzzer_cursor*)cur;
   int rc;
   fuzzer_stem *pStem, *pNew;
@@ -968,7 +968,7 @@ static int fuzzerNext(sqlite3_vtab_cursor *cur){
 ** it starts its output over again.  Always called at least once
 ** prior to any fuzzerColumn, fuzzerRowid, or fuzzerEof call.
 */
-static int fuzzerFilter(
+int fuzzerFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -1020,7 +1020,7 @@ static int fuzzerFilter(
 ** Only the word and distance columns have values.  All other columns
 ** return NULL
 */
-static int fuzzerColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+int fuzzerColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   fuzzer_cursor *pCur = (fuzzer_cursor*)cur;
   if( i==0 ){
     /* the "word" column */
@@ -1041,7 +1041,7 @@ static int fuzzerColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
 /*
 ** The rowid.
 */
-static int fuzzerRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int fuzzerRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   fuzzer_cursor *pCur = (fuzzer_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -1051,7 +1051,7 @@ static int fuzzerRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** When the fuzzer_cursor.rLimit value is 0 or less, that is a signal
 ** that the cursor has nothing more to output.
 */
-static int fuzzerEof(sqlite3_vtab_cursor *cur){
+int fuzzerEof(sqlite3_vtab_cursor *cur){
   fuzzer_cursor *pCur = (fuzzer_cursor*)cur;
   return pCur->rLimit<=(fuzzer_cost)0;
 }
@@ -1078,7 +1078,7 @@ static int fuzzerEof(sqlite3_vtab_cursor *cur){
 ** filter.argv[1] if exactly one of bit-1 and bit-2 are set, and is in
 ** filter.argv[2] if both bit-1 and bit-2 are set.
 */
-static int fuzzerBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+int fuzzerBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   int iPlan = 0;
   int iDistTerm = -1;
   int iRulesetTerm = -1;
@@ -1147,7 +1147,7 @@ static int fuzzerBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 /*
 ** A virtual table module that implements the "fuzzer".
 */
-static sqlite3_module fuzzerModule = {
+sqlite3_module fuzzerModule = {
   0,                           /* iVersion */
   fuzzerConnect,
   fuzzerConnect,

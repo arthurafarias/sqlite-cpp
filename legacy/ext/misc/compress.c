@@ -43,7 +43,7 @@ SQLITE_EXTENSION_INIT1
 ** formats other than deflate, by providing a different algorithm-id
 ** mark following the variable-length integer size parameter.
 */
-static void compressFunc(
+void compressFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -83,7 +83,7 @@ static void compressFunc(
 ** is a blob which was obtained from compress(Y).  The output will be
 ** the value Y.
 */
-static void uncompressFunc(
+void uncompressFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

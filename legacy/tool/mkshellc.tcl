@@ -61,7 +61,7 @@ proc generate_usage {out} {
   global Usage
   puts $out "/**************************************************************"
   puts $out "** \"Usage\" help text automatically generated from comments */"
-  puts $out "static const struct \173"
+  puts $out "const struct \173"
   puts $out "  const char *zCmd;   /* Name of the dot-command */"
   puts $out "  const char *zUsage; /* Documentation */"
   puts $out "\175 aUsage\[\] = \173"

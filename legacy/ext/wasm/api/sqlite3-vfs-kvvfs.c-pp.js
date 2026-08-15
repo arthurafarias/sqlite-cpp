@@ -114,7 +114,7 @@ globalThis.sqlite3ApiBootstrap.initializers.push(function(sqlite3){
         hop = (o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 
   const kvvfsMethods = new sqlite3_kvvfs_methods(
-    /* Wraps the static sqlite3_api_methods singleton */
+    /* Wraps the sqlite3_api_methods singleton */
     wasm.exports.sqlite3__wasm_kvvfs_methods()
   );
   util.assert( 32<=kvvfsMethods.$nKeySize, "unexpected kvvfsMethods.$nKeySize: "+kvvfsMethods.$nKeySize);
@@ -412,7 +412,7 @@ globalThis.sqlite3ApiBootstrap.initializers.push(function(sqlite3){
       /* In test runs, leave these for inspection. If we delete them here,
          any prior dumps of them emitted via the console get cleared out
          because the console shows live objects instead of call-time
-         static dumps. */
+         dumps. */
       delete store.storage;
       delete store.refc;
     }

@@ -54,7 +54,7 @@ const char *findOption(const char *zName, int hasArg, const char *zDefault){
 /*
 ** Prepare an SQL query
 */
-static sqlite3_stmt *prepare(sqlite3 *db, const char *zFormat, ...){
+sqlite3_stmt *prepare(sqlite3 *db, const char *zFormat, ...){
   va_list ap;
   char *zSql;
   sqlite3_stmt *pStmt;
@@ -75,7 +75,7 @@ static sqlite3_stmt *prepare(sqlite3 *db, const char *zFormat, ...){
 /*
 ** Run an SQL statement
 */
-static int runSql(sqlite3 *db, const char *zFormat, ...){
+int runSql(sqlite3 *db, const char *zFormat, ...){
   va_list ap;
   char *zSql;
   int rc;
@@ -90,7 +90,7 @@ static int runSql(sqlite3 *db, const char *zFormat, ...){
 /*
 ** Show the table schema
 */
-static void showSchema(sqlite3 *db, const char *zTab){
+void showSchema(sqlite3 *db, const char *zTab){
   sqlite3_stmt *pStmt;
   pStmt = prepare(db,
             "SELECT sql FROM sqlite_schema"
@@ -149,7 +149,7 @@ int getVarint(const unsigned char *p, sqlite_int64 *v){
 
 /* Show the content of the %_stat table
 */
-static void showStat(sqlite3 *db, const char *zTab){
+void showStat(sqlite3 *db, const char *zTab){
   sqlite3_stmt *pStmt;
   pStmt = prepare(db, "SELECT id, value FROM '%q_stat'", zTab);
   while( sqlite3_step(pStmt)==SQLITE_ROW ){
@@ -180,7 +180,7 @@ static void showStat(sqlite3 *db, const char *zTab){
 ** Report on the vocabulary.  This creates an fts4aux table with a random
 ** name, but deletes it in the end.
 */
-static void showVocabulary(sqlite3 *db, const char *zTab){
+void showVocabulary(sqlite3 *db, const char *zTab){
   char *zAux;
   sqlite3_uint64 r;
   sqlite3_stmt *pStmt;
@@ -281,7 +281,7 @@ end_vocab:
 /*
 ** Report on the number and sizes of segments
 */
-static void showSegmentStats(sqlite3 *db, const char *zTab){
+void showSegmentStats(sqlite3 *db, const char *zTab){
   sqlite3_stmt *pStmt;
   int nSeg = 0;
   sqlite3_int64 szSeg = 0, mxSeg = 0;
@@ -428,7 +428,7 @@ static void showSegmentStats(sqlite3 *db, const char *zTab){
 /*
 ** Print a single "tree" line of the segdir map output.
 */
-static void printTreeLine(sqlite3_int64 iLower, sqlite3_int64 iUpper){
+void printTreeLine(sqlite3_int64 iLower, sqlite3_int64 iUpper){
   printf("                 tree   %9lld", iLower);
   if( iUpper>iLower ){
     printf(" thru %9lld  (%lld blocks)", iUpper, iUpper-iLower+1);
@@ -439,7 +439,7 @@ static void printTreeLine(sqlite3_int64 iLower, sqlite3_int64 iUpper){
 /*
 ** Check to see if the block of a %_segments entry is NULL.
 */
-static int isNullSegment(sqlite3 *db, const char *zTab, sqlite3_int64 iBlockId){
+int isNullSegment(sqlite3 *db, const char *zTab, sqlite3_int64 iBlockId){
   sqlite3_stmt *pStmt;
   int rc = 1;
 
@@ -455,7 +455,7 @@ static int isNullSegment(sqlite3 *db, const char *zTab, sqlite3_int64 iBlockId){
 /*
 ** Show a map of segments derived from the %_segdir table.
 */
-static void showSegdirMap(sqlite3 *db, const char *zTab){
+void showSegdirMap(sqlite3 *db, const char *zTab){
   int mxIndex, iIndex;
   sqlite3_stmt *pStmt = 0;
   sqlite3_stmt *pStmt2 = 0;
@@ -544,7 +544,7 @@ static void showSegdirMap(sqlite3 *db, const char *zTab){
 /*
 ** Decode a single segment block and display the results on stdout.
 */
-static void decodeSegment(
+void decodeSegment(
   const unsigned char *aData,   /* Content to print */
   int nData                     /* Number of bytes of content */
 ){
@@ -593,7 +593,7 @@ static void decodeSegment(
 /*
 ** Print a a blob as hex and ascii.
 */
-static void printBlob(
+void printBlob(
   const unsigned char *aData,   /* Content to print */
   int nData                     /* Number of bytes of content */
 ){
@@ -636,7 +636,7 @@ static void printBlob(
 /*
 ** Convert text to a 64-bit integer
 */
-static sqlite3_int64 atoi64(const char *z){
+sqlite3_int64 atoi64(const char *z){
   sqlite3_int64 v = 0;
   while( z[0]>='0' && z[0]<='9' ){
      v = v*10 + z[0] - '0';
@@ -651,7 +651,7 @@ static sqlite3_int64 atoi64(const char *z){
 ** 'r' then it is a rowid of a %_segdir entry.  Otherwise it is a
 ** %_segment entry.
 */
-static sqlite3_stmt *prepareToGetSegment(
+sqlite3_stmt *prepareToGetSegment(
   sqlite3 *db,         /* The database */
   const char *zTab,    /* The FTS3/4 table name */
   const char *zId      /* ID of the segment to open */
@@ -677,7 +677,7 @@ static sqlite3_stmt *prepareToGetSegment(
 ** If the --raw option is present in azExtra, then a hex dump is provided.
 ** Otherwise a decoding is shown.
 */
-static void showSegment(sqlite3 *db, const char *zTab){
+void showSegment(sqlite3 *db, const char *zTab){
   const unsigned char *aData;
   int nData;
   sqlite3_stmt *pStmt;
@@ -701,7 +701,7 @@ static void showSegment(sqlite3 *db, const char *zTab){
 /*
 ** Decode a single doclist and display the results on stdout.
 */
-static void decodeDoclist(
+void decodeDoclist(
   const unsigned char *aData,   /* Content to print */
   int nData                     /* Number of bytes of content */
 ){
@@ -747,7 +747,7 @@ static void decodeDoclist(
 ** If the --raw option is present in azExtra, then a hex dump is provided.
 ** Otherwise a decoding is shown.
 */
-static void showDoclist(sqlite3 *db, const char *zTab){
+void showDoclist(sqlite3 *db, const char *zTab){
   const unsigned char *aData;
   sqlite3_int64 offset;
   int nData;
@@ -774,7 +774,7 @@ static void showDoclist(sqlite3 *db, const char *zTab){
 /*
 ** Show the top N largest segments
 */
-static void listBigSegments(sqlite3 *db, const char *zTab){
+void listBigSegments(sqlite3 *db, const char *zTab){
   int nTop, i;
   sqlite3_stmt *pStmt;
   sqlite3_int64 sz;
@@ -798,7 +798,7 @@ static void listBigSegments(sqlite3 *db, const char *zTab){
 
 
 
-static void usage(const char *argv0){
+void usage(const char *argv0){
   fprintf(stderr, "Usage: %s DATABASE\n"
                   "   or: %s DATABASE FTS3TABLE ARGS...\n", argv0, argv0);
   fprintf(stderr,

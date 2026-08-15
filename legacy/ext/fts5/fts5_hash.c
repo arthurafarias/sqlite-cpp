@@ -142,7 +142,7 @@ void sqlite3Fts5HashClear(Fts5Hash *pHash){
   pHash->nEntry = 0;
 }
 
-static unsigned int fts5HashKey(int nSlot, const u8 *p, int n){
+unsigned int fts5HashKey(int nSlot, const u8 *p, int n){
   int i;
   unsigned int h = 13;
   for(i=n-1; i>=0; i--){
@@ -151,7 +151,7 @@ static unsigned int fts5HashKey(int nSlot, const u8 *p, int n){
   return (h % nSlot);
 }
 
-static unsigned int fts5HashKey2(int nSlot, u8 b, const u8 *p, int n){
+unsigned int fts5HashKey2(int nSlot, u8 b, const u8 *p, int n){
   int i;
   unsigned int h = 13;
   for(i=n-1; i>=0; i--){
@@ -164,7 +164,7 @@ static unsigned int fts5HashKey2(int nSlot, u8 b, const u8 *p, int n){
 /*
 ** Resize the hash table by doubling the number of slots.
 */
-static int fts5HashResize(Fts5Hash *pHash){
+int fts5HashResize(Fts5Hash *pHash){
   int nNew = pHash->nSlot*2;
   int i;
   Fts5HashEntry **apNew;
@@ -191,7 +191,7 @@ static int fts5HashResize(Fts5Hash *pHash){
   return SQLITE_OK;
 }
 
-static int fts5HashAddPoslistSize(
+int fts5HashAddPoslistSize(
   Fts5Hash *pHash, 
   Fts5HashEntry *p,
   Fts5HashEntry *p2
@@ -395,7 +395,7 @@ int sqlite3Fts5HashWrite(
 ** each sorted in key order. This function merges the two lists into a
 ** single list and returns a pointer to its first element.
 */
-static Fts5HashEntry *fts5HashEntryMerge(
+Fts5HashEntry *fts5HashEntryMerge(
   Fts5HashEntry *pLeft,
   Fts5HashEntry *pRight
 ){
@@ -444,7 +444,7 @@ static Fts5HashEntry *fts5HashEntryMerge(
 ** Link all tokens from hash table iHash into a list in sorted order. The
 ** tokens are not removed from the hash table.
 */
-static int fts5HashEntrySort(
+int fts5HashEntrySort(
   Fts5Hash *pHash, 
   const char *pTerm, int nTerm,   /* Query prefix, if any */
   Fts5HashEntry **ppSorted
@@ -535,7 +535,7 @@ int sqlite3Fts5HashScanInit(
 }
 
 #ifdef SQLITE_DEBUG
-static int fts5HashCount(Fts5Hash *pHash){
+int fts5HashCount(Fts5Hash *pHash){
   int nEntry = 0;
   int ii;
   for(ii=0; ii<pHash->nSlot; ii++){

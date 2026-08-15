@@ -135,46 +135,46 @@ struct ApndFile {
 /*
 ** Methods for ApndFile
 */
-static int apndClose(sqlite3_file*);
-static int apndRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int apndWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int apndTruncate(sqlite3_file*, sqlite3_int64 size);
-static int apndSync(sqlite3_file*, int flags);
-static int apndFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int apndLock(sqlite3_file*, int);
-static int apndUnlock(sqlite3_file*, int);
-static int apndCheckReservedLock(sqlite3_file*, int *pResOut);
-static int apndFileControl(sqlite3_file*, int op, void *pArg);
-static int apndSectorSize(sqlite3_file*);
-static int apndDeviceCharacteristics(sqlite3_file*);
-static int apndShmMap(sqlite3_file*, int iPg, int pgsz, int, void volatile**);
-static int apndShmLock(sqlite3_file*, int offset, int n, int flags);
-static void apndShmBarrier(sqlite3_file*);
-static int apndShmUnmap(sqlite3_file*, int deleteFlag);
-static int apndFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
-static int apndUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
+int apndClose(sqlite3_file*);
+int apndRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
+int apndWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
+int apndTruncate(sqlite3_file*, sqlite3_int64 size);
+int apndSync(sqlite3_file*, int flags);
+int apndFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+int apndLock(sqlite3_file*, int);
+int apndUnlock(sqlite3_file*, int);
+int apndCheckReservedLock(sqlite3_file*, int *pResOut);
+int apndFileControl(sqlite3_file*, int op, void *pArg);
+int apndSectorSize(sqlite3_file*);
+int apndDeviceCharacteristics(sqlite3_file*);
+int apndShmMap(sqlite3_file*, int iPg, int pgsz, int, void volatile**);
+int apndShmLock(sqlite3_file*, int offset, int n, int flags);
+void apndShmBarrier(sqlite3_file*);
+int apndShmUnmap(sqlite3_file*, int deleteFlag);
+int apndFetch(sqlite3_file*, sqlite3_int64 iOfst, int iAmt, void **pp);
+int apndUnfetch(sqlite3_file*, sqlite3_int64 iOfst, void *p);
 
 /*
 ** Methods for ApndVfs
 */
-static int apndOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int apndDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int apndAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int apndFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *apndDlOpen(sqlite3_vfs*, const char *zFilename);
-static void apndDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*apndDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
-static void apndDlClose(sqlite3_vfs*, void*);
-static int apndRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int apndSleep(sqlite3_vfs*, int microseconds);
-static int apndCurrentTime(sqlite3_vfs*, double*);
-static int apndGetLastError(sqlite3_vfs*, int, char *);
-static int apndCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
-static int apndSetSystemCall(sqlite3_vfs*, const char*,sqlite3_syscall_ptr);
-static sqlite3_syscall_ptr apndGetSystemCall(sqlite3_vfs*, const char *z);
-static const char *apndNextSystemCall(sqlite3_vfs*, const char *zName);
+int apndOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
+int apndDelete(sqlite3_vfs*, const char *zName, int syncDir);
+int apndAccess(sqlite3_vfs*, const char *zName, int flags, int *);
+int apndFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+void *apndDlOpen(sqlite3_vfs*, const char *zFilename);
+void apndDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+void (*apndDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
+void apndDlClose(sqlite3_vfs*, void*);
+int apndRandomness(sqlite3_vfs*, int nByte, char *zOut);
+int apndSleep(sqlite3_vfs*, int microseconds);
+int apndCurrentTime(sqlite3_vfs*, double*);
+int apndGetLastError(sqlite3_vfs*, int, char *);
+int apndCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+int apndSetSystemCall(sqlite3_vfs*, const char*,sqlite3_syscall_ptr);
+sqlite3_syscall_ptr apndGetSystemCall(sqlite3_vfs*, const char *z);
+const char *apndNextSystemCall(sqlite3_vfs*, const char *zName);
 
-static sqlite3_vfs apnd_vfs = {
+sqlite3_vfs apnd_vfs = {
   3,                            /* iVersion (set when registered) */
   0,                            /* szOsFile (set when registered) */
   1024,                         /* mxPathname */
@@ -199,7 +199,7 @@ static sqlite3_vfs apnd_vfs = {
   apndNextSystemCall            /* xNextSystemCall */
 };
 
-static const sqlite3_io_methods apnd_io_methods = {
+const sqlite3_io_methods apnd_io_methods = {
   3,                              /* iVersion */
   apndClose,                      /* xClose */
   apndRead,                       /* xRead */
@@ -224,7 +224,7 @@ static const sqlite3_io_methods apnd_io_methods = {
 /*
 ** Close an apnd-file.
 */
-static int apndClose(sqlite3_file *pFile){
+int apndClose(sqlite3_file *pFile){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xClose(pFile);
 }
@@ -232,7 +232,7 @@ static int apndClose(sqlite3_file *pFile){
 /*
 ** Read data from an apnd-file.
 */
-static int apndRead(
+int apndRead(
   sqlite3_file *pFile, 
   void *zBuf, 
   int iAmt, 
@@ -248,7 +248,7 @@ static int apndRead(
 *  If and only if this succeeds, internal ApndFile.iMark is updated.
 *  Parameter iWriteEnd is the appendvfs-relative offset of the new mark.
 */
-static int apndWriteMark(
+int apndWriteMark(
   ApndFile *paf,
   sqlite3_file *pFile,
   sqlite_int64 iWriteEnd
@@ -274,7 +274,7 @@ static int apndWriteMark(
 /*
 ** Write data to an apnd-file.
 */
-static int apndWrite(
+int apndWrite(
   sqlite3_file *pFile,
   const void *zBuf,
   int iAmt,
@@ -295,7 +295,7 @@ static int apndWrite(
 /*
 ** Truncate an apnd-file.
 */
-static int apndTruncate(sqlite3_file *pFile, sqlite_int64 size){
+int apndTruncate(sqlite3_file *pFile, sqlite_int64 size){
   ApndFile *paf = (ApndFile *)pFile;
   pFile = ORIGFILE(pFile);
   /* The append mark goes out first so truncate failure does not lose it. */
@@ -307,7 +307,7 @@ static int apndTruncate(sqlite3_file *pFile, sqlite_int64 size){
 /*
 ** Sync an apnd-file.
 */
-static int apndSync(sqlite3_file *pFile, int flags){
+int apndSync(sqlite3_file *pFile, int flags){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xSync(pFile, flags);
 }
@@ -316,7 +316,7 @@ static int apndSync(sqlite3_file *pFile, int flags){
 ** Return the current file-size of an apnd-file.
 ** If the append mark is not yet there, the file-size is 0.
 */
-static int apndFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+int apndFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   ApndFile *paf = (ApndFile *)pFile;
   *pSize = ( paf->iMark >= 0 )? (paf->iMark - paf->iPgOne) : 0;
   return SQLITE_OK;
@@ -325,7 +325,7 @@ static int apndFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
 /*
 ** Lock an apnd-file.
 */
-static int apndLock(sqlite3_file *pFile, int eLock){
+int apndLock(sqlite3_file *pFile, int eLock){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xLock(pFile, eLock);
 }
@@ -333,7 +333,7 @@ static int apndLock(sqlite3_file *pFile, int eLock){
 /*
 ** Unlock an apnd-file.
 */
-static int apndUnlock(sqlite3_file *pFile, int eLock){
+int apndUnlock(sqlite3_file *pFile, int eLock){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xUnlock(pFile, eLock);
 }
@@ -341,7 +341,7 @@ static int apndUnlock(sqlite3_file *pFile, int eLock){
 /*
 ** Check if another file-handle holds a RESERVED lock on an apnd-file.
 */
-static int apndCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+int apndCheckReservedLock(sqlite3_file *pFile, int *pResOut){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xCheckReservedLock(pFile, pResOut);
 }
@@ -349,7 +349,7 @@ static int apndCheckReservedLock(sqlite3_file *pFile, int *pResOut){
 /*
 ** File control method. For custom operations on an apnd-file.
 */
-static int apndFileControl(sqlite3_file *pFile, int op, void *pArg){
+int apndFileControl(sqlite3_file *pFile, int op, void *pArg){
   ApndFile *paf = (ApndFile *)pFile;
   int rc;
   pFile = ORIGFILE(pFile);
@@ -364,7 +364,7 @@ static int apndFileControl(sqlite3_file *pFile, int op, void *pArg){
 /*
 ** Return the sector-size in bytes for an apnd-file.
 */
-static int apndSectorSize(sqlite3_file *pFile){
+int apndSectorSize(sqlite3_file *pFile){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xSectorSize(pFile);
 }
@@ -372,13 +372,13 @@ static int apndSectorSize(sqlite3_file *pFile){
 /*
 ** Return the device characteristic flags supported by an apnd-file.
 */
-static int apndDeviceCharacteristics(sqlite3_file *pFile){
+int apndDeviceCharacteristics(sqlite3_file *pFile){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xDeviceCharacteristics(pFile);
 }
 
 /* Create a shared memory file mapping */
-static int apndShmMap(
+int apndShmMap(
   sqlite3_file *pFile,
   int iPg,
   int pgsz,
@@ -390,25 +390,25 @@ static int apndShmMap(
 }
 
 /* Perform locking on a shared-memory segment */
-static int apndShmLock(sqlite3_file *pFile, int offset, int n, int flags){
+int apndShmLock(sqlite3_file *pFile, int offset, int n, int flags){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xShmLock(pFile,offset,n,flags);
 }
 
 /* Memory barrier operation on shared memory */
-static void apndShmBarrier(sqlite3_file *pFile){
+void apndShmBarrier(sqlite3_file *pFile){
   pFile = ORIGFILE(pFile);
   pFile->pMethods->xShmBarrier(pFile);
 }
 
 /* Unmap a shared memory segment */
-static int apndShmUnmap(sqlite3_file *pFile, int deleteFlag){
+int apndShmUnmap(sqlite3_file *pFile, int deleteFlag){
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xShmUnmap(pFile,deleteFlag);
 }
 
 /* Fetch a page of a memory-mapped file */
-static int apndFetch(
+int apndFetch(
   sqlite3_file *pFile,
   sqlite3_int64 iOfst,
   int iAmt,
@@ -423,7 +423,7 @@ static int apndFetch(
 }
 
 /* Release a memory-mapped page */
-static int apndUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
+int apndUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
   ApndFile *p = (ApndFile *)pFile;
   pFile = ORIGFILE(pFile);
   return pFile->pMethods->xUnfetch(pFile, iOfst+p->iPgOne, pPage);
@@ -438,7 +438,7 @@ static int apndUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *pPage){
 ** indicates that the appended database contains at least one page.  The
 ** start-of-database value must be a multiple of 512.
 */
-static sqlite3_int64 apndReadMark(sqlite3_int64 sz, sqlite3_file *pFile){
+sqlite3_int64 apndReadMark(sqlite3_int64 sz, sqlite3_file *pFile){
   int rc, i;
   sqlite3_int64 iMark;
   int msbs = 8 * (APND_MARK_FOS_SZ-1);
@@ -458,12 +458,12 @@ static sqlite3_int64 apndReadMark(sqlite3_int64 sz, sqlite3_file *pFile){
   return iMark;
 }
 
-static const char apvfsSqliteHdr[] = "SQLite format 3";
+const char apvfsSqliteHdr[] = "SQLite format 3";
 /*
 ** Check to see if the file is an appendvfs SQLite database file.
 ** Return true iff it is such. Parameter sz is the file's size.
 */
-static int apndIsAppendvfsDatabase(sqlite3_int64 sz, sqlite3_file *pFile){
+int apndIsAppendvfsDatabase(sqlite3_int64 sz, sqlite3_file *pFile){
   int rc;
   char zHdr[16];
   sqlite3_int64 iMark = apndReadMark(sz, pFile);
@@ -488,7 +488,7 @@ static int apndIsAppendvfsDatabase(sqlite3_int64 sz, sqlite3_file *pFile){
 ** Check to see if the file is an ordinary SQLite database file.
 ** Return true iff so. Parameter sz is the file's size.
 */
-static int apndIsOrdinaryDatabaseFile(sqlite3_int64 sz, sqlite3_file *pFile){
+int apndIsOrdinaryDatabaseFile(sqlite3_int64 sz, sqlite3_file *pFile){
   char zHdr[16];
   if( apndIsAppendvfsDatabase(sz, pFile) /* rule 2 */
    || (sz & 0x1ff) != 0
@@ -504,7 +504,7 @@ static int apndIsOrdinaryDatabaseFile(sqlite3_int64 sz, sqlite3_file *pFile){
 /*
 ** Open an apnd file handle.
 */
-static int apndOpen(
+int apndOpen(
   sqlite3_vfs *pApndVfs,
   const char *zName,
   sqlite3_file *pFile,
@@ -571,14 +571,14 @@ static int apndOpen(
 ** leaving the appendee as it was before it gained an appendvfs.
 ** For now, this code deletes the underlying file too.
 */
-static int apndDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
+int apndDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
   return ORIGVFS(pVfs)->xDelete(ORIGVFS(pVfs), zPath, dirSync);
 }
 
 /*
 ** All other VFS methods are pass-thrus.
 */
-static int apndAccess(
+int apndAccess(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
   int flags, 
@@ -586,7 +586,7 @@ static int apndAccess(
 ){
   return ORIGVFS(pVfs)->xAccess(ORIGVFS(pVfs), zPath, flags, pResOut);
 }
-static int apndFullPathname(
+int apndFullPathname(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
   int nOut, 
@@ -594,47 +594,47 @@ static int apndFullPathname(
 ){
   return ORIGVFS(pVfs)->xFullPathname(ORIGVFS(pVfs),zPath,nOut,zOut);
 }
-static void *apndDlOpen(sqlite3_vfs *pVfs, const char *zPath){
+void *apndDlOpen(sqlite3_vfs *pVfs, const char *zPath){
   return ORIGVFS(pVfs)->xDlOpen(ORIGVFS(pVfs), zPath);
 }
-static void apndDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+void apndDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
   ORIGVFS(pVfs)->xDlError(ORIGVFS(pVfs), nByte, zErrMsg);
 }
-static void (*apndDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
+void (*apndDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
   return ORIGVFS(pVfs)->xDlSym(ORIGVFS(pVfs), p, zSym);
 }
-static void apndDlClose(sqlite3_vfs *pVfs, void *pHandle){
+void apndDlClose(sqlite3_vfs *pVfs, void *pHandle){
   ORIGVFS(pVfs)->xDlClose(ORIGVFS(pVfs), pHandle);
 }
-static int apndRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
+int apndRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
   return ORIGVFS(pVfs)->xRandomness(ORIGVFS(pVfs), nByte, zBufOut);
 }
-static int apndSleep(sqlite3_vfs *pVfs, int nMicro){
+int apndSleep(sqlite3_vfs *pVfs, int nMicro){
   return ORIGVFS(pVfs)->xSleep(ORIGVFS(pVfs), nMicro);
 }
-static int apndCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+int apndCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
   return ORIGVFS(pVfs)->xCurrentTime(ORIGVFS(pVfs), pTimeOut);
 }
-static int apndGetLastError(sqlite3_vfs *pVfs, int a, char *b){
+int apndGetLastError(sqlite3_vfs *pVfs, int a, char *b){
   return ORIGVFS(pVfs)->xGetLastError(ORIGVFS(pVfs), a, b);
 }
-static int apndCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
+int apndCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
   return ORIGVFS(pVfs)->xCurrentTimeInt64(ORIGVFS(pVfs), p);
 }
-static int apndSetSystemCall(
+int apndSetSystemCall(
   sqlite3_vfs *pVfs,
   const char *zName,
   sqlite3_syscall_ptr pCall
 ){
   return ORIGVFS(pVfs)->xSetSystemCall(ORIGVFS(pVfs),zName,pCall);
 }
-static sqlite3_syscall_ptr apndGetSystemCall(
+sqlite3_syscall_ptr apndGetSystemCall(
   sqlite3_vfs *pVfs,
   const char *zName
 ){
   return ORIGVFS(pVfs)->xGetSystemCall(ORIGVFS(pVfs),zName);
 }
-static const char *apndNextSystemCall(sqlite3_vfs *pVfs, const char *zName){
+const char *apndNextSystemCall(sqlite3_vfs *pVfs, const char *zName){
   return ORIGVFS(pVfs)->xNextSystemCall(ORIGVFS(pVfs), zName);
 }
 

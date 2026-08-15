@@ -132,7 +132,7 @@ struct StrBuffer {
 /*
 ** Allocate a two-slot MatchinfoBuffer object.
 */
-static MatchinfoBuffer *fts3MIBufferNew(size_t nElem, const char *zMatchinfo){
+MatchinfoBuffer *fts3MIBufferNew(size_t nElem, const char *zMatchinfo){
   MatchinfoBuffer *pRet;
   sqlite3_int64 nByte = sizeof(u32) * (2*(sqlite3_int64)nElem + 1)
                            + SZ_MATCHINFOBUFFER(1);
@@ -152,7 +152,7 @@ static MatchinfoBuffer *fts3MIBufferNew(size_t nElem, const char *zMatchinfo){
   return pRet;
 }
 
-static void fts3MIBufferFree(void *p){
+void fts3MIBufferFree(void *p){
   MatchinfoBuffer *pBuf = (MatchinfoBuffer*)((u8*)p - ((u32*)p)[-1]);
 
   assert( (u32*)p==&pBuf->aMI[1] 
@@ -169,7 +169,7 @@ static void fts3MIBufferFree(void *p){
   }
 }
 
-static void (*fts3MIBufferAlloc(MatchinfoBuffer *p, u32 **paOut))(void*){
+void (*fts3MIBufferAlloc(MatchinfoBuffer *p, u32 **paOut))(void*){
   void (*xRet)(void*) = 0;
   u32 *aOut = 0;
 
@@ -194,7 +194,7 @@ static void (*fts3MIBufferAlloc(MatchinfoBuffer *p, u32 **paOut))(void*){
   return xRet;
 }
 
-static void fts3MIBufferSetGlobal(MatchinfoBuffer *p){
+void fts3MIBufferSetGlobal(MatchinfoBuffer *p){
   p->bGlobal = 1;
   memcpy(&p->aMI[2+p->nElem], &p->aMI[1], p->nElem*sizeof(u32));
 }
@@ -237,7 +237,7 @@ void sqlite3Fts3MIBufferFree(MatchinfoBuffer *p){
 ** After it returns, *piPos contains the value of the next element of the
 ** list and *pp is advanced to the following varint.
 */
-static void fts3GetDeltaPosition(char **pp, i64 *piPos){
+void fts3GetDeltaPosition(char **pp, i64 *piPos){
   int iVal;
   *pp += fts3GetVarint32(*pp, &iVal);
   *piPos += (iVal-2);
@@ -246,7 +246,7 @@ static void fts3GetDeltaPosition(char **pp, i64 *piPos){
 /*
 ** Helper function for sqlite3Fts3ExprIterate() (see below).
 */
-static int fts3ExprIterate2(
+int fts3ExprIterate2(
   Fts3Expr *pExpr,                /* Expression to iterate phrases of */
   int *piPhrase,                  /* Pointer to phrase counter */
   int (*x)(Fts3Expr*,int,void*),  /* Callback function to invoke for phrases */
@@ -292,7 +292,7 @@ int sqlite3Fts3ExprIterate(
 ** doclists for each phrase into Fts3Expr.aDoclist[]/nDoclist. See also
 ** fts3ExprLoadDoclists().
 */
-static int fts3ExprLoadDoclistsCb(Fts3Expr *pExpr, int iPhrase, void *ctx){
+int fts3ExprLoadDoclistsCb(Fts3Expr *pExpr, int iPhrase, void *ctx){
   int rc = SQLITE_OK;
   Fts3Phrase *pPhrase = pExpr->pPhrase;
   LoadDoclistCtx *p = (LoadDoclistCtx *)ctx;
@@ -315,7 +315,7 @@ static int fts3ExprLoadDoclistsCb(Fts3Expr *pExpr, int iPhrase, void *ctx){
 ** pnToken is not NULL, then it is set to the number of tokens in all
 ** matchable phrases of the expression.
 */
-static int fts3ExprLoadDoclists(
+int fts3ExprLoadDoclists(
   Fts3Cursor *pCsr,               /* Fts3 cursor for current query */
   int *pnPhrase,                  /* OUT: Number of phrases in query */
   int *pnToken                    /* OUT: Number of tokens in query */
@@ -329,12 +329,12 @@ static int fts3ExprLoadDoclists(
   return rc;
 }
 
-static int fts3ExprPhraseCountCb(Fts3Expr *pExpr, int iPhrase, void *ctx){
+int fts3ExprPhraseCountCb(Fts3Expr *pExpr, int iPhrase, void *ctx){
   (*(int *)ctx)++;
   pExpr->iPhrase = iPhrase;
   return SQLITE_OK;
 }
-static int fts3ExprPhraseCount(Fts3Expr *pExpr){
+int fts3ExprPhraseCount(Fts3Expr *pExpr){
   int nPhrase = 0;
   (void)sqlite3Fts3ExprIterate(pExpr, fts3ExprPhraseCountCb, (void *)&nPhrase);
   return nPhrase;
@@ -345,7 +345,7 @@ static int fts3ExprPhraseCount(Fts3Expr *pExpr){
 ** arguments so that it points to the first element with a value greater
 ** than or equal to parameter iNext.
 */
-static void fts3SnippetAdvance(char **ppIter, i64 *piIter, int iNext){
+void fts3SnippetAdvance(char **ppIter, i64 *piIter, int iNext){
   char *pIter = *ppIter;
   if( pIter ){
     i64 iIter = *piIter;
@@ -367,7 +367,7 @@ static void fts3SnippetAdvance(char **ppIter, i64 *piIter, int iNext){
 /*
 ** Advance the snippet iterator to the next candidate snippet.
 */
-static int fts3SnippetNextCandidate(SnippetIter *pIter){
+int fts3SnippetNextCandidate(SnippetIter *pIter){
   int i;                          /* Loop counter */
 
   if( pIter->iCurrent<0 ){
@@ -414,7 +414,7 @@ static int fts3SnippetNextCandidate(SnippetIter *pIter){
 ** Retrieve information about the current candidate snippet of snippet 
 ** iterator pIter.
 */
-static void fts3SnippetDetails(
+void fts3SnippetDetails(
   SnippetIter *pIter,             /* Snippet iterator */
   u64 mCovered,                   /* Bitmask of phrases already covered */
   int *piToken,                   /* OUT: First token of proposed snippet */
@@ -469,7 +469,7 @@ static void fts3SnippetDetails(
 ** fts3BestSnippet().  Each invocation populates an element of the
 ** SnippetIter.aPhrase[] array.
 */
-static int fts3SnippetFindPositions(Fts3Expr *pExpr, int iPhrase, void *ctx){
+int fts3SnippetFindPositions(Fts3Expr *pExpr, int iPhrase, void *ctx){
   SnippetIter *p = (SnippetIter *)ctx;
   SnippetPhrase *pPhrase = &p->aPhrase[iPhrase];
   char *pCsr;
@@ -514,7 +514,7 @@ static int fts3SnippetFindPositions(Fts3Expr *pExpr, int iPhrase, void *ctx){
 ** returning. The score of the selected snippet is stored in *piScore
 ** before returning.
 */
-static int fts3BestSnippet(
+int fts3BestSnippet(
   int nSnippet,                   /* Desired snippet length */
   Fts3Cursor *pCsr,               /* Cursor to create snippet for */
   int iCol,                       /* Index of column to create snippet from */
@@ -601,7 +601,7 @@ static int fts3BestSnippet(
 ** If nAppend is negative, then the length of the string zAppend is
 ** determined using strlen().
 */
-static int fts3StringAppend(
+int fts3StringAppend(
   StrBuffer *pStr,                /* Buffer to append to */
   const char *zAppend,            /* Pointer to data to append to buffer */
   int nAppend                     /* Size of zAppend in bytes (or -1) */
@@ -653,7 +653,7 @@ static int fts3StringAppend(
 ** is no way for fts3BestSnippet() to know whether or not the document 
 ** actually contains terms that follow the final highlighted term. 
 */
-static int fts3SnippetShift(
+int fts3SnippetShift(
   Fts3Table *pTab,                /* FTS3 table snippet comes from */
   int iLangid,                    /* Language id to use in tokenizing */
   int nSnippet,                   /* Number of tokens desired for snippet */
@@ -718,7 +718,7 @@ static int fts3SnippetShift(
 ** Extract the snippet text for fragment pFragment from cursor pCsr and
 ** append it to string buffer pOut.
 */
-static int fts3SnippetText(
+int fts3SnippetText(
   Fts3Cursor *pCsr,               /* FTS3 Cursor */
   SnippetFragment *pFragment,     /* Snippet to extract */
   int iFragment,                  /* Fragment number */
@@ -846,7 +846,7 @@ static int fts3SnippetText(
 **
 ** The number of elements in the column-list is returned.
 */
-static int fts3ColumnlistCount(char **ppCollist){
+int fts3ColumnlistCount(char **ppCollist){
   char *pEnd = *ppCollist;
   char c = 0;
   int nEntry = 0;
@@ -864,7 +864,7 @@ static int fts3ColumnlistCount(char **ppCollist){
 /*
 ** This function gathers 'y' or 'b' data for a single phrase.
 */
-static int fts3ExprLHits(
+int fts3ExprLHits(
   Fts3Expr *pExpr,                /* Phrase expression node */
   MatchInfo *p                    /* Matchinfo context */
 ){
@@ -902,7 +902,7 @@ static int fts3ExprLHits(
 /*
 ** Gather the results for matchinfo directives 'y' and 'b'.
 */
-static int fts3ExprLHitGather(
+int fts3ExprLHitGather(
   Fts3Expr *pExpr,
   MatchInfo *p
 ){
@@ -946,7 +946,7 @@ static int fts3ExprLHitGather(
 ** to calculate these values properly, and the full-text index doclist is
 ** not available for deferred tokens.
 */
-static int fts3ExprGlobalHitsCb(
+int fts3ExprGlobalHitsCb(
   Fts3Expr *pExpr,                /* Phrase expression node */
   int iPhrase,                    /* Phrase number (numbered from zero) */
   void *pCtx                      /* Pointer to MatchInfo structure */
@@ -962,7 +962,7 @@ static int fts3ExprGlobalHitsCb(
 ** FTS3_MATCHINFO_HITS array. The local stats are those elements of the 
 ** array that are different for each row returned by the query.
 */
-static int fts3ExprLocalHitsCb(
+int fts3ExprLocalHitsCb(
   Fts3Expr *pExpr,                /* Phrase expression node */
   int iPhrase,                    /* Phrase number */
   void *pCtx                      /* Pointer to MatchInfo structure */
@@ -985,7 +985,7 @@ static int fts3ExprLocalHitsCb(
   return rc;
 }
 
-static int fts3MatchinfoCheck(
+int fts3MatchinfoCheck(
   Fts3Table *pTab, 
   char cArg,
   char **pzErr
@@ -1006,7 +1006,7 @@ static int fts3MatchinfoCheck(
   return SQLITE_ERROR;
 }
 
-static size_t fts3MatchinfoSize(MatchInfo *pInfo, char cArg){
+size_t fts3MatchinfoSize(MatchInfo *pInfo, char cArg){
   size_t nVal;                      /* Number of integers output by cArg */
 
   switch( cArg ){
@@ -1039,7 +1039,7 @@ static size_t fts3MatchinfoSize(MatchInfo *pInfo, char cArg){
   return nVal;
 }
 
-static int fts3MatchinfoSelectDoctotal(
+int fts3MatchinfoSelectDoctotal(
   Fts3Table *pTab,
   sqlite3_stmt **ppStmt,
   sqlite3_int64 *pnDoc,
@@ -1097,7 +1097,7 @@ struct LcsIterator {
 */
 #define LCS_ITERATOR_FINISHED 0x7FFFFFFF;
 
-static int fts3MatchinfoLcsCb(
+int fts3MatchinfoLcsCb(
   Fts3Expr *pExpr,                /* Phrase expression node */
   int iPhrase,                    /* Phrase number (numbered from zero) */
   void *pCtx                      /* Pointer to MatchInfo structure */
@@ -1112,7 +1112,7 @@ static int fts3MatchinfoLcsCb(
 ** 1 if the iterator is at EOF or if it now points to the start of the
 ** position list for the next column.
 */
-static int fts3LcsIteratorAdvance(LcsIterator *pIter){
+int fts3LcsIteratorAdvance(LcsIterator *pIter){
   char *pRead;
   sqlite3_int64 iRead;
   int rc = 0;
@@ -1142,7 +1142,7 @@ static int fts3LcsIteratorAdvance(LcsIterator *pIter){
 ** data written to the first nCol elements of pInfo->aMatchinfo[] is 
 ** undefined.
 */
-static int fts3MatchinfoLcs(Fts3Cursor *pCsr, MatchInfo *pInfo){
+int fts3MatchinfoLcs(Fts3Cursor *pCsr, MatchInfo *pInfo){
   LcsIterator *aIter;
   int i;
   int iCol;
@@ -1230,7 +1230,7 @@ static int fts3MatchinfoLcs(Fts3Cursor *pCsr, MatchInfo *pInfo){
 ** occurs. If a value other than SQLITE_OK is returned, the state the
 ** pInfo->aMatchinfo[] buffer is left in is undefined.
 */
-static int fts3MatchinfoValues(
+int fts3MatchinfoValues(
   Fts3Cursor *pCsr,               /* FTS3 cursor object */
   int bGlobal,                    /* True to grab the global stats */
   MatchInfo *pInfo,               /* Matchinfo context object */
@@ -1352,7 +1352,7 @@ static int fts3MatchinfoValues(
 ** Populate pCsr->aMatchinfo[] with data for the current row. The 
 ** 'matchinfo' data is an array of 32-bit unsigned integers (C type u32).
 */
-static void fts3GetMatchinfo(
+void fts3GetMatchinfo(
   sqlite3_context *pCtx,        /* Return results here */
   Fts3Cursor *pCsr,               /* FTS3 Cursor object */
   const char *zArg                /* Second argument to matchinfo() function */
@@ -1560,7 +1560,7 @@ struct TermOffsetCtx {
 /*
 ** This function is an sqlite3Fts3ExprIterate() callback used by sqlite3Fts3Offsets().
 */
-static int fts3ExprTermOffsetInit(Fts3Expr *pExpr, int iPhrase, void *ctx){
+int fts3ExprTermOffsetInit(Fts3Expr *pExpr, int iPhrase, void *ctx){
   TermOffsetCtx *p = (TermOffsetCtx *)ctx;
   int nTerm;                      /* Number of tokens in phrase */
   int iTerm;                      /* For looping through nTerm phrase terms */
@@ -1591,7 +1591,7 @@ static int fts3ExprTermOffsetInit(Fts3Expr *pExpr, int iPhrase, void *ctx){
 ** restart it as a regular, non-incremental query. Return SQLITE_OK
 ** if successful, or an SQLite error code otherwise.
 */
-static int fts3ExprRestartIfCb(Fts3Expr *pExpr, int iPhrase, void *ctx){
+int fts3ExprRestartIfCb(Fts3Expr *pExpr, int iPhrase, void *ctx){
   TermOffsetCtx *p = (TermOffsetCtx*)ctx;
   int rc = SQLITE_OK;
   UNUSED_PARAMETER(iPhrase);

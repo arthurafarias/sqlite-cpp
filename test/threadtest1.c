@@ -32,12 +32,12 @@
 /*
 ** Enable for tracing
 */
-static int verbose = 0;
+int verbose = 0;
 
 /*
 ** Come here to die.
 */
-static void Exit(int rc){
+void Exit(int rc){
   exit(rc);
 }
 
@@ -47,7 +47,7 @@ extern char *sqlite3_vmprintf(const char *zFormat, va_list);
 /*
 ** When a lock occurs, yield.
 */
-static int db_is_locked(void *NotUsed, int iCount){
+int db_is_locked(void *NotUsed, int iCount){
   /* sched_yield(); */
   if( verbose ) printf("BUSY %s #%d\n", (char*)NotUsed, iCount);
   usleep(100);
@@ -67,7 +67,7 @@ struct QueryResult {
 /*
 ** The callback function for db_query
 */
-static int db_query_callback(
+int db_query_callback(
   void *pUser,     /* Pointer to the QueryResult structure */
   int nArg,        /* Number of columns in this result row */
   char **azArg,    /* Text of data in all columns */
@@ -191,7 +191,7 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t sig = PTHREAD_COND_INITIALIZER;
 int thread_cnt = 0;
 
-static void *worker_bee(void *pArg){
+void *worker_bee(void *pArg){
   const char *zFilename = (char*)pArg;
   char *azErr;
   int i, cnt;

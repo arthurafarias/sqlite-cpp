@@ -102,7 +102,7 @@ struct GlobalVars {
 
 void SHA1Transform(unsigned int state[5], const unsigned char buffer[64]){
   unsigned int qq[5]; /* a, b, c, d, e; */
-  static int one = 1;
+  int one = 1;
   unsigned int block[16];
   memcpy(block, buffer, 64);
   memcpy(qq,state,5*sizeof(unsigned int));
@@ -155,7 +155,7 @@ void SHA1Transform(unsigned int state[5], const unsigned char buffer[64]){
 
 
 /* Initialize the SHA1 hash */
-static void hash_init(void){
+void hash_init(void){
   /* SHA1 initialization constants */
   g.cx.state[0] = 0x67452301;
   g.cx.state[1] = 0xEFCDAB89;
@@ -166,7 +166,7 @@ static void hash_init(void){
 }
 
 /* Add new content to the SHA1 hash */
-static void hash_step(const unsigned char *data,  unsigned int len){
+void hash_step(const unsigned char *data,  unsigned int len){
   unsigned int i, j;
 
   j = g.cx.count[0];
@@ -189,11 +189,11 @@ static void hash_step(const unsigned char *data,  unsigned int len){
 
 
 /* Add padding and compute and output the message digest. */
-static void hash_finish(const char *zName){
+void hash_finish(const char *zName){
   unsigned int i;
   unsigned char finalcount[8];
   unsigned char digest[20];
-  static const char zEncode[] = "0123456789abcdef";
+  const char zEncode[] = "0123456789abcdef";
   char zOut[41];
 
   for (i = 0; i < 8; i++){
@@ -222,7 +222,7 @@ static void hash_finish(const char *zName){
 ** Print an error resulting from faulting command-line arguments and
 ** abort the program.
 */
-static void cmdlineError(const char *zFormat, ...){
+void cmdlineError(const char *zFormat, ...){
   va_list ap;
   fprintf(stderr, "%s: ", g.zArgv0);
   va_start(ap, zFormat);
@@ -236,7 +236,7 @@ static void cmdlineError(const char *zFormat, ...){
 ** Print an error message for an error that occurs at runtime, then
 ** abort the program.
 */
-static void runtimeError(const char *zFormat, ...){
+void runtimeError(const char *zFormat, ...){
   va_list ap;
   fprintf(stderr, "%s: ", g.zArgv0);
   va_start(ap, zFormat);
@@ -250,7 +250,7 @@ static void runtimeError(const char *zFormat, ...){
 ** Prepare a new SQL statement.  Print an error and abort if anything
 ** goes wrong.
 */
-static sqlite3_stmt *db_vprepare(const char *zFormat, va_list ap){
+sqlite3_stmt *db_vprepare(const char *zFormat, va_list ap){
   char *zSql;
   int rc;
   sqlite3_stmt *pStmt;
@@ -265,7 +265,7 @@ static sqlite3_stmt *db_vprepare(const char *zFormat, va_list ap){
   sqlite3_free(zSql);
   return pStmt;
 }
-static sqlite3_stmt *db_prepare(const char *zFormat, ...){
+sqlite3_stmt *db_prepare(const char *zFormat, ...){
   va_list ap;
   sqlite3_stmt *pStmt;
   va_start(ap, zFormat);
@@ -278,7 +278,7 @@ static sqlite3_stmt *db_prepare(const char *zFormat, ...){
 ** Compute the hash for all rows of the query formed from the printf-style
 ** zFormat and its argument.
 */
-static void hash_one_query(const char *zFormat, ...){
+void hash_one_query(const char *zFormat, ...){
   va_list ap;
   sqlite3_stmt *pStmt;        /* The query defined by zFormat and "..." */
   int nCol;                   /* Number of columns in the result set */
@@ -363,7 +363,7 @@ static void hash_one_query(const char *zFormat, ...){
 /*
 ** Print sketchy documentation for this utility program
 */
-static void showHelp(void){
+void showHelp(void){
   printf("Usage: %s [options] FILE ...\n", g.zArgv0);
   printf(
 "Compute a SHA1 hash on the content of database FILE.  System tables such as\n"
@@ -430,7 +430,7 @@ int main(int argc, char **argv){
   if( zLike==0 ) zLike = "%";
 
   for(i=1; i<=nFile; i++){
-    static const int openFlags = 
+    const int openFlags = 
        SQLITE_OPEN_READWRITE |     /* Read/write so hot journals can recover */
        SQLITE_OPEN_URI
     ;

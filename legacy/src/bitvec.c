@@ -307,7 +307,7 @@ u32 sqlite3BitvecSize(Bitvec *p){
 **
 ** For some Bitvec p and see a recursive view of the Bitvec's content.
 */
-static void showBitvec(Bitvec *p, int n, unsigned x){
+void showBitvec(Bitvec *p, int n, unsigned x){
   int i;
   if( p==0 ){
     printf("NULL\n");

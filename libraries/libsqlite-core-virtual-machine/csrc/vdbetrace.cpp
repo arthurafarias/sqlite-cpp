@@ -32,7 +32,7 @@ namespace sqlite::core::virtual_machine::utils {
 ** FR-3) -- nested under `utils` rather than living at the library's own
 ** namespace level.
 */
-static i64 find_next_host_parameter(const char *zSql, i64 *pnToken){
+i64 find_next_host_parameter(const char *zSql, i64 *pnToken){
   int tokenType;
   i64 nTotal = 0;
   i64 n;

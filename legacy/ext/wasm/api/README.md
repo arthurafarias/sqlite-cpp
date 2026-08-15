@@ -164,7 +164,7 @@ files detailed below (into which `sqlite3-api.js` gets injected).
 The non-JS outlier file is `sqlite3-wasm.c`: it is a proxy for
 `sqlite3.c` which `#include`'s that file and adds a handful of
 WASM-specific helper functions, at least two of which requires access
-to private/static `sqlite3.c` internals. `sqlite3.wasm` is compiled
+to private/`sqlite3.c` internals. `sqlite3.wasm` is compiled
 from this file rather than `sqlite3.c`.
 
 The following Emscripten-specific files are injected into the

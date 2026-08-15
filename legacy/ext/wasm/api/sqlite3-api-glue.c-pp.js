@@ -796,7 +796,7 @@ globalThis.sqlite3ApiBootstrap.initializers.push(function(sqlite3){
          string-equivalent argument.
 
        Use case: sqlite3_bind_pointer(), sqlite3_result_pointer(), and
-       sqlite3_value_pointer() call for "a static string and
+       sqlite3_value_pointer() call for "a string and
        preferably a string literal". This converter is used to ensure
        that the string value seen by those functions is long-lived and
        behaves as they need it to, at the cost of a one-time leak of
@@ -948,7 +948,7 @@ globalThis.sqlite3ApiBootstrap.initializers.push(function(sqlite3){
     const cJson = wasm.xCall('sqlite3__wasm_enum_json');
     if(!cJson){
       toss("Maintenance required: increase sqlite3__wasm_enum_json()'s",
-           "static buffer size!");
+           "buffer size!");
     }
     wasm.ctype = JSON.parse(wasm.cstrToJs(cJson));
     // Groups of SQLITE_xyz macros...
@@ -1870,7 +1870,7 @@ globalThis.sqlite3ApiBootstrap.initializers.push(function(sqlite3){
           delete this.ondispose.__removeFuncList;
         }
       };
-    }/*static init*/
+    }/*init*/
     const sigN = tgt.memberSignature(name);
     if(sigN.length<2){
       toss("Member",name,"does not have a function pointer signature:",sigN);

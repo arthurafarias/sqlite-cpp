@@ -109,10 +109,10 @@ struct DateTime {
 **
 ** The function returns the number of successful conversions.
 */
-static int getDigits(const char *zDate, const char *zFormat, ...){
+int getDigits(const char *zDate, const char *zFormat, ...){
   /* The aMx[] array translates the 3rd character of each format
   ** spec into a max size:    a   b   c   d   e      f */
-  static const u16 aMx[] = { 12, 14, 24, 31, 59, 14712 };
+  const u16 aMx[] = { 12, 14, 24, 31, 59, 14712 };
   va_list ap;
   int cnt = 0;
   char nextC;
@@ -163,7 +163,7 @@ end_getDigits:
 **
 ** A missing specifier is not considered an error.
 */
-static int parseTimezone(const char *zDate, DateTime *p){
+int parseTimezone(const char *zDate, DateTime *p){
   int sgn = 0;
   int nHr, nMn;
   int c;
@@ -204,7 +204,7 @@ zulu_time:
 **
 ** Return 1 if there is a parsing error and 0 on success.
 */
-static int parseHhMmSs(const char *zDate, DateTime *p){
+int parseHhMmSs(const char *zDate, DateTime *p){
   int h, m, s;
   double ms = 0.0;
   if( getDigits(zDate, "20c:20e", &h, &m)!=2 ){
@@ -246,7 +246,7 @@ static int parseHhMmSs(const char *zDate, DateTime *p){
 /*
 ** Put the DateTime object into its error state.
 */
-static void datetimeError(DateTime *p){
+void datetimeError(DateTime *p){
   memset(p, 0, sizeof(*p));
   p->isError = 1;
 }
@@ -257,7 +257,7 @@ static void datetimeError(DateTime *p){
 **
 ** Reference:  Meeus page 61
 */
-static void computeJD(DateTime *p){
+void computeJD(DateTime *p){
   int Y, M, D, A, B, X1, X2;
 
   if( p->validJD ) return;
@@ -303,7 +303,7 @@ static void computeJD(DateTime *p){
 ** would need to be subtracted from the date in order to bring the
 ** date back to the end of the month.
 */
-static void computeFloor(DateTime *p){
+void computeFloor(DateTime *p){
   assert( p->validYMD || p->isError );
   assert( p->D>=0 && p->D<=31 );
   assert( p->M>=0 && p->M<=12 );
@@ -332,7 +332,7 @@ static void computeFloor(DateTime *p){
 ** on success and 1 if the input string is not a well-formed
 ** date.
 */
-static int parseYyyyMmDd(const char *zDate, DateTime *p){
+int parseYyyyMmDd(const char *zDate, DateTime *p){
   int Y, M, D, neg;
 
   if( zDate[0]=='-' ){
@@ -366,14 +366,14 @@ static int parseYyyyMmDd(const char *zDate, DateTime *p){
 }
 
 
-static void clearYMD_HMS_TZ(DateTime *p);  /* Forward declaration */
+void clearYMD_HMS_TZ(DateTime *p);  /* Forward declaration */
 
 /*
 ** Set the time to the current time reported by the VFS.
 **
 ** Return the number of errors.
 */
-static int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
+int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
   p->iJD = sqlite3StmtCurrentTime(context);
   if( p->iJD>0 ){
     p->validJD = 1;
@@ -392,7 +392,7 @@ static int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
 ** range of a julian day number, install it as such and set validJD.
 ** If the value is a valid unix timestamp, put it in p->s and set p->rawS.
 */
-static void setRawDateNumber(DateTime *p, double r){
+void setRawDateNumber(DateTime *p, double r){
   p->s = r;
   p->rawS = 1;
   if( r>=0.0 && r<5373484.5 ){
@@ -417,7 +417,7 @@ static void setRawDateNumber(DateTime *p, double r){
 ** as there is a time string.  The time string can be omitted as long
 ** as there is a year and date.
 */
-static int parseDateOrTime(
+int parseDateOrTime(
   sqlite3_context *context, 
   const char *zDate, 
   DateTime *p
@@ -455,14 +455,14 @@ static int parseDateOrTime(
 **
 ** The input is the JulianDay times 86400000.
 */
-static int validJulianDay(sqlite3_int64 iJD){
+int validJulianDay(sqlite3_int64 iJD){
   return iJD>=0 && iJD<=INT_464269060799999;
 }
 
 /*
 ** Compute the Year, Month, and Day from the julian day number.
 */
-static void computeYMD(DateTime *p){
+void computeYMD(DateTime *p){
   int Z, alpha, A, B, C, D, E, X1;
   if( p->validYMD ) return;
   if( !p->validJD ){
@@ -491,7 +491,7 @@ static void computeYMD(DateTime *p){
 /*
 ** Compute the Hour, Minute, and Seconds from the julian day number.
 */
-static void computeHMS(DateTime *p){
+void computeHMS(DateTime *p){
   int day_ms, day_min; /* milliseconds, minutes into the day */
   if( p->validHMS ) return;
   computeJD(p);
@@ -507,7 +507,7 @@ static void computeHMS(DateTime *p){
 /*
 ** Compute both YMD and HMS
 */
-static void computeYMD_HMS(DateTime *p){
+void computeYMD_HMS(DateTime *p){
   computeYMD(p);
   computeHMS(p);
 }
@@ -515,7 +515,7 @@ static void computeYMD_HMS(DateTime *p){
 /*
 ** Clear the YMD and HMS and the TZ
 */
-static void clearYMD_HMS_TZ(DateTime *p){
+void clearYMD_HMS_TZ(DateTime *p){
   p->validYMD = 0;
   p->validHMS = 0;
   p->tz = 0;
@@ -555,7 +555,7 @@ static void clearYMD_HMS_TZ(DateTime *p){
 ** library function localtime_r() is used to assist in the calculation of
 ** local time.
 */
-static int osLocaltime(time_t *t, struct tm *pTm){
+int osLocaltime(time_t *t, struct tm *pTm){
   int rc;
 #if !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S
   struct tm *pX;
@@ -605,7 +605,7 @@ static int osLocaltime(time_t *t, struct tm *pTm){
 /*
 ** Assuming the input DateTime is UTC, move it to its localtime equivalent.
 */
-static int toLocaltime(
+int toLocaltime(
   DateTime *p,                   /* Date at which to calculate offset */
   sqlite3_context *pCtx          /* Write error here if one occurs */
 ){
@@ -664,7 +664,7 @@ static int toLocaltime(
 ** Where NNN is an arbitrary floating-point number and "days" can be one
 ** of several units of time.
 */
-static const struct {
+const struct {
   u8 nName;           /* Length of the name */
   char zName[7];      /* Name of the transformation */
   float rLimit;       /* Maximum NNN value for this transform */
@@ -683,7 +683,7 @@ static const struct {
 ** a julian day number of a unix timestamp.  Set the p value
 ** appropriately.
 */
-static void autoAdjustDate(DateTime *p){
+void autoAdjustDate(DateTime *p){
   if( !p->rawS || p->validJD ){
     p->rawS = 0;
   }else if( p->s>=-21086676*(i64)10000        /* -4713-11-24 12:00:00 */
@@ -727,7 +727,7 @@ static void autoAdjustDate(DateTime *p){
 ** to context pCtx. If the error is an unrecognized modifier, no error is
 ** written to pCtx.
 */
-static int parseModifier(
+int parseModifier(
   sqlite3_context *pCtx,      /* Function context */
   const char *z,              /* The text of the modifier */
   int n,                      /* Length of zMod in bytes */
@@ -1104,7 +1104,7 @@ static int parseModifier(
 ** If there are zero parameters (if even argv[0] is undefined)
 ** then assume a default value of "now" for argv[0].
 */
-static int isDate(
+int isDate(
   sqlite3_context *context, 
   int argc, 
   sqlite3_value **argv, 
@@ -1154,7 +1154,7 @@ static int isDate(
 **
 ** Return the julian day number of the date specified in the arguments
 */
-static void juliandayFunc(
+void juliandayFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1172,7 +1172,7 @@ static void juliandayFunc(
 ** Return the number of seconds (including fractional seconds) since
 ** the unix epoch of 1970-01-01 00:00:00 GMT.
 */
-static void unixepochFunc(
+void unixepochFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1193,7 +1193,7 @@ static void unixepochFunc(
 **
 ** Return YYYY-MM-DD HH:MM:SS
 */
-static void datetimeFunc(
+void datetimeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1253,7 +1253,7 @@ static void datetimeFunc(
 **
 ** Return HH:MM:SS
 */
-static void timeFunc(
+void timeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1295,7 +1295,7 @@ static void timeFunc(
 **
 ** Return YYYY-MM-DD
 */
-static void dateFunc(
+void dateFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1336,7 +1336,7 @@ static void dateFunc(
 **   Jan01 = 0,  Jan02 = 1, ..., Jan31 = 30, Feb01 = 31, ...
 **   Dec31 = 364 or 365.
 */
-static int daysAfterJan01(DateTime *pDate){
+int daysAfterJan01(DateTime *pDate){
   DateTime jan01 = *pDate;
   assert( jan01.validYMD );
   assert( jan01.validHMS );
@@ -1356,7 +1356,7 @@ static int daysAfterJan01(DateTime *pDate){
 **
 **   0=Monday, 1=Tuesday, 2=Wednesday, ..., 6=Sunday.
 */
-static int daysAfterMonday(DateTime *pDate){
+int daysAfterMonday(DateTime *pDate){
   assert( pDate->validJD );
   return (int)((pDate->iJD+43200000)/86400000) % 7;
 }
@@ -1369,7 +1369,7 @@ static int daysAfterMonday(DateTime *pDate){
 **
 **   0=Sunday, 1=Monday, 2=Tuesday, ..., 6=Saturday
 */
-static int daysAfterSunday(DateTime *pDate){
+int daysAfterSunday(DateTime *pDate){
   assert( pDate->validJD );
   return (int)((pDate->iJD+129600000)/86400000) % 7;
 }
@@ -1407,7 +1407,7 @@ static int daysAfterSunday(DateTime *pDate){
 **   %Y  year 0000-9999
 **   %%  %
 */
-static void strftimeFunc(
+void strftimeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1575,7 +1575,7 @@ static void strftimeFunc(
 **
 ** This function returns the same value as time('now').
 */
-static void ctimeFunc(
+void ctimeFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -1589,7 +1589,7 @@ static void ctimeFunc(
 **
 ** This function returns the same value as date('now').
 */
-static void cdateFunc(
+void cdateFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -1615,7 +1615,7 @@ static void cdateFunc(
 ** ISO-8601 string.  The unix timestamps are not supported by this
 ** routine.
 */
-static void timediffFunc(
+void timediffFunc(
   sqlite3_context *context,
   int NotUsed1,
   sqlite3_value **argv
@@ -1712,7 +1712,7 @@ static void timediffFunc(
 **
 ** This function returns the same value as datetime('now').
 */
-static void ctimestampFunc(
+void ctimestampFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **NotUsed2
@@ -1734,7 +1734,7 @@ static void ctimestampFunc(
 ** and strftime(). The format string to pass to strftime() is supplied
 ** as the user-data for the function.
 */
-static void currentTimeFunc(
+void currentTimeFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1774,7 +1774,7 @@ static void currentTimeFunc(
 ** This routine returns JSON that describes the internal DateTime object.
 ** Used for debugging and testing only.  Subject to change.
 */
-static void datedebugFunc(
+void datedebugFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1803,7 +1803,7 @@ static void datedebugFunc(
 ** external linkage.
 */
 void sqlite3RegisterDateTimeFunctions(void){
-  static FuncDef aDateTimeFuncs[] = {
+  FuncDef aDateTimeFuncs[] = {
 #ifndef SQLITE_OMIT_DATETIME_FUNCS
     PURE_DATE(julianday,        -1, 0, 0, juliandayFunc ),
     PURE_DATE(unixepoch,        -1, 0, 0, unixepochFunc ),

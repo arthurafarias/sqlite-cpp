@@ -182,7 +182,7 @@ struct series_cursor {
 ** convoluted computation designed to work around the silly restriction
 ** against signed integer overflow in C.
 */
-static sqlite3_uint64 span64(sqlite3_int64 a, sqlite3_int64 b){
+sqlite3_uint64 span64(sqlite3_int64 a, sqlite3_int64 b){
   assert( a>=b );
   return (*(sqlite3_uint64*)&a) - (*(sqlite3_uint64*)&b);
 }  
@@ -191,12 +191,12 @@ static sqlite3_uint64 span64(sqlite3_int64 a, sqlite3_int64 b){
 ** Add or substract an unsigned 64-bit integer from a signed 64-bit integer
 ** and return the new signed 64-bit integer.
 */
-static sqlite3_int64 add64(sqlite3_int64 a, sqlite3_uint64 b){
+sqlite3_int64 add64(sqlite3_int64 a, sqlite3_uint64 b){
   sqlite3_uint64 x = *(sqlite3_uint64*)&a;
   x += b;
   return *(sqlite3_int64*)&x;
 }
-static sqlite3_int64 sub64(sqlite3_int64 a, sqlite3_uint64 b){
+sqlite3_int64 sub64(sqlite3_int64 a, sqlite3_uint64 b){
   sqlite3_uint64 x = *(sqlite3_uint64*)&a;
   x -= b;
   return *(sqlite3_int64*)&x;
@@ -215,7 +215,7 @@ static sqlite3_int64 sub64(sqlite3_int64 a, sqlite3_uint64 b){
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against generate_series will look like.
 */
-static int seriesConnect(
+int seriesConnect(
   sqlite3 *db,
   void *pUnused,
   int argcUnused, const char *const*argvUnused,
@@ -250,7 +250,7 @@ static int seriesConnect(
 /*
 ** This method is the destructor for series_cursor objects.
 */
-static int seriesDisconnect(sqlite3_vtab *pVtab){
+int seriesDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -258,7 +258,7 @@ static int seriesDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new series_cursor object.
 */
-static int seriesOpen(sqlite3_vtab *pUnused, sqlite3_vtab_cursor **ppCursor){
+int seriesOpen(sqlite3_vtab *pUnused, sqlite3_vtab_cursor **ppCursor){
   series_cursor *pCur;
   (void)pUnused;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
@@ -271,7 +271,7 @@ static int seriesOpen(sqlite3_vtab *pUnused, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a series_cursor.
 */
-static int seriesClose(sqlite3_vtab_cursor *cur){
+int seriesClose(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur);
   return SQLITE_OK;
 }
@@ -280,7 +280,7 @@ static int seriesClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a series_cursor to its next row of output.
 */
-static int seriesNext(sqlite3_vtab_cursor *cur){
+int seriesNext(sqlite3_vtab_cursor *cur){
   series_cursor *pCur = (series_cursor*)cur;
   if( pCur->iValue==pCur->iTerm ){
     pCur->bDone = 1;
@@ -298,7 +298,7 @@ static int seriesNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the series_cursor
 ** is currently pointing.
 */
-static int seriesColumn(
+int seriesColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -324,7 +324,7 @@ static int seriesColumn(
 /*
 ** The rowid is the same as the value.
 */
-static int seriesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int seriesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   series_cursor *pCur = (series_cursor*)cur;
   *pRowid = pCur->iValue;
   return SQLITE_OK;
@@ -334,7 +334,7 @@ static int seriesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int seriesEof(sqlite3_vtab_cursor *cur){
+int seriesEof(sqlite3_vtab_cursor *cur){
   series_cursor *pCur = (series_cursor*)cur;
   return pCur->bDone;
 }
@@ -351,7 +351,7 @@ static int seriesEof(sqlite3_vtab_cursor *cur){
 ** Return the number of steps between pCur->iBase and pCur->iTerm if
 ** the step width is pCur->iStep.
 */
-static sqlite3_uint64 seriesSteps(series_cursor *pCur){
+sqlite3_uint64 seriesSteps(series_cursor *pCur){
   if( pCur->bDesc ){
     assert( pCur->iBase >= pCur->iTerm );
     return span64(pCur->iBase, pCur->iTerm)/pCur->iStep;
@@ -366,19 +366,19 @@ static sqlite3_uint64 seriesSteps(series_cursor *pCur){
 ** Case 1 (the most common case):
 ** The standard math library is available so use ceil() and floor() from there.
 */
-static double seriesCeil(double r){ return ceil(r); }
-static double seriesFloor(double r){ return floor(r); }
+double seriesCeil(double r){ return ceil(r); }
+double seriesFloor(double r){ return floor(r); }
 #elif defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
 /*
 ** Case 2 (2nd most common): Use GCC/Clang builtins
 */
-static double seriesCeil(double r){ return __builtin_ceil(r); }
-static double seriesFloor(double r){ return __builtin_floor(r); }
+double seriesCeil(double r){ return __builtin_ceil(r); }
+double seriesFloor(double r){ return __builtin_floor(r); }
 #else
 /*
 ** Case 3 (rarely happens): Use home-grown ceil() and floor() routines.
 */
-static double seriesCeil(double r){
+double seriesCeil(double r){
   sqlite3_int64 x;
   if( r!=r ) return r;
   if( r<=(-4503599627370496.0) ) return r;
@@ -388,7 +388,7 @@ static double seriesCeil(double r){
   if( r>(double)x ) x++;
   return (double)x;
 }
-static double seriesFloor(double r){
+double seriesFloor(double r){
   sqlite3_int64 x;
   if( r!=r ) return r;
   if( r<=(-4503599627370496.0) ) return r;
@@ -404,7 +404,7 @@ static double seriesFloor(double r){
 ** a way that avoids 'outside the range of representable values' warnings
 ** from UBSAN.
 */
-static sqlite3_int64 seriesRealToI64(double r){
+sqlite3_int64 seriesRealToI64(double r){
   if( r<-9223372036854774784.0 ) return SMALLEST_INT64;
   if( r>+9223372036854774784.0 ) return LARGEST_INT64;
   return (sqlite3_int64)r;
@@ -437,7 +437,7 @@ static sqlite3_int64 seriesRealToI64(double r){
 ** is pointing at the first row, or pointing off the end of the table
 ** (so that seriesEof() will return true) if the table is empty.
 */
-static int seriesFilter(
+int seriesFilter(
   sqlite3_vtab_cursor *pVtabCursor,
   int idxNum, const char *idxStrUnused,
   int argc, sqlite3_value **argv
@@ -727,7 +727,7 @@ series_no_rows:
 **      are in the mask
 **
 */
-static int seriesBestIndex(
+int seriesBestIndex(
   sqlite3_vtab *pVTab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -903,7 +903,7 @@ static int seriesBestIndex(
 ** This following structure defines all the methods for the 
 ** generate_series virtual table.
 */
-static sqlite3_module seriesModule = {
+sqlite3_module seriesModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   seriesConnect,             /* xConnect */

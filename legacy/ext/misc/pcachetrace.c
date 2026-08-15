@@ -26,11 +26,11 @@
 #include <stdio.h>
 
 /* The original page cache routines */
-static sqlite3_pcache_methods2 pcacheBase;
-static FILE *pcachetraceOut;
+sqlite3_pcache_methods2 pcacheBase;
+FILE *pcachetraceOut;
 
 /* Methods that trace pcache activity */
-static int pcachetraceInit(void *pArg){
+int pcachetraceInit(void *pArg){
   int nRes;
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xInit(%p)\n", pArg);
@@ -41,13 +41,13 @@ static int pcachetraceInit(void *pArg){
   }
   return nRes;
 }
-static void pcachetraceShutdown(void *pArg){
+void pcachetraceShutdown(void *pArg){
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xShutdown(%p)\n", pArg);
   }
   pcacheBase.xShutdown(pArg);
 }
-static sqlite3_pcache *pcachetraceCreate(int szPage, int szExtra, int bPurge){
+sqlite3_pcache *pcachetraceCreate(int szPage, int szExtra, int bPurge){
   sqlite3_pcache *pRes;
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xCreate(%d,%d,%d)\n",
@@ -60,13 +60,13 @@ static sqlite3_pcache *pcachetraceCreate(int szPage, int szExtra, int bPurge){
   }
   return pRes;
 }
-static void pcachetraceCachesize(sqlite3_pcache *p, int nCachesize){
+void pcachetraceCachesize(sqlite3_pcache *p, int nCachesize){
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xCachesize(%p, %d)\n", p, nCachesize);
   }
   pcacheBase.xCachesize(p, nCachesize);
 }
-static int pcachetracePagecount(sqlite3_pcache *p){
+int pcachetracePagecount(sqlite3_pcache *p){
   int nRes;
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xPagecount(%p)\n", p);
@@ -77,7 +77,7 @@ static int pcachetracePagecount(sqlite3_pcache *p){
   }
   return nRes;
 }
-static sqlite3_pcache_page *pcachetraceFetch(
+sqlite3_pcache_page *pcachetraceFetch(
   sqlite3_pcache *p,
   unsigned key,
   int crFg
@@ -93,7 +93,7 @@ static sqlite3_pcache_page *pcachetraceFetch(
   }
   return pRes;
 }
-static void pcachetraceUnpin(
+void pcachetraceUnpin(
   sqlite3_pcache *p,
   sqlite3_pcache_page *pPg,
   int bDiscard
@@ -104,7 +104,7 @@ static void pcachetraceUnpin(
   }
   pcacheBase.xUnpin(p, pPg, bDiscard);
 }
-static void pcachetraceRekey(
+void pcachetraceRekey(
   sqlite3_pcache *p,
   sqlite3_pcache_page *pPg,
   unsigned oldKey,
@@ -116,19 +116,19 @@ static void pcachetraceRekey(
   }
   pcacheBase.xRekey(p, pPg, oldKey, newKey);
 }
-static void pcachetraceTruncate(sqlite3_pcache *p, unsigned n){
+void pcachetraceTruncate(sqlite3_pcache *p, unsigned n){
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xTruncate(%p, %u)\n", p, n);
   }
   pcacheBase.xTruncate(p, n);
 }
-static void pcachetraceDestroy(sqlite3_pcache *p){
+void pcachetraceDestroy(sqlite3_pcache *p){
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xDestroy(%p)\n", p);
   }
   pcacheBase.xDestroy(p);
 }
-static void pcachetraceShrink(sqlite3_pcache *p){
+void pcachetraceShrink(sqlite3_pcache *p){
   if( pcachetraceOut ){
     fprintf(pcachetraceOut, "PCACHETRACE: xShrink(%p)\n", p);
   }
@@ -136,7 +136,7 @@ static void pcachetraceShrink(sqlite3_pcache *p){
 }
 
 /* The substitute pcache methods */
-static sqlite3_pcache_methods2 ersaztPcacheMethods = {
+sqlite3_pcache_methods2 ersaztPcacheMethods = {
   0,
   0,
   pcachetraceInit,

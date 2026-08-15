@@ -107,7 +107,7 @@ struct BinfoTable {
 /*
 ** Connect to the sqlite_btreeinfo virtual table.
 */
-static int binfoConnect(
+int binfoConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -145,7 +145,7 @@ static int binfoConnect(
 /*
 ** Disconnect from or destroy a btreeinfo virtual table.
 */
-static int binfoDisconnect(sqlite3_vtab *pVtab){
+int binfoDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -156,7 +156,7 @@ static int binfoDisconnect(sqlite3_vtab *pVtab){
 **     0     Use "main" for the schema
 **     1     Schema identified by parameter ?1
 */
-static int binfoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+int binfoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   int i;
   pIdxInfo->estimatedCost = 10000.0;  /* Cost estimate */
   pIdxInfo->estimatedRows = 100;
@@ -179,7 +179,7 @@ static int binfoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 /*
 ** Open a new btreeinfo cursor.
 */
-static int binfoOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+int binfoOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   BinfoCursor *pCsr;
 
   pCsr = (BinfoCursor *)sqlite3_malloc64(sizeof(BinfoCursor));
@@ -197,7 +197,7 @@ static int binfoOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Close a btreeinfo cursor.
 */
-static int binfoClose(sqlite3_vtab_cursor *pCursor){
+int binfoClose(sqlite3_vtab_cursor *pCursor){
   BinfoCursor *pCsr = (BinfoCursor *)pCursor;
   sqlite3_finalize(pCsr->pStmt);
   sqlite3_free(pCsr->zSchema);
@@ -208,7 +208,7 @@ static int binfoClose(sqlite3_vtab_cursor *pCursor){
 /*
 ** Move a btreeinfo cursor to the next entry in the file.
 */
-static int binfoNext(sqlite3_vtab_cursor *pCursor){
+int binfoNext(sqlite3_vtab_cursor *pCursor){
   BinfoCursor *pCsr = (BinfoCursor *)pCursor;
   pCsr->rc = sqlite3_step(pCsr->pStmt);
   pCsr->hasRowid = -1;
@@ -218,14 +218,14 @@ static int binfoNext(sqlite3_vtab_cursor *pCursor){
 /* We have reached EOF if previous sqlite3_step() returned
 ** anything other than SQLITE_ROW;
 */
-static int binfoEof(sqlite3_vtab_cursor *pCursor){
+int binfoEof(sqlite3_vtab_cursor *pCursor){
   BinfoCursor *pCsr = (BinfoCursor *)pCursor;
   return pCsr->rc!=SQLITE_ROW;
 }
 
 /* Position a cursor back to the beginning.
 */
-static int binfoFilter(
+int binfoFilter(
   sqlite3_vtab_cursor *pCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -259,17 +259,17 @@ static int binfoFilter(
 }
 
 /* Decode big-endian integers */
-static unsigned int get_uint16(unsigned char *a){
+unsigned int get_uint16(unsigned char *a){
   return (a[0]<<8)|a[1];
 }
-static unsigned int get_uint32(unsigned char *a){
+unsigned int get_uint32(unsigned char *a){
   return (a[0]<<24)|(a[1]<<16)|(a[2]<<8)|a[3];
 }
 
 /* Examine the b-tree rooted at pgno and estimate its size.
 ** Return non-zero if anything goes wrong.
 */
-static int binfoCompute(sqlite3 *db, int pgno, BinfoCursor *pCsr){
+int binfoCompute(sqlite3 *db, int pgno, BinfoCursor *pCsr){
   sqlite3_int64 nEntry = 1;
   int nPage = 1;
   unsigned char *aData;
@@ -332,7 +332,7 @@ static int binfoCompute(sqlite3 *db, int pgno, BinfoCursor *pCsr){
 }
 
 /* Return a column for the sqlite_btreeinfo table */
-static int binfoColumn(
+int binfoColumn(
   sqlite3_vtab_cursor *pCursor, 
   sqlite3_context *ctx, 
   int i
@@ -381,7 +381,7 @@ static int binfoColumn(
 }
 
 /* Return the ROWID for the sqlite_btreeinfo table */
-static int binfoRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+int binfoRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   BinfoCursor *pCsr = (BinfoCursor *)pCursor;
   *pRowid = sqlite3_column_int64(pCsr->pStmt, 0);
   return SQLITE_OK;
@@ -391,7 +391,7 @@ static int binfoRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
 ** Invoke this routine to register the "sqlite_btreeinfo" virtual table module
 */
 int sqlite3BinfoRegister(sqlite3 *db){
-  static sqlite3_module binfo_module = {
+  sqlite3_module binfo_module = {
     0,                           /* iVersion */
     0,                           /* xCreate */
     binfoConnect,                /* xConnect */

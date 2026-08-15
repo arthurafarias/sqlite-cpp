@@ -29,251 +29,251 @@ import org.sqlite.jni.capi.OutputPointer;
 */
 public final class Sqlite implements AutoCloseable  {
   private sqlite3 db;
-  private static final boolean JNI_SUPPORTS_NIO =
+  private final boolean JNI_SUPPORTS_NIO =
     CApi.sqlite3_jni_supports_nio();
 
   // Result codes
-  public static final int OK = CApi.SQLITE_OK;
-  public static final int ERROR = CApi.SQLITE_ERROR;
-  public static final int INTERNAL = CApi.SQLITE_INTERNAL;
-  public static final int PERM = CApi.SQLITE_PERM;
-  public static final int ABORT = CApi.SQLITE_ABORT;
-  public static final int BUSY = CApi.SQLITE_BUSY;
-  public static final int LOCKED = CApi.SQLITE_LOCKED;
-  public static final int NOMEM = CApi.SQLITE_NOMEM;
-  public static final int READONLY = CApi.SQLITE_READONLY;
-  public static final int INTERRUPT = CApi.SQLITE_INTERRUPT;
-  public static final int IOERR = CApi.SQLITE_IOERR;
-  public static final int CORRUPT = CApi.SQLITE_CORRUPT;
-  public static final int NOTFOUND = CApi.SQLITE_NOTFOUND;
-  public static final int FULL = CApi.SQLITE_FULL;
-  public static final int CANTOPEN = CApi.SQLITE_CANTOPEN;
-  public static final int PROTOCOL = CApi.SQLITE_PROTOCOL;
-  public static final int EMPTY = CApi.SQLITE_EMPTY;
-  public static final int SCHEMA = CApi.SQLITE_SCHEMA;
-  public static final int TOOBIG = CApi.SQLITE_TOOBIG;
-  public static final int CONSTRAINT = CApi. SQLITE_CONSTRAINT;
-  public static final int MISMATCH = CApi.SQLITE_MISMATCH;
-  public static final int MISUSE = CApi.SQLITE_MISUSE;
-  public static final int NOLFS = CApi.SQLITE_NOLFS;
-  public static final int AUTH = CApi.SQLITE_AUTH;
-  public static final int FORMAT = CApi.SQLITE_FORMAT;
-  public static final int RANGE = CApi.SQLITE_RANGE;
-  public static final int NOTADB = CApi.SQLITE_NOTADB;
-  public static final int NOTICE = CApi.SQLITE_NOTICE;
-  public static final int WARNING = CApi.SQLITE_WARNING;
-  public static final int ROW = CApi.SQLITE_ROW;
-  public static final int DONE = CApi.SQLITE_DONE;
-  public static final int ERROR_MISSING_COLLSEQ = CApi.SQLITE_ERROR_MISSING_COLLSEQ;
-  public static final int ERROR_RETRY = CApi.SQLITE_ERROR_RETRY;
-  public static final int ERROR_SNAPSHOT = CApi.SQLITE_ERROR_SNAPSHOT;
-  public static final int IOERR_READ = CApi.SQLITE_IOERR_READ;
-  public static final int IOERR_SHORT_READ = CApi.SQLITE_IOERR_SHORT_READ;
-  public static final int IOERR_WRITE = CApi.SQLITE_IOERR_WRITE;
-  public static final int IOERR_FSYNC = CApi.SQLITE_IOERR_FSYNC;
-  public static final int IOERR_DIR_FSYNC = CApi.SQLITE_IOERR_DIR_FSYNC;
-  public static final int IOERR_TRUNCATE = CApi.SQLITE_IOERR_TRUNCATE;
-  public static final int IOERR_FSTAT = CApi.SQLITE_IOERR_FSTAT;
-  public static final int IOERR_UNLOCK = CApi.SQLITE_IOERR_UNLOCK;
-  public static final int IOERR_RDLOCK = CApi.SQLITE_IOERR_RDLOCK;
-  public static final int IOERR_DELETE = CApi.SQLITE_IOERR_DELETE;
-  public static final int IOERR_BLOCKED = CApi.SQLITE_IOERR_BLOCKED;
-  public static final int IOERR_NOMEM = CApi.SQLITE_IOERR_NOMEM;
-  public static final int IOERR_ACCESS = CApi.SQLITE_IOERR_ACCESS;
-  public static final int IOERR_CHECKRESERVEDLOCK = CApi.SQLITE_IOERR_CHECKRESERVEDLOCK;
-  public static final int IOERR_LOCK = CApi.SQLITE_IOERR_LOCK;
-  public static final int IOERR_CLOSE = CApi.SQLITE_IOERR_CLOSE;
-  public static final int IOERR_DIR_CLOSE = CApi.SQLITE_IOERR_DIR_CLOSE;
-  public static final int IOERR_SHMOPEN = CApi.SQLITE_IOERR_SHMOPEN;
-  public static final int IOERR_SHMSIZE = CApi.SQLITE_IOERR_SHMSIZE;
-  public static final int IOERR_SHMLOCK = CApi.SQLITE_IOERR_SHMLOCK;
-  public static final int IOERR_SHMMAP = CApi.SQLITE_IOERR_SHMMAP;
-  public static final int IOERR_SEEK = CApi.SQLITE_IOERR_SEEK;
-  public static final int IOERR_DELETE_NOENT = CApi.SQLITE_IOERR_DELETE_NOENT;
-  public static final int IOERR_MMAP = CApi.SQLITE_IOERR_MMAP;
-  public static final int IOERR_GETTEMPPATH = CApi.SQLITE_IOERR_GETTEMPPATH;
-  public static final int IOERR_CONVPATH = CApi.SQLITE_IOERR_CONVPATH;
-  public static final int IOERR_VNODE = CApi.SQLITE_IOERR_VNODE;
-  public static final int IOERR_AUTH = CApi.SQLITE_IOERR_AUTH;
-  public static final int IOERR_BEGIN_ATOMIC = CApi.SQLITE_IOERR_BEGIN_ATOMIC;
-  public static final int IOERR_COMMIT_ATOMIC = CApi.SQLITE_IOERR_COMMIT_ATOMIC;
-  public static final int IOERR_ROLLBACK_ATOMIC = CApi.SQLITE_IOERR_ROLLBACK_ATOMIC;
-  public static final int IOERR_DATA = CApi.SQLITE_IOERR_DATA;
-  public static final int IOERR_CORRUPTFS = CApi.SQLITE_IOERR_CORRUPTFS;
-  public static final int LOCKED_SHAREDCACHE = CApi.SQLITE_LOCKED_SHAREDCACHE;
-  public static final int LOCKED_VTAB = CApi.SQLITE_LOCKED_VTAB;
-  public static final int BUSY_RECOVERY = CApi.SQLITE_BUSY_RECOVERY;
-  public static final int BUSY_SNAPSHOT = CApi.SQLITE_BUSY_SNAPSHOT;
-  public static final int BUSY_TIMEOUT = CApi.SQLITE_BUSY_TIMEOUT;
-  public static final int CANTOPEN_NOTEMPDIR = CApi.SQLITE_CANTOPEN_NOTEMPDIR;
-  public static final int CANTOPEN_ISDIR = CApi.SQLITE_CANTOPEN_ISDIR;
-  public static final int CANTOPEN_FULLPATH = CApi.SQLITE_CANTOPEN_FULLPATH;
-  public static final int CANTOPEN_CONVPATH = CApi.SQLITE_CANTOPEN_CONVPATH;
-  public static final int CANTOPEN_SYMLINK = CApi.SQLITE_CANTOPEN_SYMLINK;
-  public static final int CORRUPT_VTAB = CApi.SQLITE_CORRUPT_VTAB;
-  public static final int CORRUPT_SEQUENCE = CApi.SQLITE_CORRUPT_SEQUENCE;
-  public static final int CORRUPT_INDEX = CApi.SQLITE_CORRUPT_INDEX;
-  public static final int READONLY_RECOVERY = CApi.SQLITE_READONLY_RECOVERY;
-  public static final int READONLY_CANTLOCK = CApi.SQLITE_READONLY_CANTLOCK;
-  public static final int READONLY_ROLLBACK = CApi.SQLITE_READONLY_ROLLBACK;
-  public static final int READONLY_DBMOVED = CApi.SQLITE_READONLY_DBMOVED;
-  public static final int READONLY_CANTINIT = CApi.SQLITE_READONLY_CANTINIT;
-  public static final int READONLY_DIRECTORY = CApi.SQLITE_READONLY_DIRECTORY;
-  public static final int ABORT_ROLLBACK = CApi.SQLITE_ABORT_ROLLBACK;
-  public static final int CONSTRAINT_CHECK = CApi.SQLITE_CONSTRAINT_CHECK;
-  public static final int CONSTRAINT_COMMITHOOK = CApi.SQLITE_CONSTRAINT_COMMITHOOK;
-  public static final int CONSTRAINT_FOREIGNKEY = CApi.SQLITE_CONSTRAINT_FOREIGNKEY;
-  public static final int CONSTRAINT_FUNCTION = CApi.SQLITE_CONSTRAINT_FUNCTION;
-  public static final int CONSTRAINT_NOTNULL = CApi.SQLITE_CONSTRAINT_NOTNULL;
-  public static final int CONSTRAINT_PRIMARYKEY = CApi.SQLITE_CONSTRAINT_PRIMARYKEY;
-  public static final int CONSTRAINT_TRIGGER = CApi.SQLITE_CONSTRAINT_TRIGGER;
-  public static final int CONSTRAINT_UNIQUE = CApi.SQLITE_CONSTRAINT_UNIQUE;
-  public static final int CONSTRAINT_VTAB = CApi.SQLITE_CONSTRAINT_VTAB;
-  public static final int CONSTRAINT_ROWID = CApi.SQLITE_CONSTRAINT_ROWID;
-  public static final int CONSTRAINT_PINNED = CApi.SQLITE_CONSTRAINT_PINNED;
-  public static final int CONSTRAINT_DATATYPE = CApi.SQLITE_CONSTRAINT_DATATYPE;
-  public static final int NOTICE_RECOVER_WAL = CApi.SQLITE_NOTICE_RECOVER_WAL;
-  public static final int NOTICE_RECOVER_ROLLBACK = CApi.SQLITE_NOTICE_RECOVER_ROLLBACK;
-  public static final int WARNING_AUTOINDEX = CApi.SQLITE_WARNING_AUTOINDEX;
-  public static final int AUTH_USER = CApi.SQLITE_AUTH_USER;
-  public static final int OK_LOAD_PERMANENTLY = CApi.SQLITE_OK_LOAD_PERMANENTLY;
+  public final int OK = CApi.SQLITE_OK;
+  public final int ERROR = CApi.SQLITE_ERROR;
+  public final int INTERNAL = CApi.SQLITE_INTERNAL;
+  public final int PERM = CApi.SQLITE_PERM;
+  public final int ABORT = CApi.SQLITE_ABORT;
+  public final int BUSY = CApi.SQLITE_BUSY;
+  public final int LOCKED = CApi.SQLITE_LOCKED;
+  public final int NOMEM = CApi.SQLITE_NOMEM;
+  public final int READONLY = CApi.SQLITE_READONLY;
+  public final int INTERRUPT = CApi.SQLITE_INTERRUPT;
+  public final int IOERR = CApi.SQLITE_IOERR;
+  public final int CORRUPT = CApi.SQLITE_CORRUPT;
+  public final int NOTFOUND = CApi.SQLITE_NOTFOUND;
+  public final int FULL = CApi.SQLITE_FULL;
+  public final int CANTOPEN = CApi.SQLITE_CANTOPEN;
+  public final int PROTOCOL = CApi.SQLITE_PROTOCOL;
+  public final int EMPTY = CApi.SQLITE_EMPTY;
+  public final int SCHEMA = CApi.SQLITE_SCHEMA;
+  public final int TOOBIG = CApi.SQLITE_TOOBIG;
+  public final int CONSTRAINT = CApi. SQLITE_CONSTRAINT;
+  public final int MISMATCH = CApi.SQLITE_MISMATCH;
+  public final int MISUSE = CApi.SQLITE_MISUSE;
+  public final int NOLFS = CApi.SQLITE_NOLFS;
+  public final int AUTH = CApi.SQLITE_AUTH;
+  public final int FORMAT = CApi.SQLITE_FORMAT;
+  public final int RANGE = CApi.SQLITE_RANGE;
+  public final int NOTADB = CApi.SQLITE_NOTADB;
+  public final int NOTICE = CApi.SQLITE_NOTICE;
+  public final int WARNING = CApi.SQLITE_WARNING;
+  public final int ROW = CApi.SQLITE_ROW;
+  public final int DONE = CApi.SQLITE_DONE;
+  public final int ERROR_MISSING_COLLSEQ = CApi.SQLITE_ERROR_MISSING_COLLSEQ;
+  public final int ERROR_RETRY = CApi.SQLITE_ERROR_RETRY;
+  public final int ERROR_SNAPSHOT = CApi.SQLITE_ERROR_SNAPSHOT;
+  public final int IOERR_READ = CApi.SQLITE_IOERR_READ;
+  public final int IOERR_SHORT_READ = CApi.SQLITE_IOERR_SHORT_READ;
+  public final int IOERR_WRITE = CApi.SQLITE_IOERR_WRITE;
+  public final int IOERR_FSYNC = CApi.SQLITE_IOERR_FSYNC;
+  public final int IOERR_DIR_FSYNC = CApi.SQLITE_IOERR_DIR_FSYNC;
+  public final int IOERR_TRUNCATE = CApi.SQLITE_IOERR_TRUNCATE;
+  public final int IOERR_FSTAT = CApi.SQLITE_IOERR_FSTAT;
+  public final int IOERR_UNLOCK = CApi.SQLITE_IOERR_UNLOCK;
+  public final int IOERR_RDLOCK = CApi.SQLITE_IOERR_RDLOCK;
+  public final int IOERR_DELETE = CApi.SQLITE_IOERR_DELETE;
+  public final int IOERR_BLOCKED = CApi.SQLITE_IOERR_BLOCKED;
+  public final int IOERR_NOMEM = CApi.SQLITE_IOERR_NOMEM;
+  public final int IOERR_ACCESS = CApi.SQLITE_IOERR_ACCESS;
+  public final int IOERR_CHECKRESERVEDLOCK = CApi.SQLITE_IOERR_CHECKRESERVEDLOCK;
+  public final int IOERR_LOCK = CApi.SQLITE_IOERR_LOCK;
+  public final int IOERR_CLOSE = CApi.SQLITE_IOERR_CLOSE;
+  public final int IOERR_DIR_CLOSE = CApi.SQLITE_IOERR_DIR_CLOSE;
+  public final int IOERR_SHMOPEN = CApi.SQLITE_IOERR_SHMOPEN;
+  public final int IOERR_SHMSIZE = CApi.SQLITE_IOERR_SHMSIZE;
+  public final int IOERR_SHMLOCK = CApi.SQLITE_IOERR_SHMLOCK;
+  public final int IOERR_SHMMAP = CApi.SQLITE_IOERR_SHMMAP;
+  public final int IOERR_SEEK = CApi.SQLITE_IOERR_SEEK;
+  public final int IOERR_DELETE_NOENT = CApi.SQLITE_IOERR_DELETE_NOENT;
+  public final int IOERR_MMAP = CApi.SQLITE_IOERR_MMAP;
+  public final int IOERR_GETTEMPPATH = CApi.SQLITE_IOERR_GETTEMPPATH;
+  public final int IOERR_CONVPATH = CApi.SQLITE_IOERR_CONVPATH;
+  public final int IOERR_VNODE = CApi.SQLITE_IOERR_VNODE;
+  public final int IOERR_AUTH = CApi.SQLITE_IOERR_AUTH;
+  public final int IOERR_BEGIN_ATOMIC = CApi.SQLITE_IOERR_BEGIN_ATOMIC;
+  public final int IOERR_COMMIT_ATOMIC = CApi.SQLITE_IOERR_COMMIT_ATOMIC;
+  public final int IOERR_ROLLBACK_ATOMIC = CApi.SQLITE_IOERR_ROLLBACK_ATOMIC;
+  public final int IOERR_DATA = CApi.SQLITE_IOERR_DATA;
+  public final int IOERR_CORRUPTFS = CApi.SQLITE_IOERR_CORRUPTFS;
+  public final int LOCKED_SHAREDCACHE = CApi.SQLITE_LOCKED_SHAREDCACHE;
+  public final int LOCKED_VTAB = CApi.SQLITE_LOCKED_VTAB;
+  public final int BUSY_RECOVERY = CApi.SQLITE_BUSY_RECOVERY;
+  public final int BUSY_SNAPSHOT = CApi.SQLITE_BUSY_SNAPSHOT;
+  public final int BUSY_TIMEOUT = CApi.SQLITE_BUSY_TIMEOUT;
+  public final int CANTOPEN_NOTEMPDIR = CApi.SQLITE_CANTOPEN_NOTEMPDIR;
+  public final int CANTOPEN_ISDIR = CApi.SQLITE_CANTOPEN_ISDIR;
+  public final int CANTOPEN_FULLPATH = CApi.SQLITE_CANTOPEN_FULLPATH;
+  public final int CANTOPEN_CONVPATH = CApi.SQLITE_CANTOPEN_CONVPATH;
+  public final int CANTOPEN_SYMLINK = CApi.SQLITE_CANTOPEN_SYMLINK;
+  public final int CORRUPT_VTAB = CApi.SQLITE_CORRUPT_VTAB;
+  public final int CORRUPT_SEQUENCE = CApi.SQLITE_CORRUPT_SEQUENCE;
+  public final int CORRUPT_INDEX = CApi.SQLITE_CORRUPT_INDEX;
+  public final int READONLY_RECOVERY = CApi.SQLITE_READONLY_RECOVERY;
+  public final int READONLY_CANTLOCK = CApi.SQLITE_READONLY_CANTLOCK;
+  public final int READONLY_ROLLBACK = CApi.SQLITE_READONLY_ROLLBACK;
+  public final int READONLY_DBMOVED = CApi.SQLITE_READONLY_DBMOVED;
+  public final int READONLY_CANTINIT = CApi.SQLITE_READONLY_CANTINIT;
+  public final int READONLY_DIRECTORY = CApi.SQLITE_READONLY_DIRECTORY;
+  public final int ABORT_ROLLBACK = CApi.SQLITE_ABORT_ROLLBACK;
+  public final int CONSTRAINT_CHECK = CApi.SQLITE_CONSTRAINT_CHECK;
+  public final int CONSTRAINT_COMMITHOOK = CApi.SQLITE_CONSTRAINT_COMMITHOOK;
+  public final int CONSTRAINT_FOREIGNKEY = CApi.SQLITE_CONSTRAINT_FOREIGNKEY;
+  public final int CONSTRAINT_FUNCTION = CApi.SQLITE_CONSTRAINT_FUNCTION;
+  public final int CONSTRAINT_NOTNULL = CApi.SQLITE_CONSTRAINT_NOTNULL;
+  public final int CONSTRAINT_PRIMARYKEY = CApi.SQLITE_CONSTRAINT_PRIMARYKEY;
+  public final int CONSTRAINT_TRIGGER = CApi.SQLITE_CONSTRAINT_TRIGGER;
+  public final int CONSTRAINT_UNIQUE = CApi.SQLITE_CONSTRAINT_UNIQUE;
+  public final int CONSTRAINT_VTAB = CApi.SQLITE_CONSTRAINT_VTAB;
+  public final int CONSTRAINT_ROWID = CApi.SQLITE_CONSTRAINT_ROWID;
+  public final int CONSTRAINT_PINNED = CApi.SQLITE_CONSTRAINT_PINNED;
+  public final int CONSTRAINT_DATATYPE = CApi.SQLITE_CONSTRAINT_DATATYPE;
+  public final int NOTICE_RECOVER_WAL = CApi.SQLITE_NOTICE_RECOVER_WAL;
+  public final int NOTICE_RECOVER_ROLLBACK = CApi.SQLITE_NOTICE_RECOVER_ROLLBACK;
+  public final int WARNING_AUTOINDEX = CApi.SQLITE_WARNING_AUTOINDEX;
+  public final int AUTH_USER = CApi.SQLITE_AUTH_USER;
+  public final int OK_LOAD_PERMANENTLY = CApi.SQLITE_OK_LOAD_PERMANENTLY;
 
   // sqlite3_open() flags
-  public static final int OPEN_READWRITE = CApi.SQLITE_OPEN_READWRITE;
-  public static final int OPEN_CREATE = CApi.SQLITE_OPEN_CREATE;
-  public static final int OPEN_EXRESCODE = CApi.SQLITE_OPEN_EXRESCODE;
+  public final int OPEN_READWRITE = CApi.SQLITE_OPEN_READWRITE;
+  public final int OPEN_CREATE = CApi.SQLITE_OPEN_CREATE;
+  public final int OPEN_EXRESCODE = CApi.SQLITE_OPEN_EXRESCODE;
 
   // transaction state
-  public static final int TXN_NONE = CApi.SQLITE_TXN_NONE;
-  public static final int TXN_READ = CApi.SQLITE_TXN_READ;
-  public static final int TXN_WRITE = CApi.SQLITE_TXN_WRITE;
+  public final int TXN_NONE = CApi.SQLITE_TXN_NONE;
+  public final int TXN_READ = CApi.SQLITE_TXN_READ;
+  public final int TXN_WRITE = CApi.SQLITE_TXN_WRITE;
 
   // sqlite3_status() ops
-  public static final int STATUS_MEMORY_USED = CApi.SQLITE_STATUS_MEMORY_USED;
-  public static final int STATUS_PAGECACHE_USED = CApi.SQLITE_STATUS_PAGECACHE_USED;
-  public static final int STATUS_PAGECACHE_OVERFLOW = CApi.SQLITE_STATUS_PAGECACHE_OVERFLOW;
-  public static final int STATUS_MALLOC_SIZE = CApi.SQLITE_STATUS_MALLOC_SIZE;
-  public static final int STATUS_PARSER_STACK = CApi.SQLITE_STATUS_PARSER_STACK;
-  public static final int STATUS_PAGECACHE_SIZE = CApi.SQLITE_STATUS_PAGECACHE_SIZE;
-  public static final int STATUS_MALLOC_COUNT = CApi.SQLITE_STATUS_MALLOC_COUNT;
+  public final int STATUS_MEMORY_USED = CApi.SQLITE_STATUS_MEMORY_USED;
+  public final int STATUS_PAGECACHE_USED = CApi.SQLITE_STATUS_PAGECACHE_USED;
+  public final int STATUS_PAGECACHE_OVERFLOW = CApi.SQLITE_STATUS_PAGECACHE_OVERFLOW;
+  public final int STATUS_MALLOC_SIZE = CApi.SQLITE_STATUS_MALLOC_SIZE;
+  public final int STATUS_PARSER_STACK = CApi.SQLITE_STATUS_PARSER_STACK;
+  public final int STATUS_PAGECACHE_SIZE = CApi.SQLITE_STATUS_PAGECACHE_SIZE;
+  public final int STATUS_MALLOC_COUNT = CApi.SQLITE_STATUS_MALLOC_COUNT;
 
   // sqlite3_db_status() ops
-  public static final int DBSTATUS_LOOKASIDE_USED = CApi.SQLITE_DBSTATUS_LOOKASIDE_USED;
-  public static final int DBSTATUS_CACHE_USED = CApi.SQLITE_DBSTATUS_CACHE_USED;
-  public static final int DBSTATUS_SCHEMA_USED = CApi.SQLITE_DBSTATUS_SCHEMA_USED;
-  public static final int DBSTATUS_STMT_USED = CApi.SQLITE_DBSTATUS_STMT_USED;
-  public static final int DBSTATUS_LOOKASIDE_HIT = CApi.SQLITE_DBSTATUS_LOOKASIDE_HIT;
-  public static final int DBSTATUS_LOOKASIDE_MISS_SIZE = CApi.SQLITE_DBSTATUS_LOOKASIDE_MISS_SIZE;
-  public static final int DBSTATUS_LOOKASIDE_MISS_FULL = CApi.SQLITE_DBSTATUS_LOOKASIDE_MISS_FULL;
-  public static final int DBSTATUS_CACHE_HIT = CApi.SQLITE_DBSTATUS_CACHE_HIT;
-  public static final int DBSTATUS_CACHE_MISS = CApi.SQLITE_DBSTATUS_CACHE_MISS;
-  public static final int DBSTATUS_CACHE_WRITE = CApi.SQLITE_DBSTATUS_CACHE_WRITE;
-  public static final int DBSTATUS_DEFERRED_FKS = CApi.SQLITE_DBSTATUS_DEFERRED_FKS;
-  public static final int DBSTATUS_CACHE_USED_SHARED = CApi.SQLITE_DBSTATUS_CACHE_USED_SHARED;
-  public static final int DBSTATUS_CACHE_SPILL = CApi.SQLITE_DBSTATUS_CACHE_SPILL;
-  public static final int DBSTATUS_TEMPBUF_SPILL = CApi.SQLITE_DBSTATUS_TEMPBUF_SPILL;
+  public final int DBSTATUS_LOOKASIDE_USED = CApi.SQLITE_DBSTATUS_LOOKASIDE_USED;
+  public final int DBSTATUS_CACHE_USED = CApi.SQLITE_DBSTATUS_CACHE_USED;
+  public final int DBSTATUS_SCHEMA_USED = CApi.SQLITE_DBSTATUS_SCHEMA_USED;
+  public final int DBSTATUS_STMT_USED = CApi.SQLITE_DBSTATUS_STMT_USED;
+  public final int DBSTATUS_LOOKASIDE_HIT = CApi.SQLITE_DBSTATUS_LOOKASIDE_HIT;
+  public final int DBSTATUS_LOOKASIDE_MISS_SIZE = CApi.SQLITE_DBSTATUS_LOOKASIDE_MISS_SIZE;
+  public final int DBSTATUS_LOOKASIDE_MISS_FULL = CApi.SQLITE_DBSTATUS_LOOKASIDE_MISS_FULL;
+  public final int DBSTATUS_CACHE_HIT = CApi.SQLITE_DBSTATUS_CACHE_HIT;
+  public final int DBSTATUS_CACHE_MISS = CApi.SQLITE_DBSTATUS_CACHE_MISS;
+  public final int DBSTATUS_CACHE_WRITE = CApi.SQLITE_DBSTATUS_CACHE_WRITE;
+  public final int DBSTATUS_DEFERRED_FKS = CApi.SQLITE_DBSTATUS_DEFERRED_FKS;
+  public final int DBSTATUS_CACHE_USED_SHARED = CApi.SQLITE_DBSTATUS_CACHE_USED_SHARED;
+  public final int DBSTATUS_CACHE_SPILL = CApi.SQLITE_DBSTATUS_CACHE_SPILL;
+  public final int DBSTATUS_TEMPBUF_SPILL = CApi.SQLITE_DBSTATUS_TEMPBUF_SPILL;
 
   // Limits
-  public static final int LIMIT_LENGTH = CApi.SQLITE_LIMIT_LENGTH;
-  public static final int LIMIT_SQL_LENGTH = CApi.SQLITE_LIMIT_SQL_LENGTH;
-  public static final int LIMIT_COLUMN = CApi.SQLITE_LIMIT_COLUMN;
-  public static final int LIMIT_EXPR_DEPTH = CApi.SQLITE_LIMIT_EXPR_DEPTH;
-  public static final int LIMIT_COMPOUND_SELECT = CApi.SQLITE_LIMIT_COMPOUND_SELECT;
-  public static final int LIMIT_VDBE_OP = CApi.SQLITE_LIMIT_VDBE_OP;
-  public static final int LIMIT_FUNCTION_ARG = CApi.SQLITE_LIMIT_FUNCTION_ARG;
-  public static final int LIMIT_ATTACHED = CApi.SQLITE_LIMIT_ATTACHED;
-  public static final int LIMIT_LIKE_PATTERN_LENGTH = CApi.SQLITE_LIMIT_LIKE_PATTERN_LENGTH;
-  public static final int LIMIT_VARIABLE_NUMBER = CApi.SQLITE_LIMIT_VARIABLE_NUMBER;
-  public static final int LIMIT_TRIGGER_DEPTH = CApi.SQLITE_LIMIT_TRIGGER_DEPTH;
-  public static final int LIMIT_WORKER_THREADS = CApi.SQLITE_LIMIT_WORKER_THREADS;
+  public final int LIMIT_LENGTH = CApi.SQLITE_LIMIT_LENGTH;
+  public final int LIMIT_SQL_LENGTH = CApi.SQLITE_LIMIT_SQL_LENGTH;
+  public final int LIMIT_COLUMN = CApi.SQLITE_LIMIT_COLUMN;
+  public final int LIMIT_EXPR_DEPTH = CApi.SQLITE_LIMIT_EXPR_DEPTH;
+  public final int LIMIT_COMPOUND_SELECT = CApi.SQLITE_LIMIT_COMPOUND_SELECT;
+  public final int LIMIT_VDBE_OP = CApi.SQLITE_LIMIT_VDBE_OP;
+  public final int LIMIT_FUNCTION_ARG = CApi.SQLITE_LIMIT_FUNCTION_ARG;
+  public final int LIMIT_ATTACHED = CApi.SQLITE_LIMIT_ATTACHED;
+  public final int LIMIT_LIKE_PATTERN_LENGTH = CApi.SQLITE_LIMIT_LIKE_PATTERN_LENGTH;
+  public final int LIMIT_VARIABLE_NUMBER = CApi.SQLITE_LIMIT_VARIABLE_NUMBER;
+  public final int LIMIT_TRIGGER_DEPTH = CApi.SQLITE_LIMIT_TRIGGER_DEPTH;
+  public final int LIMIT_WORKER_THREADS = CApi.SQLITE_LIMIT_WORKER_THREADS;
 
   // sqlite3_prepare_v3() flags
-  public static final int PREPARE_PERSISTENT = CApi.SQLITE_PREPARE_PERSISTENT;
-  public static final int PREPARE_NO_VTAB = CApi.SQLITE_PREPARE_NO_VTAB;
+  public final int PREPARE_PERSISTENT = CApi.SQLITE_PREPARE_PERSISTENT;
+  public final int PREPARE_NO_VTAB = CApi.SQLITE_PREPARE_NO_VTAB;
 
   // sqlite3_trace_v2() flags
-  public static final int TRACE_STMT = CApi.SQLITE_TRACE_STMT;
-  public static final int TRACE_PROFILE = CApi.SQLITE_TRACE_PROFILE;
-  public static final int TRACE_ROW = CApi.SQLITE_TRACE_ROW;
-  public static final int TRACE_CLOSE = CApi.SQLITE_TRACE_CLOSE;
-  public static final int TRACE_ALL = TRACE_STMT | TRACE_PROFILE | TRACE_ROW | TRACE_CLOSE;
+  public final int TRACE_STMT = CApi.SQLITE_TRACE_STMT;
+  public final int TRACE_PROFILE = CApi.SQLITE_TRACE_PROFILE;
+  public final int TRACE_ROW = CApi.SQLITE_TRACE_ROW;
+  public final int TRACE_CLOSE = CApi.SQLITE_TRACE_CLOSE;
+  public final int TRACE_ALL = TRACE_STMT | TRACE_PROFILE | TRACE_ROW | TRACE_CLOSE;
 
   // sqlite3_db_config() ops
-  public static final int DBCONFIG_ENABLE_FKEY = CApi.SQLITE_DBCONFIG_ENABLE_FKEY;
-  public static final int DBCONFIG_ENABLE_TRIGGER = CApi.SQLITE_DBCONFIG_ENABLE_TRIGGER;
-  public static final int DBCONFIG_ENABLE_FTS3_TOKENIZER = CApi.SQLITE_DBCONFIG_ENABLE_FTS3_TOKENIZER;
-  public static final int DBCONFIG_ENABLE_LOAD_EXTENSION = CApi.SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION;
-  public static final int DBCONFIG_NO_CKPT_ON_CLOSE = CApi.SQLITE_DBCONFIG_NO_CKPT_ON_CLOSE;
-  public static final int DBCONFIG_ENABLE_QPSG = CApi.SQLITE_DBCONFIG_ENABLE_QPSG;
-  public static final int DBCONFIG_TRIGGER_EQP = CApi.SQLITE_DBCONFIG_TRIGGER_EQP;
-  public static final int DBCONFIG_RESET_DATABASE = CApi.SQLITE_DBCONFIG_RESET_DATABASE;
-  public static final int DBCONFIG_DEFENSIVE = CApi.SQLITE_DBCONFIG_DEFENSIVE;
-  public static final int DBCONFIG_WRITABLE_SCHEMA = CApi.SQLITE_DBCONFIG_WRITABLE_SCHEMA;
-  public static final int DBCONFIG_LEGACY_ALTER_TABLE = CApi.SQLITE_DBCONFIG_LEGACY_ALTER_TABLE;
-  public static final int DBCONFIG_DQS_DML = CApi.SQLITE_DBCONFIG_DQS_DML;
-  public static final int DBCONFIG_DQS_DDL = CApi.SQLITE_DBCONFIG_DQS_DDL;
-  public static final int DBCONFIG_ENABLE_VIEW = CApi.SQLITE_DBCONFIG_ENABLE_VIEW;
-  public static final int DBCONFIG_LEGACY_FILE_FORMAT = CApi.SQLITE_DBCONFIG_LEGACY_FILE_FORMAT;
-  public static final int DBCONFIG_TRUSTED_SCHEMA = CApi.SQLITE_DBCONFIG_TRUSTED_SCHEMA;
-  public static final int DBCONFIG_STMT_SCANSTATUS = CApi.SQLITE_DBCONFIG_STMT_SCANSTATUS;
-  public static final int DBCONFIG_REVERSE_SCANORDER = CApi.SQLITE_DBCONFIG_REVERSE_SCANORDER;
+  public final int DBCONFIG_ENABLE_FKEY = CApi.SQLITE_DBCONFIG_ENABLE_FKEY;
+  public final int DBCONFIG_ENABLE_TRIGGER = CApi.SQLITE_DBCONFIG_ENABLE_TRIGGER;
+  public final int DBCONFIG_ENABLE_FTS3_TOKENIZER = CApi.SQLITE_DBCONFIG_ENABLE_FTS3_TOKENIZER;
+  public final int DBCONFIG_ENABLE_LOAD_EXTENSION = CApi.SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION;
+  public final int DBCONFIG_NO_CKPT_ON_CLOSE = CApi.SQLITE_DBCONFIG_NO_CKPT_ON_CLOSE;
+  public final int DBCONFIG_ENABLE_QPSG = CApi.SQLITE_DBCONFIG_ENABLE_QPSG;
+  public final int DBCONFIG_TRIGGER_EQP = CApi.SQLITE_DBCONFIG_TRIGGER_EQP;
+  public final int DBCONFIG_RESET_DATABASE = CApi.SQLITE_DBCONFIG_RESET_DATABASE;
+  public final int DBCONFIG_DEFENSIVE = CApi.SQLITE_DBCONFIG_DEFENSIVE;
+  public final int DBCONFIG_WRITABLE_SCHEMA = CApi.SQLITE_DBCONFIG_WRITABLE_SCHEMA;
+  public final int DBCONFIG_LEGACY_ALTER_TABLE = CApi.SQLITE_DBCONFIG_LEGACY_ALTER_TABLE;
+  public final int DBCONFIG_DQS_DML = CApi.SQLITE_DBCONFIG_DQS_DML;
+  public final int DBCONFIG_DQS_DDL = CApi.SQLITE_DBCONFIG_DQS_DDL;
+  public final int DBCONFIG_ENABLE_VIEW = CApi.SQLITE_DBCONFIG_ENABLE_VIEW;
+  public final int DBCONFIG_LEGACY_FILE_FORMAT = CApi.SQLITE_DBCONFIG_LEGACY_FILE_FORMAT;
+  public final int DBCONFIG_TRUSTED_SCHEMA = CApi.SQLITE_DBCONFIG_TRUSTED_SCHEMA;
+  public final int DBCONFIG_STMT_SCANSTATUS = CApi.SQLITE_DBCONFIG_STMT_SCANSTATUS;
+  public final int DBCONFIG_REVERSE_SCANORDER = CApi.SQLITE_DBCONFIG_REVERSE_SCANORDER;
 
   // sqlite3_config() ops
-  public static final int CONFIG_SINGLETHREAD = CApi.SQLITE_CONFIG_SINGLETHREAD;
-  public static final int CONFIG_MULTITHREAD = CApi.SQLITE_CONFIG_MULTITHREAD;
-  public static final int CONFIG_SERIALIZED = CApi.SQLITE_CONFIG_SERIALIZED;
+  public final int CONFIG_SINGLETHREAD = CApi.SQLITE_CONFIG_SINGLETHREAD;
+  public final int CONFIG_MULTITHREAD = CApi.SQLITE_CONFIG_MULTITHREAD;
+  public final int CONFIG_SERIALIZED = CApi.SQLITE_CONFIG_SERIALIZED;
 
   // Encodings
-  public static final int UTF8 = CApi.SQLITE_UTF8;
-  public static final int UTF16 = CApi.SQLITE_UTF16;
-  public static final int UTF16LE = CApi.SQLITE_UTF16LE;
-  public static final int UTF16BE = CApi.SQLITE_UTF16BE;
+  public final int UTF8 = CApi.SQLITE_UTF8;
+  public final int UTF16 = CApi.SQLITE_UTF16;
+  public final int UTF16LE = CApi.SQLITE_UTF16LE;
+  public final int UTF16BE = CApi.SQLITE_UTF16BE;
   /* We elide the UTF16_ALIGNED from this interface because it
      is irrelevant for the Java interface. */
 
   // SQL data type IDs
-  public static final int INTEGER = CApi.SQLITE_INTEGER;
-  public static final int FLOAT = CApi.SQLITE_FLOAT;
-  public static final int TEXT = CApi.SQLITE_TEXT;
-  public static final int BLOB = CApi.SQLITE_BLOB;
-  public static final int NULL = CApi.SQLITE_NULL;
+  public final int INTEGER = CApi.SQLITE_INTEGER;
+  public final int FLOAT = CApi.SQLITE_FLOAT;
+  public final int TEXT = CApi.SQLITE_TEXT;
+  public final int BLOB = CApi.SQLITE_BLOB;
+  public final int NULL = CApi.SQLITE_NULL;
 
   // Authorizer codes.
-  public static final int DENY = CApi.SQLITE_DENY;
-  public static final int IGNORE = CApi.SQLITE_IGNORE;
-  public static final int CREATE_INDEX = CApi.SQLITE_CREATE_INDEX;
-  public static final int CREATE_TABLE = CApi.SQLITE_CREATE_TABLE;
-  public static final int CREATE_TEMP_INDEX = CApi.SQLITE_CREATE_TEMP_INDEX;
-  public static final int CREATE_TEMP_TABLE = CApi.SQLITE_CREATE_TEMP_TABLE;
-  public static final int CREATE_TEMP_TRIGGER = CApi.SQLITE_CREATE_TEMP_TRIGGER;
-  public static final int CREATE_TEMP_VIEW = CApi.SQLITE_CREATE_TEMP_VIEW;
-  public static final int CREATE_TRIGGER = CApi.SQLITE_CREATE_TRIGGER;
-  public static final int CREATE_VIEW = CApi.SQLITE_CREATE_VIEW;
-  public static final int DELETE = CApi.SQLITE_DELETE;
-  public static final int DROP_INDEX = CApi.SQLITE_DROP_INDEX;
-  public static final int DROP_TABLE = CApi.SQLITE_DROP_TABLE;
-  public static final int DROP_TEMP_INDEX = CApi.SQLITE_DROP_TEMP_INDEX;
-  public static final int DROP_TEMP_TABLE = CApi.SQLITE_DROP_TEMP_TABLE;
-  public static final int DROP_TEMP_TRIGGER = CApi.SQLITE_DROP_TEMP_TRIGGER;
-  public static final int DROP_TEMP_VIEW = CApi.SQLITE_DROP_TEMP_VIEW;
-  public static final int DROP_TRIGGER = CApi.SQLITE_DROP_TRIGGER;
-  public static final int DROP_VIEW = CApi.SQLITE_DROP_VIEW;
-  public static final int INSERT = CApi.SQLITE_INSERT;
-  public static final int PRAGMA = CApi.SQLITE_PRAGMA;
-  public static final int READ = CApi.SQLITE_READ;
-  public static final int SELECT = CApi.SQLITE_SELECT;
-  public static final int TRANSACTION = CApi.SQLITE_TRANSACTION;
-  public static final int UPDATE = CApi.SQLITE_UPDATE;
-  public static final int ATTACH = CApi.SQLITE_ATTACH;
-  public static final int DETACH = CApi.SQLITE_DETACH;
-  public static final int ALTER_TABLE = CApi.SQLITE_ALTER_TABLE;
-  public static final int REINDEX = CApi.SQLITE_REINDEX;
-  public static final int ANALYZE = CApi.SQLITE_ANALYZE;
-  public static final int CREATE_VTABLE = CApi.SQLITE_CREATE_VTABLE;
-  public static final int DROP_VTABLE = CApi.SQLITE_DROP_VTABLE;
-  public static final int FUNCTION = CApi.SQLITE_FUNCTION;
-  public static final int SAVEPOINT = CApi.SQLITE_SAVEPOINT;
-  public static final int RECURSIVE = CApi.SQLITE_RECURSIVE;
+  public final int DENY = CApi.SQLITE_DENY;
+  public final int IGNORE = CApi.SQLITE_IGNORE;
+  public final int CREATE_INDEX = CApi.SQLITE_CREATE_INDEX;
+  public final int CREATE_TABLE = CApi.SQLITE_CREATE_TABLE;
+  public final int CREATE_TEMP_INDEX = CApi.SQLITE_CREATE_TEMP_INDEX;
+  public final int CREATE_TEMP_TABLE = CApi.SQLITE_CREATE_TEMP_TABLE;
+  public final int CREATE_TEMP_TRIGGER = CApi.SQLITE_CREATE_TEMP_TRIGGER;
+  public final int CREATE_TEMP_VIEW = CApi.SQLITE_CREATE_TEMP_VIEW;
+  public final int CREATE_TRIGGER = CApi.SQLITE_CREATE_TRIGGER;
+  public final int CREATE_VIEW = CApi.SQLITE_CREATE_VIEW;
+  public final int DELETE = CApi.SQLITE_DELETE;
+  public final int DROP_INDEX = CApi.SQLITE_DROP_INDEX;
+  public final int DROP_TABLE = CApi.SQLITE_DROP_TABLE;
+  public final int DROP_TEMP_INDEX = CApi.SQLITE_DROP_TEMP_INDEX;
+  public final int DROP_TEMP_TABLE = CApi.SQLITE_DROP_TEMP_TABLE;
+  public final int DROP_TEMP_TRIGGER = CApi.SQLITE_DROP_TEMP_TRIGGER;
+  public final int DROP_TEMP_VIEW = CApi.SQLITE_DROP_TEMP_VIEW;
+  public final int DROP_TRIGGER = CApi.SQLITE_DROP_TRIGGER;
+  public final int DROP_VIEW = CApi.SQLITE_DROP_VIEW;
+  public final int INSERT = CApi.SQLITE_INSERT;
+  public final int PRAGMA = CApi.SQLITE_PRAGMA;
+  public final int READ = CApi.SQLITE_READ;
+  public final int SELECT = CApi.SQLITE_SELECT;
+  public final int TRANSACTION = CApi.SQLITE_TRANSACTION;
+  public final int UPDATE = CApi.SQLITE_UPDATE;
+  public final int ATTACH = CApi.SQLITE_ATTACH;
+  public final int DETACH = CApi.SQLITE_DETACH;
+  public final int ALTER_TABLE = CApi.SQLITE_ALTER_TABLE;
+  public final int REINDEX = CApi.SQLITE_REINDEX;
+  public final int ANALYZE = CApi.SQLITE_ANALYZE;
+  public final int CREATE_VTABLE = CApi.SQLITE_CREATE_VTABLE;
+  public final int DROP_VTABLE = CApi.SQLITE_DROP_VTABLE;
+  public final int FUNCTION = CApi.SQLITE_FUNCTION;
+  public final int SAVEPOINT = CApi.SQLITE_SAVEPOINT;
+  public final int RECURSIVE = CApi.SQLITE_RECURSIVE;
 
   //! Used only by the open() factory functions.
   private Sqlite(sqlite3 db){
@@ -281,7 +281,7 @@ public final class Sqlite implements AutoCloseable  {
   }
 
   /** Maps org.sqlite.jni.capi.sqlite3 to Sqlite instances. */
-  private static final java.util.Map<org.sqlite.jni.capi.sqlite3, Sqlite> nativeToWrapper
+  private final java.util.Map<org.sqlite.jni.capi.sqlite3, Sqlite> nativeToWrapper
     = new java.util.HashMap<>();
 
 
@@ -306,7 +306,7 @@ public final class Sqlite implements AutoCloseable  {
      thread, e.g. from within a query loop or a callback which is
      operating on behalf of the library.
   */
-  static void uncacheThread(){
+  void uncacheThread(){
     CApi.sqlite3_java_uncache_thread();
   }
 
@@ -314,7 +314,7 @@ public final class Sqlite implements AutoCloseable  {
      Returns the Sqlite object associated with the given sqlite3
      object, or null if there is no such mapping.
   */
-  static Sqlite fromNative(sqlite3 low){
+  Sqlite fromNative(sqlite3 low){
     synchronized(nativeToWrapper){
       return nativeToWrapper.get(low);
     }
@@ -325,10 +325,10 @@ public final class Sqlite implements AutoCloseable  {
      opening fails. All arguments are as documented for
      sqlite3_open_v2().
 
-     Design question: do we want static factory functions or should
+     Design question: do we want factory functions or should
      this be reformulated as a constructor?
   */
-  public static Sqlite open(String filename, int flags, String vfsName){
+  public Sqlite open(String filename, int flags, String vfsName){
     final OutputPointer.sqlite3 out = new OutputPointer.sqlite3();
     final int rc = CApi.sqlite3_open_v2(filename, out, flags, vfsName);
     final sqlite3 n = out.take();
@@ -346,23 +346,23 @@ public final class Sqlite implements AutoCloseable  {
     return rv;
   }
 
-  public static Sqlite open(String filename, int flags){
+  public Sqlite open(String filename, int flags){
     return open(filename, flags, null);
   }
 
-  public static Sqlite open(String filename){
+  public Sqlite open(String filename){
     return open(filename, OPEN_READWRITE|OPEN_CREATE, null);
   }
 
-  public static String libVersion(){
+  public String libVersion(){
     return CApi.sqlite3_libversion();
   }
 
-  public static int libVersionNumber(){
+  public int libVersionNumber(){
     return CApi.sqlite3_libversion_number();
   }
 
-  public static String libSourceId(){
+  public String libSourceId(){
     return CApi.sqlite3_sourceid();
   }
 
@@ -370,28 +370,28 @@ public final class Sqlite implements AutoCloseable  {
      Returns the value of the native library's build-time value of the
      SQLITE_THREADSAFE build option.
   */
-  public static int libThreadsafe(){
+  public int libThreadsafe(){
     return CApi.sqlite3_threadsafe();
   }
 
   /**
      Analog to sqlite3_compileoption_get().
   */
-  public static String compileOptionGet(int n){
+  public String compileOptionGet(int n){
     return CApi.sqlite3_compileoption_get(n);
   }
 
   /**
      Analog to sqlite3_compileoption_used().
   */
-  public static boolean compileOptionUsed(String optName){
+  public boolean compileOptionUsed(String optName){
     return CApi.sqlite3_compileoption_used(optName);
   }
 
-  private static final boolean hasNormalizeSql =
+  private final boolean hasNormalizeSql =
     compileOptionUsed("ENABLE_NORMALIZE");
 
-  private static final boolean hasSqlLog =
+  private final boolean hasSqlLog =
     compileOptionUsed("ENABLE_SQLLOG");
 
   /**
@@ -399,7 +399,7 @@ public final class Sqlite implements AutoCloseable  {
      flag is expected to be the name of an SQLITE_ENABLE_...
      build flag.
   */
-  private static void checkSupported(boolean check, String flag){
+  private void checkSupported(boolean check, String flag){
     if( !check ){
       throw new UnsupportedOperationException(
         "Library was built without "+flag
@@ -410,7 +410,7 @@ public final class Sqlite implements AutoCloseable  {
   /**
      Analog to sqlite3_complete().
   */
-  public static boolean isCompleteStatement(String sql){
+  public boolean isCompleteStatement(String sql){
     switch(CApi.sqlite3_complete(sql)){
       case 0: return false;
       case CApi.SQLITE_MISUSE:
@@ -422,30 +422,30 @@ public final class Sqlite implements AutoCloseable  {
     }
   }
 
-  public static int keywordCount(){
+  public int keywordCount(){
     return CApi.sqlite3_keyword_count();
   }
 
-  public static boolean keywordCheck(String word){
+  public boolean keywordCheck(String word){
     return CApi.sqlite3_keyword_check(word);
   }
 
-  public static String keywordName(int index){
+  public String keywordName(int index){
     return CApi.sqlite3_keyword_name(index);
   }
 
-  public static boolean strglob(String glob, String txt){
+  public boolean strglob(String glob, String txt){
     return 0==CApi.sqlite3_strglob(glob, txt);
   }
 
-  public static boolean strlike(String glob, String txt, char escChar){
+  public boolean strlike(String glob, String txt, char escChar){
     return 0==CApi.sqlite3_strlike(glob, txt, escChar);
   }
 
   /**
      Output object for use with status() and libStatus().
   */
-  public static final class Status {
+  public final class Status {
     /** The current value for the requested status() or libStatus() metric. */
     long current;
     /** The peak value for the requested status() or libStatus() metric. */
@@ -457,7 +457,7 @@ public final class Sqlite implements AutoCloseable  {
      results as a Status object. Throws if the first argument is
      not one of the STATUS_... constants.
   */
-  public static Status libStatus(int op, boolean resetStats){
+  public Status libStatus(int op, boolean resetStats){
     org.sqlite.jni.capi.OutputPointer.Int64 pCurrent =
       new org.sqlite.jni.capi.OutputPointer.Int64();
     org.sqlite.jni.capi.OutputPointer.Int64 pHighwater =
@@ -541,7 +541,7 @@ public final class Sqlite implements AutoCloseable  {
      Like checkRc() but behaves as if that function were
      called with a null db object.
   */
-  private static void checkRcStatic(int rc){
+  private void checkRcStatic(int rc){
     if( 0!=rc ){
       if( CApi.SQLITE_NOMEM==rc ){
         throw new OutOfMemoryError();
@@ -634,7 +634,7 @@ public final class Sqlite implements AutoCloseable  {
      A PrepareMulti implementation which calls another PrepareMulti
      object and then finalizes its statement.
   */
-  public static class PrepareMultiFinalize implements PrepareMulti {
+  public class PrepareMultiFinalize implements PrepareMulti {
     private final PrepareMulti pm;
     /**
        Proxies the given PrepareMulti via this object's call() method.
@@ -844,7 +844,7 @@ public final class Sqlite implements AutoCloseable  {
   /**
      Analog to sqlite3_release_memory().
   */
-  public static int libReleaseMemory(int n){
+  public int libReleaseMemory(int n){
     return CApi.sqlite3_release_memory(n);
   }
 
@@ -873,7 +873,7 @@ public final class Sqlite implements AutoCloseable  {
   /**
      Analog to sqlite3_errstr().
   */
-  static String errstr(int resultCode){
+  String errstr(int resultCode){
     return CApi.sqlite3_errstr(resultCode);
   }
 
@@ -994,7 +994,7 @@ public final class Sqlite implements AutoCloseable  {
      Corresponds to the sqlite3_stmt class. Use Sqlite.prepare() to
      create new instances.
   */
-  public static final class Stmt implements AutoCloseable {
+  public final class Stmt implements AutoCloseable {
     private Sqlite _db;
     private sqlite3_stmt stmt;
 
@@ -1012,14 +1012,14 @@ public final class Sqlite implements AutoCloseable  {
     }
 
     /** Maps org.sqlite.jni.capi.sqlite3_stmt to Stmt instances. */
-    private static final java.util.Map<org.sqlite.jni.capi.sqlite3_stmt, Stmt> nativeToWrapper
+    private final java.util.Map<org.sqlite.jni.capi.sqlite3_stmt, Stmt> nativeToWrapper
       = new java.util.HashMap<>();
 
     /**
        Returns the Stmt object associated with the given sqlite3_stmt
        object, or null if there is no such mapping.
     */
-    static Stmt fromNative(sqlite3_stmt low){
+    Stmt fromNative(sqlite3_stmt low){
       synchronized(nativeToWrapper){
         return nativeToWrapper.get(low);
       }
@@ -1304,14 +1304,14 @@ public final class Sqlite implements AutoCloseable  {
     public void call(Sqlite db);
   }
 
-  private static final java.util.Set<AutoExtension> autoExtensions =
+  private final java.util.Set<AutoExtension> autoExtensions =
     new java.util.LinkedHashSet<>();
 
   /**
      Passes db to all auto-extensions. If any one of them throws,
      db.close() is called before the exception is propagated.
   */
-  private static void runAutoExtensions(Sqlite db){
+  private void runAutoExtensions(Sqlite db){
     AutoExtension list[];
     synchronized(autoExtensions){
       /* Avoid that modifications to the AutoExtension list from within
@@ -1345,7 +1345,7 @@ public final class Sqlite implements AutoCloseable  {
      necessarily result in recursion loop and (eventually) a stack
      overflow.
   */
-  public static void addAutoExtension( AutoExtension e ){
+  public void addAutoExtension( AutoExtension e ){
     if( null==e ){
       throw new IllegalArgumentException("AutoExtension may not be null.");
     }
@@ -1359,7 +1359,7 @@ public final class Sqlite implements AutoCloseable  {
      that list, otherwise this has no side-effects beyond briefly
      locking that list.
   */
-  public static void removeAutoExtension( AutoExtension e ){
+  public void removeAutoExtension( AutoExtension e ){
     synchronized(autoExtensions){
       autoExtensions.remove(e);
     }
@@ -1368,7 +1368,7 @@ public final class Sqlite implements AutoCloseable  {
   /**
      Removes all auto-extensions which were added via addAutoExtension().
   */
-  public static void clearAutoExtensions(){
+  public void clearAutoExtensions(){
     synchronized(autoExtensions){
       autoExtensions.clear();
     }
@@ -1378,7 +1378,7 @@ public final class Sqlite implements AutoCloseable  {
      Encapsulates state related to the sqlite3 backup API. Use
      Sqlite.initBackup() to create new instances.
   */
-  public static final class Backup implements AutoCloseable {
+  public final class Backup implements AutoCloseable {
     private sqlite3_backup b;
     private Sqlite dbTo;
     private Sqlite dbFrom;
@@ -1625,7 +1625,7 @@ public final class Sqlite implements AutoCloseable  {
      have a different hook type than Sqlite.CommitHook so
      setCommitHook() will return null instead of that object.
   */
-  private static class CommitHookProxy
+  private class CommitHookProxy
     implements org.sqlite.jni.capi.CommitHookCallback {
     final CommitHook commitHook;
     CommitHookProxy(CommitHook ch){
@@ -1676,7 +1676,7 @@ public final class Sqlite implements AutoCloseable  {
      have a different hook type than Sqlite.RollbackHook so
      setRollbackHook() will return null instead of that object.
   */
-  private static class RollbackHookProxy
+  private class RollbackHookProxy
     implements org.sqlite.jni.capi.RollbackHookCallback {
     final RollbackHook rollbackHook;
     RollbackHookProxy(RollbackHook ch){
@@ -1723,7 +1723,7 @@ public final class Sqlite implements AutoCloseable  {
      have a different hook type than Sqlite.UpdateHook so
      setUpdateHook() will return null instead of that object.
   */
-  private static class UpdateHookProxy
+  private class UpdateHookProxy
     implements org.sqlite.jni.capi.UpdateHookCallback {
     final UpdateHook updateHook;
     UpdateHookProxy(UpdateHook ch){
@@ -1931,7 +1931,7 @@ public final class Sqlite implements AutoCloseable  {
      Analog to sqlite3_config() with the SQLITE_CONFIG_LOG option,
      this sets or (if log is null) clears the current logger.
   */
-  public static void libConfigLog(ConfigLog log){
+  public void libConfigLog(ConfigLog log){
     final org.sqlite.jni.capi.ConfigLogCallback l =
       null==log
       ? null
@@ -1964,7 +1964,7 @@ public final class Sqlite implements AutoCloseable  {
      If SQLite is built without SQLITE_ENABLE_SQLLOG defined then this
      will throw an UnsupportedOperationException.
   */
-  public static void libConfigSqlLog(ConfigSqlLog log){
+  public void libConfigSqlLog(ConfigSqlLog log){
     Sqlite.checkSupported(hasNormalizeSql, "SQLITE_ENABLE_SQLLOG");
     final org.sqlite.jni.capi.ConfigSqlLogCallback l =
       null==log
@@ -1988,7 +1988,7 @@ public final class Sqlite implements AutoCloseable  {
      if a specified option is not supported by the underlying build of
      the SQLite library.
    */
-  public static void libConfigOp( int op ){
+  public void libConfigOp( int op ){
     checkRcStatic(CApi.sqlite3_config(op));
   }
 

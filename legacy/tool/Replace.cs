@@ -80,7 +80,7 @@ namespace Replace
 
     ///////////////////////////////////////////////////////////////////////////
 
-    internal static class Replace
+    internal class Replace
     {
         #region Private Support Methods
         /// <summary>
@@ -93,7 +93,7 @@ namespace Replace
         /// <param name="usage">
         /// Non-zero to display the command line usage information.
         /// </param>
-        private static void Error(
+        private void Error(
             string message,
             bool usage
             )
@@ -126,7 +126,7 @@ namespace Replace
         /// Zero upon success; non-zero on failure.  This will be one of the
         /// values from the <see cref="ExitCode" /> enumeration.
         /// </returns>
-        private static int Main(
+        private int Main(
             string[] args
             )
         {

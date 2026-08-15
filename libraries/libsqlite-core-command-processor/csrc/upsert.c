@@ -18,7 +18,7 @@
 /*
 ** Free a list of Upsert objects
 */
-static void SQLITE_NOINLINE upsertDelete(sqlite3 *db, Upsert *p){
+void SQLITE_NOINLINE upsertDelete(sqlite3 *db, Upsert *p){
   do{
     Upsert *pNext = p->pNextUpsert;
     sqlite3ExprListDelete(db, p->pUpsertTarget);

@@ -79,7 +79,7 @@ struct Fts5Storage {
 ** Return SQLITE_OK if successful, or an SQLite error code if an error
 ** occurs.
 */
-static int fts5StorageGetStmt(
+int fts5StorageGetStmt(
   Fts5Storage *p,                 /* Storage handle */
   int eStmt,                      /* FTS5_STMT_XXX constant */
   sqlite3_stmt **ppStmt,          /* OUT: Prepared statement handle */
@@ -219,7 +219,7 @@ static int fts5StorageGetStmt(
 }
 
 
-static int fts5ExecPrintf(
+int fts5ExecPrintf(
   sqlite3 *db,
   char **pzErr,
   const char *zFormat,
@@ -271,7 +271,7 @@ int sqlite3Fts5DropAll(Fts5Config *pConfig){
   return rc;
 }
 
-static void fts5StorageRenameOne(
+void fts5StorageRenameOne(
   Fts5Config *pConfig,            /* Current FTS5 configuration */
   int *pRc,                       /* IN/OUT: Error code */
   const char *zTail,              /* Tail of table name e.g. "data", "config" */
@@ -444,7 +444,7 @@ struct Fts5InsertCtx {
 /*
 ** Tokenization callback used when inserting tokens into the FTS index.
 */
-static int fts5StorageInsertCallback(
+int fts5StorageInsertCallback(
   void *pContext,                 /* Pointer to Fts5InsertCtx object */
   int tflags,
   const char *pToken,             /* Buffer containing token */
@@ -500,7 +500,7 @@ int sqlite3Fts5StorageFindDeleteRow(Fts5Storage *p, i64 iDel){
 ** the original values of the row being deleted. This is used by UPDATE
 ** statements.
 */
-static int fts5StorageDeleteFromIndex(
+int fts5StorageDeleteFromIndex(
   Fts5Storage *p, 
   i64 iDel, 
   sqlite3_value **apVal,
@@ -622,7 +622,7 @@ void sqlite3Fts5StorageReleaseDeleteRow(Fts5Storage *pStorage){
 ** iDel. If successful, SQLITE_OK is returned. Or, if an error occurs,
 ** an SQLite error code.
 */
-static int fts5StorageContentlessDelete(Fts5Storage *p, i64 iDel){
+int fts5StorageContentlessDelete(Fts5Storage *p, i64 iDel){
   i64 iOrigin = 0;
   sqlite3_stmt *pLookup = 0;
   int rc = SQLITE_OK;
@@ -658,7 +658,7 @@ static int fts5StorageContentlessDelete(Fts5Storage *p, i64 iDel){
 ** If there is no %_docsize table (as happens if the columnsize=0 option
 ** is specified when the FTS5 table is created), this function is a no-op.
 */
-static int fts5StorageInsertDocsize(
+int fts5StorageInsertDocsize(
   Fts5Storage *p,                 /* Storage module to write to */
   i64 iRowid,                     /* id value */
   Fts5Buffer *pBuf                /* sz value */
@@ -695,7 +695,7 @@ static int fts5StorageInsertDocsize(
 ** Return SQLITE_OK if successful, or an SQLite error code if an error
 ** occurs.
 */
-static int fts5StorageLoadTotals(Fts5Storage *p, int bCache){
+int fts5StorageLoadTotals(Fts5Storage *p, int bCache){
   int rc = SQLITE_OK;
   if( p->bTotalsValid==0 ){
     rc = sqlite3Fts5IndexGetAverages(p->pIndex, &p->nTotalRow, p->aTotalSize);
@@ -711,7 +711,7 @@ static int fts5StorageLoadTotals(Fts5Storage *p, int bCache){
 ** Return SQLITE_OK if successful, or an SQLite error code if an error
 ** occurs.
 */
-static int fts5StorageSaveTotals(Fts5Storage *p){
+int fts5StorageSaveTotals(Fts5Storage *p){
   int nCol = p->pConfig->nCol;
   int i;
   Fts5Buffer buf;
@@ -929,7 +929,7 @@ int sqlite3Fts5StorageReset(Fts5Storage *p){
 ** If the %_docsize table does not exist, SQLITE_MISMATCH is returned. In
 ** this case the user is required to provide a rowid explicitly.
 */
-static int fts5StorageNewRowid(Fts5Storage *p, i64 *piRowid){
+int fts5StorageNewRowid(Fts5Storage *p, i64 *piRowid){
   int rc = SQLITE_MISMATCH;
   if( p->pConfig->bColumnsize ){
     sqlite3_stmt *pReplace = 0;
@@ -1098,7 +1098,7 @@ int sqlite3Fts5StorageIndexInsert(
   return rc;
 }
 
-static int fts5StorageCount(Fts5Storage *p, const char *zSuffix, i64 *pnRow){
+int fts5StorageCount(Fts5Storage *p, const char *zSuffix, i64 *pnRow){
   Fts5Config *pConfig = p->pConfig;
   char *zSql;
   int rc;
@@ -1140,7 +1140,7 @@ struct Fts5IntegrityCtx {
 /*
 ** Tokenization callback used by integrity check.
 */
-static int fts5StorageIntegrityCallback(
+int fts5StorageIntegrityCallback(
   void *pContext,                 /* Pointer to Fts5IntegrityCtx object */
   int tflags,
   const char *pToken,             /* Buffer containing token */
@@ -1391,7 +1391,7 @@ void sqlite3Fts5StorageStmtRelease(
   }
 }
 
-static int fts5StorageDecodeSizeArray(
+int fts5StorageDecodeSizeArray(
   int *aCol, int nCol,            /* Array to populate */
   const u8 *aBlob, int nBlob      /* Record to read varints from */
 ){

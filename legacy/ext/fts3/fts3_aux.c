@@ -54,7 +54,7 @@ struct Fts3auxCursor {
 ** These tables have no persistent representation of their own, so xConnect
 ** and xCreate are identical operations.
 */
-static int fts3auxConnectMethod(
+int fts3auxConnectMethod(
   sqlite3 *db,                    /* Database connection */
   void *pUnused,                  /* Unused */
   int argc,                       /* Number of elements in argv array */
@@ -125,7 +125,7 @@ static int fts3auxConnectMethod(
 ** These tables have no persistent representation of their own, so xDisconnect
 ** and xDestroy are identical operations.
 */
-static int fts3auxDisconnectMethod(sqlite3_vtab *pVtab){
+int fts3auxDisconnectMethod(sqlite3_vtab *pVtab){
   Fts3auxTable *p = (Fts3auxTable *)pVtab;
   Fts3Table *pFts3 = p->pFts3Tab;
   int i;
@@ -146,7 +146,7 @@ static int fts3auxDisconnectMethod(sqlite3_vtab *pVtab){
 /*
 ** xBestIndex - Analyze a WHERE and ORDER BY clause.
 */
-static int fts3auxBestIndexMethod(
+int fts3auxBestIndexMethod(
   sqlite3_vtab *pVTab, 
   sqlite3_index_info *pInfo
 ){
@@ -216,7 +216,7 @@ static int fts3auxBestIndexMethod(
 /*
 ** xOpen - Open a cursor.
 */
-static int fts3auxOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
+int fts3auxOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
   Fts3auxCursor *pCsr;            /* Pointer to cursor object to return */
 
   UNUSED_PARAMETER(pVTab);
@@ -232,7 +232,7 @@ static int fts3auxOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
 /*
 ** xClose - Close a cursor.
 */
-static int fts3auxCloseMethod(sqlite3_vtab_cursor *pCursor){
+int fts3auxCloseMethod(sqlite3_vtab_cursor *pCursor){
   Fts3Table *pFts3 = ((Fts3auxTable *)pCursor->pVtab)->pFts3Tab;
   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;
 
@@ -245,7 +245,7 @@ static int fts3auxCloseMethod(sqlite3_vtab_cursor *pCursor){
   return SQLITE_OK;
 }
 
-static int fts3auxGrowStatArray(Fts3auxCursor *pCsr, int nSize){
+int fts3auxGrowStatArray(Fts3auxCursor *pCsr, int nSize){
   if( nSize>pCsr->nStat ){
     struct Fts3auxColstats *aNew;
     aNew = (struct Fts3auxColstats *)sqlite3_realloc64(pCsr->aStat, 
@@ -264,7 +264,7 @@ static int fts3auxGrowStatArray(Fts3auxCursor *pCsr, int nSize){
 /*
 ** xNext - Advance the cursor to the next row, if any.
 */
-static int fts3auxNextMethod(sqlite3_vtab_cursor *pCursor){
+int fts3auxNextMethod(sqlite3_vtab_cursor *pCursor){
   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;
   Fts3Table *pFts3 = ((Fts3auxTable *)pCursor->pVtab)->pFts3Tab;
   int rc;
@@ -362,7 +362,7 @@ static int fts3auxNextMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xFilter - Initialize a cursor to point at the start of its data.
 */
-static int fts3auxFilterMethod(
+int fts3auxFilterMethod(
   sqlite3_vtab_cursor *pCursor,   /* The cursor used for this query */
   int idxNum,                     /* Strategy index */
   const char *idxStr,             /* Unused */
@@ -458,7 +458,7 @@ static int fts3auxFilterMethod(
 /*
 ** xEof - Return true if the cursor is at EOF, or false otherwise.
 */
-static int fts3auxEofMethod(sqlite3_vtab_cursor *pCursor){
+int fts3auxEofMethod(sqlite3_vtab_cursor *pCursor){
   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;
   return pCsr->isEof;
 }
@@ -466,7 +466,7 @@ static int fts3auxEofMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xColumn - Return a column value.
 */
-static int fts3auxColumnMethod(
+int fts3auxColumnMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite3_context *pCtx,          /* Context for sqlite3_result_xxx() calls */
   int iCol                        /* Index of column to read value from */
@@ -507,7 +507,7 @@ static int fts3auxColumnMethod(
 /*
 ** xRowid - Return the current rowid for the cursor.
 */
-static int fts3auxRowidMethod(
+int fts3auxRowidMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite_int64 *pRowid            /* OUT: Rowid value */
 ){
@@ -521,7 +521,7 @@ static int fts3auxRowidMethod(
 ** if successful or an error code if sqlite3_create_module() fails.
 */
 int sqlite3Fts3InitAux(sqlite3 *db){
-  static const sqlite3_module fts3aux_module = {
+  const sqlite3_module fts3aux_module = {
      0,                           /* iVersion      */
      fts3auxConnectMethod,        /* xCreate       */
      fts3auxConnectMethod,        /* xConnect      */

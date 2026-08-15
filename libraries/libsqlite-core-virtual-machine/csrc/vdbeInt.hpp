@@ -329,7 +329,7 @@ struct sqlite3_value {
 ** aggregate accumulator.
 */
 #define MEM_Dyn       0x1000   /* Need to call Mem.xDel() on Mem.z */
-#define MEM_Static    0x2000   /* Mem.z points to a static string */
+#define MEM_Static    0x2000   /* Mem.z points to a string */
 #define MEM_Ephem     0x4000   /* Mem.z points to an ephemeral string */
 #define MEM_Agg       0x8000   /* Mem.z points to an agg function context */
 

@@ -34,7 +34,7 @@ SQLITE_EXTENSION_INIT1
 ** If so, those new formats will be identified by alternative headers in the
 ** compressed data.
 */
-static void sqlarCompressFunc(
+void sqlarCompressFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -75,7 +75,7 @@ static void sqlarCompressFunc(
 ** utility function uncompress() and return the results (another
 ** blob).
 */
-static void sqlarUncompressFunc(
+void sqlarUncompressFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

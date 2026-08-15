@@ -45,7 +45,7 @@ struct CmdLineOption {
 #define CMDLINE_TEXT(x,y,z)  {x, y, CMDLINE_STRING, z}
 #define CMDLINE_NONE(x,y,z)  {x, y, CMDLINE_BARE, z}
 
-static void option_requires_argument_error(CmdLineOption *pOpt){
+void option_requires_argument_error(CmdLineOption *pOpt){
   fprintf(stderr, "Option requires a%s argument: %s\n", 
       pOpt->eType==CMDLINE_INTEGER ? "n integer" :
       pOpt->eType==CMDLINE_STRING ? " string" : " boolean",
@@ -54,12 +54,12 @@ static void option_requires_argument_error(CmdLineOption *pOpt){
   exit(1);
 }
 
-static void ambiguous_option_error(const char *zArg){
+void ambiguous_option_error(const char *zArg){
   fprintf(stderr, "Option is ambiguous: %s\n", zArg);
   exit(1);
 }
 
-static void unknown_option_error(
+void unknown_option_error(
   const char *zArg, 
   CmdLineOption *aOpt,
   const char *zHelp
@@ -84,7 +84,7 @@ static void unknown_option_error(
   exit(1);
 }
 
-static int get_integer_option(CmdLineOption *pOpt, const char *zArg){
+int get_integer_option(CmdLineOption *pOpt, const char *zArg){
   int i = 0;
   int iRet = 0;
   int bSign = 1;
@@ -100,7 +100,7 @@ static int get_integer_option(CmdLineOption *pOpt, const char *zArg){
   return (iRet*bSign);
 }
 
-static int get_boolean_option(CmdLineOption *pOpt, const char *zArg){
+int get_boolean_option(CmdLineOption *pOpt, const char *zArg){
   if( 0==sqlite3_stricmp(zArg, "true") ) return 1;
   if( 0==sqlite3_stricmp(zArg, "1") ) return 1;
   if( 0==sqlite3_stricmp(zArg, "0") ) return 0;
@@ -109,7 +109,7 @@ static int get_boolean_option(CmdLineOption *pOpt, const char *zArg){
   return 0;
 }
 
-static void parse_command_line(
+void parse_command_line(
   int argc, 
   char **argv, 
   int iStart,
@@ -193,21 +193,21 @@ static void parse_command_line(
 ** End of generic command line parser.
 *************************************************************************/
 
-static void abort_due_to_error(int rc){
+void abort_due_to_error(int rc){
   fprintf(stderr, "Error: %d\n");
   exit(-1);
 }
 
-static void execsql(sqlite3 *db, const char *zSql){
+void execsql(sqlite3 *db, const char *zSql){
   int rc = sqlite3_exec(db, zSql, 0, 0, 0);
   if( rc!=SQLITE_OK ) abort_due_to_error(rc);
 }
 
-static int xConflict(void *pCtx, int eConflict, sqlite3_changeset_iter *p){
+int xConflict(void *pCtx, int eConflict, sqlite3_changeset_iter *p){
   return SQLITE_CHANGESET_ABORT;
 }
 
-static void run_test(
+void run_test(
   sqlite3 *db, 
   sqlite3 *db2, 
   int nRow, 

@@ -85,20 +85,20 @@ struct vtablog_cursor {
 
 /* Skip leading whitespace.  Return a pointer to the first non-whitespace
 ** character, or to the zero terminator if the string has only whitespace */
-static const char *vtablog_skip_whitespace(const char *z){
+const char *vtablog_skip_whitespace(const char *z){
   while( isspace((unsigned char)z[0]) ) z++;
   return z;
 }
 
 /* Remove trailing whitespace from the end of string z[] */
-static void vtablog_trim_whitespace(char *z){
+void vtablog_trim_whitespace(char *z){
   size_t n = strlen(z);
   while( n>0 && isspace((unsigned char)z[n]) ) n--;
   z[n] = 0;
 }
 
 /* Dequote the string */
-static void vtablog_dequote(char *z){
+void vtablog_dequote(char *z){
   int j;
   char cQuote = z[0];
   size_t i, n;
@@ -117,7 +117,7 @@ static void vtablog_dequote(char *z){
 ** whitespace before and around tokens.  If it is, return a pointer to the
 ** first character of VALUE.  If it is not, return NULL.
 */
-static const char *vtablog_parameter(const char *zTag, int nTag, const char *z){
+const char *vtablog_parameter(const char *zTag, int nTag, const char *z){
   z = vtablog_skip_whitespace(z);
   if( strncmp(zTag, z, nTag)!=0 ) return 0;
   z = vtablog_skip_whitespace(z+nTag);
@@ -129,7 +129,7 @@ static const char *vtablog_parameter(const char *zTag, int nTag, const char *z){
 **
 ** Return non-zero on an error.
 */
-static int vtablog_string_parameter(
+int vtablog_string_parameter(
   char **pzErr,            /* Leave the error message here, if there is one */
   const char *zParam,      /* Parameter we are checking for */
   const char *zArg,        /* Raw text of the virtual table argment */
@@ -156,7 +156,7 @@ static int vtablog_string_parameter(
 /* Return 0 if the argument is false and 1 if it is true.  Return -1 if
 ** we cannot really tell.
 */
-static int vtablog_boolean(const char *z){
+int vtablog_boolean(const char *z){
   if( sqlite3_stricmp("yes",z)==0
    || sqlite3_stricmp("on",z)==0
    || sqlite3_stricmp("true",z)==0
@@ -188,7 +188,7 @@ static int vtablog_boolean(const char *z){
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against vtablog will look like.
 */
-static int vtablogConnectCreate(
+int vtablogConnectCreate(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -261,7 +261,7 @@ vtablog_end_connect:
   sqlite3_free(zConsumeOB);
   return rc;
 }
-static int vtablogCreate(
+int vtablogCreate(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -270,7 +270,7 @@ static int vtablogCreate(
 ){
   return vtablogConnectCreate(db,pAux,argc,argv,ppVtab,pzErr,1);
 }
-static int vtablogConnect(
+int vtablogConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -284,7 +284,7 @@ static int vtablogConnect(
 /*
 ** This method is the destructor for vtablog_vtab objects.
 */
-static int vtablogDisconnect(sqlite3_vtab *pVtab){
+int vtablogDisconnect(sqlite3_vtab *pVtab){
   vtablog_vtab *pTab = (vtablog_vtab*)pVtab;
   printf("%s.%s.xDisconnect()\n", pTab->zDb, pTab->zName);
   sqlite3_free(pTab->zDb);
@@ -296,7 +296,7 @@ static int vtablogDisconnect(sqlite3_vtab *pVtab){
 /*
 ** This method is (also) the destructor for vtablog_vtab objects.
 */
-static int vtablogDestroy(sqlite3_vtab *pVtab){
+int vtablogDestroy(sqlite3_vtab *pVtab){
   vtablog_vtab *pTab = (vtablog_vtab*)pVtab;
   printf("%s.%s.xDestroy()\n", pTab->zDb, pTab->zName);
   sqlite3_free(pTab->zDb);
@@ -308,7 +308,7 @@ static int vtablogDestroy(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new vtablog_cursor object.
 */
-static int vtablogOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int vtablogOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   vtablog_vtab *pTab = (vtablog_vtab*)p;
   vtablog_cursor *pCur;
   printf("%s.%s.xOpen(cursor=%d)\n", pTab->zDb, pTab->zName,
@@ -324,7 +324,7 @@ static int vtablogOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a vtablog_cursor.
 */
-static int vtablogClose(sqlite3_vtab_cursor *cur){
+int vtablogClose(sqlite3_vtab_cursor *cur){
   vtablog_cursor *pCur = (vtablog_cursor*)cur;
   vtablog_vtab *pTab = (vtablog_vtab*)cur->pVtab;
   printf("%s.%s.xClose(cursor=%d)\n", pTab->zDb, pTab->zName, pCur->iCursor);
@@ -336,7 +336,7 @@ static int vtablogClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a vtablog_cursor to its next row of output.
 */
-static int vtablogNext(sqlite3_vtab_cursor *cur){
+int vtablogNext(sqlite3_vtab_cursor *cur){
   vtablog_cursor *pCur = (vtablog_cursor*)cur;
   vtablog_vtab *pTab = (vtablog_vtab*)cur->pVtab;
   printf("%s.%s.xNext(cursor=%d)  rowid %d -> %d\n", 
@@ -350,7 +350,7 @@ static int vtablogNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the vtablog_cursor
 ** is currently pointing.
 */
-static int vtablogColumn(
+int vtablogColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -375,7 +375,7 @@ static int vtablogColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int vtablogRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int vtablogRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   vtablog_cursor *pCur = (vtablog_cursor*)cur;
   vtablog_vtab *pTab = (vtablog_vtab*)cur->pVtab;
   printf("%s.%s.xRowid(cursor=%d): %d\n",
@@ -388,7 +388,7 @@ static int vtablogRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int vtablogEof(sqlite3_vtab_cursor *cur){
+int vtablogEof(sqlite3_vtab_cursor *cur){
   vtablog_cursor *pCur = (vtablog_cursor*)cur;
   vtablog_vtab *pTab = (vtablog_vtab*)cur->pVtab;
   int rc = pCur->iRowid >= pTab->nRow;
@@ -400,7 +400,7 @@ static int vtablogEof(sqlite3_vtab_cursor *cur){
 /*
 ** Output an sqlite3_value object's value as an SQL literal.
 */
-static void vtablogQuote(sqlite3_value *p){
+void vtablogQuote(sqlite3_value *p){
   char z[50];
   switch( sqlite3_value_type(p) ){
     case SQLITE_NULL: {
@@ -465,7 +465,7 @@ static void vtablogQuote(sqlite3_value *p){
 ** once prior to any call to vtablogColumn() or vtablogRowid() or 
 ** vtablogEof().
 */
-static int vtablogFilter(
+int vtablogFilter(
   sqlite3_vtab_cursor *cur,
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -478,11 +478,11 @@ static int vtablogFilter(
 }
 
 /*
-** Return an sqlite3_index_info operator name in static space.
+** Return an sqlite3_index_info operator name in space.
 ** The name is possibly overwritten on subsequent calls.
 */
-static char *vtablogOpName(unsigned char op){
-  static char zUnknown[30];
+char *vtablogOpName(unsigned char op){
+  char zUnknown[30];
   char *zOut;
   switch( op ){
     case SQLITE_INDEX_CONSTRAINT_EQ:        zOut = "EQ";        break;
@@ -516,7 +516,7 @@ static char *vtablogOpName(unsigned char op){
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int vtablogBestIndex(
+int vtablogBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *p
 ){
@@ -579,7 +579,7 @@ static int vtablogBestIndex(
 ** This implementation does not actually make any changes to the table
 ** content.  It merely logs the fact that the method was invoked
 */
-static int vtablogUpdate(
+int vtablogUpdate(
   sqlite3_vtab *tab,
   int argc,
   sqlite3_value **argv,
@@ -597,43 +597,43 @@ static int vtablogUpdate(
   return SQLITE_OK;
 }
 
-static int vtablogBegin(sqlite3_vtab *tab){
+int vtablogBegin(sqlite3_vtab *tab){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xBegin()\n", pTab->zDb, pTab->zName);
   return SQLITE_OK;
 }
-static int vtablogSync(sqlite3_vtab *tab){
+int vtablogSync(sqlite3_vtab *tab){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xSync()\n", pTab->zDb, pTab->zName);
   return SQLITE_OK;
 }
-static int vtablogCommit(sqlite3_vtab *tab){
+int vtablogCommit(sqlite3_vtab *tab){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xCommit()\n", pTab->zDb, pTab->zName);
   return SQLITE_OK;
 }
-static int vtablogRollback(sqlite3_vtab *tab){
+int vtablogRollback(sqlite3_vtab *tab){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xRollback()\n", pTab->zDb, pTab->zName);
   return SQLITE_OK;
 }
-static int vtablogSavepoint(sqlite3_vtab *tab, int N){
+int vtablogSavepoint(sqlite3_vtab *tab, int N){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xSavepoint(%d)\n", pTab->zDb, pTab->zName, N);
   return SQLITE_OK;
 }
-static int vtablogRelease(sqlite3_vtab *tab, int N){
+int vtablogRelease(sqlite3_vtab *tab, int N){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xRelease(%d)\n", pTab->zDb, pTab->zName, N);
   return SQLITE_OK;
 }
-static int vtablogRollbackTo(sqlite3_vtab *tab, int N){
+int vtablogRollbackTo(sqlite3_vtab *tab, int N){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xRollbackTo(%d)\n", pTab->zDb, pTab->zName, N);
   return SQLITE_OK;
 }
 
-static int vtablogFindMethod(
+int vtablogFindMethod(
   sqlite3_vtab *tab,
   int nArg,
   const char *zName,
@@ -645,7 +645,7 @@ static int vtablogFindMethod(
          pTab->zDb, pTab->zName, nArg, zName);
   return SQLITE_OK;
 }
-static int vtablogRename(sqlite3_vtab *tab, const char *zNew){
+int vtablogRename(sqlite3_vtab *tab, const char *zNew){
   vtablog_vtab *pTab = (vtablog_vtab*)tab;
   printf("%s.%s.xRename('%s')\n", pTab->zDb, pTab->zName, zNew);
   sqlite3_free(pTab->zName);
@@ -656,12 +656,12 @@ static int vtablogRename(sqlite3_vtab *tab, const char *zNew){
 /* Any table name that contains the text "shadow" is seen as a
 ** shadow table.  Nothing else is.
 */
-static int vtablogShadowName(const char *zName){
+int vtablogShadowName(const char *zName){
   printf("vtablog.xShadowName('%s')\n", zName);
   return sqlite3_strglob("*shadow*", zName)==0;
 }
 
-static int vtablogIntegrity(
+int vtablogIntegrity(
   sqlite3_vtab *tab,
   const char *zSchema,
   const char *zTabName,
@@ -677,7 +677,7 @@ static int vtablogIntegrity(
 ** This following structure defines all the methods for the 
 ** vtablog virtual table.
 */
-static sqlite3_module vtablogModule = {
+sqlite3_module vtablogModule = {
   4,                         /* iVersion */
   vtablogCreate,             /* xCreate */
   vtablogConnect,            /* xConnect */

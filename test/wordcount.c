@@ -102,8 +102,8 @@ const char zHelp[] =
 char *zTag = "--";
 
 /* Return the current wall-clock time */
-static sqlite3_int64 realTime(void){
-  static sqlite3_vfs *clockVfs = 0;
+sqlite3_int64 realTime(void){
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ) clockVfs = sqlite3_vfs_find(0);
   if( clockVfs->iVersion>=1 && clockVfs->xCurrentTimeInt64!=0 ){
@@ -117,7 +117,7 @@ static sqlite3_int64 realTime(void){
 }
 
 /* Print an error message and exit */
-static void fatal_error(const char *zMsg, ...){
+void fatal_error(const char *zMsg, ...){
   va_list ap;
   va_start(ap, zMsg);
   vfprintf(stderr, zMsg, ap);
@@ -126,19 +126,19 @@ static void fatal_error(const char *zMsg, ...){
 }
 
 /* Print a usage message and quit */
-static void usage(void){
+void usage(void){
   printf("%s",zHelp);
   exit(0);
 }
 
 /* The sqlite3_trace() callback function */
-static void traceCallback(void *NotUsed, const char *zSql){
+void traceCallback(void *NotUsed, const char *zSql){
   printf("%s;\n", zSql);
 }
 
 /* An sqlite3_exec() callback that prints results on standard output,
 ** each column separated by a single space. */
-static int printResult(void *NotUsed, int nArg, char **azArg, char **azNm){
+int printResult(void *NotUsed, int nArg, char **azArg, char **azNm){
   int i;
   printf("%s", zTag);
   for(i=0; i<nArg; i++){
@@ -152,7 +152,7 @@ static int printResult(void *NotUsed, int nArg, char **azArg, char **azNm){
 /*
 ** Add one character to a hash
 */
-static void addCharToHash(unsigned int *a, unsigned char x){
+void addCharToHash(unsigned int *a, unsigned char x){
   if( a[0]<4 ){
     a[1] = (a[1]<<8) | x;
     a[0]++;
@@ -170,7 +170,7 @@ static void addCharToHash(unsigned int *a, unsigned char x){
 /*
 ** Compute the final hash value.
 */
-static void finalHash(unsigned int *a, char *z){
+void finalHash(unsigned int *a, char *z){
   a[3] += a[1] + a[4] + a[0];
   a[4] += a[2] + a[3];
   sqlite3_snprintf(17, z, "%08x%08x", a[3], a[4]);
@@ -180,7 +180,7 @@ static void finalHash(unsigned int *a, char *z){
 /*
 ** Implementation of a checksum() aggregate SQL function
 */
-static void checksumStep(
+void checksumStep(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -200,7 +200,7 @@ static void checksumStep(
     addCharToHash(a, '\n');
   }
 }
-static void checksumFinalize(sqlite3_context *context){
+void checksumFinalize(sqlite3_context *context){
   unsigned int *a;
   char zResult[24];
   a = sqlite3_aggregate_context(context, 0);
@@ -222,7 +222,7 @@ static void checksumFinalize(sqlite3_context *context){
 #define MODE_ALL      (-1)
 
 /* Mode names */
-static const char *azMode[] = {
+const char *azMode[] = {
   "--insert",
   "--replace",
   "--upsert",
@@ -236,7 +236,7 @@ static const char *azMode[] = {
 ** Determine if another iteration of the test is required.  Return true
 ** if so.  Return zero if all iterations have finished.
 */
-static int allLoop(
+int allLoop(
   int iMode,                /* The selected test mode */
   int *piLoopCnt,           /* Iteration loop counter */
   int *piMode2,             /* The test mode to use on the next iteration */

@@ -75,14 +75,14 @@
 ** have found to render Unicode characters on a Windows console while
 ** at the same time avoiding undesirable \n to \r\n translation.
 */
-static int simBinaryStdout = 0;
-static int simBinaryOther = 0;
+int simBinaryStdout = 0;
+int simBinaryOther = 0;
 
 
 /*
 ** Determine if simulated binary mode should be used for output to fd
 */
-static int UseBinaryWText(FILE *fd){
+int UseBinaryWText(FILE *fd){
   if( fd==stdout || fd==stderr ){
     return simBinaryStdout;
   }else{
@@ -182,7 +182,7 @@ char *sqlite3_fgets(char *buf, int sz, FILE *in){
 ** Send ASCII text as O_BINARY.  But for Unicode characters U+0080 and
 ** greater, switch to O_U8TEXT.
 */
-static void piecemealOutput(wchar_t *b1, int sz, FILE *out){
+void piecemealOutput(wchar_t *b1, int sz, FILE *out){
   int i;
   wchar_t c;
   while( sz>0 ){

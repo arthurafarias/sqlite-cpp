@@ -104,7 +104,7 @@ struct Fts5VocabCursor {
 ** value and return SQLITE_OK. Otherwise, set *pzErr to an error message
 ** and return SQLITE_ERROR.
 */
-static int fts5VocabTableType(const char *zType, char **pzErr, int *peType){
+int fts5VocabTableType(const char *zType, char **pzErr, int *peType){
   int rc = SQLITE_OK;
   char *zCopy = sqlite3Fts5Strndup(&rc, zType, -1);
   if( rc==SQLITE_OK ){
@@ -133,7 +133,7 @@ static int fts5VocabTableType(const char *zType, char **pzErr, int *peType){
 /*
 ** The xDisconnect() virtual table method.
 */
-static int fts5VocabDisconnectMethod(sqlite3_vtab *pVtab){
+int fts5VocabDisconnectMethod(sqlite3_vtab *pVtab){
   Fts5VocabTable *pTab = (Fts5VocabTable*)pVtab;
   sqlite3_free(pTab);
   return SQLITE_OK;
@@ -142,7 +142,7 @@ static int fts5VocabDisconnectMethod(sqlite3_vtab *pVtab){
 /*
 ** The xDestroy() virtual table method.
 */
-static int fts5VocabDestroyMethod(sqlite3_vtab *pVtab){
+int fts5VocabDestroyMethod(sqlite3_vtab *pVtab){
   Fts5VocabTable *pTab = (Fts5VocabTable*)pVtab;
   sqlite3_free(pTab);
   return SQLITE_OK;
@@ -169,7 +169,7 @@ static int fts5VocabDestroyMethod(sqlite3_vtab *pVtab){
 **   argv[4]   -> name of fts5 table
 **   argv[5]   -> type of fts5vocab table
 */
-static int fts5VocabInitVtab(
+int fts5VocabInitVtab(
   sqlite3 *db,                    /* The SQLite database connection */
   void *pAux,                     /* Pointer to Fts5Global object */
   int argc,                       /* Number of elements in argv array */
@@ -231,7 +231,7 @@ static int fts5VocabInitVtab(
 ** The xConnect() and xCreate() methods for the virtual table. All the
 ** work is done in function fts5VocabInitVtab().
 */
-static int fts5VocabConnectMethod(
+int fts5VocabConnectMethod(
   sqlite3 *db,                    /* Database connection */
   void *pAux,                     /* Pointer to tokenizer hash table */
   int argc,                       /* Number of elements in argv array */
@@ -241,7 +241,7 @@ static int fts5VocabConnectMethod(
 ){
   return fts5VocabInitVtab(db, pAux, argc, argv, ppVtab, pzErr);
 }
-static int fts5VocabCreateMethod(
+int fts5VocabCreateMethod(
   sqlite3 *db,                    /* Database connection */
   void *pAux,                     /* Pointer to tokenizer hash table */
   int argc,                       /* Number of elements in argv array */
@@ -264,7 +264,7 @@ static int fts5VocabCreateMethod(
 ** are interpreted. Less-than and less-than-or-equal are treated 
 ** identically, as are greater-than and greater-than-or-equal.
 */
-static int fts5VocabBestIndexMethod(
+int fts5VocabBestIndexMethod(
   sqlite3_vtab *pUnused,
   sqlite3_index_info *pInfo
 ){
@@ -328,7 +328,7 @@ static int fts5VocabBestIndexMethod(
 /*
 ** Implementation of xOpen method.
 */
-static int fts5VocabOpenMethod(
+int fts5VocabOpenMethod(
   sqlite3_vtab *pVTab, 
   sqlite3_vtab_cursor **ppCsr
 ){
@@ -400,7 +400,7 @@ static int fts5VocabOpenMethod(
 ** Restore cursor pCsr to the state it was in immediately after being
 ** created by the xOpen() method.
 */
-static void fts5VocabResetCursor(Fts5VocabCursor *pCsr){
+void fts5VocabResetCursor(Fts5VocabCursor *pCsr){
   int nCol = pCsr->pFts5->pConfig->nCol;
   pCsr->rowid = 0;
   sqlite3Fts5IterClose(pCsr->pIter);
@@ -423,7 +423,7 @@ static void fts5VocabResetCursor(Fts5VocabCursor *pCsr){
 ** Close the cursor.  For additional information see the documentation
 ** on the xClose method of the virtual table interface.
 */
-static int fts5VocabCloseMethod(sqlite3_vtab_cursor *pCursor){
+int fts5VocabCloseMethod(sqlite3_vtab_cursor *pCursor){
   Fts5VocabCursor *pCsr = (Fts5VocabCursor*)pCursor;
   fts5VocabResetCursor(pCsr);
   sqlite3Fts5BufferFree(&pCsr->term);
@@ -432,7 +432,7 @@ static int fts5VocabCloseMethod(sqlite3_vtab_cursor *pCursor){
   return SQLITE_OK;
 }
 
-static int fts5VocabInstanceNewTerm(Fts5VocabCursor *pCsr){
+int fts5VocabInstanceNewTerm(Fts5VocabCursor *pCsr){
   int rc = SQLITE_OK;
   
   if( sqlite3Fts5IterEof(pCsr->pIter) ){
@@ -454,7 +454,7 @@ static int fts5VocabInstanceNewTerm(Fts5VocabCursor *pCsr){
   return rc;
 }
 
-static int fts5VocabInstanceNext(Fts5VocabCursor *pCsr){
+int fts5VocabInstanceNext(Fts5VocabCursor *pCsr){
   int eDetail = pCsr->pFts5->pConfig->eDetail;
   int rc = SQLITE_OK;
   Fts5IndexIter *pIter = pCsr->pIter;
@@ -486,7 +486,7 @@ static int fts5VocabInstanceNext(Fts5VocabCursor *pCsr){
 /*
 ** Advance the cursor to the next row in the table.
 */
-static int fts5VocabNextMethod(sqlite3_vtab_cursor *pCursor){
+int fts5VocabNextMethod(sqlite3_vtab_cursor *pCursor){
   Fts5VocabCursor *pCsr = (Fts5VocabCursor*)pCursor;
   Fts5VocabTable *pTab = (Fts5VocabTable*)pCursor->pVtab;
   int nCol = pCsr->pFts5->pConfig->nCol;
@@ -624,7 +624,7 @@ static int fts5VocabNextMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** This is the xFilter implementation for the virtual table.
 */
-static int fts5VocabFilterMethod(
+int fts5VocabFilterMethod(
   sqlite3_vtab_cursor *pCursor,   /* The cursor used for this query */
   int idxNum,                     /* Strategy index */
   const char *zUnused,            /* Unused */
@@ -699,12 +699,12 @@ static int fts5VocabFilterMethod(
 ** This is the xEof method of the virtual table. SQLite calls this 
 ** routine to find out if it has reached the end of a result set.
 */
-static int fts5VocabEofMethod(sqlite3_vtab_cursor *pCursor){
+int fts5VocabEofMethod(sqlite3_vtab_cursor *pCursor){
   Fts5VocabCursor *pCsr = (Fts5VocabCursor*)pCursor;
   return pCsr->bEof;
 }
 
-static int fts5VocabColumnMethod(
+int fts5VocabColumnMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite3_context *pCtx,          /* Context for sqlite3_result_xxx() calls */
   int iCol                        /* Index of column to read value from */
@@ -776,7 +776,7 @@ static int fts5VocabColumnMethod(
 ** retrieve the rowid for the current row of the result set. The
 ** rowid should be written to *pRowid.
 */
-static int fts5VocabRowidMethod(
+int fts5VocabRowidMethod(
   sqlite3_vtab_cursor *pCursor, 
   sqlite_int64 *pRowid
 ){
@@ -786,7 +786,7 @@ static int fts5VocabRowidMethod(
 }
 
 int sqlite3Fts5VocabInit(Fts5Global *pGlobal, sqlite3 *db){
-  static const sqlite3_module fts5Vocab = {
+  const sqlite3_module fts5Vocab = {
     /* iVersion      */ 2,
     /* xCreate       */ fts5VocabCreateMethod,
     /* xConnect      */ fts5VocabConnectMethod,

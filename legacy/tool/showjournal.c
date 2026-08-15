@@ -9,14 +9,14 @@
 /*
 ** state information
 */
-static int pageSize = 1024;
-static int sectorSize = 512;
-static FILE *db = 0;
-static int fileSize = 0;
-static unsigned cksumNonce = 0;
+int pageSize = 1024;
+int sectorSize = 512;
+FILE *db = 0;
+int fileSize = 0;
+unsigned cksumNonce = 0;
 
 /* Report a memory allocation error */
-static void out_of_memory(void){
+void out_of_memory(void){
   fprintf(stderr,"Out of memory...\n");
   exit(1);
 }
@@ -25,7 +25,7 @@ static void out_of_memory(void){
 ** Read N bytes of memory starting at iOfst into space obtained
 ** from malloc().
 */
-static unsigned char *read_content(int N, int iOfst){
+unsigned char *read_content(int N, int iOfst){
   int got;
   unsigned char *pBuf = malloc(N);
   if( pBuf==0 ) out_of_memory();
@@ -44,7 +44,7 @@ static unsigned char *read_content(int N, int iOfst){
 
 /* Print a line of decode output showing a 4-byte integer.
 */
-static unsigned print_decode_line(
+unsigned print_decode_line(
   const unsigned char *aData,  /* Content being decoded */
   int ofst, int nByte,         /* Start and size of decode */
   const char *zMsg             /* Message to append */
@@ -72,7 +72,7 @@ static unsigned print_decode_line(
 ** Read and print a journal header.  Store key information (page size, etc)
 ** in global variables.
 */
-static unsigned decode_journal_header(int iOfst){
+unsigned decode_journal_header(int iOfst){
   unsigned char *pHdr = read_content(64, iOfst);
   unsigned nPage;
   printf("Header at offset %d:\n", iOfst);
@@ -95,7 +95,7 @@ static unsigned decode_journal_header(int iOfst){
   return nPage;
 }
 
-static void print_page(int iOfst){
+void print_page(int iOfst){
   unsigned char *aData;
   char zTitle[50];
   aData = read_content(pageSize+8, iOfst);

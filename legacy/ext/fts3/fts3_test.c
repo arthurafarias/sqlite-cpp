@@ -50,7 +50,7 @@ struct NearPhrase {
   NearToken aToken[NM_MAX_TOKEN]; /* Array of tokens in this phrase */
 };
 
-static int nm_phrase_match(
+int nm_phrase_match(
   NearPhrase *p,
   NearToken *aToken
 ){
@@ -70,7 +70,7 @@ static int nm_phrase_match(
   return 1;
 }
 
-static int nm_near_chain(
+int nm_near_chain(
   int iDir,                       /* Direction to iterate through aPhrase[] */
   NearDocument *pDoc,             /* Document to match against */
   int iPos,                       /* Position at which iPhrase was found */
@@ -114,7 +114,7 @@ static int nm_near_chain(
   return 0;
 }
 
-static int nm_match_count(
+int nm_match_count(
   NearDocument *pDoc,             /* Document to match against */
   int nPhrase,                    /* Size of phrase array */
   NearPhrase *aPhrase,            /* Phrase array */
@@ -143,7 +143,7 @@ static int nm_match_count(
 /*
 ** Tclcmd: fts3_near_match DOCUMENT EXPR ?OPTIONS?
 */
-static int SQLITE_TCLAPI fts3_near_match_cmd(
+int SQLITE_TCLAPI fts3_near_match_cmd(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -282,7 +282,7 @@ static int SQLITE_TCLAPI fts3_near_match_cmd(
 **    # Restore initial incr-load settings:
 **    eval fts3_configure_incr_load $cfg
 */
-static int SQLITE_TCLAPI fts3_configure_incr_load_cmd(
+int SQLITE_TCLAPI fts3_configure_incr_load_cmd(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -355,7 +355,7 @@ typedef struct test_tokenizer_cursor {
   int iLangid;                 /* Configured language id */
 } test_tokenizer_cursor;
 
-static int testTokenizerCreate(
+int testTokenizerCreate(
   int argc, const char * const *argv,
   sqlite3_tokenizer **ppTokenizer
 ){
@@ -371,13 +371,13 @@ static int testTokenizerCreate(
   return SQLITE_OK;
 }
 
-static int testTokenizerDestroy(sqlite3_tokenizer *pTokenizer){
+int testTokenizerDestroy(sqlite3_tokenizer *pTokenizer){
   test_tokenizer *p = (test_tokenizer *)pTokenizer;
   sqlite3_free(p);
   return SQLITE_OK;
 }
 
-static int testTokenizerOpen(
+int testTokenizerOpen(
   sqlite3_tokenizer *pTokenizer,         /* The tokenizer */
   const char *pInput, int nBytes,        /* String to be tokenized */
   sqlite3_tokenizer_cursor **ppCursor    /* OUT: Tokenization cursor */
@@ -404,23 +404,23 @@ static int testTokenizerOpen(
   return rc;
 }
 
-static int testTokenizerClose(sqlite3_tokenizer_cursor *pCursor){
+int testTokenizerClose(sqlite3_tokenizer_cursor *pCursor){
   test_tokenizer_cursor *pCsr = (test_tokenizer_cursor *)pCursor;
   sqlite3_free(pCsr->aBuffer);
   sqlite3_free(pCsr);
   return SQLITE_OK;
 }
 
-static int testIsTokenChar(char c){
+int testIsTokenChar(char c){
   return (c>='a' && c<='z') || (c>='A' && c<='Z');
 }
-static int testTolower(char c){
+int testTolower(char c){
   char ret = c;
   if( ret>='A' && ret<='Z') ret = ret - ('A'-'a');
   return ret;
 }
 
-static int testTokenizerNext(
+int testTokenizerNext(
   sqlite3_tokenizer_cursor *pCursor,  /* Cursor returned by testTokenizerOpen */
   const char **ppToken,               /* OUT: *ppToken is the token text */
   int *pnBytes,                       /* OUT: Number of bytes in token */
@@ -478,7 +478,7 @@ static int testTokenizerNext(
   return rc;
 }
 
-static int testTokenizerLanguage(
+int testTokenizerLanguage(
   sqlite3_tokenizer_cursor *pCursor,
   int iLangid
 ){
@@ -492,14 +492,14 @@ static int testTokenizerLanguage(
 }
 #endif
 
-static int SQLITE_TCLAPI fts3_test_tokenizer_cmd(
+int SQLITE_TCLAPI fts3_test_tokenizer_cmd(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
 #ifdef SQLITE_ENABLE_FTS3
-  static const sqlite3_tokenizer_module testTokenizerModule = {
+  const sqlite3_tokenizer_module testTokenizerModule = {
     1,
     testTokenizerCreate,
     testTokenizerDestroy,
@@ -521,7 +521,7 @@ static int SQLITE_TCLAPI fts3_test_tokenizer_cmd(
   return TCL_OK;
 }
 
-static int SQLITE_TCLAPI fts3_test_varint_cmd(
+int SQLITE_TCLAPI fts3_test_varint_cmd(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -576,7 +576,7 @@ static int SQLITE_TCLAPI fts3_test_varint_cmd(
 **
 ** Set or clear the global "may-be-corrupt" flag. Return the old value.
 */
-static int SQLITE_TCLAPI fts3_may_be_corrupt(
+int SQLITE_TCLAPI fts3_may_be_corrupt(
   void * clientData,
   Tcl_Interp *interp,
   int objc,

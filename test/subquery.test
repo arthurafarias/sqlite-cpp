@@ -453,7 +453,7 @@ do_test subquery-4.2.2 {
 # to see if they match any column names.  If there is not column name
 # match then those literals are used a string constants.  When a
 # double-quoted string appears, we want to make sure that the search
-# for a matching column name did not cause an otherwise static subquery
+# for a matching column name did not cause an otherwise subquery
 # to become a dynamic (correlated) subquery.
 #
 do_test subquery-5.1 {

@@ -51,7 +51,7 @@
 /*
 ** This is the is the SQL that is run against the database.
 */
-static const char *azSql[] = {
+const char *azSql[] = {
   "PRAGMA integrity_check;",
   "SELECT * FROM sqlite_schema;",
   "SELECT sum(length(name)) FROM dbstat;",
@@ -68,36 +68,36 @@ static const char *azSql[] = {
 int eVerbosity = 0;
 
 /* True to activate PRAGMA vdbe_debug=on */
-static int bVdbeDebug = 0;
+int bVdbeDebug = 0;
 
 /* Maximum size of the in-memory database file */
-static sqlite3_int64 szMax = 104857600;
+sqlite3_int64 szMax = 104857600;
 
 /* Progress handler callback data */
-static int nCb = 0;                  /* Number of callbacks seen so far */
-static int mxCb = 250000;            /* Maximum allowed callbacks */
+int nCb = 0;                  /* Number of callbacks seen so far */
+int mxCb = 250000;            /* Maximum allowed callbacks */
 
 /***** Copy/paste from ext/misc/memtrace.c ***************************/
 /* The original memory allocation routines */
-static sqlite3_mem_methods memtraceBase;
-static FILE *memtraceOut;
+sqlite3_mem_methods memtraceBase;
+FILE *memtraceOut;
 
 /* Methods that trace memory allocations */
-static void *memtraceMalloc(int n){
+void *memtraceMalloc(int n){
   if( memtraceOut ){
     fprintf(memtraceOut, "MEMTRACE: allocate %d bytes\n", 
             memtraceBase.xRoundup(n));
   }
   return memtraceBase.xMalloc(n);
 }
-static void memtraceFree(void *p){
+void memtraceFree(void *p){
   if( p==0 ) return;
   if( memtraceOut ){
     fprintf(memtraceOut, "MEMTRACE: free %d bytes\n", memtraceBase.xSize(p));
   }
   memtraceBase.xFree(p);
 }
-static void *memtraceRealloc(void *p, int n){
+void *memtraceRealloc(void *p, int n){
   if( p==0 ) return memtraceMalloc(n);
   if( n==0 ){
     memtraceFree(p);
@@ -109,21 +109,21 @@ static void *memtraceRealloc(void *p, int n){
   }
   return memtraceBase.xRealloc(p, n);
 }
-static int memtraceSize(void *p){
+int memtraceSize(void *p){
   return memtraceBase.xSize(p);
 }
-static int memtraceRoundup(int n){
+int memtraceRoundup(int n){
   return memtraceBase.xRoundup(n);
 }
-static int memtraceInit(void *p){
+int memtraceInit(void *p){
   return memtraceBase.xInit(p);
 }
-static void memtraceShutdown(void *p){
+void memtraceShutdown(void *p){
   memtraceBase.xShutdown(p);
 }
 
 /* The substitute memory allocator */
-static sqlite3_mem_methods ersaztMethods = {
+sqlite3_mem_methods ersaztMethods = {
   memtraceMalloc,
   memtraceFree,
   memtraceRealloc,
@@ -166,7 +166,7 @@ int sqlite3MemTraceDeactivate(void){
 ** Count the number of callbacks and cause an abort once the limit is
 ** reached.
 */
-static int progress_handler(void *pNotUsed){
+int progress_handler(void *pNotUsed){
   nCb++;
   if( nCb<mxCb ) return 0;
   if( eVerbosity>=1 ){
@@ -245,7 +245,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *aData, size_t nByte){
 ** Return the number of "v" characters in a string.  Return 0 if there
 ** are any characters in the string other than "v".
 */
-static int numberOfVChar(const char *z){
+int numberOfVChar(const char *z){
   int N = 0;
   while( z[0] && z[0]=='v' ){
     z++;
@@ -351,7 +351,7 @@ int LLVMFuzzerInitialize(int *pArgc, char ***pArgv){
 ** Read an entire file into memory.  Space to hold the file comes
 ** from malloc().
 */
-static unsigned char *readFile(const char *zName, int *pnByte){
+unsigned char *readFile(const char *zName, int *pnByte){
   FILE *in = fopen(zName, "rb");
   long nIn;
   size_t nRead;

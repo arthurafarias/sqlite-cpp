@@ -20,7 +20,7 @@
 */
 
 
-static char *vacuum1_thread_writer(int iTid, void *pArg){
+char *vacuum1_thread_writer(int iTid, void *pArg){
   Error err = {0};                /* Error code and message */
   Sqlite db = {0};                /* SQLite database connection */
   i64 i = 0;
@@ -49,7 +49,7 @@ static char *vacuum1_thread_writer(int iTid, void *pArg){
   return sqlite3_mprintf("ok");
 }
 
-static char *vacuum1_thread_vacuumer(int iTid, void *pArg){
+char *vacuum1_thread_vacuumer(int iTid, void *pArg){
   Error err = {0};                /* Error code and message */
   Sqlite db = {0};                /* SQLite database connection */
   opendb(&err, &db, "test.db", 0);
@@ -64,7 +64,7 @@ static char *vacuum1_thread_vacuumer(int iTid, void *pArg){
   return sqlite3_mprintf("ok");
 }
 
-static void vacuum1(int nMs){
+void vacuum1(int nMs){
   Error err = {0};
   Sqlite db = {0};
   Threadset threads = {0};

@@ -51,7 +51,7 @@ struct CInstIter {
 ** Advance the iterator to the next coalesced phrase instance. Return
 ** an SQLite error code if an error occurs, or SQLITE_OK otherwise.
 */
-static int fts5CInstIterNext(CInstIter *pIter){
+int fts5CInstIterNext(CInstIter *pIter){
   int rc = SQLITE_OK;
   pIter->iStart = -1;
   pIter->iEnd = -1;
@@ -82,7 +82,7 @@ static int fts5CInstIterNext(CInstIter *pIter){
 ** Initialize the iterator object indicated by the final parameter to 
 ** iterate through coalesced phrase instances in column iCol.
 */
-static int fts5CInstIterInit(
+int fts5CInstIterInit(
   const Fts5ExtensionApi *pApi,
   Fts5Context *pFts,
   int iCol,
@@ -135,7 +135,7 @@ struct HighlightContext {
 ** called, it is a no-op. If an error (i.e. an OOM condition) is encountered, 
 ** *pRc is set to an error code before returning. 
 */
-static void fts5HighlightAppend(
+void fts5HighlightAppend(
   int *pRc, 
   HighlightContext *p, 
   const char *z, int n
@@ -150,7 +150,7 @@ static void fts5HighlightAppend(
 /*
 ** Tokenizer callback used by implementation of highlight() function.
 */
-static int fts5HighlightCb(
+int fts5HighlightCb(
   void *pContext,                 /* Pointer to HighlightContext object */
   int tflags,                     /* Mask of FTS5_TOKEN_* flags */
   const char *pToken,             /* Buffer containing token */
@@ -230,7 +230,7 @@ static int fts5HighlightCb(
 /*
 ** Implementation of highlight() function.
 */
-static void fts5HighlightFunction(
+void fts5HighlightFunction(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   sqlite3_context *pCtx,          /* Context for returning result/error */
@@ -306,7 +306,7 @@ struct Fts5SFinder {
 ** necessary. Return SQLITE_OK if successful, or SQLITE_NOMEM if an
 ** error occurs.
 */
-static int fts5SentenceFinderAdd(Fts5SFinder *p, int iAdd){
+int fts5SentenceFinderAdd(Fts5SFinder *p, int iAdd){
   if( p->nFirstAlloc==p->nFirst ){
     int nNew = p->nFirstAlloc ? p->nFirstAlloc*2 : 64;
     int *aNew;
@@ -325,7 +325,7 @@ static int fts5SentenceFinderAdd(Fts5SFinder *p, int iAdd){
 ** function. Its job is to identify tokens that are the first in a sentence.
 ** For each such token, an entry is added to the SFinder.aFirst[] array.
 */
-static int fts5SentenceFinderCb(
+int fts5SentenceFinderCb(
   void *pContext,                 /* Pointer to HighlightContext object */
   int tflags,                     /* Mask of FTS5_TOKEN_* flags */
   const char *pToken,             /* Buffer containing token */
@@ -358,7 +358,7 @@ static int fts5SentenceFinderCb(
   return rc;
 }
 
-static int fts5SnippetScore(
+int fts5SnippetScore(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   int nDocsize,                   /* Size of column in tokens */
@@ -404,10 +404,10 @@ static int fts5SnippetScore(
 
 /*
 ** Return the value in pVal interpreted as utf-8 text. Except, if pVal 
-** contains a NULL value, return a pointer to a static string zero
+** contains a NULL value, return a pointer to a string zero
 ** bytes in length instead of a NULL pointer.
 */
-static const char *fts5ValueToText(sqlite3_value *pVal){
+const char *fts5ValueToText(sqlite3_value *pVal){
   const char *zRet = (const char*)sqlite3_value_text(pVal);
   return zRet ? zRet : "";
 }
@@ -415,7 +415,7 @@ static const char *fts5ValueToText(sqlite3_value *pVal){
 /*
 ** Implementation of snippet() function.
 */
-static void fts5SnippetFunction(
+void fts5SnippetFunction(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   sqlite3_context *pCtx,          /* Context for returning result/error */
@@ -601,7 +601,7 @@ struct Fts5Bm25Data {
 ** Callback used by fts5Bm25GetData() to count the number of rows in the
 ** table matched by each individual phrase within the query.
 */
-static int fts5CountCb(
+int fts5CountCb(
   const Fts5ExtensionApi *pApi, 
   Fts5Context *pFts,
   void *pUserData                 /* Pointer to sqlite3_int64 variable */
@@ -617,7 +617,7 @@ static int fts5CountCb(
 ** If the object has not already been allocated, allocate and populate it
 ** now.
 */
-static int fts5Bm25GetData(
+int fts5Bm25GetData(
   const Fts5ExtensionApi *pApi, 
   Fts5Context *pFts,
   Fts5Bm25Data **ppData           /* OUT: bm25-data object for this query */
@@ -690,7 +690,7 @@ static int fts5Bm25GetData(
 /*
 ** Implementation of bm25() function.
 */
-static void fts5Bm25Function(
+void fts5Bm25Function(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   sqlite3_context *pCtx,          /* Context for returning result/error */
@@ -749,7 +749,7 @@ static void fts5Bm25Function(
 /*
 ** Implementation of fts5_get_locale() function.
 */
-static void fts5GetLocaleFunction(
+void fts5GetLocaleFunction(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   sqlite3_context *pCtx,          /* Context for returning result/error */

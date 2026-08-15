@@ -25,7 +25,7 @@
 # 5. The template VSIX file (which is basically a zip file) must be located in
 #    a "win" directory inside the directory containing this script.  It should
 #    not contain any executable binaries.  It should only contain dynamic
-#    textual content files to be processed using [subst] and/or static content
+#    textual content files to be processed using [subst] and/or content
 #    files to be copied verbatim.
 #
 # 6. The executable and other compiled binary files to be packaged into the

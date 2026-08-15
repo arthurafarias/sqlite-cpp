@@ -148,7 +148,7 @@ struct PercentileFunc {
   char mxFrac;         /* Maximum value of the "fraction" input */
   char bDiscrete;      /* True for percentile_disc() */
 };
-static const PercentileFunc aPercentFunc[] = {
+const PercentileFunc aPercentFunc[] = {
   { "median",           1,   1, 0 },
   { "percentile",       2, 100, 0 },
   { "percentile_cont",  2,   1, 0 },
@@ -158,7 +158,7 @@ static const PercentileFunc aPercentFunc[] = {
 /*
 ** Return TRUE if the input floating-point number is an infinity.
 */
-static int percentIsInfinity(double r){
+int percentIsInfinity(double r){
   sqlite3_uint64 u;
   assert( sizeof(u)==sizeof(r) );
   memcpy(&u, &r, sizeof(u));
@@ -168,7 +168,7 @@ static int percentIsInfinity(double r){
 /*
 ** Return TRUE if two doubles differ by 0.001 or less.
 */
-static int percentSameValue(double a, double b){
+int percentSameValue(double a, double b){
   a -= b;
   return a>=-0.001 && a<=0.001;
 }
@@ -184,7 +184,7 @@ static int percentSameValue(double a, double b){
 ** order.  The smallest return value in this case will be 0, and
 ** the largest return value will be p->nUsed.
 */
-static int percentBinarySearch(Percentile *p, double y, int bExact){
+int percentBinarySearch(Percentile *p, double y, int bExact){
   int iFirst = 0;              /* First element of search range */
   int iLast = p->nUsed - 1;    /* Last element of search range */
   while( iLast>=iFirst ){
@@ -209,7 +209,7 @@ static int percentBinarySearch(Percentile *p, double y, int bExact){
 ** (with two '%' characters).  That substring will be replaced by the name
 ** of the function.
 */
-static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
+void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
   PercentileFunc *pFunc = (PercentileFunc*)sqlite3_user_data(pCtx);
   char *zMsg1;
   char *zMsg2;
@@ -228,7 +228,7 @@ static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
 ** The "step" function for percentile(Y,P) is called once for each
 ** input row.
 */
-static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
+void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
   Percentile *p;
   double rPct;
   int eType;
@@ -335,7 +335,7 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 **    (2)  To avoid the function call to the comparison routine for each
 **         comparison.
 */
-static void percentSort(double *a, unsigned int n){
+void percentSort(double *a, unsigned int n){
   int iLt;  /* Entries before a[iLt] are less than rPivot */
   int iGt;  /* Entries at or after a[iGt] are greater than rPivot */
   int i;         /* Loop counter */
@@ -386,7 +386,7 @@ static void percentSort(double *a, unsigned int n){
 ** The "inverse" function for percentile(Y,P) is called to remove a
 ** row that was previously inserted by "step".
 */
-static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
+void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
   Percentile *p;
   int eType;
   double y;
@@ -433,7 +433,7 @@ static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
 ** Compute the final output of percentile().  Clean up all allocated
 ** memory if and only if bIsFinal is true.
 */
-static void percentCompute(sqlite3_context *pCtx, int bIsFinal){
+void percentCompute(sqlite3_context *pCtx, int bIsFinal){
   Percentile *p;
   PercentileFunc *pFunc = (PercentileFunc*)sqlite3_user_data(pCtx);
   unsigned i1, i2;
@@ -467,10 +467,10 @@ static void percentCompute(sqlite3_context *pCtx, int bIsFinal){
     p->bKeepSorted = 1;
   }
 }
-static void percentFinal(sqlite3_context *pCtx){
+void percentFinal(sqlite3_context *pCtx){
   percentCompute(pCtx, 1);
 }
-static void percentValue(sqlite3_context *pCtx){
+void percentValue(sqlite3_context *pCtx){
   percentCompute(pCtx, 0);
 }
 

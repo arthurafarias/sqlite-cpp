@@ -74,7 +74,7 @@ struct Fts3tokCursor {
 /*
 ** Query FTS for the tokenizer implementation named zName.
 */
-static int fts3tokQueryTokenizer(
+int fts3tokQueryTokenizer(
   Fts3Hash *pHash,
   const char *zName,
   const sqlite3_tokenizer_module **pp,
@@ -105,7 +105,7 @@ static int fts3tokQueryTokenizer(
 ** in this case. Or, if an error occurs, an SQLite error code is returned.
 ** The final value of *pazDequote is undefined in this case.
 */
-static int fts3tokDequoteArray(
+int fts3tokDequoteArray(
   int argc,                       /* Number of elements in argv[] */
   const char * const *argv,       /* Input array */
   char ***pazDequote              /* Output array */
@@ -155,7 +155,7 @@ static int fts3tokDequoteArray(
 **   argv[2]: table name
 **   argv[3]: first argument (tokenizer name)
 */
-static int fts3tokConnectMethod(
+int fts3tokConnectMethod(
   sqlite3 *db,                    /* Database connection */
   void *pHash,                    /* Hash table of tokenizers */
   int argc,                       /* Number of elements in argv array */
@@ -220,7 +220,7 @@ static int fts3tokConnectMethod(
 ** These tables have no persistent representation of their own, so xDisconnect
 ** and xDestroy are identical operations.
 */
-static int fts3tokDisconnectMethod(sqlite3_vtab *pVtab){
+int fts3tokDisconnectMethod(sqlite3_vtab *pVtab){
   Fts3tokTable *pTab = (Fts3tokTable *)pVtab;
 
   pTab->pMod->xDestroy(pTab->pTok);
@@ -231,7 +231,7 @@ static int fts3tokDisconnectMethod(sqlite3_vtab *pVtab){
 /*
 ** xBestIndex - Analyze a WHERE and ORDER BY clause.
 */
-static int fts3tokBestIndexMethod(
+int fts3tokBestIndexMethod(
   sqlite3_vtab *pVTab, 
   sqlite3_index_info *pInfo
 ){
@@ -260,7 +260,7 @@ static int fts3tokBestIndexMethod(
 /*
 ** xOpen - Open a cursor.
 */
-static int fts3tokOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
+int fts3tokOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
   Fts3tokCursor *pCsr;
   UNUSED_PARAMETER(pVTab);
 
@@ -278,7 +278,7 @@ static int fts3tokOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
 ** Reset the tokenizer cursor passed as the only argument. As if it had
 ** just been returned by fts3tokOpenMethod().
 */
-static void fts3tokResetCursor(Fts3tokCursor *pCsr){
+void fts3tokResetCursor(Fts3tokCursor *pCsr){
   if( pCsr->pCsr ){
     Fts3tokTable *pTab = (Fts3tokTable *)(pCsr->base.pVtab);
     pTab->pMod->xClose(pCsr->pCsr);
@@ -297,7 +297,7 @@ static void fts3tokResetCursor(Fts3tokCursor *pCsr){
 /*
 ** xClose - Close a cursor.
 */
-static int fts3tokCloseMethod(sqlite3_vtab_cursor *pCursor){
+int fts3tokCloseMethod(sqlite3_vtab_cursor *pCursor){
   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;
 
   fts3tokResetCursor(pCsr);
@@ -308,7 +308,7 @@ static int fts3tokCloseMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xNext - Advance the cursor to the next row, if any.
 */
-static int fts3tokNextMethod(sqlite3_vtab_cursor *pCursor){
+int fts3tokNextMethod(sqlite3_vtab_cursor *pCursor){
   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;
   Fts3tokTable *pTab = (Fts3tokTable *)(pCursor->pVtab);
   int rc;                         /* Return code */
@@ -330,7 +330,7 @@ static int fts3tokNextMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xFilter - Initialize a cursor to point at the start of its data.
 */
-static int fts3tokFilterMethod(
+int fts3tokFilterMethod(
   sqlite3_vtab_cursor *pCursor,   /* The cursor used for this query */
   int idxNum,                     /* Strategy index */
   const char *idxStr,             /* Unused */
@@ -367,7 +367,7 @@ static int fts3tokFilterMethod(
 /*
 ** xEof - Return true if the cursor is at EOF, or false otherwise.
 */
-static int fts3tokEofMethod(sqlite3_vtab_cursor *pCursor){
+int fts3tokEofMethod(sqlite3_vtab_cursor *pCursor){
   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;
   return (pCsr->zToken==0);
 }
@@ -375,7 +375,7 @@ static int fts3tokEofMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xColumn - Return a column value.
 */
-static int fts3tokColumnMethod(
+int fts3tokColumnMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite3_context *pCtx,          /* Context for sqlite3_result_xxx() calls */
   int iCol                        /* Index of column to read value from */
@@ -407,7 +407,7 @@ static int fts3tokColumnMethod(
 /*
 ** xRowid - Return the current rowid for the cursor.
 */
-static int fts3tokRowidMethod(
+int fts3tokRowidMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite_int64 *pRowid            /* OUT: Rowid value */
 ){
@@ -421,7 +421,7 @@ static int fts3tokRowidMethod(
 ** if successful or an error code if sqlite3_create_module() fails.
 */
 int sqlite3Fts3InitTok(sqlite3 *db, Fts3Hash *pHash, void(*xDestroy)(void*)){
-  static const sqlite3_module fts3tok_module = {
+  const sqlite3_module fts3tok_module = {
      0,                           /* iVersion      */
      fts3tokConnectMethod,        /* xCreate       */
      fts3tokConnectMethod,        /* xConnect      */

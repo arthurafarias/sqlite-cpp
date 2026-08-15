@@ -37,7 +37,7 @@
 /*
 ** Print sketchy documentation for this utility program
 */
-static void showHelp(const char *zArgv0){
+void showHelp(const char *zArgv0){
   printf("Usage: %s [options] DATABASE ...\n", zArgv0);
   printf(
 "Read databases into an in-memory filesystem.  Run test SQL as specified\n"
@@ -61,7 +61,7 @@ static void showHelp(const char *zArgv0){
 /*
 ** Print an error message and quit.
 */
-static void fatalError(const char *zFormat, ...){
+void fatalError(const char *zFormat, ...){
   va_list ap;
   va_start(ap, zFormat);
   vfprintf(stderr, zFormat, ap);
@@ -99,7 +99,7 @@ struct VHandle {
 /*
 ** All global variables are gathered into the "g" singleton.
 */
-static struct GlobalVars {
+struct GlobalVars {
   VFile aFile[MX_FILE];            /* The virtual filesystem */
 } g;
 
@@ -107,7 +107,7 @@ static struct GlobalVars {
 /*
 ** Initialize the virtual file system.
 */
-static void formatVfs(void){
+void formatVfs(void){
   int i;
   for(i=0; i<MX_FILE; i++){
     g.aFile[i].sz = -1;
@@ -121,7 +121,7 @@ static void formatVfs(void){
 /*
 ** Erase all information in the virtual file system.
 */
-static void reformatVfs(void){
+void reformatVfs(void){
   int i;
   for(i=0; i<MX_FILE; i++){
     if( g.aFile[i].sz<0 ) continue;
@@ -142,7 +142,7 @@ static void reformatVfs(void){
 /*
 ** Find a VFile by name
 */
-static VFile *findVFile(const char *zName){
+VFile *findVFile(const char *zName){
   int i;
   if( zName==0 ) return 0;
   for(i=0; i<MX_FILE; i++){
@@ -158,7 +158,7 @@ static VFile *findVFile(const char *zName){
 **
 ** Return NULL if the filesystem is full.
 */
-static VFile *createVFile(const char *zName, const char *zDiskFile){
+VFile *createVFile(const char *zName, const char *zDiskFile){
   VFile *pNew = findVFile(zName);
   int i;
   FILE *in = 0;
@@ -205,7 +205,7 @@ static VFile *createVFile(const char *zName, const char *zDiskFile){
 
 /* Methods for the VHandle object
 */
-static int inmemClose(sqlite3_file *pFile){
+int inmemClose(sqlite3_file *pFile){
   VHandle *p = (VHandle*)pFile;
   VFile *pVFile = p->pVFile;
   pVFile->nRef--;
@@ -216,7 +216,7 @@ static int inmemClose(sqlite3_file *pFile){
   }
   return SQLITE_OK;
 }
-static int inmemRead(
+int inmemRead(
   sqlite3_file *pFile,   /* Read from this open file */
   void *pData,           /* Store content in this buffer */
   int iAmt,              /* Bytes of content */
@@ -237,7 +237,7 @@ static int inmemRead(
   memcpy(pData, pVFile->a + iOfst, iAmt);
   return SQLITE_OK;
 }
-static int inmemWrite(
+int inmemWrite(
   sqlite3_file *pFile,   /* Write to this file */
   const void *pData,     /* Content to write */
   int iAmt,              /* bytes to write */
@@ -263,36 +263,36 @@ static int inmemWrite(
   memcpy(pVFile->a + iOfst, pData, iAmt);
   return SQLITE_OK;
 }
-static int inmemTruncate(sqlite3_file *pFile, sqlite3_int64 iSize){
+int inmemTruncate(sqlite3_file *pFile, sqlite3_int64 iSize){
   VHandle *pHandle = (VHandle*)pFile;
   VFile *pVFile = pHandle->pVFile;
   if( pVFile->sz>iSize && iSize>=0 ) pVFile->sz = (int)iSize;
   return SQLITE_OK;
 }
-static int inmemSync(sqlite3_file *pFile, int flags){
+int inmemSync(sqlite3_file *pFile, int flags){
   return SQLITE_OK;
 }
-static int inmemFileSize(sqlite3_file *pFile, sqlite3_int64 *pSize){
+int inmemFileSize(sqlite3_file *pFile, sqlite3_int64 *pSize){
   *pSize = ((VHandle*)pFile)->pVFile->sz;
   return SQLITE_OK;
 }
-static int inmemLock(sqlite3_file *pFile, int type){
+int inmemLock(sqlite3_file *pFile, int type){
   return SQLITE_OK;
 }
-static int inmemUnlock(sqlite3_file *pFile, int type){
+int inmemUnlock(sqlite3_file *pFile, int type){
   return SQLITE_OK;
 }
-static int inmemCheckReservedLock(sqlite3_file *pFile, int *pOut){
+int inmemCheckReservedLock(sqlite3_file *pFile, int *pOut){
   *pOut = 0;
   return SQLITE_OK;
 }
-static int inmemFileControl(sqlite3_file *pFile, int op, void *pArg){
+int inmemFileControl(sqlite3_file *pFile, int op, void *pArg){
   return SQLITE_NOTFOUND;
 }
-static int inmemSectorSize(sqlite3_file *pFile){
+int inmemSectorSize(sqlite3_file *pFile){
   return 512;
 }
-static int inmemDeviceCharacteristics(sqlite3_file *pFile){
+int inmemDeviceCharacteristics(sqlite3_file *pFile){
   return
       SQLITE_IOCAP_SAFE_APPEND |
       SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN |
@@ -302,7 +302,7 @@ static int inmemDeviceCharacteristics(sqlite3_file *pFile){
 
 /* Method table for VHandle
 */
-static sqlite3_io_methods VHandleMethods = {
+sqlite3_io_methods VHandleMethods = {
   /* iVersion    */  1,
   /* xClose      */  inmemClose,
   /* xRead       */  inmemRead,
@@ -328,7 +328,7 @@ static sqlite3_io_methods VHandleMethods = {
 ** Open a new file in the inmem VFS.  All files are anonymous and are
 ** delete-on-close.
 */
-static int inmemOpen(
+int inmemOpen(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   sqlite3_file *pFile,
@@ -350,7 +350,7 @@ static int inmemOpen(
 /*
 ** Delete a file by name
 */
-static int inmemDelete(
+int inmemDelete(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   int syncdir
@@ -370,7 +370,7 @@ static int inmemDelete(
 
 /* Check for the existence of a file
 */
-static int inmemAccess(
+int inmemAccess(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   int flags,
@@ -383,7 +383,7 @@ static int inmemAccess(
 
 /* Get the canonical pathname for a file
 */
-static int inmemFullPathname(
+int inmemFullPathname(
   sqlite3_vfs *pVfs,
   const char *zFilename,
   int nOut,
@@ -396,8 +396,8 @@ static int inmemFullPathname(
 /*
 ** Register the VFS that reads from the g.aFile[] set of files.
 */
-static void inmemVfsRegister(void){
-  static sqlite3_vfs inmemVfs;
+void inmemVfsRegister(void){
+  sqlite3_vfs inmemVfs;
   sqlite3_vfs *pDefault = sqlite3_vfs_find(0);
   inmemVfs.iVersion = 3;
   inmemVfs.szOsFile = sizeof(VHandle);
@@ -417,7 +417,7 @@ static void inmemVfsRegister(void){
 ** Timeout handler
 */
 #ifdef __unix__
-static void timeoutHandler(int NotUsed){
+void timeoutHandler(int NotUsed){
   (void)NotUsed;
   fatalError("timeout\n");
 }
@@ -427,7 +427,7 @@ static void timeoutHandler(int NotUsed){
 ** Set the an alarm to go off after N seconds.  Disable the alarm
 ** if N==0
 */
-static void setAlarm(int N){
+void setAlarm(int N){
 #ifdef __unix__
   alarm(N);
 #else
@@ -446,12 +446,12 @@ struct Str {
 };
 
 /* Initialize a Str object */
-static void StrInit(Str *p){
+void StrInit(Str *p){
   memset(p, 0, sizeof(*p));
 }
 
 /* Append text to the end of a Str object */
-static void StrAppend(Str *p, const char *z){
+void StrAppend(Str *p, const char *z){
   sqlite3_uint64 n = strlen(z);
   if( p->n + n >= p->nAlloc ){
     char *zNew;
@@ -474,12 +474,12 @@ static void StrAppend(Str *p, const char *z){
 }
 
 /* Return the current string content */
-static char *StrStr(Str *p){
+char *StrStr(Str *p){
  return p->z;
 }
 
 /* Free the string */
-static void StrFree(Str *p){
+void StrFree(Str *p){
   sqlite3_free(p->z);
   StrInit(p);
 }
@@ -488,7 +488,7 @@ static void StrFree(Str *p){
 ** Return the value of a hexadecimal digit.  Return -1 if the input
 ** is not a hex digit.
 */
-static int hexDigitValue(char c){
+int hexDigitValue(char c){
   if( c>='0' && c<='9' ) return c - '0';
   if( c>='a' && c<='f' ) return c - 'a' + 10;
   if( c>='A' && c<='F' ) return c - 'A' + 10;
@@ -498,9 +498,9 @@ static int hexDigitValue(char c){
 /*
 ** Interpret zArg as an integer value, possibly with suffixes.
 */
-static int integerValue(const char *zArg){
+int integerValue(const char *zArg){
   sqlite3_int64 v = 0;
-  static const struct { char *zSuffix; int iMult; } aMult[] = {
+  const struct { char *zSuffix; int iMult; } aMult[] = {
     { "KiB", 1024 },
     { "MiB", 1024*1024 },
     { "GiB", 1024*1024*1024 },
@@ -545,7 +545,7 @@ static int integerValue(const char *zArg){
 /*
 ** This callback is invoked by sqlite3_log().
 */
-static void sqlLog(void *pNotUsed, int iErrCode, const char *zMsg){
+void sqlLog(void *pNotUsed, int iErrCode, const char *zMsg){
   printf("LOG: (%d) %s\n", iErrCode, zMsg);
   fflush(stdout);
 }
@@ -559,7 +559,7 @@ static void sqlLog(void *pNotUsed, int iErrCode, const char *zMsg){
 ** *pVdbeLimitFlag is true if the --limit-vdbe command-line option is used.
 ** In that case, hitting the progress handler is a fatal error.
 */
-static int progressHandler(void *pVdbeLimitFlag){
+int progressHandler(void *pVdbeLimitFlag){
   if( *(int*)pVdbeLimitFlag ) fatalError("too many VDBE cycles");
   return 1;
 }
@@ -575,7 +575,7 @@ static int progressHandler(void *pVdbeLimitFlag){
 ** Run multiple commands of SQL.  Similar to sqlite3_exec(), but does not
 ** stop if an error is encountered.
 */
-static void runSql(sqlite3 *db, const char *zSql, unsigned  runFlags){
+void runSql(sqlite3 *db, const char *zSql, unsigned  runFlags){
   const char *zMore;
   const char *zEnd = &zSql[strlen(zSql)];
   sqlite3_stmt *pStmt;

@@ -44,19 +44,19 @@ typedef struct Prng {
 } Prng;
 
 /* Reseed the PRNG */
-static void prngSeed(Prng *p, unsigned int iSeed){
+void prngSeed(Prng *p, unsigned int iSeed){
   p->x = iSeed | 1;
   p->y = iSeed;
 }
 
 /* Extract a random number */
-static unsigned int prngInt(Prng *p){
+unsigned int prngInt(Prng *p){
   p->x = (p->x>>1) ^ ((1+~(p->x&1)) & 0xd0000001);
   p->y = p->y*1103515245 + 12345;
   return p->x ^ p->y;
 }
 
-static char *azJsonAtoms[] = {
+char *azJsonAtoms[] = {
   /* JSON                    JSON-5 */
   "0",                       "0",
   "1",                       "1",
@@ -101,7 +101,7 @@ static char *azJsonAtoms[] = {
   "\"y\\uXXXXz\"",           "\"y\\uXXXXz\"",
   "\"\"",                    "\"\"",
 };
-static char *azJsonTemplate[] = {
+char *azJsonTemplate[] = {
   /* JSON                                      JSON-5 */
   "{\"a\":%,\"b\":%,\"cDD\":%}",               "{a:%,b:%,cDD:%}",
   "{\"a\":%,\"b\":%,\"c\":%,\"d\":%,\"e\":%}", "{a:%,b:%,c:%,d:%,e:%}",
@@ -123,7 +123,7 @@ static char *azJsonTemplate[] = {
 
 #define STRSZ 10000
 
-static void jsonExpand(
+void jsonExpand(
   const char *zSrc,
   char *zDest,
   Prng *p,
@@ -192,7 +192,7 @@ static void jsonExpand(
   if( j<STRSZ ) zDest[j] = 0;
 }
 
-static void randJsonFunc(
+void randJsonFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -219,8 +219,8 @@ int sqlite3_randomjson_init(
   char **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
-  static int cOne = 1;
-  static int cZero = 0;
+  int cOne = 1;
+  int cZero = 0;
   int rc = SQLITE_OK;
 #ifdef SQLITE_STATIC_RANDOMJSON
   (void)pApi;      /* Unused parameter */

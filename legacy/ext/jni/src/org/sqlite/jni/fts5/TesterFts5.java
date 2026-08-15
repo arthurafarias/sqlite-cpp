@@ -13,14 +13,14 @@
 */
 package org.sqlite.jni.fts5;
 import java.util.*;
-import static org.sqlite.jni.capi.CApi.*;
-import static org.sqlite.jni.capi.Tester1.*;
+import org.sqlite.jni.capi.CApi.*;
+import org.sqlite.jni.capi.Tester1.*;
 import org.sqlite.jni.capi.*;
 import java.nio.charset.StandardCharsets;
 
 public class TesterFts5 {
 
-  private static void test1(){
+  private void test1(){
     final Fts5ExtensionApi fea = Fts5ExtensionApi.getInstance();
     affirm( null != fea );
     affirm( fea.getNativePointer() != 0 );
@@ -86,7 +86,7 @@ public class TesterFts5 {
   ** an array of strings. If an error does occur, a RuntimeException is 
   ** thrown.
   */
-  private static String[] sqlite3_exec(sqlite3 db, String sql) {
+  private String[] sqlite3_exec(sqlite3 db, String sql) {
     List<String> aOut = new ArrayList<>();
 
     /* Iterate through the list of SQL statements. For each, step through
@@ -119,13 +119,13 @@ public class TesterFts5 {
   **   do_execsql_test(db, "SELECT 'abc'", "[abc]");
   **
   */
-  private static void do_execsql_test(sqlite3 db, String sql, String expect) {
+  private void do_execsql_test(sqlite3 db, String sql, String expect) {
     String res = Arrays.toString( sqlite3_exec(db, sql) );
     affirm( res.equals(expect),
       "got {" + res + "} expected {" + expect + "}"
     );
   }
-  private static void do_execsql_test(sqlite3 db, String sql){
+  private void do_execsql_test(sqlite3 db, String sql){
     do_execsql_test(db, sql, "[]");
   }
 
@@ -135,7 +135,7 @@ public class TesterFts5 {
   **     fts5_rowid()
   **     fts5_columncount()
   */
-  private static void create_test_functions(sqlite3 db){
+  private void create_test_functions(sqlite3 db){
     /*
     ** A user-defined-function fts5_rowid() that uses xRowid()
     */
@@ -563,7 +563,7 @@ public class TesterFts5 {
   /* 
   ** Test of various Fts5ExtensionApi methods 
   */
-  private static void test2(){
+  private void test2(){
 
     /* Open db and populate an fts5 table */
     sqlite3 db = createNewDb();
@@ -674,7 +674,7 @@ public class TesterFts5 {
   /* 
   ** Test of various Fts5ExtensionApi methods 
   */
-  private static void test3(){
+  private void test3(){
 
     /* Open db and populate an fts5 table */
     sqlite3 db = createNewDb();
@@ -709,7 +709,7 @@ public class TesterFts5 {
   /* 
   ** Test of various Fts5ExtensionApi methods 
   */
-  private static void test4(){
+  private void test4(){
 
     /* Open db and populate an fts5 table */
     sqlite3 db = createNewDb();
@@ -787,7 +787,7 @@ public class TesterFts5 {
     sqlite3_close_v2(db);
   }
 
-  private static void test5(){
+  private void test5(){
     /* Open db and populate an fts5 table */
     sqlite3 db = createNewDb();
     create_test_functions(db);
@@ -806,7 +806,7 @@ public class TesterFts5 {
     sqlite3_close_v2(db);
   }
 
-  private static void test6(){
+  private void test6(){
     sqlite3 db = createNewDb();
     create_test_functions(db);
     do_execsql_test(db, 
@@ -826,7 +826,7 @@ public class TesterFts5 {
     sqlite3_close_v2(db);
   }
 
-  private static synchronized void runTests(){
+  private synchronized void runTests(){
     test1();
     test2();
     test3();

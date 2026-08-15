@@ -12,7 +12,7 @@
 ** This file contains a set of tests for the sqlite3 JNI bindings.
 */
 package org.sqlite.jni.capi;
-import static org.sqlite.jni.capi.CApi.*;
+import org.sqlite.jni.capi.CApi.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -47,22 +47,22 @@ import java.util.concurrent.Executors;
 
 public class Tester1 implements Runnable {
   //! True when running in multi-threaded mode.
-  private static boolean mtMode = false;
+  private boolean mtMode = false;
   //! True to sleep briefly between tests.
-  private static boolean takeNaps = false;
+  private boolean takeNaps = false;
   //! True to shuffle the order of the tests.
-  private static boolean shuffle = false;
+  private boolean shuffle = false;
   //! True to dump the list of to-run tests to stdout.
-  private static int listRunTests = 0;
+  private int listRunTests = 0;
   //! True to squelch all out() and outln() output.
-  private static boolean quietMode = false;
+  private boolean quietMode = false;
   //! Total number of runTests() calls.
-  private static int nTestRuns = 0;
+  private int nTestRuns = 0;
   //! List of test*() methods to run.
-  private static List<java.lang.reflect.Method> testMethods = null;
+  private List<java.lang.reflect.Method> testMethods = null;
   //! List of exceptions collected by run()
-  private static final List<Exception> listErrors = new ArrayList<>();
-  private static final class Metrics {
+  private final List<Exception> listErrors = new ArrayList<>();
+  private final class Metrics {
     //! Number of times createNewDb() (or equivalent) is invoked.
     volatile int dbOpen = 0;
   }
@@ -73,35 +73,35 @@ public class Tester1 implements Runnable {
     tId = id;
   }
 
-  static final Metrics metrics = new Metrics();
+  final Metrics metrics = new Metrics();
 
-  public static synchronized void outln(){
+  public synchronized void outln(){
     if( !quietMode ){
       System.out.println();
     }
   }
 
-  public static synchronized void outPrefix(){
+  public synchronized void outPrefix(){
     if( !quietMode ){
       System.out.print(Thread.currentThread().getName()+": ");
     }
   }
 
-  public static synchronized void outln(Object val){
+  public synchronized void outln(Object val){
     if( !quietMode ){
       outPrefix();
       System.out.println(val);
     }
   }
 
-  public static synchronized void out(Object val){
+  public synchronized void out(Object val){
     if( !quietMode ){
       System.out.print(val);
     }
   }
 
   @SuppressWarnings("unchecked")
-  public static synchronized void out(Object... vals){
+  public synchronized void out(Object... vals){
     if( !quietMode ){
       outPrefix();
       for(Object v : vals) out(v);
@@ -109,14 +109,14 @@ public class Tester1 implements Runnable {
   }
 
   @SuppressWarnings("unchecked")
-  public static synchronized void outln(Object... vals){
+  public synchronized void outln(Object... vals){
     if( !quietMode ){
       out(vals); out("\n");
     }
   }
 
-  static volatile int affirmCount = 0;
-  public static synchronized int affirm(Boolean v, String comment){
+  volatile int affirmCount = 0;
+  public synchronized int affirm(Boolean v, String comment){
     ++affirmCount;
     if( false ) assert( v /* prefer assert over exception if it's enabled because
                  the JNI layer sometimes has to suppress exceptions,
@@ -126,7 +126,7 @@ public class Tester1 implements Runnable {
     return affirmCount;
   }
 
-  public static void affirm(Boolean v){
+  public void affirm(Boolean v){
     affirm(v, "Affirmation failed.");
   }
 
@@ -135,7 +135,7 @@ public class Tester1 implements Runnable {
     affirm(sqlite3_libversion_number() == SQLITE_VERSION_NUMBER);
   }
 
-  public static sqlite3 createNewDb(){
+  public sqlite3 createNewDb(){
     final OutputPointer.sqlite3 out = new OutputPointer.sqlite3();
     int rc = sqlite3_open(":memory:", out);
     ++metrics.dbOpen;
@@ -153,11 +153,11 @@ public class Tester1 implements Runnable {
     return db;
   }
 
-  public static void execSql(sqlite3 db, String[] sql){
+  public void execSql(sqlite3 db, String[] sql){
     execSql(db, String.join("", sql));
   }
 
-  public static int execSql(sqlite3 db, boolean throwOnError, String sql){
+  public int execSql(sqlite3 db, boolean throwOnError, String sql){
     OutputPointer.Int32 oTail = new OutputPointer.Int32();
     final byte[] sqlUtf8 = sql.getBytes(StandardCharsets.UTF_8);
     int pos = 0, n = 1;
@@ -198,11 +198,11 @@ public class Tester1 implements Runnable {
     return rc;
   }
 
-  public static void execSql(sqlite3 db, String sql){
+  public void execSql(sqlite3 db, String sql){
     execSql(db, true, sql);
   }
 
-  public static sqlite3_stmt prepare(sqlite3 db, boolean throwOnError, String sql){
+  public sqlite3_stmt prepare(sqlite3 db, boolean throwOnError, String sql){
     final OutputPointer.sqlite3_stmt outStmt = new OutputPointer.sqlite3_stmt();
     int rc = sqlite3_prepare_v2(db, sql, outStmt);
     if( throwOnError ){
@@ -216,7 +216,7 @@ public class Tester1 implements Runnable {
     return rv;
   }
 
-  public static sqlite3_stmt prepare(sqlite3 db, String sql){
+  public sqlite3_stmt prepare(sqlite3 db, String sql){
     return prepare(db, true, sql);
   }
 
@@ -1147,7 +1147,7 @@ public class Tester1 implements Runnable {
   }
 
   @SingleThreadOnly /* because threads inherently break this test */
-  private static void testBusy(){
+  private void testBusy(){
     final String dbName = "_busy-handler.db";
     try{
       final OutputPointer.sqlite3 outDb = new OutputPointer.sqlite3();
@@ -1998,7 +1998,7 @@ public class Tester1 implements Runnable {
 
      -v: emit some developer-mode info at the end.
   */
-  public static void main(String[] args) throws Exception {
+  public void main(String[] args) throws Exception {
     int nThread = 1;
     boolean doSomethingForDev = false;
     int nRepeat = 1;

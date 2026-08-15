@@ -21,10 +21,10 @@
 #include <string.h>
 
 
-static int pagesize = 1024;     /* Size of a database page */
-static int fd = -1;             /* File descriptor for reading the WAL file */
-static int mxFrame = 0;         /* Last frame */
-static int perLine = 16;        /* HEX elements to print per line */
+int pagesize = 1024;     /* Size of a database page */
+int fd = -1;             /* File descriptor for reading the WAL file */
+int mxFrame = 0;         /* Last frame */
+int perLine = 16;        /* HEX elements to print per line */
 
 typedef long long int i64;      /* Datatype for 64-bit integers */
 
@@ -38,7 +38,7 @@ struct Cksum {
 /*
 ** extract a 32-bit big-endian integer
 */
-static unsigned int getInt32(const unsigned char *a){
+unsigned int getInt32(const unsigned char *a){
   unsigned int x = (a[0]<<24) + (a[1]<<16) + (a[2]<<8) + a[3];
   return x;
 }
@@ -46,14 +46,14 @@ static unsigned int getInt32(const unsigned char *a){
 /*
 ** Swap bytes on a 32-bit unsigned integer
 */
-static unsigned int swab32(unsigned int x){
+unsigned int swab32(unsigned int x){
   return (((x)&0x000000FF)<<24) + (((x)&0x0000FF00)<<8)
          + (((x)&0x00FF0000)>>8)  + (((x)&0xFF000000)>>24);
 }
 
 /* Extend the checksum.  Reinitialize the checksum if bInit is true.
 */
-static void extendCksum(
+void extendCksum(
   Cksum *pCksum,
   unsigned char *aData,
   unsigned int nByte,
@@ -92,7 +92,7 @@ static void extendCksum(
 ** Convert the var-int format into i64.  Return the number of bytes
 ** in the var-int.  Write the var-int value into *pVal.
 */
-static int decodeVarint(const unsigned char *z, i64 *pVal){
+int decodeVarint(const unsigned char *z, i64 *pVal){
   i64 v = 0;
   int i;
   for(i=0; i<8; i++){
@@ -106,7 +106,7 @@ static int decodeVarint(const unsigned char *z, i64 *pVal){
 
 /* Report an out-of-memory error and die.
 */
-static void out_of_memory(void){
+void out_of_memory(void){
   fprintf(stderr,"Out of memory...\n");
   exit(1);
 }
@@ -117,7 +117,7 @@ static void out_of_memory(void){
 ** Space to hold the content is obtained from malloc() and needs to be
 ** freed by the caller.
 */
-static unsigned char *getContent(i64 ofst, int nByte){
+unsigned char *getContent(i64 ofst, int nByte){
   unsigned char *aData;
   aData = malloc(nByte);
   if( aData==0 ) out_of_memory();
@@ -129,7 +129,7 @@ static unsigned char *getContent(i64 ofst, int nByte){
 /*
 ** Print a range of bytes as hex and as ascii.
 */
-static void print_byte_range(
+void print_byte_range(
   int ofst,              /* First byte in the range of bytes to print */
   int nByte,             /* Number of bytes to print */
   unsigned char *aData,  /* Content to print */
@@ -172,7 +172,7 @@ static void print_byte_range(
 
 /* Print a line of decode output showing a 4-byte integer.
 */
-static void print_decode_line(
+void print_decode_line(
   unsigned char *aData,      /* Content being decoded */
   int ofst, int nByte,       /* Start and size of decode */
   int asHex,                 /* If true, output value as hex */
@@ -203,7 +203,7 @@ static void print_decode_line(
 /*
 ** Print an entire page of content as hex
 */
-static void print_frame(int iFrame){
+void print_frame(int iFrame){
   i64 iStart;
   unsigned char *aData;
   iStart = 32 + (i64)(iFrame-1)*(pagesize+24);
@@ -223,7 +223,7 @@ static void print_frame(int iFrame){
 /*
 ** Summarize a single frame on a single line.
 */
-static void print_oneline_frame(int iFrame, Cksum *pCksum){
+void print_oneline_frame(int iFrame, Cksum *pCksum){
   i64 iStart;
   unsigned char *aData;
   unsigned int s0, s1;
@@ -259,7 +259,7 @@ static void print_oneline_frame(int iFrame, Cksum *pCksum){
 /*
 ** Decode the WAL header.
 */
-static void print_wal_header(Cksum *pCksum){
+void print_wal_header(Cksum *pCksum){
   unsigned char *aData;
   aData = getContent(0, 32);
   if( pCksum ){
@@ -288,7 +288,7 @@ static void print_wal_header(Cksum *pCksum){
 /*
 ** Describe cell content.
 */
-static i64 describeContent(
+i64 describeContent(
   unsigned char *a,       /* Cell content */
   i64 nLocal,             /* Bytes in a[] */
   char *zDesc             /* Write description here */
@@ -354,7 +354,7 @@ static i64 describeContent(
 ** Compute the local payload size given the total payload size and
 ** the page size.
 */
-static i64 localPayload(i64 nPayload, char cType){
+i64 localPayload(i64 nPayload, char cType){
   i64 maxLocal;
   i64 minLocal;
   i64 surplus;
@@ -385,7 +385,7 @@ static i64 localPayload(i64 nPayload, char cType){
 **
 ** The return value is the local cell size.
 */
-static i64 describeCell(
+i64 describeCell(
   unsigned char cType,    /* Page type */
   unsigned char *a,       /* Cell content */
   int showCellContent,    /* Show cell content if true */
@@ -398,7 +398,7 @@ static i64 describeCell(
   i64 nPayload;
   i64 rowid;
   i64 nLocal;
-  static char zDesc[1000];
+  char zDesc[1000];
   i = 0;
   if( cType<=5 ){
     leftChild = ((a[0]*256 + a[1])*256 + a[2])*256 + a[3];
@@ -442,7 +442,7 @@ static i64 describeCell(
 /*
 ** Decode a btree page
 */
-static void decode_btree_page(
+void decode_btree_page(
   unsigned char *a,   /* Content of the btree page to be decoded */
   int pgno,           /* Page number */
   int hdrSize,        /* Size of the page1-header in bytes */
@@ -521,7 +521,7 @@ static void decode_btree_page(
 ** Check the range validity for a page number.  Print an error and
 ** exit if the page is out of range.
 */
-static void checkPageValidity(int iPage, int mxPage){
+void checkPageValidity(int iPage, int mxPage){
   if( iPage<1 || iPage>mxPage ){
     fprintf(stderr, "Invalid page number %d:  valid range is 1..%d\n",
             iPage, mxPage);

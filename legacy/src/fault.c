@@ -32,15 +32,15 @@
 ** Global variables.
 */
 typedef struct BenignMallocHooks BenignMallocHooks;
-static SQLITE_WSD struct BenignMallocHooks {
+SQLITE_WSD struct BenignMallocHooks {
   void (*xBenignBegin)(void);
   void (*xBenignEnd)(void);
 } sqlite3Hooks = { 0, 0 };
 
 /* The "wsdHooks" macro will resolve to the appropriate BenignMallocHooks
-** structure.  If writable static data is unsupported on the target,
+** structure.  If writable data is unsupported on the target,
 ** we have to locate the state vector at run-time.  In the more common
-** case where writable static data is supported, wsdHooks can refer directly
+** case where writable data is supported, wsdHooks can refer directly
 ** to the "sqlite3Hooks" state vector declared above.
 */
 #ifdef SQLITE_OMIT_WSD

@@ -20,7 +20,7 @@
 #include <stdarg.h>
 #include "sqlite3.h"
 
-static const char zUsage[] =
+const char zUsage[] =
   "sqlite3_rsync ORIGIN REPLICA ?OPTIONS?\n"
   "\n"
   "One of ORIGIN or REPLICA is a pathname to a database on the local\n"
@@ -112,7 +112,7 @@ struct SQLiteRsync {
 /*
 ** Print a fatal error and quit.
 */
-static void win32_fatal_error(const char *zMsg){
+void win32_fatal_error(const char *zMsg){
   fprintf(stderr, "%s", zMsg);
   exit(1);
 }
@@ -164,7 +164,7 @@ extern int sqlite3_sha_init(
 **
 ** Return the number of errors.
 */
-static int win32_create_child_process(
+int win32_create_child_process(
   wchar_t *zCmd,       /* The command that the child process will run */
   HANDLE hIn,          /* Standard input */
   HANDLE hOut,         /* Standard output */
@@ -224,7 +224,7 @@ void *win32_utf8_to_unicode(const char *zUtf8){
 **
 ** Return the number of errors.
 */
-static int popen2(
+int popen2(
   const char *zCmd,      /* Command to run in the child process */
   FILE **ppIn,           /* Read from child using this file descriptor */
   FILE **ppOut,          /* Write to child using this file descriptor */
@@ -325,7 +325,7 @@ static int popen2(
 ** Close the connection to a child process previously created using
 ** popen2().
 */
-static int pclose2(FILE *pIn, FILE *pOut, int childPid){
+int pclose2(FILE *pIn, FILE *pOut, int childPid){
 #ifdef _WIN32
   /* Not implemented, yet */
   fclose(pIn);
@@ -381,7 +381,7 @@ static int pclose2(FILE *pIn, FILE *pOut, int childPid){
 **    4      First byte of a 3-byte UTF-8
 **    5      First byte of a 4-byte UTF-8
 */
-static const char aSafeChar[256] = {
+const char aSafeChar[256] = {
 #ifdef _WIN32
 /* Windows
 ** Prohibit:  all control characters, including tab, \r and \n.
@@ -635,12 +635,12 @@ struct HashContext {
 /*
 ** A single step of the Keccak mixing function for a 1600-bit state
 */
-static void KeccakF1600Step(HashContext *p){
+void KeccakF1600Step(HashContext *p){
   int i;
   u64 b0, b1, b2, b3, b4;
   u64 c0, c1, c2, c3, c4;
   u64 d0, d1, d2, d3, d4;
-  static const u64 RC[] = {
+  const u64 RC[] = {
     0x0000000000000001ULL,  0x0000000000008082ULL,
     0x800000000000808aULL,  0x8000000080008000ULL,
     0x000000000000808bULL,  0x0000000080000001ULL,
@@ -757,7 +757,7 @@ static void KeccakF1600Step(HashContext *p){
 ** in bits and should be one of 224, 256, 384, or 512.  Or iSize
 ** can be zero to use the default hash size of 256 bits.
 */
-static void HashInit(HashContext *p, int iSize){
+void HashInit(HashContext *p, int iSize){
   memset(p, 0, sizeof(*p));
   p->iSize = iSize;
   if( iSize>=128 && iSize<=512 ){
@@ -771,7 +771,7 @@ static void HashInit(HashContext *p, int iSize){
   p->ixMask = 7;  /* Big-endian */
 #else
   {
-    static unsigned int one = 1;
+    unsigned int one = 1;
     if( 1==*(unsigned char*)&one ){
       /* Little endian.  No byte swapping. */
       p->ixMask = 0;
@@ -787,7 +787,7 @@ static void HashInit(HashContext *p, int iSize){
 ** Make consecutive calls to the HashUpdate function to add new content
 ** to the hash
 */
-static void HashUpdate(
+void HashUpdate(
   HashContext *p,
   const unsigned char *aData,
   unsigned int nData
@@ -827,7 +827,7 @@ static void HashUpdate(
 ** the final hash.  The function returns a pointer to the binary
 ** hash value.
 */
-static unsigned char *HashFinal(HashContext *p){
+unsigned char *HashFinal(HashContext *p){
   unsigned int i;
   if( p->nLoaded==p->nRate-1 ){
     const unsigned char c1 = 0x86;
@@ -850,7 +850,7 @@ static unsigned char *HashFinal(HashContext *p){
 **
 ** Return a 160-bit BLOB which is the hash of X.
 */
-static void hashFunc(
+void hashFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -874,7 +874,7 @@ static void hashFunc(
 ** Return a 160-bit BLOB which is the hash of the concatenation
 ** of all X inputs.
 */
-static void agghashStep(
+void agghashStep(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -892,7 +892,7 @@ static void agghashStep(
     HashUpdate(pCx, sqlite3_value_text(argv[0]), nByte);
   }
 }
-static void agghashFinal(sqlite3_context *context){
+void agghashFinal(sqlite3_context *context){
   HashContext *pCx = (HashContext*)sqlite3_aggregate_context(context, 0);
   if( pCx ){
     sqlite3_result_blob(context, HashFinal(pCx), 160/8, SQLITE_TRANSIENT);
@@ -900,7 +900,7 @@ static void agghashFinal(sqlite3_context *context){
 }
 
 /* Register the hash function */
-static int hashRegister(sqlite3 *db){
+int hashRegister(sqlite3 *db){
   int rc;
   rc = sqlite3_create_function(db, "hash", 1,
                 SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC,
@@ -934,7 +934,7 @@ const char *file_tail(const char *z){
 ** Append error message text to the error file, if an error file is
 ** specified.  In any case, increment the error count.
 */
-static void logError(SQLiteRsync *p, const char *zFormat, ...){
+void logError(SQLiteRsync *p, const char *zFormat, ...){
   if( p->zErrFile ){
     FILE *pErr = fopen(p->zErrFile, "a");
     if( pErr ){
@@ -952,7 +952,7 @@ static void logError(SQLiteRsync *p, const char *zFormat, ...){
 ** Append text to the debugging mesage file, if an that file is
 ** specified.
 */
-static void debugMessage(SQLiteRsync *p, const char *zFormat, ...){
+void debugMessage(SQLiteRsync *p, const char *zFormat, ...){
   if( p->zDebugFile ){
     if( p->pDebug==0 ){
       p->pDebug = fopen(p->zDebugFile, "wb");
@@ -971,7 +971,7 @@ static void debugMessage(SQLiteRsync *p, const char *zFormat, ...){
 /* Read a single big-endian 32-bit unsigned integer from the input
 ** stream.  Return 0 on success and 1 if there are any errors.
 */
-static int readUint32(SQLiteRsync *p, unsigned int *pU){
+int readUint32(SQLiteRsync *p, unsigned int *pU){
   unsigned char buf[4];
   if( fread(buf, sizeof(buf), 1, p->pIn)==1 ){
     *pU = (buf[0]<<24) | (buf[1]<<16) | (buf[2]<<8) | buf[3];
@@ -986,7 +986,7 @@ static int readUint32(SQLiteRsync *p, unsigned int *pU){
 /* Write a single big-endian 32-bit unsigned integer to the output stream.
 ** Return 0 on success and 1 if there are any errors.
 */
-static int writeUint32(SQLiteRsync *p, unsigned int x){
+int writeUint32(SQLiteRsync *p, unsigned int x){
   unsigned char buf[4];
   buf[3] = x & 0xff;
   x >>= 8;
@@ -1070,7 +1070,7 @@ void writeBytes(SQLiteRsync *p, int nByte, const void *pData){
 ** If this happens on the remote side, we send back a *_ERROR
 ** message.  On the local side, the error message goes to stderr.
 */
-static void reportError(SQLiteRsync *p, const char *zFormat, ...){
+void reportError(SQLiteRsync *p, const char *zFormat, ...){
   va_list ap;
   char *zMsg;
   unsigned int nMsg;
@@ -1099,7 +1099,7 @@ static void reportError(SQLiteRsync *p, const char *zFormat, ...){
 ** If this happens on the remote side, we send back a *_MSG 
 ** message.  On the local side, the message goes to stdout.
 */
-static void infoMsg(SQLiteRsync *p, const char *zFormat, ...){
+void infoMsg(SQLiteRsync *p, const char *zFormat, ...){
   va_list ap;
   char *zMsg;
   unsigned int nMsg;
@@ -1124,7 +1124,7 @@ static void infoMsg(SQLiteRsync *p, const char *zFormat, ...){
 
 /* Receive and report an error message coming from the other side.
 */
-static void readAndDisplayMessage(SQLiteRsync *p, int c){
+void readAndDisplayMessage(SQLiteRsync *p, int c){
   unsigned int n = 0;
   char *zMsg;
   const char *zPrefix;
@@ -1153,7 +1153,7 @@ static void readAndDisplayMessage(SQLiteRsync *p, int c){
 /* Construct a new prepared statement.  Report an error and return NULL
 ** if anything goes wrong.
 */
-static sqlite3_stmt *prepareStmtVA(
+sqlite3_stmt *prepareStmtVA(
   SQLiteRsync *p,
   char *zFormat,
   va_list ap
@@ -1184,7 +1184,7 @@ static sqlite3_stmt *prepareStmtVA(
   if( zToFree ) sqlite3_free(zToFree);
   return pStmt;
 }
-static sqlite3_stmt *prepareStmt(
+sqlite3_stmt *prepareStmt(
   SQLiteRsync *p,
   char *zFormat,
   ...
@@ -1207,7 +1207,7 @@ static sqlite3_stmt *prepareStmt(
 ** with a non-UTF8 encoding to the empty :memory: database that is
 ** opened on the replica.
 */
-static void runSql(SQLiteRsync *p, char *zSql, ...){
+void runSql(SQLiteRsync *p, char *zSql, ...){
   sqlite3_stmt *pStmt;
   va_list ap;
 
@@ -1234,7 +1234,7 @@ static void runSql(SQLiteRsync *p, char *zSql, ...){
 
 /* Run an SQL statement that returns a single unsigned 32-bit integer result
 */
-static int runSqlReturnUInt(
+int runSqlReturnUInt(
   SQLiteRsync *p,
   unsigned int *pRes,
   char *zSql,
@@ -1266,7 +1266,7 @@ static int runSqlReturnUInt(
 /* Run an SQL statement that returns a single TEXT value that is no more
 ** than 99 bytes in length.
 */
-static int runSqlReturnText(
+int runSqlReturnText(
   SQLiteRsync *p,
   char *pRes,
   char *zSql,
@@ -1307,7 +1307,7 @@ static int runSqlReturnText(
 
 /* Close the database connection associated with p
 */
-static void closeDb(SQLiteRsync *p){
+void closeDb(SQLiteRsync *p){
   if( p->db ){
     sqlite3_stmt *pStmt;
     while( (pStmt = sqlite3_next_stmt(p->db, 0))!=0 ){
@@ -1360,7 +1360,7 @@ static void closeDb(SQLiteRsync *p){
 **         content for pages that do not have a matching hash or with
 **         ORIGIN_DETAIL messages with requests for more detail.
 */
-static void originSide(SQLiteRsync *p){
+void originSide(SQLiteRsync *p){
   int rc = 0;
   int c = 0;
   unsigned int nPage = 0;
@@ -1621,7 +1621,7 @@ static void originSide(SQLiteRsync *p){
 ** be expecting in the hash that follows.  Send a REPLICA_CONFIG message
 ** if either of these values if not correct.
 */
-static void sendHashMessages(
+void sendHashMessages(
   SQLiteRsync *p,       /* The replica-side of the sync */
   unsigned int iHash,   /* Next page expected by origin */
   unsigned int nHash    /* Next number of pages expected by origin */
@@ -1679,7 +1679,7 @@ static void sendHashMessages(
 ** npg (mnemonic: Number of PaGes) pages starting with fpg
 ** (mnemonic: First PaGe).
 */
-static void subdivideHashRange(
+void subdivideHashRange(
   SQLiteRsync *p,       /* The replica-side of the sync */
   unsigned int fpg,     /* First page of the range */
   unsigned int npg      /* Number of pages */
@@ -1753,7 +1753,7 @@ static void subdivideHashRange(
 **
 **         Expect no more transmissions from the origin.
 */
-static void replicaSide(SQLiteRsync *p){
+void replicaSide(SQLiteRsync *p){
   int c;
   sqlite3_stmt *pIns = 0;
   char eJMode = 0;               /* Journal mode prior to sync */
@@ -1975,7 +1975,7 @@ static void replicaSide(SQLiteRsync *p){
 ** The argument might be -vvv...vv with any number of "v"s.  Return
 ** the number of "v"s.  Return 0 if the argument is not a -vvv...v.
 */
-static int numVs(const char *z){
+int numVs(const char *z){
   int n = 0;
   if( z[0]!='-' ) return 0;
   z++;
@@ -1989,7 +1989,7 @@ static int numVs(const char *z){
 ** Get the argument to an --option.  Throw an error and die if no argument
 ** is available.
 */
-static const char *cmdline_option_value(int argc, const char * const*argv,
+const char *cmdline_option_value(int argc, const char * const*argv,
                                         int i){
   if( i==argc ){
     fprintf(stderr,"%s: Error: missing argument to %s\n",
@@ -2022,7 +2022,7 @@ sqlite3_int64 currentTime(void){
 ** a pointer to the ':' character that separates the hostname
 ** from the path.
 */
-static char *hostSeparator(const char *zIn){
+char *hostSeparator(const char *zIn){
   char *zPath = strchr(zIn, ':');
   if( zPath==0 ) return 0;
 #ifdef _WIN32

@@ -14,7 +14,7 @@
 ** This file contains C code that implements the sqlite3_complete() API.
 ** This code used to be part of the tokenizer.c source file.  But by
 ** separating it out, the code will be automatically omitted from
-** static links that do not use it.
+** links that do not use it.
 */
 #include "sqliteInt.h"
 #ifndef SQLITE_OMIT_COMPLETE
@@ -109,7 +109,7 @@ int sqlite3_complete(const char *zSql){
   /* A complex statement machine used to detect the end of a CREATE TRIGGER
   ** statement.  This is the normal case.
   */
-  static const u8 trans[8][8] = {
+  const u8 trans[8][8] = {
                      /* Token:                                                */
      /* State:       **  SEMI  WS  OTHER  EXPLAIN  CREATE  TEMP  TRIGGER  END */
      /* 0 INVALID: */ {    1,  0,     2,       3,      4,    2,       2,   2, },
@@ -125,7 +125,7 @@ int sqlite3_complete(const char *zSql){
   /* If triggers are not supported by this compile then the statement machine
   ** used to detect the end of a statement is much simpler
   */
-  static const u8 trans[3][3] = {
+  const u8 trans[3][3] = {
                      /* Token:           */
      /* State:       **  SEMI  WS  OTHER */
      /* 0 INVALID: */ {    1,  0,     2, },

@@ -39,7 +39,7 @@ int sqlite3FtsUnicodeIsalnum(int c){
   ** C. It is not possible to represent a range larger than 1023 codepoints 
   ** using this format.
   */
-  static const unsigned int aEntry[] = {
+  const unsigned int aEntry[] = {
     0x00000030, 0x0000E807, 0x00016C06, 0x0001EC2F, 0x0002AC07,
     0x0002D001, 0x0002D803, 0x0002EC01, 0x0002FC01, 0x00035C01,
     0x0003DC01, 0x000B0804, 0x000B480E, 0x000B9407, 0x000BB401,
@@ -123,7 +123,7 @@ int sqlite3FtsUnicodeIsalnum(int c){
     0x07D9140B, 0x07DA0046, 0x07DC0074, 0x38000401, 0x38008060,
     0x380400F0,
   };
-  static const unsigned int aAscii[4] = {
+  const unsigned int aAscii[4] = {
     0xFFFFFFFF, 0xFC00FFFF, 0xF8000001, 0xF8000001,
   };
 
@@ -159,7 +159,7 @@ int sqlite3FtsUnicodeIsalnum(int c){
 ** E"). The resuls of passing a codepoint that corresponds to an
 ** uppercase letter are undefined.
 */
-static int remove_diacritic(int c, int bComplex){
+int remove_diacritic(int c, int bComplex){
   unsigned short aDia[] = {
         0,  1797,  1848,  1859,  1891,  1928,  1940,  1995, 
      2024,  2040,  2060,  2110,  2168,  2206,  2264,  2286, 
@@ -263,7 +263,7 @@ int sqlite3FtsUnicodeFold(int c, int eRemoveDiacritic){
   ** file distributed as part of the "Unicode Character Database". See
   ** http://www.unicode.org for details.
   */
-  static const struct TableEntry {
+  const struct TableEntry {
     unsigned short iCode;
     unsigned char flags;
     unsigned char nRange;
@@ -324,7 +324,7 @@ int sqlite3FtsUnicodeFold(int c, int eRemoveDiacritic){
     {42896, 1, 4},         {42912, 1, 10},        {42922, 72, 1},
     {65313, 14, 26},       
   };
-  static const unsigned short aiOff[] = {
+  const unsigned short aiOff[] = {
    1,     2,     8,     15,    16,    26,    28,    32,    
    37,    38,    40,    48,    63,    64,    69,    71,    
    79,    80,    116,   202,   203,   205,   206,   207,   

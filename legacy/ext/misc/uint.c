@@ -37,7 +37,7 @@ SQLITE_EXTENSION_INIT1
 ** Compare text in lexicographic order, except strings of digits
 ** compare in numeric order.
 */
-static int uintCollFunc(
+int uintCollFunc(
   void *notUsed,
   int nKey1, const void *pKey1,
   int nKey2, const void *pKey2

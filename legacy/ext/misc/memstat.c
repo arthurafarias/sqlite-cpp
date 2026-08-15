@@ -67,7 +67,7 @@ struct memstat_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against memstat will look like.
 */
-static int memstatConnect(
+int memstatConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -97,7 +97,7 @@ static int memstatConnect(
 /*
 ** This method is the destructor for memstat_cursor objects.
 */
-static int memstatDisconnect(sqlite3_vtab *pVtab){
+int memstatDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -105,7 +105,7 @@ static int memstatDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new memstat_cursor object.
 */
-static int memstatOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int memstatOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   memstat_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -118,7 +118,7 @@ static int memstatOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Clear all the schema names from a cursor
 */
-static void memstatClearSchema(memstat_cursor *pCur){
+void memstatClearSchema(memstat_cursor *pCur){
   int i;
   if( pCur->azDb==0 ) return;
   for(i=0; i<pCur->nDb; i++){
@@ -132,7 +132,7 @@ static void memstatClearSchema(memstat_cursor *pCur){
 /*
 ** Fill in the azDb[] array for the cursor.
 */
-static int memstatFindSchemas(memstat_cursor *pCur){
+int memstatFindSchemas(memstat_cursor *pCur){
   sqlite3_stmt *pStmt = 0;
   int rc;
   if( pCur->nDb ) return SQLITE_OK;
@@ -165,7 +165,7 @@ static int memstatFindSchemas(memstat_cursor *pCur){
 /*
 ** Destructor for a memstat_cursor.
 */
-static int memstatClose(sqlite3_vtab_cursor *cur){
+int memstatClose(sqlite3_vtab_cursor *cur){
   memstat_cursor *pCur = (memstat_cursor*)cur;
   memstatClearSchema(pCur);
   sqlite3_free(cur);
@@ -184,7 +184,7 @@ static int memstatClose(sqlite3_vtab_cursor *cur){
 ** An array of quantities that can be measured and reported by
 ** this virtual table
 */
-static const struct MemstatColumns {
+const struct MemstatColumns {
   const char *zName;    /* Symbolic name */
   unsigned char eType;  /* Type of interface */
   unsigned char mNull;  /* Bitmask of which columns are NULL */
@@ -229,7 +229,7 @@ static const struct MemstatColumns {
 /*
 ** Advance a memstat_cursor to its next row of output.
 */
-static int memstatNext(sqlite3_vtab_cursor *cur){
+int memstatNext(sqlite3_vtab_cursor *cur){
   memstat_cursor *pCur = (memstat_cursor*)cur;
   int i;
   assert( pCur->iRowid<=MSV_NROW );
@@ -281,7 +281,7 @@ static int memstatNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the memstat_cursor
 ** is currently pointing.
 */
-static int memstatColumn(
+int memstatColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int iCol                    /* Which column to return */
@@ -318,7 +318,7 @@ static int memstatColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int memstatRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int memstatRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   memstat_cursor *pCur = (memstat_cursor*)cur;
   *pRowid = pCur->iRowid*1000 + pCur->iDb;
   return SQLITE_OK;
@@ -328,7 +328,7 @@ static int memstatRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int memstatEof(sqlite3_vtab_cursor *cur){
+int memstatEof(sqlite3_vtab_cursor *cur){
   memstat_cursor *pCur = (memstat_cursor*)cur;
   return pCur->iRowid>MSV_NROW;
 }
@@ -339,7 +339,7 @@ static int memstatEof(sqlite3_vtab_cursor *cur){
 ** once prior to any call to memstatColumn() or memstatRowid() or 
 ** memstatEof().
 */
-static int memstatFilter(
+int memstatFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -358,7 +358,7 @@ static int memstatFilter(
 ** a query plan for each invocation and compute an estimated cost for that
 ** plan.
 */
-static int memstatBestIndex(
+int memstatBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -371,7 +371,7 @@ static int memstatBestIndex(
 ** This following structure defines all the methods for the 
 ** memstat virtual table.
 */
-static sqlite3_module memstatModule = {
+sqlite3_module memstatModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   memstatConnect,            /* xConnect */

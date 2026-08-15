@@ -24,12 +24,12 @@
 #include <sched.h>
 #include "sqlite.h"
 
-static void do_some_sql(int parent){
+void do_some_sql(int parent){
   char *zErr;
   int rc = SQLITE_OK;
   sqlite *db;
   int cnt = 0;
-  static char zBig[] = 
+  char zBig[] = 
     "-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

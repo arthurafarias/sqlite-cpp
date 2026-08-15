@@ -56,7 +56,7 @@ typedef struct porter_tokenizer_cursor {
 /*
 ** Create a new tokenizer instance.
 */
-static int porterCreate(
+int porterCreate(
   int argc, const char * const *argv,
   sqlite3_tokenizer **ppTokenizer
 ){
@@ -75,7 +75,7 @@ static int porterCreate(
 /*
 ** Destroy a tokenizer
 */
-static int porterDestroy(sqlite3_tokenizer *pTokenizer){
+int porterDestroy(sqlite3_tokenizer *pTokenizer){
   sqlite3_free(pTokenizer);
   return SQLITE_OK;
 }
@@ -86,7 +86,7 @@ static int porterDestroy(sqlite3_tokenizer *pTokenizer){
 ** used to incrementally tokenize this string is returned in 
 ** *ppCursor.
 */
-static int porterOpen(
+int porterOpen(
   sqlite3_tokenizer *pTokenizer,         /* The tokenizer */
   const char *zInput, int nInput,        /* String to be tokenized */
   sqlite3_tokenizer_cursor **ppCursor    /* OUT: Tokenization cursor */
@@ -119,7 +119,7 @@ static int porterOpen(
 ** Close a tokenization cursor previously opened by a call to
 ** porterOpen() above.
 */
-static int porterClose(sqlite3_tokenizer_cursor *pCursor){
+int porterClose(sqlite3_tokenizer_cursor *pCursor){
   porter_tokenizer_cursor *c = (porter_tokenizer_cursor *) pCursor;
   sqlite3_free(c->zToken);
   sqlite3_free(c);
@@ -128,7 +128,7 @@ static int porterClose(sqlite3_tokenizer_cursor *pCursor){
 /*
 ** Vowel or consonant
 */
-static const char cType[] = {
+const char cType[] = {
    0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0,
    1, 1, 1, 2, 1
 };
@@ -146,8 +146,8 @@ static const char cType[] = {
 ** is that 'y' is a consonant unless it is followed by another
 ** consonent.
 */
-static int isVowel(const char*);
-static int isConsonant(const char *z){
+int isVowel(const char*);
+int isConsonant(const char *z){
   int j;
   char x = *z;
   if( x==0 ) return 0;
@@ -156,7 +156,7 @@ static int isConsonant(const char *z){
   if( j<2 ) return j;
   return z[1]==0 || isVowel(z + 1);
 }
-static int isVowel(const char *z){
+int isVowel(const char *z){
   int j;
   char x = *z;
   if( x==0 ) return 0;
@@ -185,7 +185,7 @@ static int isVowel(const char *z){
 ** In this routine z[] is in reverse order.  So we are really looking
 ** for an instance of a consonant followed by a vowel.
 */
-static int m_gt_0(const char *z){
+int m_gt_0(const char *z){
   while( isVowel(z) ){ z++; }
   if( *z==0 ) return 0;
   while( isConsonant(z) ){ z++; }
@@ -195,7 +195,7 @@ static int m_gt_0(const char *z){
 /* Like mgt0 above except we are looking for a value of m which is
 ** exactly 1
 */
-static int m_eq_1(const char *z){
+int m_eq_1(const char *z){
   while( isVowel(z) ){ z++; }
   if( *z==0 ) return 0;
   while( isConsonant(z) ){ z++; }
@@ -209,7 +209,7 @@ static int m_eq_1(const char *z){
 /* Like mgt0 above except we are looking for a value of m>1 instead
 ** or m>0
 */
-static int m_gt_1(const char *z){
+int m_gt_1(const char *z){
   while( isVowel(z) ){ z++; }
   if( *z==0 ) return 0;
   while( isConsonant(z) ){ z++; }
@@ -223,7 +223,7 @@ static int m_gt_1(const char *z){
 /*
 ** Return TRUE if there is a vowel anywhere within z[0..n-1]
 */
-static int hasVowel(const char *z){
+int hasVowel(const char *z){
   while( isConsonant(z) ){ z++; }
   return *z!=0;
 }
@@ -234,7 +234,7 @@ static int hasVowel(const char *z){
 ** The text is reversed here. So we are really looking at
 ** the first two characters of z[].
 */
-static int doubleConsonant(const char *z){
+int doubleConsonant(const char *z){
   return isConsonant(z) && z[0]==z[1];
 }
 
@@ -246,7 +246,7 @@ static int doubleConsonant(const char *z){
 ** The word is reversed here.  So we are really checking the
 ** first three letters and the first one cannot be in [wxy].
 */
-static int star_oh(const char *z){
+int star_oh(const char *z){
   return
     isConsonant(z) &&
     z[0]!='w' && z[0]!='x' && z[0]!='y' &&
@@ -266,7 +266,7 @@ static int star_oh(const char *z){
 ** match.  Not that TRUE is returned even if xCond() fails and
 ** no substitution occurs.
 */
-static int stem(
+int stem(
   char **pz,             /* The word being stemmed (Reversed) */
   const char *zFrom,     /* If the ending matches this... (Reversed) */
   const char *zTo,       /* ... change the ending to this (not reversed) */
@@ -291,7 +291,7 @@ static int stem(
 ** it contains digits) then word is truncated to 20 or 6 bytes
 ** by taking 10 or 3 bytes from the beginning and end.
 */
-static void copy_stemmer(const char *zIn, int nIn, char *zOut, int *pnOut){
+void copy_stemmer(const char *zIn, int nIn, char *zOut, int *pnOut){
   int i, mx, j;
   int hasDigit = 0;
   for(i=0; i<nIn; i++){
@@ -338,7 +338,7 @@ static void copy_stemmer(const char *zIn, int nIn, char *zOut, int *pnOut){
 ** Stemming never increases the length of the word.  So there is
 ** no chance of overflowing the zOut buffer.
 */
-static void porter_stemmer(const char *zIn, int nIn, char *zOut, int *pnOut){
+void porter_stemmer(const char *zIn, int nIn, char *zOut, int *pnOut){
   int i, j;
   char zReverse[28];
   char *z, *z2;
@@ -577,7 +577,7 @@ static void porter_stemmer(const char *zIn, int nIn, char *zOut, int *pnOut){
 ** part of a token.  In other words, delimiters all must have
 ** values of 0x7f or lower.
 */
-static const char porterIdChar[] = {
+const char porterIdChar[] = {
 /* x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xA xB xC xD xE xF */
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,  /* 3x */
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  /* 4x */
@@ -591,7 +591,7 @@ static const char porterIdChar[] = {
 ** Extract the next token from a tokenization cursor.  The cursor must
 ** have been opened by a prior call to porterOpen().
 */
-static int porterNext(
+int porterNext(
   sqlite3_tokenizer_cursor *pCursor,  /* Cursor returned by porterOpen */
   const char **pzToken,               /* OUT: *pzToken is the token text */
   int *pnBytes,                       /* OUT: Number of bytes in token */
@@ -639,7 +639,7 @@ static int porterNext(
 /*
 ** The set of routines that implement the porter-stemmer tokenizer
 */
-static const sqlite3_tokenizer_module porterTokenizerModule = {
+const sqlite3_tokenizer_module porterTokenizerModule = {
   0,
   porterCreate,
   porterDestroy,

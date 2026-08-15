@@ -29,7 +29,7 @@ This review has the goal of:
    conditional code paths).
 2. removing C linkage externs from the code.
 3. removing C-linkage name-mangling dependencies.
-4. removing static (file-local) free functions.
+4. removing (file-local) free functions.
 5. splitting headers that declare multiple state containers and their functions into
    one header (and one source file) per state container.
 

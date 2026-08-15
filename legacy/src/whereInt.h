@@ -360,9 +360,9 @@ struct WhereClause {
   int nBase;               /* Number of terms through the last non-Virtual */
   WhereTerm *a;            /* Each a[] describes a term of the WHERE clause */
 #if defined(SQLITE_SMALL_STACK)
-  WhereTerm aStatic[1];    /* Initial static space for a[] */
+  WhereTerm aStatic[1];    /* Initial space for a[] */
 #else
-  WhereTerm aStatic[8];    /* Initial static space for a[] */
+  WhereTerm aStatic[8];    /* Initial space for a[] */
 #endif
 };
 

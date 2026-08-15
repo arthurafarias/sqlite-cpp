@@ -1668,7 +1668,7 @@ globalThis.sqlite3ApiBootstrap = async function sqlite3ApiBootstrap(
         if(!this.s){
           this.s = wasm.xWrap('sqlite3__wasm_db_config_s','int',
                               ['sqlite3*', 'int', 'string:static']
-                              /* MAINDBNAME requires a static string */);
+                              /* MAINDBNAME requires a string */);
         }
         return this.s(pDb, op, args[0]);
       default:

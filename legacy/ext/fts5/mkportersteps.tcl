@@ -13,11 +13,11 @@
 # This script generates the implementations of the following C functions,
 # which are part of the porter tokenizer implementation:
 #
-#   static int fts5PorterStep1B(char *aBuf, int *pnBuf);
-#   static int fts5PorterStep1B2(char *aBuf, int *pnBuf);
-#   static int fts5PorterStep2(char *aBuf, int *pnBuf);
-#   static int fts5PorterStep3(char *aBuf, int *pnBuf);
-#   static int fts5PorterStep4(char *aBuf, int *pnBuf);
+#   int fts5PorterStep1B(char *aBuf, int *pnBuf);
+#   int fts5PorterStep1B2(char *aBuf, int *pnBuf);
+#   int fts5PorterStep2(char *aBuf, int *pnBuf);
+#   int fts5PorterStep3(char *aBuf, int *pnBuf);
+#   int fts5PorterStep4(char *aBuf, int *pnBuf);
 #
 
 set O(Step1B2) {
@@ -97,7 +97,7 @@ proc sort_cb {lhs rhs} {
 proc create_step_function {name data} {
 
   set T(function) {
-static int fts5Porter${name}(char *aBuf, int *pnBuf){
+int fts5Porter${name}(char *aBuf, int *pnBuf){
   int ret = 0;
   int nBuf = *pnBuf;
   switch( aBuf[nBuf-2] ){

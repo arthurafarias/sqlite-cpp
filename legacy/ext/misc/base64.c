@@ -77,7 +77,7 @@ typedef unsigned char u8;
 #endif
 
 /* Decoding table, ASCII (7-bit) value to base 64 digit value or other */
-static const u8 b64DigitValues[128] = {
+const u8 b64DigitValues[128] = {
   /*                             HT LF VT  FF CR       */
     ND,ND,ND,ND, ND,ND,ND,ND, ND,WS,WS,WS, WS,WS,ND,ND,
   /*                                                US */
@@ -96,7 +96,7 @@ static const u8 b64DigitValues[128] = {
     41,42,43,44, 45,46,47,48, 49,50,51,ND, ND,ND,ND,ND
 };
 
-static const char b64Numerals[64+1]
+const char b64Numerals[64+1]
 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 #define BX_DV_PROTO(c) \
@@ -111,7 +111,7 @@ static const char b64Numerals[64+1]
 /* Encode a byte buffer into base64 text with linefeeds appended to limit
 ** encoded group lengths to B64_DARK_MAX or to terminate the last group.
 */
-static char* toBase64( u8 *pIn, int nbIn, char *pOut ){
+char* toBase64( u8 *pIn, int nbIn, char *pOut ){
   int nCol = 0;
   while( nbIn >= 3 ){
     /* Do the bit-shuffle, exploiting unsigned input to avoid masking. */
@@ -148,17 +148,17 @@ static char* toBase64( u8 *pIn, int nbIn, char *pOut ){
 }
 
 /* Skip over text which is not base64 numeral(s). */
-static char * skipNonB64( char *s, int nc ){
+char * skipNonB64( char *s, int nc ){
   char c;
   while( nc-- > 0 && (c = *s) && !IS_BX_DIGIT(BX_DV_PROTO(c)) ) ++s;
   return s;
 }
 
 /* Decode base64 text into a byte buffer. */
-static u8* fromBase64( char *pIn, int ncIn, u8 *pOut ){
+u8* fromBase64( char *pIn, int ncIn, u8 *pOut ){
   if( ncIn>0 && pIn[ncIn-1]=='\n' ) --ncIn;
   while( ncIn>0 && *pIn!=PAD_CHAR ){
-    static signed char nboi[] = { 0, 0, 1, 2, 3 };
+    signed char nboi[] = { 0, 0, 1, 2, 3 };
     char *pUse = skipNonB64(pIn, ncIn);
     unsigned long qv = 0L;
     int nti, nbo, nac;
@@ -206,7 +206,7 @@ static u8* fromBase64( char *pIn, int ncIn, u8 *pOut ){
 }
 
 /* This function does the work for the SQLite base64(x) UDF. */
-static void base64(sqlite3_context *context, int na, sqlite3_value *av[]){
+void base64(sqlite3_context *context, int na, sqlite3_value *av[]){
   sqlite3_int64 nb;
   sqlite3_int64 nv = sqlite3_value_bytes(av[0]);
   sqlite3_int64 nc;
@@ -277,7 +277,7 @@ __declspec(dllexport)
 #endif
 int sqlite3_base64_init
 #else
-static int sqlite3_base64_init
+int sqlite3_base64_init
 #endif
 (sqlite3 *db, char **pzErr, const sqlite3_api_routines *pApi){
   SQLITE_EXTENSION_INIT2(pApi);

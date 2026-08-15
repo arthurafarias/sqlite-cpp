@@ -24,7 +24,7 @@
 # include <sys/time.h>
 #endif
 
-static double aVal[] = {
+double aVal[] = {
   -1.0163830486285643089e+063,
   +0.0049243807391586981e-019,
   +7.3818732407343994867e-095,
@@ -131,7 +131,7 @@ static double aVal[] = {
 /* Return the current wall-clock time in microseconds since the
 ** Unix epoch (1970-01-01T00:00:00Z)
 */
-static sqlite3_int64 timeOfDay(void){
+sqlite3_int64 timeOfDay(void){
 #if defined(_WIN64) && _WIN32_WINNT >= _WIN32_WINNT_WIN8
   sqlite3_uint64 t;
   FILETIME tm;
@@ -142,7 +142,7 @@ static sqlite3_int64 timeOfDay(void){
   t /= 10;
   return t;
 #elif defined(_WIN32)
-  static sqlite3_vfs *clockVfs = 0;
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ) clockVfs = sqlite3_vfs_find(0);
   if( clockVfs==0 ) return 0;  /* Never actually happens */
@@ -164,7 +164,7 @@ static sqlite3_int64 timeOfDay(void){
 int main(int argc, char **argv){
   int i;
   int cnt;
-  static const char *zFmt = "%.17g";
+  const char *zFmt = "%.17g";
   sqlite3_int64 tm1, tm2;
   char zBuf[1000];
 

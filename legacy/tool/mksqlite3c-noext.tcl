@@ -26,13 +26,13 @@
 # from in this file.  The version number is needed to generate the header
 # comment of the amalgamation.
 #
-set addstatic 1
+set add1
 set linemacros 0
 set useapicall 0
 for {set i 0} {$i<[llength $argv]} {incr i} {
   set x [lindex $argv $i]
   if {[regexp {^-+nostatic$} $x]} {
-    set addstatic 0
+    set add0
   } elseif {[regexp {^-+linemacros} $x]} {
     set linemacros 1
   } elseif {[regexp {^-+useapicall} $x]} {
@@ -161,7 +161,7 @@ proc section_comment {text} {
 #
 proc copy_file {filename} {
   global seen_hdr available_hdr varonly_hdr cdecllist out
-  global addstatic linemacros useapicall
+  global addlinemacros useapicall
   set ln 0
   set tail [file tail $filename]
   section_comment "Begin file $tail"

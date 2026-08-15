@@ -26,7 +26,7 @@ struct TestRecover {
   Tcl_Obj *pScript;
 };
 
-static int xSqlCallback(void *pSqlArg, const char *zSql){
+int xSqlCallback(void *pSqlArg, const char *zSql){
   TestRecover *p = (TestRecover*)pSqlArg;
   Tcl_Obj *pEval = 0;
   int res = 0;
@@ -55,7 +55,7 @@ static int xSqlCallback(void *pSqlArg, const char *zSql){
   return res;
 }
 
-static int getDbPointer(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
+int getDbPointer(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
   Tcl_CmdInfo info;
   if( 0==Tcl_GetCommandInfo(interp, Tcl_GetString(pObj), &info) ){
     Tcl_AppendResult(interp, "no such handle: ", Tcl_GetString(pObj), NULL);
@@ -74,13 +74,13 @@ static int getDbPointer(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
 **     $cmd errcode
 **     $cmd finalize
 */
-static int testRecoverCmd(
+int testRecoverCmd(
   void *clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  static struct RecoverSub {
+  struct RecoverSub {
     const char *zSub;
     int nArg;
     const char *zMsg;
@@ -211,13 +211,13 @@ static int testRecoverCmd(
 /*
 ** sqlite3_recover_init DB DBNAME URI
 */
-static int test_sqlite3_recover_init(
+int test_sqlite3_recover_init(
   void *clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  static int iTestRecoverCmd = 1;
+  int iTestRecoverCmd = 1;
 
   TestRecover *pNew = 0;
   sqlite3 *db = 0;
@@ -266,7 +266,7 @@ int sqlite3_dbdata_init(sqlite3*, char**, const sqlite3_api_routines*);
 /*
 ** sqlite3_recover_init DB DBNAME URI
 */
-static int test_sqlite3_dbdata_init(
+int test_sqlite3_dbdata_init(
   void *clientData,
   Tcl_Interp *interp,
   int objc,

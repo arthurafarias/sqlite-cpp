@@ -18,7 +18,7 @@ typedef sqlite3_int64 i64;   /* 64-bit signed integer type */
 ** Convert the var-int format into i64.  Return the number of bytes
 ** in the var-int.  Write the var-int value into *pVal.
 */
-static int decodeVarint(const unsigned char *z, i64 *pVal){
+int decodeVarint(const unsigned char *z, i64 *pVal){
   i64 v = 0;
   int i;
   for(i=0; i<8; i++){

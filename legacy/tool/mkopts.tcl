@@ -17,7 +17,7 @@ while {![eof stdin]} {
   }
 }
 
-puts "  static const char *${prefix}_strs\[\] = \173"
+puts "  const char *${prefix}_strs\[\] = \173"
 set col 0
 proc put_item x {
   global col

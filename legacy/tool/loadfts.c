@@ -30,7 +30,7 @@
 ** the file contains UTF-8 text. NULL is returned if the file does not 
 ** exist or is unreadable.
 */
-static void readfileFunc(
+void readfileFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -59,7 +59,7 @@ static void readfileFunc(
 /*
 ** Print usage text for this program and exit.
 */
-static void showHelp(const char *zArgv0){
+void showHelp(const char *zArgv0){
   printf("\n"
 "Usage: %s SWITCHES... DB\n"
 "\n"
@@ -82,7 +82,7 @@ static void showHelp(const char *zArgv0){
 /*
 ** Exit with a message based on the argument and the current value of errno.
 */
-static void error_out(const char *zText){
+void error_out(const char *zText){
   fprintf(stderr, "%s: %s\n", zText, strerror(errno));
   exit(-1);
 }
@@ -91,7 +91,7 @@ static void error_out(const char *zText){
 ** Exit with a message based on the first argument and the error message
 ** currently stored in database handle db.
 */
-static void sqlite_error_out(const char *zText, sqlite3 *db){
+void sqlite_error_out(const char *zText, sqlite3 *db){
   fprintf(stderr, "%s: %s\n", zText, sqlite3_errmsg(db));
   exit(-1);
 }
@@ -131,7 +131,7 @@ void visit_file(void *pCtx, const char *zPath){
 ** Recursively traverse directory zDir. For each file that is not a 
 ** directory, invoke the supplied callback with its path.
 */
-static void traverse(
+void traverse(
   const char *zDir,               /* Directory to traverse */
   void *pCtx,                     /* First argument passed to callback */
   void (*xCallback)(void*, const char *zPath)

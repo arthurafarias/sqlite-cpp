@@ -39,7 +39,7 @@ struct wholenumber_cursor {
 };
 
 /* Methods for the wholenumber module */
-static int wholenumberConnect(
+int wholenumberConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -57,7 +57,7 @@ static int wholenumberConnect(
 /* Note that for this virtual table, the xCreate and xConnect
 ** methods are identical. */
 
-static int wholenumberDisconnect(sqlite3_vtab *pVtab){
+int wholenumberDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -67,7 +67,7 @@ static int wholenumberDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Open a new wholenumber cursor.
 */
-static int wholenumberOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int wholenumberOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   wholenumber_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -79,7 +79,7 @@ static int wholenumberOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Close a wholenumber cursor.
 */
-static int wholenumberClose(sqlite3_vtab_cursor *cur){
+int wholenumberClose(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur);
   return SQLITE_OK;
 }
@@ -88,7 +88,7 @@ static int wholenumberClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a cursor to its next row of output
 */
-static int wholenumberNext(sqlite3_vtab_cursor *cur){
+int wholenumberNext(sqlite3_vtab_cursor *cur){
   wholenumber_cursor *pCur = (wholenumber_cursor*)cur;
   pCur->iValue++;
   return SQLITE_OK;
@@ -97,7 +97,7 @@ static int wholenumberNext(sqlite3_vtab_cursor *cur){
 /*
 ** Return the value associated with a wholenumber.
 */
-static int wholenumberColumn(
+int wholenumberColumn(
   sqlite3_vtab_cursor *cur,
   sqlite3_context *ctx,
   int i
@@ -110,7 +110,7 @@ static int wholenumberColumn(
 /*
 ** The rowid.
 */
-static int wholenumberRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int wholenumberRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   wholenumber_cursor *pCur = (wholenumber_cursor*)cur;
   *pRowid = pCur->iValue;
   return SQLITE_OK;
@@ -120,7 +120,7 @@ static int wholenumberRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** When the wholenumber_cursor.rLimit value is 0 or less, that is a signal
 ** that the cursor has nothing more to output.
 */
-static int wholenumberEof(sqlite3_vtab_cursor *cur){
+int wholenumberEof(sqlite3_vtab_cursor *cur){
   wholenumber_cursor *pCur = (wholenumber_cursor*)cur;
   return pCur->iValue>pCur->mxValue || pCur->iValue==0;
 }
@@ -143,7 +143,7 @@ static int wholenumberEof(sqlite3_vtab_cursor *cur){
 **      9      value > $argv0 AND value <= $argv1
 **     10      value >= $argv0 AND value <= $argv1
 */
-static int wholenumberFilter(
+int wholenumberFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -175,7 +175,7 @@ static int wholenumberFilter(
 **
 ** idxNum is an ORed combination of 1 or 2 with 4 or 8.
 */
-static int wholenumberBestIndex(
+int wholenumberBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -233,7 +233,7 @@ static int wholenumberBestIndex(
 ** A virtual table module that provides read-only access to a
 ** Tcl global variable namespace.
 */
-static sqlite3_module wholenumberModule = {
+sqlite3_module wholenumberModule = {
   0,                         /* iVersion */
   wholenumberConnect,
   wholenumberConnect,

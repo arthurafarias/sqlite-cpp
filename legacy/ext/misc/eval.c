@@ -31,7 +31,7 @@ struct EvalResult {
 /*
 ** Callback from sqlite_exec() for the eval() function.
 */
-static int callback(void *pCtx, int argc, char **argv, char **colnames){
+int callback(void *pCtx, int argc, char **argv, char **colnames){
   struct EvalResult *p = (struct EvalResult*)pCtx;
   int i; 
   if( argv==0 ) return 0;
@@ -68,7 +68,7 @@ static int callback(void *pCtx, int argc, char **argv, char **colnames){
 ** Evaluate the SQL text in X.  Return the results, using string
 ** Y as the separator.  If Y is omitted, use a single space character.
 */
-static void sqlEvalFunc(
+void sqlEvalFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

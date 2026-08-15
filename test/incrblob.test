@@ -430,7 +430,7 @@ unset -nocomplain ::text
 #     closed.
 #
 #     This test does not work with the "memsubsys1" configuration.
-#     Permutation memsubsys1 configures a very small static allocation 
+#     Permutation memsubsys1 configures a very small allocation 
 #     for use as page-cache memory. This causes SQLite to upgrade
 #     to an exclusive lock when writing earlier than usual, which
 #     makes some of these tests fail.

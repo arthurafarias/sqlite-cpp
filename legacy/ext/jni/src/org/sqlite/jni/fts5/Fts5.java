@@ -24,9 +24,9 @@ public final class Fts5 {
   private Fts5(){}
 
 
-  public static final int FTS5_TOKENIZE_QUERY    = 0x0001;
-  public static final int FTS5_TOKENIZE_PREFIX   = 0x0002;
-  public static final int FTS5_TOKENIZE_DOCUMENT = 0x0004;
-  public static final int FTS5_TOKENIZE_AUX      = 0x0008;
-  public static final int FTS5_TOKEN_COLOCATED   = 0x0001;
+  public final int FTS5_TOKENIZE_QUERY    = 0x0001;
+  public final int FTS5_TOKENIZE_PREFIX   = 0x0002;
+  public final int FTS5_TOKENIZE_DOCUMENT = 0x0004;
+  public final int FTS5_TOKENIZE_AUX      = 0x0008;
+  public final int FTS5_TOKEN_COLOCATED   = 0x0001;
 }

@@ -561,7 +561,7 @@ function WhWasmUtilInstaller(target){
     /** Attribution: adapted up from Emscripten-generated glue code,
         refactored primarily for efficiency's sake, eliminating
         call-local functions and superfluous temporary arrays. */
-    if(!f._){/*static init...*/
+    if(!f._){/*init...*/
       f._ = {
         /* Map of signature letters to type IR values */
         sigTypes: Object.assign(Object.create(null),{
@@ -618,7 +618,7 @@ function WhWasmUtilInstaller(target){
           return rc;
         },************/
       };
-    }/*static init*/
+    }/*init*/
     if('string'===typeof func){
       const x = sig;
       sig = func;
@@ -1858,9 +1858,9 @@ function WhWasmUtilInstaller(target){
     }
 
     /**
-       The static class members are defined outside of the class to
+       The class members are defined outside of the class to
        work around an emcc toolchain build problem: one of the tools
-       in emsdk v3.1.42 does not support the static keyword.
+       in emsdk v3.1.42 does not support the keyword.
     */
 
     /* Dummy impl. Overwritten per-instance as needed. */

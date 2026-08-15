@@ -28,9 +28,9 @@
 #include <ctype.h>
 
 /* Forward references */
-static char *fuzz_invariant_sql(sqlite3_stmt*, int);
-static int sameValue(sqlite3_stmt*,int,sqlite3_stmt*,int,sqlite3_stmt*);
-static void reportInvariantFailed(
+char *fuzz_invariant_sql(sqlite3_stmt*, int);
+int sameValue(sqlite3_stmt*,int,sqlite3_stmt*,int,sqlite3_stmt*);
+void reportInvariantFailed(
   sqlite3_stmt *pOrig,   /* The original query */
   sqlite3_stmt *pTest,   /* The alternative test query with a missing row */
   int iRow,              /* Row number in pOrig */
@@ -46,7 +46,7 @@ static void reportInvariantFailed(
 **     $carray_clr     ->   First argument to carray() for color names
 **     $carray_primes  ->   First argument to carray() for prime numbers
 */
-static void bindDebugParameters(sqlite3_stmt *pStmt){
+void bindDebugParameters(sqlite3_stmt *pStmt){
   int nVar = sqlite3_bind_parameter_count(pStmt);
   int i;
   for(i=1; i<=nVar; i++){
@@ -54,7 +54,7 @@ static void bindDebugParameters(sqlite3_stmt *pStmt){
     if( zVar==0 ) continue;
 #ifdef SQLITE_ENABLE_CARRAY
     if( strcmp(zVar,"$carray_clr")==0 ){
-      static char *azColorNames[] = {
+      char *azColorNames[] = {
         "azure", "black", "blue",   "brown", "cyan",   "fuchsia", "gold",
         "gray",  "green", "indigo", "khaki", "lime",   "magenta", "maroon",
         "navy",  "olive", "orange", "pink",  "purple", "red",     "silver",
@@ -63,7 +63,7 @@ static void bindDebugParameters(sqlite3_stmt *pStmt){
       sqlite3_carray_bind(pStmt,i,azColorNames,26,SQLITE_CARRAY_TEXT,0);
     }else
     if( strcmp(zVar,"$carray_primes")==0 ){
-      static int aPrimes[] = {
+      int aPrimes[] = {
         1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
        53, 59, 61, 67, 71, 73, 79, 83, 89, 97
       };
@@ -312,7 +312,7 @@ not_a_fault:
 **                           ORDER BY N
 **
 */
-static char *fuzz_invariant_sql(sqlite3_stmt *pStmt, int iCnt){
+char *fuzz_invariant_sql(sqlite3_stmt *pStmt, int iCnt){
   const char *zIn;
   size_t nIn;
   const char *zAnd = "WHERE";
@@ -394,7 +394,7 @@ static char *fuzz_invariant_sql(sqlite3_stmt *pStmt, int iCnt){
 /*
 ** Return true if and only if v1 and is the same as v2.
 */
-static int sameValue(
+int sameValue(
   sqlite3_stmt *pS1, int i1,       /* Value to text on the left */
   sqlite3_stmt *pS2, int i2,       /* Value to test on the right */
   sqlite3_stmt *pTestCompare       /* COLLATE comparison statement or NULL */
@@ -475,7 +475,7 @@ static int sameValue(
 /*
 ** Print binary data as hex
 */
-static void printHex(const unsigned char *a, int n, int mx){
+void printHex(const unsigned char *a, int n, int mx){
   int j;
   for(j=0; j<mx && j<n; j++){
     printf("%02x", a[j]);
@@ -486,7 +486,7 @@ static void printHex(const unsigned char *a, int n, int mx){
 /*
 ** Print a single row from the prepared statement
 */
-static void printRow(sqlite3_stmt *pStmt, int iRow){
+void printRow(sqlite3_stmt *pStmt, int iRow){
   int i, n, nCol;
   unsigned const char *data;
   nCol = sqlite3_column_count(pStmt);
@@ -555,7 +555,7 @@ static void printRow(sqlite3_stmt *pStmt, int iRow){
 ** Report a failure of the invariant:  The current output row of pOrig
 ** does not appear in any row of the output from pTest.
 */
-static void reportInvariantFailed(
+void reportInvariantFailed(
   sqlite3_stmt *pOrig,   /* The original query */
   sqlite3_stmt *pTest,   /* The alternative test query with a missing row */
   int iRow,              /* Row number in pOrig */

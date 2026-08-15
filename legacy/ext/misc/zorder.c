@@ -42,7 +42,7 @@ SQLITE_EXTENSION_INIT1
 ** The output is a signed 64-bit integer.  If any argument is too large
 ** to be successfully encoded into a morton code, an error is raised.
 */
-static void zorderFunc(
+void zorderFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -84,7 +84,7 @@ static void zorderFunc(
 ** Assuming that Z is an N-dimensional Morton code, extract the K-th
 ** dimension.  K is between 0 and N-1.  N must be between 2 and 24.
 */
-static void unzorderFunc(
+void unzorderFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

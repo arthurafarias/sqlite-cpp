@@ -25,7 +25,7 @@
 ** argument. If successful, set *pDb to point to the db handle and return
 ** TCL_OK. Otherwise, return TCL_ERROR.
 */
-static int dbHandleFromObj(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
+int dbHandleFromObj(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
   Tcl_CmdInfo info;
   if( 0==Tcl_GetCommandInfo(interp, Tcl_GetString(pObj), &info) ){
     Tcl_AppendResult(interp, "no such handle: ", Tcl_GetString(pObj), NULL);
@@ -44,7 +44,7 @@ static int dbHandleFromObj(Tcl_Interp *interp, Tcl_Obj *pObj, sqlite3 **pDb){
 **          $expert report STMT EREPORT
 **          $expert destroy
 */
-static int SQLITE_TCLAPI testExpertCmd(
+int SQLITE_TCLAPI testExpertCmd(
   void *clientData,
   Tcl_Interp *interp,
   int objc,
@@ -139,7 +139,7 @@ static int SQLITE_TCLAPI testExpertCmd(
   return rc;
 }
 
-static void SQLITE_TCLAPI testExpertDel(void *clientData){
+void SQLITE_TCLAPI testExpertDel(void *clientData){
   sqlite3expert *pExpert = (sqlite3expert*)clientData;
   sqlite3_expert_destroy(pExpert);
 }
@@ -147,13 +147,13 @@ static void SQLITE_TCLAPI testExpertDel(void *clientData){
 /*
 ** sqlite3_expert_new DB
 */
-static int SQLITE_TCLAPI test_sqlite3_expert_new(
+int SQLITE_TCLAPI test_sqlite3_expert_new(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  static int iCmd = 0;
+  int iCmd = 0;
   sqlite3 *db;
   char *zCmd = 0;
   char *zErr = 0;

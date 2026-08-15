@@ -125,7 +125,7 @@ typedef struct VdbeOpList VdbeOpList;
 */
 #define P4_NOTUSED      0   /* The P4 parameter is not used */
 #define P4_TRANSIENT    0   /* P4 is a pointer to a transient string */
-#define P4_STATIC     (-1)  /* Pointer to a static string */
+#define P4_STATIC     (-1)  /* Pointer to a string */
 #define P4_COLLSEQ    (-2)  /* P4 is a pointer to a CollSeq structure */
 #define P4_INT32      (-3)  /* P4 is a 32-bit signed integer */
 #define P4_SUBPROGRAM (-4)  /* P4 is a pointer to a SubProgram structure */

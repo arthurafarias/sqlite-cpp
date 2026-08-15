@@ -59,7 +59,7 @@ Hello World
 
 ```java
 import org.sqlite.jni.*;
-import static org.sqlite.jni.CApi.*;
+import org.sqlite.jni.CApi.*;
 
 ...
 

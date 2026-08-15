@@ -19,7 +19,7 @@
 ** Fill the InitData structure with an error message that indicates
 ** that the database is corrupt.
 */
-static void corruptSchema(
+void corruptSchema(
   InitData *pData,     /* Initialization context */
   char **azObj,        /* Type and name of object being parsed */
   const char *zExtra   /* Error information */
@@ -30,7 +30,7 @@ static void corruptSchema(
   }else if( pData->pzErrMsg[0]!=0 ){
     /* A error message has already been generated.  Do not overwrite it */
   }else if( pData->mInitFlags & (INITFLAG_AlterMask) ){
-    static const char *azAlterType[] = {
+    const char *azAlterType[] = {
        "rename",
        "drop column",
        "add column",
@@ -68,7 +68,7 @@ int sqlite3IndexHasDuplicateRootPage(Index *pIndex){
 }
 
 /* forward declaration */
-static int sqlite3Prepare(
+int sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
   const char *zSql,         /* UTF-8 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */
@@ -489,7 +489,7 @@ int sqlite3ReadSchema(Parse *pParse){
 ** of date set pParse->rc to SQLITE_SCHEMA.  If all schema cookies
 ** make no changes to pParse->rc.
 */
-static void schemaIsValid(Parse *pParse){
+void schemaIsValid(Parse *pParse){
   sqlite3 *db = pParse->db;
   int iDb;
   int rc;
@@ -679,7 +679,7 @@ void sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
 /*
 ** Compile the UTF-8 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare(
+int sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
   const char *zSql,         /* UTF-8 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */
@@ -833,7 +833,7 @@ end_prepare:
   sqlite3ParseObjectReset(&sParse);
   return rc;
 }
-static int sqlite3LockAndPrepare(
+int sqlite3LockAndPrepare(
   sqlite3 *db,              /* Database handle. */
   const char *zSql,         /* UTF-8 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */
@@ -980,7 +980,7 @@ int sqlite3_prepare_v3(
 /*
 ** Compile the UTF-16 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare16(
+int sqlite3Prepare16(
   sqlite3 *db,              /* Database handle. */ 
   const void *zSql,         /* UTF-16 encoded SQL statement. */
   int nBytes,               /* Length of zSql in bytes. */

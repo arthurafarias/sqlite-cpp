@@ -84,7 +84,7 @@ struct Qrf {
 **    0x02 -  digit
 **    0x04 -  alphabetic, including '_'
 */
-static const char qrfCType[] = {
+const char qrfCType[] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -119,7 +119,7 @@ static const char qrfCType[] = {
 /*
 ** Set an error code and error message.
 */
-static void qrfError(
+void qrfError(
   Qrf *p,                /* Query result state */
   int iCode,             /* Error code */
   const char *zFormat,   /* Message format (or NULL) */
@@ -141,14 +141,14 @@ static void qrfError(
 /*
 ** Out-of-memory error.
 */
-static void qrfOom(Qrf *p){
+void qrfOom(Qrf *p){
   qrfError(p, SQLITE_NOMEM, "out of memory");
 }
 
 /*
 ** Transfer any error in pStr over into p.
 */
-static void qrfStrErr(Qrf *p, sqlite3_str *pStr){
+void qrfStrErr(Qrf *p, sqlite3_str *pStr){
   int rc = pStr ? sqlite3_str_errcode(pStr) : 0;
   if( rc ){
     qrfError(p, rc, sqlite3_errstr(rc));
@@ -159,7 +159,7 @@ static void qrfStrErr(Qrf *p, sqlite3_str *pStr){
 /*
 ** Add a new entry to the EXPLAIN QUERY PLAN data
 */
-static void qrfEqpAppend(Qrf *p, int iEqpId, int p2, const char *zText){
+void qrfEqpAppend(Qrf *p, int iEqpId, int p2, const char *zText){
   qrfEQPGraphRow *pNew;
   sqlite3_int64 nText;
   if( zText==0 ) return;
@@ -193,7 +193,7 @@ static void qrfEqpAppend(Qrf *p, int iEqpId, int p2, const char *zText){
 ** Free and reset the EXPLAIN QUERY PLAN data that has been collected
 ** in p->u.pGraph.
 */
-static void qrfEqpReset(Qrf *p){
+void qrfEqpReset(Qrf *p){
   qrfEQPGraphRow *pRow, *pNext;
   if( p->u.pGraph ){
     for(pRow = p->u.pGraph->pRow; pRow; pRow = pNext){
@@ -208,7 +208,7 @@ static void qrfEqpReset(Qrf *p){
 /* Return the next EXPLAIN QUERY PLAN line with iEqpId that occurs after
 ** pOld, or return the first such line if pOld is NULL
 */
-static qrfEQPGraphRow *qrfEqpNextRow(Qrf *p, int iEqpId, qrfEQPGraphRow *pOld){
+qrfEQPGraphRow *qrfEqpNextRow(Qrf *p, int iEqpId, qrfEQPGraphRow *pOld){
   qrfEQPGraphRow *pRow = pOld ? pOld->pNext : p->u.pGraph->pRow;
   while( pRow && pRow->iParentId!=iEqpId ) pRow = pRow->pNext;
   return pRow;
@@ -217,7 +217,7 @@ static qrfEQPGraphRow *qrfEqpNextRow(Qrf *p, int iEqpId, qrfEQPGraphRow *pOld){
 /* Render a single level of the graph that has iEqpId as its parent.  Called
 ** recursively to render sublevels.
 */
-static void qrfEqpRenderLevel(Qrf *p, int iEqpId){
+void qrfEqpRenderLevel(Qrf *p, int iEqpId){
   qrfEQPGraphRow *pRow, *pNext;
   i64 n = strlen(p->u.pGraph->zPrefix);
   char *z;
@@ -241,8 +241,8 @@ static void qrfEqpRenderLevel(Qrf *p, int iEqpId){
 **   +  Only show the first three significant digits.
 **   +  Append suffixes K, M, G, T, P, and E for 1e3, 1e6, ... 1e18
 */
-static void qrfApproxInt64(sqlite3_str *pOut, i64 N){
-  static const char aSuffix[] = { 'K', 'M', 'G', 'T', 'P', 'E' };
+void qrfApproxInt64(sqlite3_str *pOut, i64 N){
+  const char aSuffix[] = { 'K', 'M', 'G', 'T', 'P', 'E' };
   int i;
   if( N<0 ){
     N = N==INT64_MIN ? INT64_MAX : -N;
@@ -276,7 +276,7 @@ static void qrfApproxInt64(sqlite3_str *pOut, i64 N){
 /*
 ** Display and reset the EXPLAIN QUERY PLAN data
 */
-static void qrfEqpRender(Qrf *p, i64 nCycle){
+void qrfEqpRender(Qrf *p, i64 nCycle){
   qrfEQPGraphRow *pRow;
   if( p->u.pGraph!=0 && (pRow = p->u.pGraph->pRow)!=0 ){
     if( pRow->zText[0]=='-' ){
@@ -322,7 +322,7 @@ static void qrfEqpRender(Qrf *p, i64 nCycle){
 ** Helper function for qrfExpStats().
 **
 */
-static int qrfStatsHeight(sqlite3_stmt *p, int iEntry){
+int qrfStatsHeight(sqlite3_stmt *p, int iEntry){
   int iPid = 0;
   int ret = 1;
   sqlite3_stmt_scanstatus_v2(p, iEntry,
@@ -353,11 +353,11 @@ static int qrfStatsHeight(sqlite3_stmt *p, int iEntry){
 /*
 ** Generate ".scanstatus est" style of EQP output.
 */
-static void qrfEqpStats(Qrf *p){
+void qrfEqpStats(Qrf *p){
 #ifndef SQLITE_ENABLE_STMT_SCANSTATUS
   qrfError(p, SQLITE_ERROR, "not available in this build");
 #else
-  static const int f = SQLITE_SCANSTAT_COMPLEX;
+  const int f = SQLITE_SCANSTAT_COMPLEX;
   sqlite3_stmt *pS = p->pStmt;
   int i = 0;
   i64 nTotal = 0;
@@ -457,7 +457,7 @@ static void qrfEqpStats(Qrf *p){
 /*
 ** Reset the prepared statement.
 */
-static void qrfResetStmt(Qrf *p){
+void qrfResetStmt(Qrf *p){
   int rc = sqlite3_reset(p->pStmt);
   if( rc!=SQLITE_OK && p->iErr==SQLITE_OK ){
     qrfError(p, rc, "%s", sqlite3_errmsg(p->db));
@@ -468,7 +468,7 @@ static void qrfResetStmt(Qrf *p){
 ** If xWrite is defined, send all content of pOut to xWrite and
 ** reset pOut.
 */
-static void qrfWrite(Qrf *p){
+void qrfWrite(Qrf *p){
   int n;
   if( p->spec.xWrite && (n = sqlite3_str_length(p->pOut))>0 ){
     int rc = p->spec.xWrite(p->spec.pWriteArg,
@@ -484,7 +484,7 @@ static void qrfWrite(Qrf *p){
 /* Lookup table to estimate the number of columns consumed by a Unicode
 ** character.
 */
-static const struct {
+const struct {
   unsigned char w;    /* Width of the character in columns */
   int iFirst;         /* First character in a span having this width */
 } aQrfUWidth[] = {
@@ -620,7 +620,7 @@ int sqlite3_qrf_decode_utf8(const unsigned char *z, int *pU){
 **
 ** This routine assumes that z[0] is \033 (ESC).
 */
-static int qrfIsVt100(const unsigned char *z){
+int qrfIsVt100(const unsigned char *z){
   int i;
   if( z[1]!='[' ) return 0;
   i = 2;
@@ -678,7 +678,7 @@ size_t sqlite3_qrf_wcswidth(const char *zIn){
 ** return 0 if everything fits on one line, or positive it
 ** it will need to be split.
 */
-static int qrfDisplayWidth(const char *zIn, sqlite3_int64 nByte, int *pnNL){
+int qrfDisplayWidth(const char *zIn, sqlite3_int64 nByte, int *pnNL){
   const unsigned char *z;
   const unsigned char *zEnd;
   int mx = 0;
@@ -732,7 +732,7 @@ static int qrfDisplayWidth(const char *zIn, sqlite3_int64 nByte, int *pnNL){
 ** The caller is responsible for freeing *ppFree if it is non-NULL in order
 ** to reclaim memory.
 */
-static void qrfEscape(
+void qrfEscape(
   int eEsc,            /* QRF_ESC_Ascii or QRF_ESC_Symbol */
   sqlite3_str *pStr,      /* String to be escaped */
   int iStart              /* Begin escapding on this byte of pStr */
@@ -809,7 +809,7 @@ static void qrfEscape(
 **    (2) z[] is not the same as the NULL rendering
 **    (3) z[] does not looks like a numeric literal
 */
-static int qrfRelaxable(Qrf *p, const char *z){
+int qrfRelaxable(Qrf *p, const char *z){
   size_t i, n;
   if( z[0]=='\'' || qrfSpace(z[0]) ) return 0;
   if( z[0]==0 ){
@@ -843,7 +843,7 @@ static int qrfRelaxable(Qrf *p, const char *z){
 ** If a field contains any character identified by a 1 in the following
 ** array, then the string must be quoted for CSV.
 */
-static const char qrfCsvQuote[] = {
+const char qrfCsvQuote[] = {
   1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1, 1, 1,
   1, 0, 1, 0, 0, 0, 0, 1,   0, 0, 0, 0, 0, 0, 0, 0,
@@ -865,7 +865,7 @@ static const char qrfCsvQuote[] = {
 /*
 ** Encode text appropriately and append it to pOut.
 */
-static void qrfEncodeText(Qrf *p, sqlite3_str *pOut, const char *zTxt){
+void qrfEncodeText(Qrf *p, sqlite3_str *pOut, const char *zTxt){
   int iStart = sqlite3_str_length(pOut);
   switch( p->spec.eText ){
     case QRF_TEXT_Relaxed:
@@ -971,7 +971,7 @@ static void qrfEncodeText(Qrf *p, sqlite3_str *pOut, const char *zTxt){
 **
 ** False positives are possible, but not false negatives.
 */
-static int qrfJsonbQuickCheck(unsigned char *aBlob, int nBlob){
+int qrfJsonbQuickCheck(unsigned char *aBlob, int nBlob){
   unsigned char x;   /* Payload size half-byte */
   int i;             /* Loop counter */   
   int n;             /* Bytes in the payload size integer */
@@ -998,7 +998,7 @@ static int qrfJsonbQuickCheck(unsigned char *aBlob, int nBlob){
 ** to this routine (with the same p argument) or when the p object is
 ** finailized.
 */
-static const char *qrfJsonbToJson(Qrf *p, int iCol){
+const char *qrfJsonbToJson(Qrf *p, int iCol){
   int nByte;
   const void *pBlob;
   int rc;
@@ -1042,7 +1042,7 @@ static const char *qrfJsonbToJson(Qrf *p, int iCol){
 **
 ** Return this display width of the modified title string.
 */
-static int qrfTitleLimit(char *zIn, int N){
+int qrfTitleLimit(char *zIn, int N){
   unsigned char *z = (unsigned char*)zIn;
   int n = 0;
   unsigned char *zEllipsis = 0;
@@ -1083,7 +1083,7 @@ static int qrfTitleLimit(char *zIn, int N){
 /*
 ** Render value pVal into pOut
 */
-static void qrfRenderValue(Qrf *p, sqlite3_str *pOut, int iCol){
+void qrfRenderValue(Qrf *p, sqlite3_str *pOut, int iCol){
 #if SQLITE_VERSION_NUMBER>=3052000
   int iStartLen = sqlite3_str_length(pOut);
 #endif
@@ -1244,7 +1244,7 @@ static void qrfRenderValue(Qrf *p, sqlite3_str *pOut, int iCol){
 
 /* Trim spaces of the end if pOut
 */
-static void qrfRTrim(sqlite3_str *pOut){
+void qrfRTrim(sqlite3_str *pOut){
 #if SQLITE_VERSION_NUMBER>=3052000
   int nByte = sqlite3_str_length(pOut);
   const char *zOut = sqlite3_str_value(pOut);
@@ -1259,9 +1259,9 @@ static void qrfRTrim(sqlite3_str *pOut){
 ** in bytes.  Double-width unicode characters count as two characters.
 ** VT100 escape sequences count as zero.  And so forth.
 */
-static void qrfWidthPrint(Qrf *p, sqlite3_str *pOut, int w, const char *zUtf){
+void qrfWidthPrint(Qrf *p, sqlite3_str *pOut, int w, const char *zUtf){
   const unsigned char *a = (const unsigned char*)zUtf;
-  static const int mxW = 10000000;
+  const int mxW = 10000000;
   unsigned char c;
   int i = 0;
   int n = 0;
@@ -1316,7 +1316,7 @@ static void qrfWidthPrint(Qrf *p, sqlite3_str *pOut, int w, const char *zUtf){
 **    *  How many character positions those bytes will cover.
 **    *  The byte offset to the start of the next line.
 */
-static void qrfWrapLine(
+void qrfWrapLine(
   const char *zIn,   /* Input text to be displayed */
   int w,             /* Column width in characters (not bytes) */
   int bWrap,         /* True if we should do word-wrapping */
@@ -1412,7 +1412,7 @@ static void qrfWrapLine(
 ** Convert tab characters in zVal to the appropriate number of
 ** spaces.
 */
-static void qrfAppendWithTabs(
+void qrfAppendWithTabs(
   sqlite3_str *pOut,       /* Append text here */
   const char *zVal,        /* Text to append */
   int nVal                 /* Use only the first nVal bytes of zVal[] */
@@ -1504,7 +1504,7 @@ struct qrfColData {
 ** split between both sides, or on the left, or on the right, depending
 ** on eAlign.
 */
-static void qrfPrintAligned(
+void qrfPrintAligned(
   sqlite3_str *pOut,       /* Append text here */
   struct qrfPerCol *pCol,  /* Information about the text to print */
   int nVal,                /* Use only the first nVal bytes of zVal[] */
@@ -1531,7 +1531,7 @@ static void qrfPrintAligned(
 /*
 ** Free all the memory allocates in the qrfColData object
 */
-static void qrfColDataFree(qrfColData *p){
+void qrfColDataFree(qrfColData *p){
   sqlite3_int64 i;
   for(i=0; i<p->n; i++) sqlite3_free(p->az[i]);
   sqlite3_free(p->az);
@@ -1545,7 +1545,7 @@ static void qrfColDataFree(qrfColData *p){
 ** Allocate space for more cells in the qrfColData object.
 ** Return non-zero if a memory allocation fails.
 */
-static int qrfColDataEnlarge(qrfColData *p){
+int qrfColDataEnlarge(qrfColData *p){
   char **azData;
   int *aiWth;
   unsigned char *abNum;
@@ -1577,7 +1577,7 @@ static int qrfColDataEnlarge(qrfColData *p){
 /*
 ** Print a markdown or table-style row separator using ascii-art
 */
-static void qrfRowSeparator(sqlite3_str *pOut, qrfColData *p, char cSep){
+void qrfRowSeparator(sqlite3_str *pOut, qrfColData *p, char cSep){
   int i;
   if( p->nCol>0 ){
     int useBorder = p->p->spec.bBorder!=QRF_No;
@@ -1636,7 +1636,7 @@ static void qrfRowSeparator(sqlite3_str *pOut, qrfColData *p, char cSep){
 /* Draw horizontal line N characters long using unicode box
 ** characters
 */
-static void qrfBoxLine(sqlite3_str *pOut, int N, int bDbl){
+void qrfBoxLine(sqlite3_str *pOut, int N, int bDbl){
   const char *azDash[2] = {
       BOX_24 BOX_24 BOX_24 BOX_24 BOX_24   BOX_24 BOX_24 BOX_24 BOX_24 BOX_24,
       DBL_24 DBL_24 DBL_24 DBL_24 DBL_24   DBL_24 DBL_24 DBL_24 DBL_24 DBL_24
@@ -1653,7 +1653,7 @@ static void qrfBoxLine(sqlite3_str *pOut, int N, int bDbl){
 /*
 ** Draw a horizontal separator for a QRF_STYLE_Box table.
 */
-static void qrfBoxSeparator(
+void qrfBoxSeparator(
   sqlite3_str *pOut,
   qrfColData *p,
   const char *zSep1,
@@ -1682,7 +1682,7 @@ static void qrfBoxSeparator(
 /*
 ** Load into pData the default alignment for the body of a table.
 */
-static void qrfLoadAlignment(qrfColData *pData, Qrf *p){
+void qrfLoadAlignment(qrfColData *pData, Qrf *p){
   sqlite3_int64 i;
   for(i=0; i<pData->nCol; i++){
     pData->a[i].e = p->spec.eDfltAlign;
@@ -1711,7 +1711,7 @@ static void qrfLoadAlignment(qrfColData *pData, Qrf *p){
 **
 ** Space to hold the returned array is from sqlite_malloc64().
 */
-static int *qrfValidLayout(
+int *qrfValidLayout(
   qrfColData *pData,   /* Collected query results */
   Qrf *p,              /* On which to report an OOM */
   int nCol,            /* Attempt this many columns */
@@ -1752,7 +1752,7 @@ static int *qrfValidLayout(
 ** Check to see if the single-column output can be split into multiple
 ** columns that appear side-by-side.  Adjust pData appropriately.
 */
-static void qrfSplitColumn(qrfColData *pData, Qrf *p){
+void qrfSplitColumn(qrfColData *pData, Qrf *p){
   int nCol = 1;
   int *aw = 0;
   char **az = 0;
@@ -1842,7 +1842,7 @@ static void qrfSplitColumn(qrfColData *pData, Qrf *p){
 /*
 ** Adjust the layout for the screen width restriction
 */
-static void qrfRestrictScreenWidth(qrfColData *pData, Qrf *p){
+void qrfRestrictScreenWidth(qrfColData *pData, Qrf *p){
   int sepW;             /* Width of all box separators and margins */
   int sumW;             /* Total width of data area over all columns */
   int targetW;          /* Desired total data area */
@@ -1919,7 +1919,7 @@ static void qrfRestrictScreenWidth(qrfColData *pData, Qrf *p){
 ** results written into memory, so that we can compute appropriate column
 ** widths.
 */
-static void qrfColumnar(Qrf *p){
+void qrfColumnar(Qrf *p){
   sqlite3_int64 i, j;                     /* Loop counters */
   const char *colSep = 0;                 /* Column separator text */
   const char *rowSep = 0;                 /* Row terminator text */
@@ -2107,7 +2107,7 @@ static void qrfColumnar(Qrf *p){
       }
       break;
     case QRF_STYLE_Column: {
-      static const char zSpace[] = "     ";
+      const char zSpace[] = "     ";
       rowStart = "";
       if( data.nMargin<2 ){
         colSep = " ";
@@ -2276,7 +2276,7 @@ static void qrfColumnar(Qrf *p){
 ** is equal, according to strcmp(), to any of the strings in the array.
 ** Otherwise, return zero.
 */
-static int qrfStringInArray(const char *zStr, const char **azArray){
+int qrfStringInArray(const char *zStr, const char **azArray){
   int i;
   if( zStr==0 ) return 0;
   for(i=0; azArray[i]; i++){
@@ -2308,7 +2308,7 @@ static int qrfStringInArray(const char *zStr, const char **azArray){
 **       then indent all opcodes between the earlier instruction
 **       and "Goto" by 2 spaces.
 */
-static void qrfExplain(Qrf *p){
+void qrfExplain(Qrf *p){
   int *abYield = 0;     /* abYield[iOp] is rue if opcode iOp is an OP_Yield */
   int *aiIndent = 0;    /* Indent the iOp-th opcode by aiIndent[iOp] */
   i64 nAlloc = 0;       /* Allocated size of aiIndent[], abYield */
@@ -2372,10 +2372,10 @@ static void qrfExplain(Qrf *p){
   /* Second pass.  Actually generate output */
   sqlite3_reset(p->pStmt);
   if( p->iErr==SQLITE_OK ){
-    static const int aExplainWidth[] = {4,       13, 4, 4, 4, 13, 2, 13};
-    static const int aExplainMap[] =   {0,       1,  2, 3, 4, 5,  6, 7 };
-    static const int aScanExpWidth[] = {4,15, 6, 13, 4, 4, 4, 13, 2, 13};
-    static const int aScanExpMap[] =   {0, 9, 8, 1,  2, 3, 4, 5,  6, 7 };
+    const int aExplainWidth[] = {4,       13, 4, 4, 4, 13, 2, 13};
+    const int aExplainMap[] =   {0,       1,  2, 3, 4, 5,  6, 7 };
+    const int aScanExpWidth[] = {4,15, 6, 13, 4, 4, 4, 13, 2, 13};
+    const int aScanExpMap[] =   {0, 9, 8, 1,  2, 3, 4, 5,  6, 7 };
     const int *aWidth = aExplainWidth;
     const int *aMap = aExplainMap;
     int nWidth = sizeof(aExplainWidth)/sizeof(int);
@@ -2448,11 +2448,11 @@ static void qrfExplain(Qrf *p){
 ** columns for the "scanstatus vm" outputs, and run the results of
 ** that new query through the normal EXPLAIN formatting.
 */
-static void qrfScanStatusVm(Qrf *p){
+void qrfScanStatusVm(Qrf *p){
   sqlite3_stmt *pOrigStmt = p->pStmt;
   sqlite3_stmt *pExplain;
   int rc;
-  static const char *zSql =
+  const char *zSql =
       "  SELECT addr, opcode, p1, p2, p3, p4, p5, comment, nexec,"
       "   format('% 6s (%.2f%%)',"
       "      CASE WHEN ncycle<100_000 THEN ncycle || ' '"
@@ -2485,7 +2485,7 @@ static void qrfScanStatusVm(Qrf *p){
 ** Return 1 if quoting is required.  Return 0 if no quoting is required.
 */
 
-static int qrf_need_quote(const char *zName){
+int qrf_need_quote(const char *zName){
   int i;
   const unsigned char *z = (const unsigned char*)zName;
   if( z==0 ) return 1;
@@ -2501,7 +2501,7 @@ static int qrf_need_quote(const char *zName){
 ** The initial "{" for a JSON object that will contain row content
 ** has been output.  Now output all the content.
 */
-static void qrfOneJsonRow(Qrf *p){
+void qrfOneJsonRow(Qrf *p){
   int i, nItem; 
   for(nItem=i=0; i<p->nCol; i++){
     const char *zCName;
@@ -2520,7 +2520,7 @@ static void qrfOneJsonRow(Qrf *p){
 ** style that lets us render row by row as the content is received
 ** from the query.
 */
-static void qrfOneSimpleRow(Qrf *p){
+void qrfOneSimpleRow(Qrf *p){
   int i;
   switch( p->spec.eStyle ){
     case QRF_STYLE_Off:
@@ -2705,7 +2705,7 @@ static void qrfOneSimpleRow(Qrf *p){
 /*
 ** Initialize the internal Qrf object.
 */
-static void qrfInitialize(
+void qrfInitialize(
   Qrf *p,                        /* State object to be initialized */
   sqlite3_stmt *pStmt,           /* Query whose output to be formatted */
   const sqlite3_qrf_spec *pSpec, /* Format specification */
@@ -2869,7 +2869,7 @@ qrf_reinit:
 /*
 ** Finish rendering the results
 */
-static void qrfFinalize(Qrf *p){
+void qrfFinalize(Qrf *p){
   switch( p->spec.eStyle ){
     case QRF_STYLE_Count: {
       sqlite3_str_appendf(p->pOut, "%lld\n", p->nRow);

@@ -136,20 +136,20 @@ public enum ResultCode {
      Returns the entry from this enum for the given result code, or
      null if no match is found.
   */
-  public static ResultCode getEntryForInt(int rc){
+  public ResultCode getEntryForInt(int rc){
     return ResultCodeMap.get(rc);
   }
 
   /**
      Internal level of indirection required because we cannot initialize
-     static enum members in an enum before the enum constructor is
+     enum members in an enum before the enum constructor is
      invoked.
   */
-  private static final class ResultCodeMap {
-    private static final java.util.Map<Integer,ResultCode> i2e
+  private final class ResultCodeMap {
+    private final java.util.Map<Integer,ResultCode> i2e
       = new java.util.HashMap<>();
-    private static void set(int rc, ResultCode e){ i2e.put(rc, e); }
-    private static ResultCode get(int rc){ return i2e.get(rc); }
+    private void set(int rc, ResultCode e){ i2e.put(rc, e); }
+    private ResultCode get(int rc){ return i2e.get(rc); }
   }
 
 }

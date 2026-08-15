@@ -59,7 +59,7 @@ struct sqlite3_intck {
 ** Some error has occurred while using database p->db. Save the error message
 ** and error code currently held by the database handle in p->rc and p->zErr.
 */
-static void intckSaveErrmsg(sqlite3_intck *p){
+void intckSaveErrmsg(sqlite3_intck *p){
   p->rc = sqlite3_errcode(p->db);
   sqlite3_free(p->zErr);
   p->zErr = sqlite3_mprintf("%s", sqlite3_errmsg(p->db));
@@ -73,7 +73,7 @@ static void intckSaveErrmsg(sqlite3_intck *p){
 ** Otherwise, this function attempts to prepare SQL statement zSql and
 ** return the resulting statement handle to the user.
 */
-static sqlite3_stmt *intckPrepare(sqlite3_intck *p, const char *zSql){
+sqlite3_stmt *intckPrepare(sqlite3_intck *p, const char *zSql){
   sqlite3_stmt *pRet = 0;
   if( p->rc==SQLITE_OK ){
     p->rc = sqlite3_prepare_v2(p->db, zSql, -1, &pRet, 0);
@@ -95,7 +95,7 @@ static sqlite3_stmt *intckPrepare(sqlite3_intck *p, const char *zSql){
 ** attempts to prepare the results and return the resulting prepared
 ** statement.
 */
-static sqlite3_stmt *intckPrepareFmt(sqlite3_intck *p, const char *zFmt, ...){
+sqlite3_stmt *intckPrepareFmt(sqlite3_intck *p, const char *zFmt, ...){
   sqlite3_stmt *pRet = 0;
   va_list ap;
   char *zSql = 0;
@@ -115,7 +115,7 @@ static sqlite3_stmt *intckPrepareFmt(sqlite3_intck *p, const char *zFmt, ...){
 ** as the first argument does not already contain an error, store the
 ** error in the handle.
 */
-static void intckFinalize(sqlite3_intck *p, sqlite3_stmt *pStmt){
+void intckFinalize(sqlite3_intck *p, sqlite3_stmt *pStmt){
   int rc = sqlite3_finalize(pStmt);
   if( p->rc==SQLITE_OK && rc!=SQLITE_OK ){
     intckSaveErrmsg(p);
@@ -126,7 +126,7 @@ static void intckFinalize(sqlite3_intck *p, sqlite3_stmt *pStmt){
 ** If there is already an error in handle p, return it. Otherwise, call
 ** sqlite3_step() on the statement handle and return that value.
 */
-static int intckStep(sqlite3_intck *p, sqlite3_stmt *pStmt){
+int intckStep(sqlite3_intck *p, sqlite3_stmt *pStmt){
   if( p->rc ) return p->rc;
   return sqlite3_step(pStmt);
 }
@@ -136,7 +136,7 @@ static int intckStep(sqlite3_intck *p, sqlite3_stmt *pStmt){
 ** returned by the statement. This function uses the sqlite3_intck error
 ** code convention.
 */
-static void intckExec(sqlite3_intck *p, const char *zSql){
+void intckExec(sqlite3_intck *p, const char *zSql){
   sqlite3_stmt *pStmt = 0;
   pStmt = intckPrepare(p, zSql);
   intckStep(p, pStmt);
@@ -147,7 +147,7 @@ static void intckExec(sqlite3_intck *p, const char *zSql){
 ** A wrapper around sqlite3_mprintf() that uses the sqlite3_intck error
 ** code convention.
 */
-static char *intckMprintf(sqlite3_intck *p, const char *zFmt, ...){
+char *intckMprintf(sqlite3_intck *p, const char *zFmt, ...){
   va_list ap;
   char *zRet = 0;
   va_start(ap, zFmt);
@@ -169,7 +169,7 @@ static char *intckMprintf(sqlite3_intck *p, const char *zFmt, ...){
 ** required to restart the current pCheck query as a nul-terminated string 
 ** in p->zKey.
 */
-static void intckSaveKey(sqlite3_intck *p){
+void intckSaveKey(sqlite3_intck *p){
   int ii;
   char *zSql = 0;
   sqlite3_stmt *pStmt = 0;
@@ -269,7 +269,7 @@ static void intckSaveKey(sqlite3_intck *p){
 ** set sqlite3_intck.zObj to point to a nul-terminated buffer containing
 ** the object's name before returning.
 */
-static void intckFindObject(sqlite3_intck *p){
+void intckFindObject(sqlite3_intck *p){
   sqlite3_stmt *pStmt = 0;
   char *zPrev = p->zObj;
   p->zObj = 0;
@@ -315,7 +315,7 @@ static void intckFindObject(sqlite3_intck *p){
 *    *  a contiguous series of ascii alphabet characters, or
 *    *  any other single byte.
 */
-static int intckGetToken(const char *z){
+int intckGetToken(const char *z){
   char c = z[0];
   int iRet = 1;
   if( c=='\'' || c=='"' || c=='`' ){
@@ -345,7 +345,7 @@ static int intckGetToken(const char *z){
 /*
 ** Return true if argument c is an ascii whitespace character.
 */
-static int intckIsSpace(char c){
+int intckIsSpace(char c){
   return (c==' ' || c=='\t' || c=='\n' || c=='\r');
 }
 
@@ -364,7 +364,7 @@ static int intckIsSpace(char c){
 ** the identified fragment is returned and output parameter (*pnByte) set
 ** to its size in bytes.
 */
-static const char *intckParseCreateIndex(const char *z, int iCol, int *pnByte){
+const char *intckParseCreateIndex(const char *z, int iCol, int *pnByte){
   int iOff = 0;
   int iThisCol = 0;
   int iStart = 0;
@@ -449,7 +449,7 @@ static const char *intckParseCreateIndex(const char *z, int iCol, int *pnByte){
 **
 **     SELECT parse_create_index(<sql>, <icol>);
 */
-static void intckParseCreateIndexFunc(
+void intckParseCreateIndexFunc(
   sqlite3_context *pCtx, 
   int nVal, 
   sqlite3_value **apVal
@@ -470,7 +470,7 @@ static void intckParseCreateIndexFunc(
 ** Return true if sqlite3_intck.db has automatic indexes enabled, false
 ** otherwise.
 */
-static int intckGetAutoIndex(sqlite3_intck *p){
+int intckGetAutoIndex(sqlite3_intck *p){
   int bRet = 0;
   sqlite3_stmt *pStmt = 0;
   pStmt = intckPrepare(p, "PRAGMA automatic_index");
@@ -484,7 +484,7 @@ static int intckGetAutoIndex(sqlite3_intck *p){
 /*
 ** Return true if zObj is an index, or false otherwise.
 */
-static int intckIsIndex(sqlite3_intck *p, const char *zObj){
+int intckIsIndex(sqlite3_intck *p, const char *zObj){
   int bRet = 0;
   sqlite3_stmt *pStmt = 0;
   pStmt = intckPrepareFmt(p, 
@@ -508,7 +508,7 @@ static int intckIsIndex(sqlite3_intck *p, const char *zObj){
 **
 ** This function uses the sqlite3_intck error code convention.
 */
-static char *intckCheckObjectSql(
+char *intckCheckObjectSql(
   sqlite3_intck *p,               /* Integrity check object */
   const char *zObj,               /* Object (table or index) to scan */
   const char *zPrev,              /* Restart key vector, if any */

@@ -304,7 +304,7 @@ do_test cast-3.32.1 {
   set blob "1234567890"
   set DB [sqlite3_connection_pointer db]
   set ::STMT [sqlite3_prepare $DB {SELECT CAST(? AS real)} -1 TAIL]
-  sqlite3_bind_blob -static $::STMT 1 $blob 5
+  sqlite3_bind_blob -$::STMT 1 $blob 5
   sqlite3_step $::STMT
 } {SQLITE_ROW}
 do_test cast-3.32.2 {

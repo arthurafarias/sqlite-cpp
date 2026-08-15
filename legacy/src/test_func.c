@@ -26,7 +26,7 @@
 ** allocation fails, call sqlite3_result_error_nomem() to notify
 ** the database handle that malloc() has failed.
 */
-static void *testContextMalloc(sqlite3_context *context, int nByte){
+void *testContextMalloc(sqlite3_context *context, int nByte){
   char *z = sqlite3_malloc(nByte);
   if( !z && nByte>0 ){
     sqlite3_result_error_nomem(context);
@@ -38,8 +38,8 @@ static void *testContextMalloc(sqlite3_context *context, int nByte){
 ** This function generates a string of random characters.  Used for
 ** generating test data.
 */
-static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
-  static const unsigned char zSrc[] = 
+void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
+  const unsigned char zSrc[] = 
      "abcdefghijklmnopqrstuvwxyz"
      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
      "0123456789"
@@ -84,15 +84,15 @@ static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
 **
 ** WARNING: Not threadsafe.
 */
-static int test_destructor_count_var = 0;
-static void destructor(void *p){
+int test_destructor_count_var = 0;
+void destructor(void *p){
   char *zVal = (char *)p;
   assert(zVal);
   zVal--;
   sqlite3_free(zVal);
   test_destructor_count_var--;
 }
-static void test_destructor(
+void test_destructor(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -115,7 +115,7 @@ static void test_destructor(
   sqlite3_result_text(pCtx, zVal, -1, destructor);
 }
 #ifndef SQLITE_OMIT_UTF16
-static void test_destructor16(
+void test_destructor16(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -138,7 +138,7 @@ static void test_destructor16(
   sqlite3_result_text16(pCtx, zVal, -1, destructor);
 }
 #endif
-static void test_destructor_count(
+void test_destructor_count(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -158,9 +158,9 @@ void sqlite3EndBenignMalloc(void);
   #define sqlite3BeginBenignMalloc()
   #define sqlite3EndBenignMalloc()
 #endif
-static void test_agg_errmsg16_step(sqlite3_context *a, int b,sqlite3_value **c){
+void test_agg_errmsg16_step(sqlite3_context *a, int b,sqlite3_value **c){
 }
-static void test_agg_errmsg16_final(sqlite3_context *ctx){
+void test_agg_errmsg16_final(sqlite3_context *ctx){
 #ifndef SQLITE_OMIT_UTF16
   const void *z;
   sqlite3 * db = sqlite3_context_db_handle(ctx);
@@ -181,8 +181,8 @@ static void test_agg_errmsg16_final(sqlite3_context *ctx){
 ** registration, the result for that argument is 1.  The overall result
 ** is the individual argument results separated by spaces.
 */
-static void free_test_auxdata(void *p) {sqlite3_free(p);}
-static void test_auxdata(
+void free_test_auxdata(void *p) {sqlite3_free(p);}
+void test_auxdata(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -219,7 +219,7 @@ static void test_auxdata(
 ** returns a copy of its first argument as the error message.  If the
 ** second argument exists, it becomes the error code.
 */
-static void test_error(
+void test_error(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -236,7 +236,7 @@ static void test_error(
 ** and so forth.  Can be used (for example) to provide a sequence number
 ** in a result set.
 */
-static void counterFunc(
+void counterFunc(
   sqlite3_context *pCtx,   /* Function context */
   int nArg,                /* Number of function arguments */
   sqlite3_value **argv     /* Values for all function arguments */
@@ -269,7 +269,7 @@ static void counterFunc(
 ** We want to verify that the type conversions that occur on the
 ** first argument do not invalidate the second argument.
 */
-static void test_isolation(
+void test_isolation(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -287,7 +287,7 @@ static void test_isolation(
 ** Invoke an SQL statement recursively.  The function result is the 
 ** first column of the first row of the result set.
 */
-static void test_eval(
+void test_eval(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -319,7 +319,7 @@ static void test_eval(
 /*
 ** convert one character from hex to binary
 */
-static int testHexChar(char c){
+int testHexChar(char c){
   if( c>='0' && c<='9' ){
     return c - '0';
   }else if( c>='a' && c<='f' ){
@@ -333,7 +333,7 @@ static int testHexChar(char c){
 /*
 ** Convert hex to binary.
 */
-static void testHexToBin(const char *zIn, char *zOut){
+void testHexToBin(const char *zIn, char *zOut){
   while( zIn[0] && zIn[1] ){
     *(zOut++) = (testHexChar(zIn[0])<<4) + testHexChar(zIn[1]);
     zIn += 2;
@@ -347,7 +347,7 @@ static void testHexToBin(const char *zIn, char *zOut){
 ** result using sqlite3_result_text16le().
 */
 #ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16be(
+void testHexToUtf16be(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -374,7 +374,7 @@ static void testHexToUtf16be(
 ** Convert the input string from HEX into binary.  Then return the
 ** result using sqlite3_result_text16le().
 */
-static void testHexToUtf8(
+void testHexToUtf8(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -401,7 +401,7 @@ static void testHexToUtf8(
 ** result using sqlite3_result_text16le().
 */
 #ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16le(
+void testHexToUtf16le(
   sqlite3_context *pCtx, 
   int nArg,
   sqlite3_value **argv
@@ -429,7 +429,7 @@ static void testHexToUtf16le(
 ** the big-endian hexadecimal representation of the ieee754 encoding of
 ** that number.  If X is not a real number, return NULL.
 */
-static void real2hex(
+void real2hex(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -466,7 +466,7 @@ static void real2hex(
 ** second argument is the index of the field within that record to
 ** extract and return.
 */
-static void test_extract(
+void test_extract(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -514,7 +514,7 @@ static void test_extract(
 ** a tcl list (type SQLITE_TEXT) containing each of the values stored
 ** in the record.
 */
-static void test_decode(
+void test_decode(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -607,7 +607,7 @@ static void test_decode(
 ** check that the integer parameter is within range before passing it
 ** to sqlite3_result_zeroblob().
 */
-static void test_zeroblob(
+void test_zeroblob(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -620,7 +620,7 @@ static void test_zeroblob(
 **
 ** Return the subtype for value V.
 */
-static void test_getsubtype(
+void test_getsubtype(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -633,7 +633,7 @@ static void test_getsubtype(
 ** Return an integer bitmask that has a bit set for every argument
 ** (up to the first 63 arguments) that originates from a bind a parameter.
 */
-static void test_frombind(
+void test_frombind(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -650,7 +650,7 @@ static void test_frombind(
 **
 ** Return the value V with its subtype changed to T
 */
-static void test_setsubtype(
+void test_setsubtype(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -659,12 +659,12 @@ static void test_setsubtype(
   sqlite3_result_subtype(context, (unsigned int)sqlite3_value_int(argv[1]));
 }
 
-static int registerTestFunctions(
+int registerTestFunctions(
   sqlite3 *db,
   char **pzErrMsg,
   const sqlite3_api_routines *pThunk
 ){
-  static const struct {
+  const struct {
      char *zName;
      signed char nArg;
      unsigned int eTextRep; /* 1: UTF-16.  0: UTF-8 */
@@ -714,7 +714,7 @@ static int registerTestFunctions(
 ** the standard set of test functions to be loaded into each new
 ** database connection.
 */
-static int SQLITE_TCLAPI autoinstall_test_funcs(
+int SQLITE_TCLAPI autoinstall_test_funcs(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -732,8 +732,8 @@ static int SQLITE_TCLAPI autoinstall_test_funcs(
 /*
 ** A bogus step function and finalizer function.
 */
-static void tStep(sqlite3_context *a, int b, sqlite3_value **c){}
-static void tFinal(sqlite3_context *a){}
+void tStep(sqlite3_context *a, int b, sqlite3_value **c){}
+void tFinal(sqlite3_context *a){}
 
 
 /*
@@ -742,7 +742,7 @@ static void tFinal(sqlite3_context *a){}
 ** Make various calls to sqlite3_create_function that do not have valid
 ** parameters.  Verify that the error condition is detected and reported.
 */
-static int SQLITE_TCLAPI abuse_create_function(
+int SQLITE_TCLAPI abuse_create_function(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -843,7 +843,7 @@ abuse_err:
 **     WHERE documents MATCH <query> 
 **     ORDER BY rank(matchinfo(documents), 1.0, 0.5) DESC
 */
-static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
+void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
   int *aMatchinfo;                /* Return value of matchinfo() */
   int nMatchinfo;                 /* Number of elements in aMatchinfo[] */
   int nCol = 0;                   /* Number of columns in the table */
@@ -906,7 +906,7 @@ wrong_number_args:
   sqlite3_result_error(pCtx, "wrong number of arguments to function rank()", -1);
 }
 
-static int SQLITE_TCLAPI install_fts3_rank_function(
+int SQLITE_TCLAPI install_fts3_rank_function(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -930,7 +930,7 @@ static int SQLITE_TCLAPI install_fts3_rank_function(
 ** Register commands with the TCL interpreter.
 */
 int Sqlitetest_func_Init(Tcl_Interp *interp){
-  static struct {
+  struct {
      char *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {

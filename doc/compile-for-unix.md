@@ -24,7 +24,7 @@ guidance on building for Windows.
           of the source tree.
       <li>Run: &ensp; `mkdir $HOME/local`
       <li>Run: &ensp; `./configure --prefix=$HOME/local`<br>
-          SQLite deliverable builds add: &emsp; `--static CFLAGS=-Os`
+          SQLite deliverable builds add: &emsp; `--CFLAGS=-Os`
       <li>Run: &ensp; `make install`
       </ol>
       <p>

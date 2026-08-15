@@ -39,7 +39,7 @@ typedef struct u256 u256;
 #define U64_BIT(N)  (((u64)1)<<(N))
 
 /* Multiple *pX by 10, in-place */
-static void u256_times_10(u256 *pX){
+void u256_times_10(u256 *pX){
   u64 carry = 0;
   int i;
   for(i=3; i>=0; i--){
@@ -50,7 +50,7 @@ static void u256_times_10(u256 *pX){
 }
 
 /* Multiple *pX by 2, in-place.  AKA, left-shift */
-static void u256_times_2(u256 *pX){
+void u256_times_2(u256 *pX){
   u64 carry = 0;
   int i;
   for(i=3; i>=0; i--){
@@ -61,7 +61,7 @@ static void u256_times_2(u256 *pX){
 }
 
 /* Divide *pX by 10, in-place */
-static void u256_div_10(u256 *pX){
+void u256_div_10(u256 *pX){
   u64 rem = 0;
   int i;
   for(i=0; i<4; i++){
@@ -72,7 +72,7 @@ static void u256_div_10(u256 *pX){
 }
 
 /* Divide *pX by 2, in-place,  AKA, right-shift */
-static void u256_div_2(u256 *pX){
+void u256_div_2(u256 *pX){
   u64 rem = 0;
   int i;
   for(i=0; i<4; i++){
@@ -150,7 +150,7 @@ int main(int argc, char **argv){
     /* With the --truth flag, also output the aTruth[] table that
     ** contains 128 bits of every power-of-two in the range */
     printf("  /* Powers of ten, accurate to 128 bits each */\n");
-    printf("  static const struct {u64 hi; u64 lo;} aTruth[] = {\n");
+    printf("  const struct {u64 hi; u64 lo;} aTruth[] = {\n");
     for(i=0; i<SCALE_COUNT; i++){
       u64 x = aHi[i];
       u64 y = aLo[i];
@@ -171,7 +171,7 @@ int main(int argc, char **argv){
   /* The aBase[] table contains powers of 10 between 0 and 26.  These
   ** all fit in a single 64-bit integer.
   */
-  printf("  static const u64 aBase[] = {\n");
+  printf("  const u64 aBase[] = {\n");
   for(i=SCALE_ZERO, j=0; i<SCALE_ZERO+27; i++, j++){
     u64 x = aHi[i];
     int e = aE[i];
@@ -197,7 +197,7 @@ int main(int argc, char **argv){
   ** The scale factors are at increments of 27.  Except, the entry for 0
   ** is replaced by the -1 value as a special case.
   */
-  printf("  static const u64 aScale[] = {\n");
+  printf("  const u64 aScale[] = {\n");
   for(i=j=0; i<SCALE_COUNT; i=iNext, j++){
     const char *zExtra = "";
     iNext = i+27;
@@ -215,7 +215,7 @@ int main(int argc, char **argv){
            x, j, i+SCALE_FIRST, zOp, e, zExtra);
   }
   printf("  };\n");
-  printf("  static const unsigned int aScaleLo[] = {\n");
+  printf("  const unsigned int aScaleLo[] = {\n");
   for(i=j=0; i<SCALE_COUNT; i=iNext, j++){
     const char *zExtra = "";
     iNext = i+27;

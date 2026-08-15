@@ -29,7 +29,7 @@ SQLITE_EXTENSION_INIT1
 #include <assert.h>
 #include <string.h>
 
-static void readblobFunc(
+void readblobFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -82,7 +82,7 @@ static void readblobFunc(
   }
 }    
 
-static void writeblobFunc(
+void writeblobFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

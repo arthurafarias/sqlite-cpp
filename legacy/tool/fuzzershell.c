@@ -95,13 +95,13 @@ struct GlobalVars {
 ** This routine is called when a simulated OOM occurs.  It exists as a
 ** convenient place to set a debugger breakpoint.
 */
-static void oomFault(void){
+void oomFault(void){
   g.nOomBrkpt++; /* Prevent oomFault() from being optimized out */
 }
 
 
 /* Versions of malloc() and realloc() that simulate OOM conditions */
-static void *oomMalloc(int nByte){
+void *oomMalloc(int nByte){
   if( nByte>0 && g.bOomEnable && g.iOomCntdown>0 ){
     g.iOomCntdown--;
     if( g.iOomCntdown==0 ){
@@ -113,7 +113,7 @@ static void *oomMalloc(int nByte){
   }
   return g.sOrigMem.xMalloc(nByte);
 }
-static void *oomRealloc(void *pOld, int nByte){
+void *oomRealloc(void *pOld, int nByte){
   if( nByte>0 && g.bOomEnable && g.iOomCntdown>0 ){
     g.iOomCntdown--;
     if( g.iOomCntdown==0 ){
@@ -130,7 +130,7 @@ static void *oomRealloc(void *pOld, int nByte){
 ** Print an error message and abort in such a way to indicate to the
 ** fuzzer that this counts as a crash.
 */
-static void abendError(const char *zFormat, ...){
+void abendError(const char *zFormat, ...){
   va_list ap;
   if( g.zTestName[0] ){
     fprintf(stderr, "%s (%s): ", g.zArgv0, g.zTestName);
@@ -147,7 +147,7 @@ static void abendError(const char *zFormat, ...){
 ** Print an error message and quit, but not in a way that would look
 ** like a crash.
 */
-static void fatalError(const char *zFormat, ...){
+void fatalError(const char *zFormat, ...){
   va_list ap;
   if( g.zTestName[0] ){
     fprintf(stderr, "%s (%s): ", g.zArgv0, g.zTestName);
@@ -164,7 +164,7 @@ static void fatalError(const char *zFormat, ...){
 /*
 ** Evaluate some SQL.  Abort if unable.
 */
-static void sqlexec(sqlite3 *db, const char *zFormat, ...){
+void sqlexec(sqlite3 *db, const char *zFormat, ...){
   va_list ap;
   char *zSql;
   char *zErrMsg = 0;
@@ -180,20 +180,20 @@ static void sqlexec(sqlite3 *db, const char *zFormat, ...){
 /*
 ** This callback is invoked by sqlite3_log().
 */
-static void shellLog(void *pNotUsed, int iErrCode, const char *zMsg){
+void shellLog(void *pNotUsed, int iErrCode, const char *zMsg){
   printf("LOG: (%d) %s\n", iErrCode, zMsg);
   fflush(stdout);
 }
-static void shellLogNoop(void *pNotUsed, int iErrCode, const char *zMsg){
+void shellLogNoop(void *pNotUsed, int iErrCode, const char *zMsg){
   return;
 }
 
 /*
 ** This callback is invoked by sqlite3_exec() to return query results.
 */
-static int execCallback(void *NotUsed, int argc, char **argv, char **colv){
+int execCallback(void *NotUsed, int argc, char **argv, char **colv){
   int i;
-  static unsigned cnt = 0;
+  unsigned cnt = 0;
   printf("ROW #%u:\n", ++cnt);
   if( argv ){
     for(i=0; i<argc; i++){
@@ -208,7 +208,7 @@ static int execCallback(void *NotUsed, int argc, char **argv, char **colv){
   fflush(stdout);
   return 0;
 }
-static int execNoop(void *NotUsed, int argc, char **argv, char **colv){
+int execNoop(void *NotUsed, int argc, char **argv, char **colv){
   return 0;
 }
 
@@ -217,11 +217,11 @@ static int execNoop(void *NotUsed, int argc, char **argv, char **colv){
 ** This callback is invoked by sqlite3_trace() as each SQL statement
 ** starts.
 */
-static void traceCallback(void *NotUsed, const char *zMsg){
+void traceCallback(void *NotUsed, const char *zMsg){
   printf("TRACE: %s\n", zMsg);
   fflush(stdout);
 }
-static void traceNoop(void *NotUsed, const char *zMsg){
+void traceNoop(void *NotUsed, const char *zMsg){
   return;
 }
 #endif
@@ -238,12 +238,12 @@ struct Str {
 };
 
 /* Initialize a Str object */
-static void StrInit(Str *p){
+void StrInit(Str *p){
   memset(p, 0, sizeof(*p));
 }
 
 /* Append text to the end of a Str object */
-static void StrAppend(Str *p, const char *z){
+void StrAppend(Str *p, const char *z){
   sqlite3_uint64 n = strlen(z);
   if( p->n + n >= p->nAlloc ){
     char *zNew;
@@ -266,12 +266,12 @@ static void StrAppend(Str *p, const char *z){
 }
 
 /* Return the current string content */
-static char *StrStr(Str *p){
+char *StrStr(Str *p){
  return p->z;
 }
 
 /* Free the string */
-static void StrFree(Str *p){
+void StrFree(Str *p){
   sqlite3_free(p->z);
   StrInit(p);
 }
@@ -293,7 +293,7 @@ struct EvalResult {
 /*
 ** Callback from sqlite_exec() for the eval() function.
 */
-static int callback(void *pCtx, int argc, char **argv, char **colnames){
+int callback(void *pCtx, int argc, char **argv, char **colnames){
   struct EvalResult *p = (struct EvalResult*)pCtx;
   int i; 
   for(i=0; i<argc; i++){
@@ -329,7 +329,7 @@ static int callback(void *pCtx, int argc, char **argv, char **colnames){
 ** Evaluate the SQL text in X.  Return the results, using string
 ** Y as the separator.  If Y is omitted, use a single space character.
 */
-static void sqlEvalFunc(
+void sqlEvalFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -397,7 +397,7 @@ struct series_cursor {
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against generate_series will look like.
 */
-static int seriesConnect(
+int seriesConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -426,7 +426,7 @@ static int seriesConnect(
 /*
 ** This method is the destructor for series_cursor objects.
 */
-static int seriesDisconnect(sqlite3_vtab *pVtab){
+int seriesDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
   return SQLITE_OK;
 }
@@ -434,7 +434,7 @@ static int seriesDisconnect(sqlite3_vtab *pVtab){
 /*
 ** Constructor for a new series_cursor object.
 */
-static int seriesOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int seriesOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   series_cursor *pCur;
   pCur = sqlite3_malloc( sizeof(*pCur) );
   if( pCur==0 ) return SQLITE_NOMEM;
@@ -446,7 +446,7 @@ static int seriesOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 /*
 ** Destructor for a series_cursor.
 */
-static int seriesClose(sqlite3_vtab_cursor *cur){
+int seriesClose(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur);
   return SQLITE_OK;
 }
@@ -455,7 +455,7 @@ static int seriesClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a series_cursor to its next row of output.
 */
-static int seriesNext(sqlite3_vtab_cursor *cur){
+int seriesNext(sqlite3_vtab_cursor *cur){
   series_cursor *pCur = (series_cursor*)cur;
   if( pCur->isDesc ){
     pCur->iValue -= pCur->iStep;
@@ -470,7 +470,7 @@ static int seriesNext(sqlite3_vtab_cursor *cur){
 ** Return values of columns for the row at which the series_cursor
 ** is currently pointing.
 */
-static int seriesColumn(
+int seriesColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int i                       /* Which column to return */
@@ -491,7 +491,7 @@ static int seriesColumn(
 ** Return the rowid for the current row.  In this implementation, the
 ** rowid is the same as the output value.
 */
-static int seriesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int seriesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   series_cursor *pCur = (series_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -501,7 +501,7 @@ static int seriesRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** Return TRUE if the cursor has been moved off of the last
 ** row of output.
 */
-static int seriesEof(sqlite3_vtab_cursor *cur){
+int seriesEof(sqlite3_vtab_cursor *cur){
   series_cursor *pCur = (series_cursor*)cur;
   if( pCur->isDesc ){
     return pCur->iValue < pCur->mnValue;
@@ -539,7 +539,7 @@ static int seriesEof(sqlite3_vtab_cursor *cur){
 ** is pointing at the first row, or pointing off the end of the table
 ** (so that seriesEof() will return true) if the table is empty.
 */
-static int seriesFilter(
+int seriesFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -592,7 +592,7 @@ static int seriesFilter(
 **  (4)  step = $value   -- constraint exists
 **  (8)  output in descending order
 */
-static int seriesBestIndex(
+int seriesBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -659,7 +659,7 @@ static int seriesBestIndex(
 ** This following structure defines all the methods for the 
 ** generate_series virtual table.
 */
-static sqlite3_module seriesModule = {
+sqlite3_module seriesModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   seriesConnect,             /* xConnect */
@@ -692,7 +692,7 @@ static sqlite3_module seriesModule = {
 /*
 ** Print sketchy documentation for this utility program
 */
-static void showHelp(void){
+void showHelp(void){
   printf("Usage: %s [options] ?FILE...?\n", g.zArgv0);
   printf(
 "Read SQL text from FILE... (or from standard input if FILE... is omitted)\n"
@@ -722,7 +722,7 @@ static void showHelp(void){
 ** Return the value of a hexadecimal digit.  Return -1 if the input
 ** is not a hex digit.
 */
-static int hexDigitValue(char c){
+int hexDigitValue(char c){
   if( c>='0' && c<='9' ) return c - '0';
   if( c>='a' && c<='f' ) return c - 'a' + 10;
   if( c>='A' && c<='F' ) return c - 'A' + 10;
@@ -732,9 +732,9 @@ static int hexDigitValue(char c){
 /*
 ** Interpret zArg as an integer value, possibly with suffixes.
 */
-static int integerValue(const char *zArg){
+int integerValue(const char *zArg){
   sqlite3_int64 v = 0;
-  static const struct { char *zSuffix; int iMult; } aMult[] = {
+  const struct { char *zSuffix; int iMult; } aMult[] = {
     { "KiB", 1024 },
     { "MiB", 1024*1024 },
     { "GiB", 1024*1024*1024 },
@@ -777,8 +777,8 @@ static int integerValue(const char *zArg){
 }
 
 /* Return the current wall-clock time */
-static sqlite3_int64 timeOfDay(void){
-  static sqlite3_vfs *clockVfs = 0;
+sqlite3_int64 timeOfDay(void){
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ) clockVfs = sqlite3_vfs_find(0);
   if( clockVfs->iVersion>=1 && clockVfs->xCurrentTimeInt64!=0 ){

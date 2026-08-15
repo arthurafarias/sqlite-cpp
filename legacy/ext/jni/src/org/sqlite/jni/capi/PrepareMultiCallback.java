@@ -39,7 +39,7 @@ public interface PrepareMultiCallback extends CallbackProxy {
      A PrepareMultiCallback impl which wraps a separate impl and finalizes
      any sqlite3_stmt passed to its callback.
   */
-  public static final class Finalize implements PrepareMultiCallback {
+  public final class Finalize implements PrepareMultiCallback {
     private final PrepareMultiCallback p;
     /**
        p is the proxy to call() when this.call() is called.

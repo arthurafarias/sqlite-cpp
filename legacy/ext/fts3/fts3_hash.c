@@ -35,14 +35,14 @@
 /*
 ** Malloc and Free functions
 */
-static void *fts3HashMalloc(sqlite3_int64 n){
+void *fts3HashMalloc(sqlite3_int64 n){
   void *p = sqlite3_malloc64(n);
   if( p ){
     memset(p, 0, n);
   }
   return p;
 }
-static void fts3HashFree(void *p){
+void fts3HashFree(void *p){
   sqlite3_free(p);
 }
 
@@ -94,7 +94,7 @@ void sqlite3Fts3HashClear(Fts3Hash *pH){
 /*
 ** Hash and comparison functions when the mode is FTS3_HASH_STRING
 */
-static int fts3StrHash(const void *pKey, int nKey){
+int fts3StrHash(const void *pKey, int nKey){
   const char *z = (const char *)pKey;
   unsigned h = 0;
   if( nKey<=0 ) nKey = (int) strlen(z);
@@ -104,7 +104,7 @@ static int fts3StrHash(const void *pKey, int nKey){
   }
   return (int)(h & 0x7fffffff);
 }
-static int fts3StrCompare(const void *pKey1, int n1, const void *pKey2, int n2){
+int fts3StrCompare(const void *pKey1, int n1, const void *pKey2, int n2){
   if( n1!=n2 ) return 1;
   return strncmp((const char*)pKey1,(const char*)pKey2,n1);
 }
@@ -112,7 +112,7 @@ static int fts3StrCompare(const void *pKey1, int n1, const void *pKey2, int n2){
 /*
 ** Hash and comparison functions when the mode is FTS3_HASH_BINARY
 */
-static int fts3BinHash(const void *pKey, int nKey){
+int fts3BinHash(const void *pKey, int nKey){
   int h = 0;
   const char *z = (const char *)pKey;
   while( nKey-- > 0 ){
@@ -120,7 +120,7 @@ static int fts3BinHash(const void *pKey, int nKey){
   }
   return h & 0x7fffffff;
 }
-static int fts3BinCompare(const void *pKey1, int n1, const void *pKey2, int n2){
+int fts3BinCompare(const void *pKey1, int n1, const void *pKey2, int n2){
   if( n1!=n2 ) return 1;
   return memcmp(pKey1,pKey2,n1);
 }
@@ -137,7 +137,7 @@ static int fts3BinCompare(const void *pKey1, int n1, const void *pKey2, int n2){
 ** of ftsHashFunction() is a pointer to a function that takes two parameters
 ** with types "const void*" and "int" and returns an "int".
 */
-static int (*ftsHashFunction(int keyClass))(const void*,int){
+int (*ftsHashFunction(int keyClass))(const void*,int){
   if( keyClass==FTS3_HASH_STRING ){
     return &fts3StrHash;
   }else{
@@ -152,7 +152,7 @@ static int (*ftsHashFunction(int keyClass))(const void*,int){
 ** For help in interpreted the obscure C code in the function definition,
 ** see the header comment on the previous function.
 */
-static int (*ftsCompareFunction(int keyClass))(const void*,int,const void*,int){
+int (*ftsCompareFunction(int keyClass))(const void*,int,const void*,int){
   if( keyClass==FTS3_HASH_STRING ){
     return &fts3StrCompare;
   }else{
@@ -163,7 +163,7 @@ static int (*ftsCompareFunction(int keyClass))(const void*,int,const void*,int){
 
 /* Link an element into the hash table
 */
-static void fts3HashInsertElement(
+void fts3HashInsertElement(
   Fts3Hash *pH,            /* The complete hash table */
   struct _fts3ht *pEntry,  /* The entry into which pNew is inserted */
   Fts3HashElem *pNew       /* The element to be inserted */
@@ -193,7 +193,7 @@ static void fts3HashInsertElement(
 **
 ** Return non-zero if a memory allocation error occurs.
 */
-static int fts3Rehash(Fts3Hash *pH, int new_size){
+int fts3Rehash(Fts3Hash *pH, int new_size){
   struct _fts3ht *new_ht;          /* The new hash table */
   Fts3HashElem *elem, *next_elem;  /* For looping over existing elements */
   int (*xHash)(const void*,int);   /* The hash function */
@@ -217,7 +217,7 @@ static int fts3Rehash(Fts3Hash *pH, int new_size){
 ** hash table that matches the given key.  The hash for this key has
 ** already been computed and is passed as the 4th parameter.
 */
-static Fts3HashElem *fts3FindElementByHash(
+Fts3HashElem *fts3FindElementByHash(
   const Fts3Hash *pH, /* The pH to be searched */
   const void *pKey,   /* The key we are searching for */
   int nKey,
@@ -245,7 +245,7 @@ static Fts3HashElem *fts3FindElementByHash(
 /* Remove a single entry from the hash table given a pointer to that
 ** element and a hash on the element's key.
 */
-static void fts3RemoveElementByHash(
+void fts3RemoveElementByHash(
   Fts3Hash *pH,         /* The pH containing "elem" */
   Fts3HashElem* elem,   /* The element to be removed from the pH */
   int h                 /* Hash value for the element */

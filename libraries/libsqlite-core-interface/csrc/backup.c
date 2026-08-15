@@ -80,7 +80,7 @@ struct sqlite3_backup {
 ** function. If an error occurs while doing so, return 0 and write an 
 ** error message to pErrorDb.
 */
-static Btree *findBtree(sqlite3 *pErrorDb, sqlite3 *pDb, const char *zDb){
+Btree *findBtree(sqlite3 *pErrorDb, sqlite3 *pDb, const char *zDb){
   int i = sqlite3FindDbName(pDb, zDb);
 
   if( i==1 ){
@@ -110,7 +110,7 @@ static Btree *findBtree(sqlite3 *pErrorDb, sqlite3 *pDb, const char *zDb){
 ** Attempt to set the page size of the destination to match the page size
 ** of the source.
 */
-static int setDestPgsz(Btree *pDest, Btree *pSrc){
+int setDestPgsz(Btree *pDest, Btree *pSrc){
   return sqlite3BtreeSetPageSize(pDest, sqlite3BtreeGetPageSize(pSrc), 0, 0);
 }
 
@@ -120,7 +120,7 @@ static int setDestPgsz(Btree *pDest, Btree *pSrc){
 ** is an open read-transaction, return SQLITE_ERROR and leave an error 
 ** message in database handle db.
 */
-static int checkReadTransaction(sqlite3 *db, Btree *p){
+int checkReadTransaction(sqlite3 *db, Btree *p){
   if( sqlite3BtreeTxnState(p)!=SQLITE_TXN_NONE ){
     sqlite3ErrorWithMsg(db, SQLITE_ERROR, "destination database is in use");
     return SQLITE_ERROR;
@@ -223,7 +223,7 @@ sqlite3_backup *sqlite3_backup_init(
 ** considered fatal if encountered during a backup operation. All errors
 ** are considered fatal except for SQLITE_BUSY and SQLITE_LOCKED.
 */
-static int isFatalError(int rc){
+int isFatalError(int rc){
   return (rc!=SQLITE_OK && rc!=SQLITE_BUSY && ALWAYS(rc!=SQLITE_LOCKED));
 }
 
@@ -232,7 +232,7 @@ static int isFatalError(int rc){
 ** page iSrcPg from the source database. Copy this data into the 
 ** destination database.
 */
-static int backupOnePage(
+int backupOnePage(
   sqlite3_backup *p,              /* Backup handle */
   Pgno iSrcPg,                    /* Source database page to backup */
   const u8 *zSrcData,             /* Source database page data */
@@ -295,7 +295,7 @@ static int backupOnePage(
 ** Return SQLITE_OK if everything is successful, or an SQLite error 
 ** code if an error occurs.
 */
-static int backupTruncateFile(sqlite3_file *pFile, i64 iSize){
+int backupTruncateFile(sqlite3_file *pFile, i64 iSize){
   i64 iCurrent;
   int rc = sqlite3OsFileSize(pFile, &iCurrent);
   if( rc==SQLITE_OK && iCurrent>iSize ){
@@ -308,7 +308,7 @@ static int backupTruncateFile(sqlite3_file *pFile, i64 iSize){
 ** Register this backup object with the associated source pager for
 ** callbacks when pages are changed or the cache invalidated.
 */
-static void attachBackupObject(sqlite3_backup *p){
+void attachBackupObject(sqlite3_backup *p){
   sqlite3_backup **pp;
   assert( sqlite3BtreeHoldsMutex(p->pSrc) );
   pp = sqlite3PagerBackupPtr(sqlite3BtreePager(p->pSrc));
@@ -685,7 +685,7 @@ int sqlite3_backup_pagecount(sqlite3_backup *p){
 ** corresponding to the source database is held when this function is
 ** called.
 */
-static SQLITE_NOINLINE void backupUpdate(
+SQLITE_NOINLINE void backupUpdate(
   sqlite3_backup *p,
   Pgno iPage,
   const u8 *aData

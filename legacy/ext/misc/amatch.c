@@ -196,7 +196,7 @@ struct amatch_avl {
 /* Recompute the amatch_avl.height and amatch_avl.imbalance fields for p.
 ** Assume that the children of p have correct heights.
 */
-static void amatchAvlRecomputeHeight(amatch_avl *p){
+void amatchAvlRecomputeHeight(amatch_avl *p){
   int hBefore = p->pBefore ? p->pBefore->height : 0;
   int hAfter = p->pAfter ? p->pAfter->height : 0;
   p->imbalance = hBefore - hAfter;  /* -: pAfter higher.  +: pBefore higher */
@@ -211,7 +211,7 @@ static void amatchAvlRecomputeHeight(amatch_avl *p){
 ** X   Y                Y   Z
 **
 */
-static amatch_avl *amatchAvlRotateBefore(amatch_avl *pP){
+amatch_avl *amatchAvlRotateBefore(amatch_avl *pP){
   amatch_avl *pB = pP->pBefore;
   amatch_avl *pY = pB->pAfter;
   pB->pUp = pP->pUp;
@@ -232,7 +232,7 @@ static amatch_avl *amatchAvlRotateBefore(amatch_avl *pP){
 **     Y   Z        X   Y
 **
 */
-static amatch_avl *amatchAvlRotateAfter(amatch_avl *pP){
+amatch_avl *amatchAvlRotateAfter(amatch_avl *pP){
   amatch_avl *pA = pP->pAfter;
   amatch_avl *pY = pA->pBefore;
   pA->pUp = pP->pUp;
@@ -249,7 +249,7 @@ static amatch_avl *amatchAvlRotateAfter(amatch_avl *pP){
 ** Return a pointer to the pBefore or pAfter pointer in the parent
 ** of p that points to p.  Or if p is the root node, return pp.
 */
-static amatch_avl **amatchAvlFromPtr(amatch_avl *p, amatch_avl **pp){
+amatch_avl **amatchAvlFromPtr(amatch_avl *p, amatch_avl **pp){
   amatch_avl *pUp = p->pUp;
   if( pUp==0 ) return pp;
   if( pUp->pAfter==p ) return &pUp->pAfter;
@@ -260,7 +260,7 @@ static amatch_avl **amatchAvlFromPtr(amatch_avl *p, amatch_avl **pp){
 ** Rebalance all nodes starting with p and working up to the root.
 ** Return the new root.
 */
-static amatch_avl *amatchAvlBalance(amatch_avl *p){
+amatch_avl *amatchAvlBalance(amatch_avl *p){
   amatch_avl *pTop = p;
   amatch_avl **pp;
   while( p ){
@@ -285,7 +285,7 @@ static amatch_avl *amatchAvlBalance(amatch_avl *p){
 /* Search the tree rooted at p for an entry with zKey.  Return a pointer
 ** to the entry or return NULL.
 */
-static amatch_avl *amatchAvlSearch(amatch_avl *p, const char *zKey){
+amatch_avl *amatchAvlSearch(amatch_avl *p, const char *zKey){
   int c;
   while( p && (c = strcmp(zKey, p->zKey))!=0 ){
     p = (c<0) ? p->pBefore : p->pAfter;
@@ -295,7 +295,7 @@ static amatch_avl *amatchAvlSearch(amatch_avl *p, const char *zKey){
 
 /* Find the first node (the one with the smallest key).
 */
-static amatch_avl *amatchAvlFirst(amatch_avl *p){
+amatch_avl *amatchAvlFirst(amatch_avl *p){
   if( p ) while( p->pBefore ) p = p->pBefore;
   return p;
 }
@@ -303,7 +303,7 @@ static amatch_avl *amatchAvlFirst(amatch_avl *p){
 #if 0 /* NOT USED */
 /* Return the node with the next larger key after p.
 */
-static amatch_avl *amatchAvlNext(amatch_avl *p){
+amatch_avl *amatchAvlNext(amatch_avl *p){
   amatch_avl *pPrev = 0;
   while( p && p->pAfter==pPrev ){
     pPrev = p;
@@ -319,7 +319,7 @@ static amatch_avl *amatchAvlNext(amatch_avl *p){
 #if 0 /* NOT USED */
 /* Verify AVL tree integrity
 */
-static int amatchAvlIntegrity(amatch_avl *pHead){
+int amatchAvlIntegrity(amatch_avl *pHead){
   amatch_avl *p;
   if( pHead==0 ) return 1;
   if( (p = pHead->pBefore)!=0 ){
@@ -338,7 +338,7 @@ static int amatchAvlIntegrity(amatch_avl *pHead){
   }
   return 1;
 }
-static int amatchAvlIntegrity2(amatch_avl *pHead){
+int amatchAvlIntegrity2(amatch_avl *pHead){
   amatch_avl *p, *pNext;
   for(p=amatchAvlFirst(pHead); p; p=pNext){
     pNext = amatchAvlNext(p);
@@ -353,7 +353,7 @@ static int amatchAvlIntegrity2(amatch_avl *pHead){
 ** unique, then do not perform the insert but instead leave pNew unchanged
 ** and return a pointer to an existing node with the same key.
 */
-static amatch_avl *amatchAvlInsert(amatch_avl **ppHead, amatch_avl *pNew){
+amatch_avl *amatchAvlInsert(amatch_avl **ppHead, amatch_avl *pNew){
   int c;
   amatch_avl *p = *ppHead;
   if( p==0 ){
@@ -396,7 +396,7 @@ static amatch_avl *amatchAvlInsert(amatch_avl **ppHead, amatch_avl *pNew){
 /* Remove node pOld from the tree.  pOld must be an element of the tree or
 ** the AVL tree will become corrupt.
 */
-static void amatchAvlRemove(amatch_avl **ppHead, amatch_avl *pOld){
+void amatchAvlRemove(amatch_avl **ppHead, amatch_avl *pOld){
   amatch_avl **ppParent;
   amatch_avl *pBalance = 0;
   /* assert( amatchAvlSearch(*ppHead, pOld->zKey)==pOld ); */
@@ -533,7 +533,7 @@ struct amatch_cursor {
 ** cost.  Merge them together into a single list, sorted by cost, and
 ** return a pointer to the head of that list.
 */
-static amatch_rule *amatchMergeRules(amatch_rule *pA, amatch_rule *pB){
+amatch_rule *amatchMergeRules(amatch_rule *pA, amatch_rule *pB){
   amatch_rule head;
   amatch_rule *pTail;
 
@@ -566,7 +566,7 @@ static amatch_rule *amatchMergeRules(amatch_rule *pA, amatch_rule *pB){
 ** is returned. Otherwise, *ppRule is zeroed, *pzErr may be set to point
 ** to an error message and an SQLite error code returned.
 */
-static int amatchLoadOneRule(
+int amatchLoadOneRule(
   amatch_vtab *p,                 /* Fuzzer virtual table handle */
   sqlite3_stmt *pStmt,            /* Base rule on statements current row */
   amatch_rule **ppRule,           /* OUT: New rule object */
@@ -643,7 +643,7 @@ static int amatchLoadOneRule(
 /*
 ** Free all the content in the edit-cost-table
 */
-static void amatchFreeRules(amatch_vtab *p){
+void amatchFreeRules(amatch_vtab *p){
   while( p->pRule ){
     amatch_rule *pRule = p->pRule;
     p->pRule = pRule->pNext;
@@ -655,7 +655,7 @@ static void amatchFreeRules(amatch_vtab *p){
 /*
 ** Load the content of the amatch data table into memory.
 */
-static int amatchLoadRules(
+int amatchLoadRules(
   sqlite3 *db,                    /* Database handle */
   amatch_vtab *p,                 /* Virtual amatch table to configure */
   char **pzErr                    /* OUT: Error message */
@@ -739,7 +739,7 @@ static int amatchLoadRules(
 **     [pqr]   becomes   pqr
 **     `mno`   becomes   mno
 */
-static char *amatchDequote(const char *zIn){
+char *amatchDequote(const char *zIn){
   sqlite3_int64 nIn;              /* Size of input string, in bytes */
   char *zOut;                     /* Output (dequoted) string */
 
@@ -768,7 +768,7 @@ static char *amatchDequote(const char *zIn){
 /*
 ** Deallocate the pVCheck prepared statement.
 */
-static void amatchVCheckClear(amatch_vtab *p){
+void amatchVCheckClear(amatch_vtab *p){
   if( p->pVCheck ){
     sqlite3_finalize(p->pVCheck);
     p->pVCheck = 0;
@@ -778,7 +778,7 @@ static void amatchVCheckClear(amatch_vtab *p){
 /*
 ** Deallocate an amatch_vtab object
 */
-static void amatchFree(amatch_vtab *p){
+void amatchFree(amatch_vtab *p){
   if( p ){
     amatchFreeRules(p);
     amatchVCheckClear(p);
@@ -797,7 +797,7 @@ static void amatchFree(amatch_vtab *p){
 /*
 ** xDisconnect/xDestroy method for the amatch module.
 */
-static int amatchDisconnect(sqlite3_vtab *pVtab){
+int amatchDisconnect(sqlite3_vtab *pVtab){
   amatch_vtab *p = (amatch_vtab*)pVtab;
   assert( p->nCursor==0 );
   amatchFree(p);
@@ -812,7 +812,7 @@ static int amatchDisconnect(sqlite3_vtab *pVtab){
 ** If it is, return a pointer to the first character of VALUE.
 ** If not, return NULL.  Spaces around the = are ignored.
 */
-static const char *amatchValueOfKey(const char *zKey, const char *zStr){
+const char *amatchValueOfKey(const char *zKey, const char *zStr){
   int nKey = (int)strlen(zKey);
   int nStr = (int)strlen(zStr);
   int i;
@@ -833,7 +833,7 @@ static const char *amatchValueOfKey(const char *zKey, const char *zStr){
 **   argv[2]    -> table name
 **   argv[3...] -> arguments
 */
-static int amatchConnect(
+int amatchConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -927,7 +927,7 @@ amatchConnectError:
 /*
 ** Open a new amatch cursor.
 */
-static int amatchOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+int amatchOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   amatch_vtab *p = (amatch_vtab*)pVTab;
   amatch_cursor *pCur;
   pCur = sqlite3_malloc64( sizeof(*pCur) );
@@ -943,7 +943,7 @@ static int amatchOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 ** Free up all the memory allocated by a cursor.  Set it rLimit to 0
 ** to indicate that it is at EOF.
 */
-static void amatchClearCursor(amatch_cursor *pCur){
+void amatchClearCursor(amatch_cursor *pCur){
   amatch_word *pWord, *pNextWord;
   for(pWord=pCur->pAllWords; pWord; pWord=pNextWord){
     pNextWord = pWord->pNext;
@@ -966,7 +966,7 @@ static void amatchClearCursor(amatch_cursor *pCur){
 /*
 ** Close a amatch cursor.
 */
-static int amatchClose(sqlite3_vtab_cursor *cur){
+int amatchClose(sqlite3_vtab_cursor *cur){
   amatch_cursor *pCur = (amatch_cursor *)cur;
   amatchClearCursor(pCur);
   pCur->pVtab->nCursor--;
@@ -977,8 +977,8 @@ static int amatchClose(sqlite3_vtab_cursor *cur){
 /*
 ** Render a 24-bit unsigned integer as a 4-byte base-64 number.
 */
-static void amatchEncodeInt(int x, char *z){
-  static const char a[] = 
+void amatchEncodeInt(int x, char *z){
+  const char a[] = 
     "0123456789"
     "ABCDEFGHIJ"
     "KLMNOPQRST"
@@ -995,7 +995,7 @@ static void amatchEncodeInt(int x, char *z){
 /*
 ** Write the zCost[] field for a amatch_word object
 */
-static void amatchWriteCost(amatch_word *pWord){
+void amatchWriteCost(amatch_word *pWord){
   amatchEncodeInt(pWord->rCost, pWord->zCost);
   amatchEncodeInt(pWord->iSeq, pWord->zCost+4);
   pWord->zCost[8] = 0;
@@ -1004,10 +1004,10 @@ static void amatchWriteCost(amatch_word *pWord){
 /* Circumvent compiler warnings about the use of strcpy() by supplying
 ** our own implementation.
 */
-static void amatchStrcpy(char *dest, const char *src){
+void amatchStrcpy(char *dest, const char *src){
   while( (*(dest++) = *(src++))!=0 ){}
 }
-static void amatchStrcat(char *dest, const char *src){
+void amatchStrcat(char *dest, const char *src){
   while( *dest ) dest++;
   amatchStrcpy(dest, src);
 }
@@ -1021,7 +1021,7 @@ static void amatchStrcat(char *dest, const char *src){
 **
 ** Do nothing if the cost exceeds threshold.
 */
-static void amatchAddWord(
+void amatchAddWord(
   amatch_cursor *pCur,
   amatch_cost rCost,
   int nMatch,
@@ -1101,7 +1101,7 @@ static void amatchAddWord(
 /*
 ** Advance a cursor to its next row of output
 */
-static int amatchNext(sqlite3_vtab_cursor *cur){
+int amatchNext(sqlite3_vtab_cursor *cur){
   amatch_cursor *pCur = (amatch_cursor*)cur;
   amatch_word *pWord = 0;
   amatch_avl *pNode;
@@ -1250,7 +1250,7 @@ static int amatchNext(sqlite3_vtab_cursor *cur){
 ** it starts its output over again.  Always called at least once
 ** prior to any amatchColumn, amatchRowid, or amatchEof call.
 */
-static int amatchFilter(
+int amatchFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -1290,7 +1290,7 @@ static int amatchFilter(
 ** Only the word and distance columns have values.  All other columns
 ** return NULL
 */
-static int amatchColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+int amatchColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   amatch_cursor *pCur = (amatch_cursor*)cur;
   switch( i ){
     case AMATCH_COL_WORD: {
@@ -1320,7 +1320,7 @@ static int amatchColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
 /*
 ** The rowid.
 */
-static int amatchRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int amatchRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   amatch_cursor *pCur = (amatch_cursor*)cur;
   *pRowid = pCur->iRowid;
   return SQLITE_OK;
@@ -1329,7 +1329,7 @@ static int amatchRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 /*
 ** EOF indicator
 */
-static int amatchEof(sqlite3_vtab_cursor *cur){
+int amatchEof(sqlite3_vtab_cursor *cur){
   amatch_cursor *pCur = (amatch_cursor*)cur;
   return pCur->pCurrent==0;
 }
@@ -1356,7 +1356,7 @@ static int amatchEof(sqlite3_vtab_cursor *cur){
 ** filter.argv[1] if exactly one of bit-1 and bit-2 are set, and is in
 ** filter.argv[2] if both bit-1 and bit-2 are set.
 */
-static int amatchBestIndex(
+int amatchBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -1422,7 +1422,7 @@ static int amatchBestIndex(
 ** This implementation disallows DELETE and UPDATE.  The only thing
 ** allowed is INSERT into the "command" column.
 */
-static int amatchUpdate(
+int amatchUpdate(
   sqlite3_vtab *pVTab,
   int argc,
   sqlite3_value **argv,
@@ -1458,7 +1458,7 @@ static int amatchUpdate(
 /*
 ** A virtual table module that implements the "approximate_match".
 */
-static sqlite3_module amatchModule = {
+sqlite3_module amatchModule = {
   0,                      /* iVersion */
   amatchConnect,          /* xCreate */
   amatchConnect,          /* xConnect */

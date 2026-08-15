@@ -28,7 +28,7 @@
 ** For blocks of more than 16 bytes, the signature is a hex dump of the
 ** first 8 bytes followed by a 64-bit hash of the entire block.
 */
-static void vlogSignature(unsigned char *p, int n, char *zCksum){
+void vlogSignature(unsigned char *p, int n, char *zCksum){
   unsigned int s0 = 0, s1 = 0;
   unsigned int *pI;
   int i;
@@ -50,7 +50,7 @@ static void vlogSignature(unsigned char *p, int n, char *zCksum){
 ** Open a file.  Find its page size.  Read each page, and compute and
 ** display the page signature.
 */
-static void computeSigs(const char *zFilename){
+void computeSigs(const char *zFilename){
   FILE *in = fopen(zFilename, "rb");
   unsigned pgsz;
   size_t got;

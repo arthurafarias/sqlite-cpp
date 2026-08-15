@@ -69,7 +69,7 @@
 
 /* Global data
 */
-static struct Global {
+struct Global {
   char *argv0;           /* Name of the executable */
   const char *zVfs;      /* Name of VFS to use. Often NULL meaning "default" */
   char *zDbFile;         /* Name of the database */
@@ -95,7 +95,7 @@ static struct Global {
 /*
 ** Print a message adding zPrefix[] to the beginning of every line.
 */
-static void printWithPrefix(FILE *pOut, const char *zPrefix, const char *zMsg){
+void printWithPrefix(FILE *pOut, const char *zPrefix, const char *zMsg){
   while( zMsg && zMsg[0] ){
     int i;
     for(i=0; zMsg[i] && zMsg[i]!='\n' && zMsg[i]!='\r'; i++){}
@@ -108,7 +108,7 @@ static void printWithPrefix(FILE *pOut, const char *zPrefix, const char *zMsg){
 /*
 ** Compare two pointers to strings, where the pointers might be NULL.
 */
-static int safe_strcmp(const char *a, const char *b){
+int safe_strcmp(const char *a, const char *b){
   if( a==b ) return 0;
   if( a==0 ) return -1;
   if( b==0 ) return 1;
@@ -205,14 +205,14 @@ int strglob(const char *zGlob, const char *z){
 /*
 ** Close output stream pOut if it is not stdout or stderr
 */
-static void maybeClose(FILE *pOut){
+void maybeClose(FILE *pOut){
   if( pOut!=stdout && pOut!=stderr ) fclose(pOut);
 }
 
 /*
 ** Print an error message
 */
-static void errorMessage(const char *zFormat, ...){
+void errorMessage(const char *zFormat, ...){
   va_list ap;
   char *zMsg;
   char zPrefix[30];
@@ -233,12 +233,12 @@ static void errorMessage(const char *zFormat, ...){
 }
 
 /* Forward declaration */
-static int trySql(const char*, ...);
+int trySql(const char*, ...);
 
 /*
 ** Print an error message and then quit.
 */
-static void fatalError(const char *zFormat, ...){
+void fatalError(const char *zFormat, ...){
   va_list ap;
   char *zMsg;
   char zPrefix[30];
@@ -273,7 +273,7 @@ static void fatalError(const char *zFormat, ...){
 /*
 ** Print a log message
 */
-static void logMessage(const char *zFormat, ...){
+void logMessage(const char *zFormat, ...){
   va_list ap;
   char *zMsg;
   char zPrefix[30];
@@ -291,7 +291,7 @@ static void logMessage(const char *zFormat, ...){
 /*
 ** Return the length of a string omitting trailing whitespace
 */
-static int clipLength(const char *z){
+int clipLength(const char *z){
   int n = (int)strlen(z);
   while( n>0 && ISSPACE(z[n-1]) ){ n--; }
   return n;
@@ -300,7 +300,7 @@ static int clipLength(const char *z){
 /*
 ** Auxiliary SQL function to return the name of the VFS
 */
-static void vfsNameFunc(
+void vfsNameFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -318,7 +318,7 @@ static void vfsNameFunc(
 /*
 ** Busy handler with a g.iTimeout-millisecond timeout
 */
-static int busyHandler(void *pCD, int count){
+int busyHandler(void *pCD, int count){
   UNUSED_PARAMETER(pCD);
   if( count*10>g.iTimeout ){
     if( g.iTimeout>0 ) errorMessage("timeout after %dms", g.iTimeout);
@@ -331,7 +331,7 @@ static int busyHandler(void *pCD, int count){
 /*
 ** SQL Trace callback
 */
-static void sqlTraceCallback(void *NotUsed1, const char *zSql){
+void sqlTraceCallback(void *NotUsed1, const char *zSql){
   UNUSED_PARAMETER(NotUsed1);
   logMessage("[%.*s]", clipLength(zSql), zSql);
 }
@@ -339,7 +339,7 @@ static void sqlTraceCallback(void *NotUsed1, const char *zSql){
 /*
 ** SQL error log callback
 */
-static void sqlErrorCallback(void *pArg, int iErrCode, const char *zMsg){
+void sqlErrorCallback(void *pArg, int iErrCode, const char *zMsg){
   UNUSED_PARAMETER(pArg);
   if( iErrCode==SQLITE_ERROR && g.bIgnoreSqlErrors ) return;
   if( (iErrCode&0xff)==SQLITE_SCHEMA && g.iTrace<3 ) return;
@@ -354,7 +354,7 @@ static void sqlErrorCallback(void *pArg, int iErrCode, const char *zMsg){
 /*
 ** Prepare an SQL statement.  Issue a fatal error if unable.
 */
-static sqlite3_stmt *prepareSql(const char *zFormat, ...){
+sqlite3_stmt *prepareSql(const char *zFormat, ...){
   va_list ap;
   char *zSql;
   int rc;
@@ -374,7 +374,7 @@ static sqlite3_stmt *prepareSql(const char *zFormat, ...){
 /*
 ** Run arbitrary SQL.  Issue a fatal error on failure.
 */
-static void runSql(const char *zFormat, ...){
+void runSql(const char *zFormat, ...){
   va_list ap;
   char *zSql;
   int rc;
@@ -391,7 +391,7 @@ static void runSql(const char *zFormat, ...){
 /*
 ** Try to run arbitrary SQL.  Return success code.
 */
-static int trySql(const char *zFormat, ...){
+int trySql(const char *zFormat, ...){
   va_list ap;
   char *zSql;
   int rc;
@@ -413,13 +413,13 @@ struct String {
 };
 
 /* Free a string */
-static void stringFree(String *p){
+void stringFree(String *p){
   if( p->z ) sqlite3_free(p->z);
   memset(p, 0, sizeof(*p));
 }
 
 /* Append n bytes of text to a string.  If n<0 append the entire string. */
-static void stringAppend(String *p, const char *z, int n){
+void stringAppend(String *p, const char *z, int n){
   if( n<0 ) n = (int)strlen(z);
   if( p->n+n>=p->nAlloc ){
     int nAlloc = p->nAlloc*2 + n + 100;
@@ -434,14 +434,14 @@ static void stringAppend(String *p, const char *z, int n){
 }
 
 /* Reset a string to an empty string */
-static void stringReset(String *p){
+void stringReset(String *p){
   if( p->z==0 ) stringAppend(p, " ", 1);
   p->n = 0;
   p->z[0] = 0;
 }
 
 /* Append a new token onto the end of the string */
-static void stringAppendTerm(String *p, const char *z){
+void stringAppendTerm(String *p, const char *z){
   int i;
   if( p->n ) stringAppend(p, " ", 1);
   if( z==0 ){
@@ -471,7 +471,7 @@ static void stringAppendTerm(String *p, const char *z){
 /*
 ** Callback function for evalSql()
 */
-static int evalCallback(void *pCData, int argc, char **argv, char **azCol){
+int evalCallback(void *pCData, int argc, char **argv, char **azCol){
   String *p = (String*)pCData;
   int i;
   UNUSED_PARAMETER(azCol);
@@ -483,7 +483,7 @@ static int evalCallback(void *pCData, int argc, char **argv, char **azCol){
 ** Run arbitrary SQL and record the results in an output string
 ** given by the first parameter.
 */
-static int evalSql(String *p, const char *zFormat, ...){
+int evalSql(String *p, const char *zFormat, ...){
   va_list ap;
   char *zSql;
   int rc;
@@ -509,7 +509,7 @@ static int evalSql(String *p, const char *zFormat, ...){
 /*
 ** Auxiliary SQL function to recursively evaluate SQL.
 */
-static void evalFunc(
+void evalFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -538,7 +538,7 @@ static void evalFunc(
 ** Return the task script and the task number and mark that
 ** task as being under way.
 */
-static int startScript(
+int startScript(
   int iClient,              /* The client number */
   char **pzScript,          /* Write task script here */
   int *pTaskId,             /* Write task number here */
@@ -620,7 +620,7 @@ static int startScript(
 ** Mark a script as having finished.   Remove the CLIENT table entry
 ** if bShutdown is true.
 */
-static int finishScript(int iClient, int taskId, int bShutdown){
+int finishScript(int iClient, int taskId, int bShutdown){
   runSql("UPDATE task"
          "   SET endtime=strftime('%%Y-%%m-%%d %%H:%%M:%%f','now')"
          " WHERE id=%d;", taskId);
@@ -635,7 +635,7 @@ static int finishScript(int iClient, int taskId, int bShutdown){
 ** running.  If the client is already running, then this routine
 ** is a no-op.
 */
-static void startClient(int iClient){
+void startClient(int iClient){
   runSql("INSERT OR IGNORE INTO client VALUES(%d,0)", iClient);
   if( sqlite3_changes(g.db) ){
     char *zSys;
@@ -681,7 +681,7 @@ static void startClient(int iClient){
 /*
 ** Read the entire content of a file into memory
 */
-static char *readFile(const char *zFilename){
+char *readFile(const char *zFilename){
   FILE *in = fopen(zFilename, "rb");
   long sz;
   char *z;
@@ -701,7 +701,7 @@ static char *readFile(const char *zFilename){
 /*
 ** Return the length of the next token.
 */
-static int tokenLength(const char *z, int *pnLine){
+int tokenLength(const char *z, int *pnLine){
   int n = 0;
   if( ISSPACE(z[0]) || (z[0]=='/' && z[1]=='*') ){
     int inC = 0;
@@ -746,7 +746,7 @@ static int tokenLength(const char *z, int *pnLine){
 /*
 ** Copy a single token into a string buffer.
 */
-static int extractToken(const char *zIn, int nIn, char *zOut, int nOut){
+int extractToken(const char *zIn, int nIn, char *zOut, int nOut){
   int i;
   if( nIn<=0 ){
     zOut[0] = 0;
@@ -760,7 +760,7 @@ static int extractToken(const char *zIn, int nIn, char *zOut, int nOut){
 /*
 ** Find the number of characters up to the start of the next "--end" token.
 */
-static int findEnd(const char *z, int *pnLine){
+int findEnd(const char *z, int *pnLine){
   int n = 0;
   while( z[n] && (strncmp(z+n,"--end",5) || !ISSPACE(z[n+5])) ){
     n += tokenLength(z+n, pnLine);
@@ -773,7 +773,7 @@ static int findEnd(const char *z, int *pnLine){
 ** of the next "--endif"  or "--else" token. Nested --if commands are
 ** also skipped.
 */
-static int findEndif(const char *z, int stopAtElse, int *pnLine){
+int findEndif(const char *z, int stopAtElse, int *pnLine){
   int n = 0;
   while( z[n] ){
     int len = tokenLength(z+n, pnLine);
@@ -795,7 +795,7 @@ static int findEndif(const char *z, int stopAtElse, int *pnLine){
 /*
 ** Wait for a client process to complete all its tasks
 */
-static void waitForClient(int iClient, int iTimeout, char *zErrPrefix){
+void waitForClient(int iClient, int iTimeout, char *zErrPrefix){
   sqlite3_stmt *pStmt;
   int rc;
   if( iClient>0 ){
@@ -833,7 +833,7 @@ static void waitForClient(int iClient, int iTimeout, char *zErrPrefix){
 
 /* Return a pointer to the tail of a filename
 */
-static char *filenameTail(char *z){
+char *filenameTail(char *z){
   int i, j;
   for(i=j=0; z[i]; i++) if( isDirSep(z[i]) ) j = i+1;
   return z+j;
@@ -842,7 +842,7 @@ static char *filenameTail(char *z){
 /*
 ** Interpret zArg as a boolean value.  Return either 0 or 1.
 */
-static int booleanValue(char *zArg){
+int booleanValue(char *zArg){
   int i;
   if( zArg==0 ) return 0;
   for(i=0; zArg[i]>='0' && zArg[i]<='9'; i++){}
@@ -861,7 +861,7 @@ static int booleanValue(char *zArg){
 /* This routine exists as a convenient place to set a debugger
 ** breakpoint.
 */
-static void test_breakpoint(void){ static volatile int cnt = 0; cnt++; }
+void test_breakpoint(void){ volatile int cnt = 0; cnt++; }
 
 /* Maximum number of arguments to a --command */
 #define MX_ARG 2
@@ -869,7 +869,7 @@ static void test_breakpoint(void){ static volatile int cnt = 0; cnt++; }
 /*
 ** Run a script.
 */
-static void runScript(
+void runScript(
   int iClient,       /* The client number, or 0 for the master */
   int taskId,        /* The task ID for clients.  0 for master */
   char *zScript,     /* Text of the script */
@@ -1202,7 +1202,7 @@ static void runScript(
 ** hasArg==1 means the option has an argument.  Return a pointer to the
 ** argument.
 */
-static char *findOption(
+char *findOption(
   char **azArg,
   int *pnArg,
   const char *zOption,
@@ -1242,7 +1242,7 @@ static char *findOption(
 }
 
 /* Print a usage message for the program and exit */
-static void usage(const char *argv0){
+void usage(const char *argv0){
   int i;
   const char *zTail = argv0;
   for(i=0; argv0[i]; i++){
@@ -1266,7 +1266,7 @@ static void usage(const char *argv0){
 }
 
 /* Report on unrecognized arguments */
-static void unrecognizedArguments(
+void unrecognizedArguments(
   const char *argv0,
   int nArg,
   char **azArg

@@ -68,7 +68,7 @@ struct Fts5MatchinfoCtx {
 ** If an error occurs, return NULL and leave an error in the database 
 ** handle (accessible using sqlite3_errcode()/errmsg()).
 */
-static int fts5_api_from_db(sqlite3 *db, fts5_api **ppApi){
+int fts5_api_from_db(sqlite3 *db, fts5_api **ppApi){
   sqlite3_stmt *pStmt = 0;
   int rc;
 
@@ -91,7 +91,7 @@ static int fts5_api_from_db(sqlite3 *db, fts5_api **ppApi){
 ** is the number of 32-bit integers added to the output array if the
 ** table has nCol columns and the query nPhrase phrases.
 */
-static int fts5MatchinfoFlagsize(int nCol, int nPhrase, char f){
+int fts5MatchinfoFlagsize(int nCol, int nPhrase, char f){
   int ret = -1;
   switch( f ){
     case 'p': ret = 1; break;
@@ -107,7 +107,7 @@ static int fts5MatchinfoFlagsize(int nCol, int nPhrase, char f){
   return ret;
 }
 
-static int fts5MatchinfoIter(
+int fts5MatchinfoIter(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   Fts5MatchinfoCtx *p,
@@ -125,7 +125,7 @@ static int fts5MatchinfoIter(
   return rc;
 }
 
-static int fts5MatchinfoXCb(
+int fts5MatchinfoXCb(
   const Fts5ExtensionApi *pApi,
   Fts5Context *pFts,
   void *pUserData
@@ -147,7 +147,7 @@ static int fts5MatchinfoXCb(
   return SQLITE_OK;
 }
 
-static int fts5MatchinfoGlobalCb(
+int fts5MatchinfoGlobalCb(
   const Fts5ExtensionApi *pApi,
   Fts5Context *pFts,
   Fts5MatchinfoCtx *p,
@@ -202,7 +202,7 @@ static int fts5MatchinfoGlobalCb(
   return rc;
 }
 
-static int fts5MatchinfoLocalCb(
+int fts5MatchinfoLocalCb(
   const Fts5ExtensionApi *pApi,
   Fts5Context *pFts,
   Fts5MatchinfoCtx *p,
@@ -298,7 +298,7 @@ static int fts5MatchinfoLocalCb(
   return rc;
 }
  
-static Fts5MatchinfoCtx *fts5MatchinfoNew(
+Fts5MatchinfoCtx *fts5MatchinfoNew(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   sqlite3_context *pCtx,          /* Context for returning error message */
@@ -354,7 +354,7 @@ static Fts5MatchinfoCtx *fts5MatchinfoNew(
   return p;
 }
 
-static void fts5MatchinfoFunc(
+void fts5MatchinfoFunc(
   const Fts5ExtensionApi *pApi,   /* API offered by current FTS version */
   Fts5Context *pFts,              /* First arg to pass to pApi functions */
   sqlite3_context *pCtx,          /* Context for returning result/error */

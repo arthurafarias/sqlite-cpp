@@ -139,7 +139,7 @@
 /* Human-readable names for the JSONB values.  The index for each
 ** string must correspond to the JSONB_* integer above.
 */
-static const char * const jsonbType[] = {
+const char * const jsonbType[] = {
   "null", "true", "false", "integer", "integer", 
   "real", "real", "text",  "text",    "text",
   "text", "array", "object", "", "", "", ""
@@ -150,7 +150,7 @@ static const char * const jsonbType[] = {
 ** the library isspace() function, resulting in a 7% overall performance
 ** increase for the text-JSON parser.  (Ubuntu14.10 gcc 4.8.4 x64 with -Os).
 */
-static const char jsonIsSpace[] = {
+const char jsonIsSpace[] = {
 #ifdef SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 1, 1, 0, 0, 1, 0, 0,  /* 0 */
@@ -200,10 +200,10 @@ static const char jsonIsSpace[] = {
 ** Useful as the second argument to strspn().
 */
 #ifdef SQLITE_ASCII
-static const char jsonSpaces[] = "\011\012\015\040";
+const char jsonSpaces[] = "\011\012\015\040";
 #endif
 #ifdef SQLITE_EBCDIC
-static const char jsonSpaces[] = "\005\045\015\100";
+const char jsonSpaces[] = "\005\045\015\100";
 #endif
 
 
@@ -213,7 +213,7 @@ static const char jsonSpaces[] = "\005\045\015\100";
 ** canonical JSON, but it is special in JSON-5, so we include
 ** it in the set of special characters.
 */
-static const char jsonIsOk[256] = {
+const char jsonIsOk[256] = {
 #ifdef SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 0 */
@@ -305,9 +305,9 @@ struct JsonString {
   char *zBuf;              /* Append JSON content here */
   u64 nAlloc;              /* Bytes of storage available in zBuf[] */
   u64 nUsed;               /* Bytes of zBuf[] currently used */
-  u8 bStatic;              /* True if zBuf is static space */
+  u8 bStatic;              /* True if zBuf is space */
   u8 eErr;                 /* True if an error has been encountered */
-  char zSpace[100];        /* Initial static space */
+  char zSpace[100];        /* Initial space */
 };
 
 /* Allowed values for JsonString.eErr */
@@ -402,14 +402,14 @@ struct JsonParse {
 /**************************************************************************
 ** Forward references
 **************************************************************************/
-static void jsonReturnStringAsBlob(JsonString*);
-static int jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
-static u32 jsonTranslateBlobToText(JsonParse*,u32,JsonString*);
-static void jsonReturnParse(sqlite3_context*,JsonParse*);
-static JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_value*,u32);
-static void jsonParseFree(JsonParse*);
-static u32 jsonbPayloadSize(const JsonParse*, u32, u32*);
-static u32 jsonUnescapeOneChar(const char*, u32, u32*);
+void jsonReturnStringAsBlob(JsonString*);
+int jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
+u32 jsonTranslateBlobToText(JsonParse*,u32,JsonString*);
+void jsonReturnParse(sqlite3_context*,JsonParse*);
+JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_value*,u32);
+void jsonParseFree(JsonParse*);
+u32 jsonbPayloadSize(const JsonParse*, u32, u32*);
+u32 jsonUnescapeOneChar(const char*, u32, u32*);
 
 /**************************************************************************
 ** Utility routines for dealing with JsonCache objects
@@ -418,14 +418,14 @@ static u32 jsonUnescapeOneChar(const char*, u32, u32*);
 /*
 ** Free a JsonCache object.
 */
-static void jsonCacheDelete(JsonCache *p){
+void jsonCacheDelete(JsonCache *p){
   int i;
   for(i=0; i<p->nUsed; i++){
     jsonParseFree(p->a[i]);
   }
   sqlite3DbFree(p->db, p);
 }
-static void jsonCacheDeleteGeneric(void *p){
+void jsonCacheDeleteGeneric(void *p){
   jsonCacheDelete((JsonCache*)p);
 }
 
@@ -436,7 +436,7 @@ static void jsonCacheDeleteGeneric(void *p){
 **
 ** Cache entries are stored in age order, oldest first.
 */
-static int jsonCacheInsert(
+int jsonCacheInsert(
   sqlite3_context *ctx,   /* The SQL statement context holding the cache */
   JsonParse *pParse       /* The parse object to be added to the cache */
 ){
@@ -480,7 +480,7 @@ static int jsonCacheInsert(
 ** be deleted at any moment.  If the caller wants the JsonParse to
 ** linger, it needs to increment the nPJRef reference counter.
 */
-static JsonParse *jsonCacheSearch(
+JsonParse *jsonCacheSearch(
   sqlite3_context *ctx,    /* The SQL statement context holding the cache */
   sqlite3_value *pArg      /* Function argument containing SQL text */
 ){
@@ -531,7 +531,7 @@ static JsonParse *jsonCacheSearch(
 /* Turn uninitialized bulk memory into a valid JsonString object
 ** holding a zero-length string.
 */
-static void jsonStringZero(JsonString *p){
+void jsonStringZero(JsonString *p){
   p->zBuf = p->zSpace;
   p->nAlloc = sizeof(p->zSpace);
   p->nUsed = 0;
@@ -540,7 +540,7 @@ static void jsonStringZero(JsonString *p){
 
 /* Initialize the JsonString object
 */
-static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
+void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
   p->pCtx = pCtx;
   p->eErr = 0;
   jsonStringZero(p);
@@ -549,14 +549,14 @@ static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
 /* Free all allocated memory and reset the JsonString object back to its
 ** initial state.
 */
-static void jsonStringReset(JsonString *p){
+void jsonStringReset(JsonString *p){
   if( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
   jsonStringZero(p);
 }
 
 /* Report an out-of-memory (OOM) condition
 */
-static void jsonStringOom(JsonString *p){
+void jsonStringOom(JsonString *p){
   p->eErr |= JSTRING_OOM;
   if( p->pCtx ) sqlite3_result_error_nomem(p->pCtx);
   jsonStringReset(p);
@@ -564,7 +564,7 @@ static void jsonStringOom(JsonString *p){
 
 /* Report JSON nested too deep
 */
-static void jsonStringTooDeep(JsonString *p){
+void jsonStringTooDeep(JsonString *p){
   p->eErr |= JSTRING_TOODEEP;
   assert( p->pCtx!=0 );
   sqlite3_result_error(p->pCtx, "JSON nested too deep", -1);
@@ -574,7 +574,7 @@ static void jsonStringTooDeep(JsonString *p){
 /* Enlarge pJson->zBuf so that it can hold at least N more bytes.
 ** Return zero on success.  Return non-zero on an OOM error
 */
-static int jsonStringGrow(JsonString *p, u32 N){
+int jsonStringGrow(JsonString *p, u32 N){
   u64 nTotal = N<p->nAlloc ? p->nAlloc*2 : p->nAlloc+N+10;
   char *zNew;
   if( p->bStatic ){
@@ -601,7 +601,7 @@ static int jsonStringGrow(JsonString *p, u32 N){
 
 /* Append N bytes from zIn onto the end of the JsonString string.
 */
-static SQLITE_NOINLINE void jsonStringExpandAndAppend(
+SQLITE_NOINLINE void jsonStringExpandAndAppend(
   JsonString *p,
   const char *zIn,
   u32 N
@@ -611,7 +611,7 @@ static SQLITE_NOINLINE void jsonStringExpandAndAppend(
   memcpy(p->zBuf+p->nUsed, zIn, N);
   p->nUsed += N;
 }
-static void jsonAppendRaw(JsonString *p, const char *zIn, u32 N){
+void jsonAppendRaw(JsonString *p, const char *zIn, u32 N){
   if( N==0 ) return;
   if( N+p->nUsed >= p->nAlloc ){
     jsonStringExpandAndAppend(p,zIn,N);
@@ -620,7 +620,7 @@ static void jsonAppendRaw(JsonString *p, const char *zIn, u32 N){
     p->nUsed += N;
   }
 }
-static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
+void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
   assert( N>0 );
   if( N+p->nUsed >= p->nAlloc ){
     jsonStringExpandAndAppend(p,zIn,N);
@@ -632,7 +632,7 @@ static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
 
 /* Append formatted text (not to exceed N bytes) to the JsonString.
 */
-static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
+void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
   va_list ap;
   if( (p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N) ) return;
   va_start(ap, zFormat);
@@ -643,11 +643,11 @@ static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
 
 /* Append a single character
 */
-static SQLITE_NOINLINE void jsonAppendCharExpand(JsonString *p, char c){
+SQLITE_NOINLINE void jsonAppendCharExpand(JsonString *p, char c){
   if( jsonStringGrow(p,1) ) return;
   p->zBuf[p->nUsed++] = c;
 }
-static void jsonAppendChar(JsonString *p, char c){
+void jsonAppendChar(JsonString *p, char c){
   if( p->nUsed>=p->nAlloc ){
     jsonAppendCharExpand(p,c);
   }else{
@@ -657,7 +657,7 @@ static void jsonAppendChar(JsonString *p, char c){
 
 /* Remove a single character from the end of the string
 */
-static void jsonStringTrimOneChar(JsonString *p){
+void jsonStringTrimOneChar(JsonString *p){
   if( p->eErr==0 ){
     assert( p->nUsed>0 );
     p->nUsed--;
@@ -670,7 +670,7 @@ static void jsonStringTrimOneChar(JsonString *p){
 ** Return true on success.  Return false if an OOM prevents this
 ** from happening.
 */
-static int jsonStringTerminate(JsonString *p){
+int jsonStringTerminate(JsonString *p){
   jsonAppendChar(p, 0);
   jsonStringTrimOneChar(p);
   return p->eErr==0;
@@ -679,7 +679,7 @@ static int jsonStringTerminate(JsonString *p){
 /* Append a comma separator to the output buffer, if the previous
 ** character is not '[' or '{'.
 */
-static void jsonAppendSeparator(JsonString *p){
+void jsonAppendSeparator(JsonString *p){
   char c;
   if( p->nUsed==0 ) return;
   c = p->zBuf[p->nUsed-1];
@@ -693,8 +693,8 @@ static void jsonAppendSeparator(JsonString *p){
 ** This routine assumes that the output buffer has already been enlarged
 ** sufficiently to hold the worst-case encoding plus a nul terminator.
 */
-static void jsonAppendControlChar(JsonString *p, u8 c){
-  static const char aSpecial[] = {
+void jsonAppendControlChar(JsonString *p, u8 c){
+  const char aSpecial[] = {
      0, 0, 0, 0, 0, 0, 0, 0, 'b', 't', 'n', 0, 'f', 'r', 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,   0,   0,   0, 0,   0,   0, 0, 0
   };
@@ -729,7 +729,7 @@ static void jsonAppendControlChar(JsonString *p, u8 c){
 ** This routine is a high-runner.  There is a measurable performance
 ** increase associated with unwinding the jsonIsOk[] loop.
 */
-static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
+void jsonAppendString(JsonString *p, const char *zIn, u32 N){
   u32 k;
   u8 c;
   const u8 *z = (const u8*)zIn;
@@ -800,7 +800,7 @@ static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
 ** Append an sqlite3_value (such as a function parameter) to the JSON
 ** string under construction in p.
 */
-static void jsonAppendSqlValue(
+void jsonAppendSqlValue(
   JsonString *p,                 /* Append to this JSON string */
   sqlite3_value *pValue          /* Value to append */
 ){
@@ -853,7 +853,7 @@ static void jsonAppendSqlValue(
 ** loaded into the zJson field of the pParse object as a RCStr and the
 ** pParse is added to the cache.
 */
-static void jsonReturnString(
+void jsonReturnString(
   JsonString *p,            /* String to return */
   JsonParse *pParse,        /* JSONB source or NULL */
   sqlite3_context *ctx      /* Where to cache */
@@ -903,7 +903,7 @@ static void jsonReturnString(
 ** Reclaim all memory allocated by a JsonParse object.  But do not
 ** delete the JsonParse object itself.
 */
-static void jsonParseReset(JsonParse *pParse){
+void jsonParseReset(JsonParse *pParse){
   assert( pParse->nJPRef<=1 );
   if( pParse->bJsonIsRCStr ){
     sqlite3RCStrUnref(pParse->zJson);
@@ -923,7 +923,7 @@ static void jsonParseReset(JsonParse *pParse){
 ** Decrement the reference count on the JsonParse object.  When the
 ** count reaches zero, free the object.
 */
-static void jsonParseFree(JsonParse *pParse){
+void jsonParseFree(JsonParse *pParse){
   if( pParse ){
     if( pParse->nJPRef>1 ){
       pParse->nJPRef--;
@@ -944,7 +944,7 @@ static void jsonParseFree(JsonParse *pParse){
 ** character:  0..9a..fA..F.  But unlike sqlite3HexToInt(), it does not
 ** assert() if the digit is not hex.
 */
-static u8 jsonHexToInt(int h){
+u8 jsonHexToInt(int h){
 #ifdef SQLITE_ASCII
   h += 9*(1&(h>>6));
 #endif
@@ -957,7 +957,7 @@ static u8 jsonHexToInt(int h){
 /*
 ** Convert a 4-byte hex string into an integer
 */
-static u32 jsonHexToInt4(const char *z){
+u32 jsonHexToInt4(const char *z){
   u32 v;
   v = (jsonHexToInt(z[0])<<12)
     + (jsonHexToInt(z[1])<<8)
@@ -969,14 +969,14 @@ static u32 jsonHexToInt4(const char *z){
 /*
 ** Return true if z[] begins with 2 (or more) hexadecimal digits
 */
-static int jsonIs2Hex(const char *z){
+int jsonIs2Hex(const char *z){
   return sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
 }
 
 /*
 ** Return true if z[] begins with 4 (or more) hexadecimal digits
 */
-static int jsonIs4Hex(const char *z){
+int jsonIs4Hex(const char *z){
   return jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
 }
 
@@ -1016,7 +1016,7 @@ static int jsonIs4Hex(const char *z){
 ** In addition, comments between '/', '*' and '*', '/' and
 ** from '/', '/' to end-of-line are also considered to be whitespace.
 */
-static int json5Whitespace(const char *zIn){
+int json5Whitespace(const char *zIn){
   int n = 0;
   const u8 *z = (u8*)zIn;
   while( 1 /*exit by "goto whitespace_done"*/ ){
@@ -1110,7 +1110,7 @@ static int json5Whitespace(const char *zIn){
 /*
 ** Extra floating-point literals to allow in JSON.
 */
-static const struct NanInfName {
+const struct NanInfName {
   char c1;
   char c2;
   char n;
@@ -1131,7 +1131,7 @@ static const struct NanInfName {
 ** Report the wrong number of arguments for json_insert(), json_replace()
 ** or json_set().
 */
-static void jsonWrongNumArgs(
+void jsonWrongNumArgs(
   sqlite3_context *pCtx,
   const char *zFuncName
 ){
@@ -1150,7 +1150,7 @@ static void jsonWrongNumArgs(
 **
 ** Return the number of errors.
 */
-static int jsonBlobExpand(JsonParse *pParse, u32 N){
+int jsonBlobExpand(JsonParse *pParse, u32 N){
   u8 *aNew;
   u64 t;
   assert( N>pParse->nBlobAlloc );
@@ -1176,7 +1176,7 @@ static int jsonBlobExpand(JsonParse *pParse, u32 N){
 **
 ** Return true on success.  Return false on OOM.
 */
-static int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
+int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
   u8 *aOld;
   u32 nSize;
   assert( !pParse->bReadOnly );
@@ -1195,7 +1195,7 @@ static int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
 
 /* Expand pParse->aBlob and append one bytes.
 */
-static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
+SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
   JsonParse *pParse,
   u8 c
 ){
@@ -1208,7 +1208,7 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
 
 /* Append a single character.
 */
-static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
+void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
   if( pParse->nBlob >= pParse->nBlobAlloc ){
     jsonBlobExpandAndAppendOneByte(pParse, c);
   }else{
@@ -1219,8 +1219,8 @@ static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
 /* Slow version of jsonBlobAppendNode() that first resizes the
 ** pParse->aBlob structure.
 */
-static void jsonBlobAppendNode(JsonParse*,u8,u64,const void*);
-static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
+void jsonBlobAppendNode(JsonParse*,u8,u64,const void*);
+SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
   JsonParse *pParse,
   u8 eType,
   u64 szPayload,
@@ -1240,7 +1240,7 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
 ** payload, but the payload is not appended and pParse->nBlob is left
 ** pointing to where the first byte of payload will eventually be.
 */
-static void jsonBlobAppendNode(
+void jsonBlobAppendNode(
   JsonParse *pParse,          /* The JsonParse object under construction */
   u8 eType,                   /* Node type.  One of JSONB_* */
   u64 szPayload,              /* Number of bytes of payload */
@@ -1281,7 +1281,7 @@ static void jsonBlobAppendNode(
 
 /* Change the payload size for the node at index i to be szPayload.
 */
-static int jsonBlobChangePayloadSize(
+int jsonBlobChangePayloadSize(
   JsonParse *pParse,
   u32 i,
   u32 szPayload
@@ -1352,7 +1352,7 @@ static int jsonBlobChangePayloadSize(
 ** then set *pOp to JSONB_TEXTJ and return true.  If not, do not make
 ** any changes to *pOp and return false.
 */
-static int jsonIs4HexB(const char *z, int *pOp){
+int jsonIs4HexB(const char *z, int *pOp){
   if( z[0]!='u' ) return 0;
   if( !jsonIs4Hex(&z[1]) ) return 0;
   *pOp = JSONB_TEXTJ;
@@ -1369,7 +1369,7 @@ static int jsonIs4HexB(const char *z, int *pOp){
 ** error if a problem is detected.  (In other words, if the error is at offset
 ** 0, return 1).
 */
-static u32 jsonbValidityCheck(
+u32 jsonbValidityCheck(
   const JsonParse *pParse,    /* Input JSONB.  Only aBlob and nBlob are used */
   u32 i,                      /* Start of element as pParse->aBlob[i] */
   u32 iEnd,                   /* One more than the last byte of the element */
@@ -1578,7 +1578,7 @@ static u32 jsonbValidityCheck(
 **     -4    ',' seen    /     the index in zJson[] of the seen character
 **     -5    ':' seen   /
 */
-static int jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
+int jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
   char c;
   u32 j;
   u32 iThis, iStart;
@@ -2052,7 +2052,7 @@ json_parse_restart:
 ** pParse must be initialized to an empty parse object prior to calling
 ** this routine.
 */
-static int jsonConvertTextToBlob(
+int jsonConvertTextToBlob(
   JsonParse *pParse,           /* Initialize and fill this JsonParse object */
   sqlite3_context *pCtx        /* Report errors here */
 ){
@@ -2097,7 +2097,7 @@ static int jsonConvertTextToBlob(
 ** this into the JSONB format and make it the return value of the
 ** SQL function.
 */
-static void jsonReturnStringAsBlob(JsonString *pStr){
+void jsonReturnStringAsBlob(JsonString *pStr){
   JsonParse px;
   assert( pStr->eErr==0 );
   memset(&px, 0, sizeof(px));
@@ -2120,7 +2120,7 @@ static void jsonReturnStringAsBlob(JsonString *pStr){
 ** payload size in to *pSz.  It returns the offset from i to the
 ** beginning of the payload.  Return 0 on error.
 */
-static u32 jsonbPayloadSize(const JsonParse *pParse, u32 i, u32 *pSz){
+u32 jsonbPayloadSize(const JsonParse *pParse, u32 i, u32 *pSz){
   u8 x;
   u32 sz;
   u32 n;
@@ -2190,7 +2190,7 @@ static u32 jsonbPayloadSize(const JsonParse *pParse, u32 i, u32 *pSz){
 **
 ** The pOut->eErr JSTRING_OOM flag is set on a OOM.
 */
-static u32 jsonTranslateBlobToText(
+u32 jsonTranslateBlobToText(
   JsonParse *pParse,             /* the complete parse of the JSON */
   u32 i,                         /* Start rendering at this index */
   JsonString *pOut               /* Write JSON here */
@@ -2427,7 +2427,7 @@ struct JsonPretty {
 };
 
 /* Append indentation to the pretty JSON under construction */
-static void jsonPrettyIndent(JsonPretty *pPretty){
+void jsonPrettyIndent(JsonPretty *pPretty){
   u32 jj;
   for(jj=0; jj<pPretty->nIndent; jj++){
     jsonAppendRaw(pPretty->pOut, pPretty->zIndent, pPretty->szIndent);
@@ -2451,7 +2451,7 @@ static void jsonPrettyIndent(JsonPretty *pPretty){
 **
 ** The pOut->eErr JSTRING_OOM flag is set on a OOM.
 */
-static u32 jsonTranslateBlobToPrettyText(
+u32 jsonTranslateBlobToPrettyText(
   JsonPretty *pPretty,       /* Pretty-printing context */
   u32 i                      /* Start rendering at this index */
 ){
@@ -2531,7 +2531,7 @@ static u32 jsonTranslateBlobToPrettyText(
 ** Given that a JSONB_ARRAY object starts at offset i, return
 ** the number of entries in that array.
 */
-static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
+u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
   u32 n, sz, i, iEnd;
   u32 k = 0;
   n = jsonbPayloadSize(pParse, iRoot, &sz);
@@ -2546,7 +2546,7 @@ static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
 ** Edit the payload size of the element at iRoot by the amount in
 ** pParse->delta.
 */
-static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
+void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
   u32 sz = 0;
   u32 nBlob;
   assert( pParse->delta!=0 );
@@ -2575,7 +2575,7 @@ static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
 ** This routine is an optimization.  A correct answer is obtained if it
 ** always leaves the output unchanged and returns false.
 */
-static int jsonBlobOverwrite(
+int jsonBlobOverwrite(
   u8 *aOut,                 /* Overwrite here */
   const u8 *aIns,           /* New content */
   u32 nIns,                 /* Bytes of new content */
@@ -2589,7 +2589,7 @@ static int jsonBlobOverwrite(
   ** expanded aIns[], based on the size of the expanded aIns[] header:
   **
   **                             2     3  4     5  6  7  8     9 */
-  static const u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
+  const u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
 
   if( (aIns[0]&0x0f)<=2 ) return 0;    /* Cannot enlarge NULL, true, false */
   switch( aIns[0]>>4 ){
@@ -2648,7 +2648,7 @@ static int jsonBlobOverwrite(
 **
 ** Set pParse->oom if an OOM occurs.
 */
-static void jsonBlobEdit(
+void jsonBlobEdit(
   JsonParse *pParse,     /* The JSONB to be modified is in pParse->aBlob */
   u32 iDel,              /* First byte to be removed */
   u32 nDel,              /* Number of bytes to remove */
@@ -2688,7 +2688,7 @@ static void jsonBlobEdit(
 **    0x5c 0xe2 0x80 0xa8
 **    0x5c 0xe2 0x80 0xa9
 */
-static u32 jsonBytesToBypass(const char *z, u32 n){
+u32 jsonBytesToBypass(const char *z, u32 n){
   u32 i = 0;
   while( i+1<n ){
     if( z[i]!='\\' ) return i;
@@ -2726,7 +2726,7 @@ static u32 jsonBytesToBypass(const char *z, u32 n){
 ** after the '\\' to complete the encoding) then *piOut is set to
 ** JSON_INVALID_CHAR.
 */
-static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
+u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
   assert( n>0 );
   assert( z[0]=='\\' );
   if( n<2 ){
@@ -2819,7 +2819,7 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 ** In this version, we know that one or the other or both of the
 ** two comparands contains an escape sequence.
 */
-static SQLITE_NOINLINE int jsonLabelCompareEscaped(
+SQLITE_NOINLINE int jsonLabelCompareEscaped(
   const char *zLeft,          /* The left label */
   u32 nLeft,                  /* Size of the left label in bytes */
   int rawLeft,                /* True if zLeft contains no escapes */
@@ -2875,7 +2875,7 @@ static SQLITE_NOINLINE int jsonLabelCompareEscaped(
 ** Compare two object labels.  Return 1 if they are equal and
 ** 0 if they differ.  Return -1 if an OOM occurs.
 */
-static int jsonLabelCompare(
+int jsonLabelCompare(
   const char *zLeft,          /* The left label */
   u32 nLeft,                  /* Size of the left label in bytes */
   int rawLeft,                /* True if zLeft contains no escapes */
@@ -2905,7 +2905,7 @@ static int jsonLabelCompare(
 #define JSON_LOOKUP_ISERROR(x) ((x)>=JSON_LOOKUP_PATHERROR)
 
 /* Forward declaration */
-static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
+u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
 
 
 /* This helper routine for jsonLookupStep() populates pIns with
@@ -2927,12 +2927,12 @@ static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
 ** The caller is responsible for resetting pIns when it has finished
 ** using the substructure.
 */
-static u32 jsonCreateEditSubstructure(
+u32 jsonCreateEditSubstructure(
   JsonParse *pParse,  /* The original JSONB that is being edited */
   JsonParse *pIns,    /* Populate this with the blob data to insert */
   const char *zTail   /* Tail of the path that determines substructure */
 ){
-  static const u8 emptyObject[] = { JSONB_ARRAY, JSONB_OBJECT };
+  const u8 emptyObject[] = { JSONB_ARRAY, JSONB_OBJECT };
   int rc;
   memset(pIns, 0, sizeof(*pIns));
   pIns->db = pParse->db;
@@ -2976,7 +2976,7 @@ static u32 jsonCreateEditSubstructure(
 ** is performed, the return value is only useful for detecting error
 ** conditions.
 */
-static u32 jsonLookupStep(
+u32 jsonLookupStep(
   JsonParse *pParse,      /* The JSON to search */
   u32 iRoot,              /* Begin the search at this element of aBlob[] */
   const char *zPath,      /* The path to search */
@@ -3190,7 +3190,7 @@ static u32 jsonLookupStep(
 ** Convert a JSON BLOB into text and make that text the return value
 ** of an SQL function.
 */
-static void jsonReturnTextJsonFromBlob(
+void jsonReturnTextJsonFromBlob(
   sqlite3_context *ctx,
   const u8 *aBlob,
   u32 nBlob
@@ -3223,7 +3223,7 @@ static void jsonReturnTextJsonFromBlob(
 **
 **     eMode==2     JSONB
 */
-static void jsonReturnFromBlob(
+void jsonReturnFromBlob(
   JsonParse *pParse,          /* Complete JSON parse tree */
   u32 i,                      /* Index of the node */
   sqlite3_context *pCtx,      /* Return value for this function */
@@ -3403,20 +3403,20 @@ returnfromblob_malformed:
 ** pParse->aBlob and pParse->nBlob.  pParse->aBlob might be dynamically
 ** allocated (if pParse->nBlobAlloc is greater than zero) in which case
 ** the caller is responsible for freeing the space allocated to pParse->aBlob
-** when it has finished with it.  Or pParse->aBlob might be a static string
+** when it has finished with it.  Or pParse->aBlob might be a string
 ** or a value obtained from sqlite3_value_blob(pArg).
 **
 ** If the argument is a BLOB that is clearly not a JSONB, then this
 ** function might set an error message in ctx and return non-zero.
 ** It might also set an error message and return non-zero on an OOM error.
 */
-static int jsonFunctionArgToBlob(
+int jsonFunctionArgToBlob(
   sqlite3_context *ctx,
   sqlite3_value *pArg,
   JsonParse *pParse
 ){
   int eType = sqlite3_value_type(pArg);
-  static u8 aNull[] = { 0x00 };
+  u8 aNull[] = { 0x00 };
   memset(pParse, 0, sizeof(pParse[0]));
   pParse->db = sqlite3_context_db_handle(ctx);
   switch( eType ){
@@ -3499,7 +3499,7 @@ static int jsonFunctionArgToBlob(
 ** If ctx is not NULL then push the error message into ctx and return NULL.
 ** If ctx is NULL, then return the text of the error message.
 */
-static char *jsonBadPathError(
+char *jsonBadPathError(
   sqlite3_context *ctx,     /* The function call containing the error */
   const char *zPath,        /* The path with the problem */
   int rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
@@ -3532,7 +3532,7 @@ static char *jsonBadPathError(
 ** The specific operation is determined by eEdit, which can be one
 ** of JEDIT_INS, JEDIT_REPL, JEDIT_SET, or JEDIT_AINS.
 */
-static void jsonInsertIntoBlob(
+void jsonInsertIntoBlob(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv,
@@ -3618,7 +3618,7 @@ jsonInsertIntoBlob_patherror:
 ** payload is less than 7 bytes, we will never get a false positive for
 ** JSONB on an input that is really text JSON.
 */
-static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
+int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
   u32 n, sz = 0;
   u8 c;
   if( sqlite3_value_type(pArg)!=SQLITE_BLOB ) return 0;
@@ -3657,7 +3657,7 @@ static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
 ** is so that SQL functions that are given NULL arguments will return
 ** a NULL value.
 */
-static JsonParse *jsonParseFuncArg(
+JsonParse *jsonParseFuncArg(
   sqlite3_context *ctx,
   sqlite3_value *pArg,
   u32 flgs
@@ -3774,7 +3774,7 @@ json_pfa_oom:
 ** or make it JSON text, depending on whether the JSON_BLOB flag is
 ** set on the function.
 */
-static void jsonReturnParse(
+void jsonReturnParse(
   sqlite3_context *ctx,
   JsonParse *p
 ){
@@ -3811,7 +3811,7 @@ static void jsonReturnParse(
 ** including iEnd.  Indent the
 ** content by nIndent spaces.
 */
-static void jsonDebugPrintBlob(
+void jsonDebugPrintBlob(
   JsonParse *pParse, /* JSON content */
   u32 iStart,        /* Start rendering here */
   u32 iEnd,          /* Do not render this byte or any byte after this one */
@@ -3899,7 +3899,7 @@ static void jsonDebugPrintBlob(
     iStart += n + sz;
   }
 }
-static void jsonShowParse(JsonParse *pParse){
+void jsonShowParse(JsonParse *pParse){
   sqlite3_str out;
   char zBuf[1000];
   if( pParse==0 ){
@@ -3926,7 +3926,7 @@ static void jsonShowParse(JsonParse *pParse){
 ** Parse JSON using jsonParseFuncArg().  Return text that is a
 ** human-readable dump of the binary JSONB for the input parameter.
 */
-static void jsonParseFunc(
+void jsonParseFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -3959,7 +3959,7 @@ static void jsonParseFunc(
 ** double-quotes around strings and returning the unquoted string "null"
 ** when given a NULL input.
 */
-static void jsonQuoteFunc(
+void jsonQuoteFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -3978,7 +3978,7 @@ static void jsonQuoteFunc(
 ** array that contains all values given in arguments.  Or if any argument
 ** is a BLOB, throw an error.
 */
-static void jsonArrayFunc(
+void jsonArrayFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4004,7 +4004,7 @@ static void jsonArrayFunc(
 ** Return the number of elements in the top-level JSON array.
 ** Return 0 if the input is not a well-formed JSON array.
 */
-static void jsonArrayLengthFunc(
+void jsonArrayLengthFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4043,7 +4043,7 @@ static void jsonArrayLengthFunc(
 }
 
 /* True if the string is all alphanumerics and underscores */
-static int jsonAllAlphanum(const char *z, int n){
+int jsonAllAlphanum(const char *z, int n){
   int i;
   for(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
   return i==n;
@@ -4069,7 +4069,7 @@ static int jsonAllAlphanum(const char *z, int n){
 ** Abbreviated JSON path expressions are allows if JSON_ABPATH, for
 ** compatibility with PG.
 */
-static void jsonExtractFunc(
+void jsonExtractFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4234,7 +4234,7 @@ json_extract_error:
 **  |
 **  ^---- Line numbers referenced in comments in the implementation
 */
-static int jsonMergePatch(
+int jsonMergePatch(
   JsonParse *pTarget,      /* The JSON parser that contains the TARGET */
   u32 iTarget,             /* Index of TARGET in pTarget->aBlob[] */
   const JsonParse *pPatch, /* The PATCH */
@@ -4387,7 +4387,7 @@ static int jsonMergePatch(
 ** object that is the result of running the RFC 7396 MergePatch() algorithm
 ** on the two arguments.
 */
-static void jsonPatchFunc(
+void jsonPatchFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4423,7 +4423,7 @@ static void jsonPatchFunc(
 ** object that contains all name/value given in arguments.  Or if any name
 ** is not a string or if any value is a BLOB, throw an error.
 */
-static void jsonObjectFunc(
+void jsonObjectFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4465,7 +4465,7 @@ static void jsonObjectFunc(
 ** Remove the named elements from JSON and return the result.  malformed
 ** JSON or PATH arguments result in an error.
 */
-static void jsonRemoveFunc(
+void jsonRemoveFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4520,7 +4520,7 @@ json_remove_done:
 ** Replace the value at PATH with VALUE.  If PATH does not already exist,
 ** this routine is a no-op.  If JSON or PATH is malformed, throw an error.
 */
-static void jsonReplaceFunc(
+void jsonReplaceFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4546,15 +4546,15 @@ static void jsonReplaceFunc(
 ** Create PATH and initialize it to VALUE.  If PATH already exists, this
 ** routine is a no-op.  If JSON or PATH is malformed, throw an error.
 */
-static void jsonSetFunc(
+void jsonSetFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
 ){
   int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   int eInsType = JSON_INSERT_TYPE(flags);
-  static const char *azInsType[] = { "insert", "set", "array_insert" };
-  static const u8 aEditType[] = { JEDIT_INS, JEDIT_SET, JEDIT_AINS };
+  const char *azInsType[] = { "insert", "set", "array_insert" };
+  const u8 aEditType[] = { JEDIT_INS, JEDIT_SET, JEDIT_AINS };
 
   if( argc<1 ) return;
   assert( eInsType>=0 && eInsType<=2 );
@@ -4572,7 +4572,7 @@ static void jsonSetFunc(
 ** Return the top-level "type" of a JSON string.  json_type() raises an
 ** error if either the JSON or PATH inputs are not well-formed.
 */
-static void jsonTypeFunc(
+void jsonTypeFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4617,7 +4617,7 @@ json_type_done:
 ** The INDENT argument is text that is used for indentation.  If omitted,
 ** it defaults to four spaces (the same as PostgreSQL).
 */
-static void jsonPrettyFunc(
+void jsonPrettyFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4698,7 +4698,7 @@ static void jsonPrettyFunc(
 **   *   Return 1 if the input is well-formed.
 **   *   Return 0 if the input is not well-formed.
 */
-static void jsonValidFunc(
+void jsonValidFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4780,7 +4780,7 @@ static void jsonValidFunc(
 ** that the input was not valid JSON, or return 0 if the input text looks
 ** ok.  JSON-5 extensions are accepted.
 */
-static void jsonErrorFunc(
+void jsonErrorFunc(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4828,7 +4828,7 @@ static void jsonErrorFunc(
 **
 ** Return a JSON array composed of all values in the aggregate.
 */
-static void jsonArrayStep(
+void jsonArrayStep(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4847,7 +4847,7 @@ static void jsonArrayStep(
     jsonAppendSqlValue(pStr, argv[0]);
   }
 }
-static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
+void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
   JsonString *pStr;
   int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
@@ -4876,17 +4876,17 @@ static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
       jsonStringTrimOneChar(pStr);
     }
   }else if( flags & JSON_BLOB ){
-    static const u8 emptyArray = 0x0b;
+    const u8 emptyArray = 0x0b;
     sqlite3_result_blob(ctx, &emptyArray, 1, SQLITE_STATIC);
   }else{
     sqlite3_result_text(ctx, "[]", 2, SQLITE_STATIC);
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonArrayValue(sqlite3_context *ctx){
+void jsonArrayValue(sqlite3_context *ctx){
   jsonArrayCompute(ctx, 0);
 }
-static void jsonArrayFinal(sqlite3_context *ctx){
+void jsonArrayFinal(sqlite3_context *ctx){
   jsonArrayCompute(ctx, 1);
 }
 
@@ -4897,7 +4897,7 @@ static void jsonArrayFinal(sqlite3_context *ctx){
 ** to the first comma (",") that is not within a string and deleting all
 ** text through that comma.
 */
-static void jsonGroupInverse(
+void jsonGroupInverse(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4950,7 +4950,7 @@ static void jsonGroupInverse(
 ** correctly process xInverse() requests.  The initial "@" is converted
 ** back into "{" and the "@" null values are removed by jsonObjectCompute().
 */
-static void jsonObjectStep(
+void jsonObjectStep(
   sqlite3_context *ctx,
   int argc,
   sqlite3_value **argv
@@ -4980,7 +4980,7 @@ static void jsonObjectStep(
     }
   }
 }
-static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
+void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
   JsonString *pStr;
   int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
@@ -5054,17 +5054,17 @@ static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
     }
     if( pStr!=pOgStr ) jsonStringReset(pStr);
   }else if( flags & JSON_BLOB ){
-    static const unsigned char emptyObject = 0x0c;
+    const unsigned char emptyObject = 0x0c;
     sqlite3_result_blob(ctx, &emptyObject, 1, SQLITE_STATIC); 
   }else{
     sqlite3_result_text(ctx, "{}", 2, SQLITE_STATIC);
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonObjectValue(sqlite3_context *ctx){
+void jsonObjectValue(sqlite3_context *ctx){
   jsonObjectCompute(ctx, 0);
 }
-static void jsonObjectFinal(sqlite3_context *ctx){
+void jsonObjectFinal(sqlite3_context *ctx){
   jsonObjectCompute(ctx, 1);
 }
 
@@ -5110,7 +5110,7 @@ struct JsonEachConnection {
 
 
 /* Constructor for the json_each virtual table */
-static int jsonEachConnect(
+int jsonEachConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -5155,14 +5155,14 @@ static int jsonEachConnect(
 }
 
 /* destructor for json_each virtual table */
-static int jsonEachDisconnect(sqlite3_vtab *pVtab){
+int jsonEachDisconnect(sqlite3_vtab *pVtab){
   JsonEachConnection *p = (JsonEachConnection*)pVtab;
   sqlite3DbFree(p->db, pVtab);
   return SQLITE_OK;
 }
 
 /* constructor for a JsonEachCursor object for json_each()/json_tree(). */
-static int jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+int jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   JsonEachConnection *pVtab = (JsonEachConnection*)p;
   JsonEachCursor *pCur;
 
@@ -5179,7 +5179,7 @@ static int jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
 
 /* Reset a JsonEachCursor back to its original state.  Free any memory
 ** held. */
-static void jsonEachCursorReset(JsonEachCursor *p){
+void jsonEachCursorReset(JsonEachCursor *p){
   jsonParseReset(&p->sParse);
   jsonStringReset(&p->path);
   sqlite3DbFree(p->db, p->aParent);
@@ -5193,7 +5193,7 @@ static void jsonEachCursorReset(JsonEachCursor *p){
 }
 
 /* Destructor for a jsonEachCursor object */
-static int jsonEachClose(sqlite3_vtab_cursor *cur){
+int jsonEachClose(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   jsonEachCursorReset(p);
   
@@ -5203,7 +5203,7 @@ static int jsonEachClose(sqlite3_vtab_cursor *cur){
 
 /* Return TRUE if the jsonEachCursor object has been advanced off the end
 ** of the JSON object */
-static int jsonEachEof(sqlite3_vtab_cursor *cur){
+int jsonEachEof(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   return p->i >= p->iEnd;
 }
@@ -5213,7 +5213,7 @@ static int jsonEachEof(sqlite3_vtab_cursor *cur){
 ** then return the index of the value.  For all other cases, return the
 ** current pointer position, which is the value.
 */
-static int jsonSkipLabel(JsonEachCursor *p){
+int jsonSkipLabel(JsonEachCursor *p){
   if( p->eType==JSONB_OBJECT ){
     u32 sz = 0;
     u32 n = jsonbPayloadSize(&p->sParse, p->i, &sz);
@@ -5228,7 +5228,7 @@ static int jsonSkipLabel(JsonEachCursor *p){
 /*
 ** Append the path name for the current element.
 */
-static void jsonAppendPathName(JsonEachCursor *p){
+void jsonAppendPathName(JsonEachCursor *p){
   assert( p->nParent>0 );
   assert( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
   if( p->eType==JSONB_ARRAY ){
@@ -5259,7 +5259,7 @@ static void jsonAppendPathName(JsonEachCursor *p){
 }
 
 /* Advance the cursor to the next element for json_tree() */
-static int jsonEachNext(sqlite3_vtab_cursor *cur){
+int jsonEachNext(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   int rc = SQLITE_OK;
   if( p->bRecursive ){
@@ -5325,7 +5325,7 @@ static int jsonEachNext(sqlite3_vtab_cursor *cur){
 
 /* Length of the path for rowid==0 in bRecursive mode.
 */
-static int jsonEachPathLength(JsonEachCursor *p){
+int jsonEachPathLength(JsonEachCursor *p){
   u32 n = p->path.nUsed;
   char *z = p->path.zBuf;
   if( p->iRowid==0 && p->bRecursive && n>=2 ){
@@ -5347,7 +5347,7 @@ static int jsonEachPathLength(JsonEachCursor *p){
 }
 
 /* Return the value of a column */
-static int jsonEachColumn(
+int jsonEachColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
   int iColumn                 /* Which column to return */
@@ -5444,7 +5444,7 @@ static int jsonEachColumn(
 }
 
 /* Return the current rowid value */
-static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   *pRowid = p->iRowid;
   return SQLITE_OK;
@@ -5455,7 +5455,7 @@ static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** 1 if the constraint is found, 3 if the constraint and zRoot are found,
 ** and 0 otherwise.
 */
-static int jsonEachBestIndex(
+int jsonEachBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
@@ -5521,7 +5521,7 @@ static int jsonEachBestIndex(
 }
 
 /* Start a search on a new JSON string */
-static int jsonEachFilter(
+int jsonEachFilter(
   sqlite3_vtab_cursor *cur,
   int idxNum, const char *idxStr,
   int argc, sqlite3_value **argv
@@ -5620,7 +5620,7 @@ json_each_malformed_input:
 }
 
 /* The methods of the json_each virtual table */
-static sqlite3_module jsonEachModule = {
+sqlite3_module jsonEachModule = {
   0,                         /* iVersion */
   0,                         /* xCreate */
   jsonEachConnect,           /* xConnect */
@@ -5655,7 +5655,7 @@ static sqlite3_module jsonEachModule = {
 */
 void sqlite3RegisterJsonFunctions(void){
 #ifndef SQLITE_OMIT_JSON
-  static FuncDef aJsonFunc[] = {
+  FuncDef aJsonFunc[] = {
     /*   sqlite3_result_subtype() ----,  ,--- sqlite3_value_subtype()       */
     /*                                |  |                                  */
     /*             Uses cache ------, |  | ,---- Returns JSONB              */
@@ -5723,7 +5723,7 @@ void sqlite3RegisterJsonFunctions(void){
 */
 Module *sqlite3JsonVtabRegister(sqlite3 *db, const char *zName){
   unsigned int i;
-  static const char *azModule[] = {
+  const char *azModule[] = {
     "json_each", "json_tree", "jsonb_each", "jsonb_tree"
   };
   assert( sqlite3HashFind(&db->aModule, zName)==0 );

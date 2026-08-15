@@ -42,7 +42,7 @@ typedef struct Stmtrand {
 **
 ** Return a pseudo-random number.
 */
-static void stmtrandFunc(
+void stmtrandFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

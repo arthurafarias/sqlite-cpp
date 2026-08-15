@@ -73,7 +73,7 @@ SQLITE_EXTENSION_INIT1
 ** This routine only works if h really is a valid hexadecimal
 ** character:  0..9a..fA..F
 */
-static unsigned char sqlite3UuidHexToInt(int h){
+unsigned char sqlite3UuidHexToInt(int h){
   assert( (h>='0' && h<='9') ||  (h>='a' && h<='f') ||  (h>='A' && h<='F') );
 #ifdef SQLITE_ASCII
   h += 9*(1&(h>>6));
@@ -89,11 +89,11 @@ static unsigned char sqlite3UuidHexToInt(int h){
 ** buffer zStr should be at least 37 bytes in length.   The output will
 ** be zero-terminated.
 */
-static void sqlite3UuidBlobToStr(
+void sqlite3UuidBlobToStr(
   const unsigned char *aBlob,  /* Input blob */
   unsigned char *zStr          /* Write the answer here */
 ){
-  static const char zDigits[] = "0123456789abcdef";
+  const char zDigits[] = "0123456789abcdef";
   int i, k;
   unsigned char x;
   k = 0;
@@ -115,7 +115,7 @@ static void sqlite3UuidBlobToStr(
 ** UUID.  Return 0 on success, or non-zero if the input string is not
 ** parsable.
 */
-static int sqlite3UuidStrToBlob(
+int sqlite3UuidStrToBlob(
   const unsigned char *zStr,   /* Input string */
   unsigned char *aBlob         /* Write results here */
 ){
@@ -139,7 +139,7 @@ static int sqlite3UuidStrToBlob(
 ** Render sqlite3_value pIn as a 16-byte UUID blob.  Return a pointer
 ** to the blob, or NULL if the input is not well-formed.
 */
-static const unsigned char *sqlite3UuidInputToBlob(
+const unsigned char *sqlite3UuidInputToBlob(
   sqlite3_value *pIn,     /* Input text */
   unsigned char *pBuf     /* output buffer */
 ){
@@ -160,7 +160,7 @@ static const unsigned char *sqlite3UuidInputToBlob(
 }
 
 /* Implementation of uuid() */
-static void sqlite3UuidFunc(
+void sqlite3UuidFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -177,7 +177,7 @@ static void sqlite3UuidFunc(
 }
 
 /* Implementation of uuid_str() */
-static void sqlite3UuidStrFunc(
+void sqlite3UuidStrFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -193,7 +193,7 @@ static void sqlite3UuidStrFunc(
 }
 
 /* Implementation of uuid_blob() */
-static void sqlite3UuidBlobFunc(
+void sqlite3UuidBlobFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

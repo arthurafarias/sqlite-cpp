@@ -51,7 +51,7 @@ struct Incrblob {
 ** calls to sqlite3_blob_read(), blob_write() or blob_reopen() will 
 ** immediately return SQLITE_ABORT.
 */
-static int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
+int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
   int rc;                         /* Error code */
   char *zErr = 0;                 /* Error message */
   Vdbe *v = (Vdbe *)p->pStmt;
@@ -266,8 +266,8 @@ int sqlite3_blob_open(
       ** which closes the b-tree cursor and (possibly) commits the 
       ** transaction.
       */
-      static const int iLn = VDBE_OFFSET_LINENO(2);
-      static const VdbeOpList openBlob[] = {
+      const int iLn = VDBE_OFFSET_LINENO(2);
+      const VdbeOpList openBlob[] = {
         {OP_TableLock,      0, 0, 0},  /* 0: Acquire a read or write lock */
         {OP_OpenRead,       0, 0, 0},  /* 1: Open a cursor */
         /* blobSeekToRow() will initialize r[1] to the desired rowid */
@@ -378,7 +378,7 @@ int sqlite3_blob_close(sqlite3_blob *pBlob){
 /*
 ** Perform a read or write operation on a blob
 */
-static int blobReadWrite(
+int blobReadWrite(
   sqlite3_blob *pBlob, 
   void *z, 
   int n, 

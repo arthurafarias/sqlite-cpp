@@ -48,17 +48,17 @@ typedef struct simple_tokenizer_cursor {
 } simple_tokenizer_cursor;
 
 
-static int simpleDelim(simple_tokenizer *t, unsigned char c){
+int simpleDelim(simple_tokenizer *t, unsigned char c){
   return c<0x80 && t->delim[c];
 }
-static int fts3_isalnum(int x){
+int fts3_isalnum(int x){
   return (x>='0' && x<='9') || (x>='A' && x<='Z') || (x>='a' && x<='z');
 }
 
 /*
 ** Create a new tokenizer instance.
 */
-static int simpleCreate(
+int simpleCreate(
   int argc, const char * const *argv,
   sqlite3_tokenizer **ppTokenizer
 ){
@@ -99,7 +99,7 @@ static int simpleCreate(
 /*
 ** Destroy a tokenizer
 */
-static int simpleDestroy(sqlite3_tokenizer *pTokenizer){
+int simpleDestroy(sqlite3_tokenizer *pTokenizer){
   sqlite3_free(pTokenizer);
   return SQLITE_OK;
 }
@@ -110,7 +110,7 @@ static int simpleDestroy(sqlite3_tokenizer *pTokenizer){
 ** used to incrementally tokenize this string is returned in 
 ** *ppCursor.
 */
-static int simpleOpen(
+int simpleOpen(
   sqlite3_tokenizer *pTokenizer,         /* The tokenizer */
   const char *pInput, int nBytes,        /* String to be tokenized */
   sqlite3_tokenizer_cursor **ppCursor    /* OUT: Tokenization cursor */
@@ -143,7 +143,7 @@ static int simpleOpen(
 ** Close a tokenization cursor previously opened by a call to
 ** simpleOpen() above.
 */
-static int simpleClose(sqlite3_tokenizer_cursor *pCursor){
+int simpleClose(sqlite3_tokenizer_cursor *pCursor){
   simple_tokenizer_cursor *c = (simple_tokenizer_cursor *) pCursor;
   sqlite3_free(c->pToken);
   sqlite3_free(c);
@@ -154,7 +154,7 @@ static int simpleClose(sqlite3_tokenizer_cursor *pCursor){
 ** Extract the next token from a tokenization cursor.  The cursor must
 ** have been opened by a prior call to simpleOpen().
 */
-static int simpleNext(
+int simpleNext(
   sqlite3_tokenizer_cursor *pCursor,  /* Cursor returned by simpleOpen */
   const char **ppToken,               /* OUT: *ppToken is the token text */
   int *pnBytes,                       /* OUT: Number of bytes in token */
@@ -211,7 +211,7 @@ static int simpleNext(
 /*
 ** The set of routines that implement the simple tokenizer
 */
-static const sqlite3_tokenizer_module simpleTokenizerModule = {
+const sqlite3_tokenizer_module simpleTokenizerModule = {
   0,
   simpleCreate,
   simpleDestroy,

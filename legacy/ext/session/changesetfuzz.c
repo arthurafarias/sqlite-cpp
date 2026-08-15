@@ -131,7 +131,7 @@ typedef unsigned int u32;
 /*
 ** Show a usage message on stderr then quit.
 */
-static void usage(const char *argv0){
+void usage(const char *argv0){
   fprintf(stderr, "Usage: %s FILENAME ?SEED N?\n", argv0);
   exit(1);
 }
@@ -139,7 +139,7 @@ static void usage(const char *argv0){
 /*
 ** Read the content of a disk file into an in-memory buffer
 */
-static void fuzzReadFile(const char *zFilename, int *pSz, void **ppBuf){
+void fuzzReadFile(const char *zFilename, int *pSz, void **ppBuf){
   FILE *f;
   sqlite3_int64 sz;
   void *pBuf;
@@ -173,7 +173,7 @@ static void fuzzReadFile(const char *zFilename, int *pSz, void **ppBuf){
 ** Write the contents of buffer pBuf, size nBuf bytes, into file zFilename
 ** on disk. zFilename, if it already exists, is clobbered.
 */
-static void fuzzWriteFile(const char *zFilename, void *pBuf, int nBuf){
+void fuzzWriteFile(const char *zFilename, void *pBuf, int nBuf){
   FILE *f;
   f = fopen(zFilename, "wb");
   if( f==0 ){
@@ -187,7 +187,7 @@ static void fuzzWriteFile(const char *zFilename, void *pBuf, int nBuf){
   fclose(f);
 }
 
-static int fuzzCorrupt(){
+int fuzzCorrupt(){
   return SQLITE_CORRUPT;
 }
 
@@ -200,7 +200,7 @@ static int fuzzCorrupt(){
 **
 **   2. It is not threadsafe.
 */
-static struct sqlite3PrngType {
+struct sqlite3PrngType {
   unsigned char i, j;             /* State variables */
   unsigned char s[256];           /* State variables */
 } sqlite3Prng = {
@@ -244,7 +244,7 @@ static struct sqlite3PrngType {
 /* 
 ** Generate and return single random byte 
 */
-static unsigned char fuzzRandomByte(void){
+unsigned char fuzzRandomByte(void){
   unsigned char t;
   sqlite3Prng.i++;
   t = sqlite3Prng.s[sqlite3Prng.i];
@@ -258,7 +258,7 @@ static unsigned char fuzzRandomByte(void){
 /*
 ** Return N random bytes.
 */
-static void fuzzRandomBlob(int nBuf, unsigned char *zBuf){
+void fuzzRandomBlob(int nBuf, unsigned char *zBuf){
   int i;
   for(i=0; i<nBuf; i++){
     zBuf[i] = fuzzRandomByte();
@@ -268,20 +268,20 @@ static void fuzzRandomBlob(int nBuf, unsigned char *zBuf){
 /*
 ** Return a random integer between 0 and nRange (not inclusive).
 */
-static unsigned int fuzzRandomInt(unsigned int nRange){
+unsigned int fuzzRandomInt(unsigned int nRange){
   unsigned int ret;
   assert( nRange>0 );
   fuzzRandomBlob(sizeof(ret), (unsigned char*)&ret);
   return (ret % nRange);
 }
 
-static u64 fuzzRandomU64(){
+u64 fuzzRandomU64(){
   u64 ret;
   fuzzRandomBlob(sizeof(ret), (unsigned char*)&ret);
   return ret;
 }
 
-static void fuzzRandomSeed(unsigned int iSeed){
+void fuzzRandomSeed(unsigned int iSeed){
   int i;
   for(i=0; i<256; i+=4){
     sqlite3Prng.s[i] ^= ((iSeed >> 24) & 0xFF);
@@ -341,7 +341,7 @@ struct FuzzChange {
 /*
 ** Allocate and return nByte bytes of zeroed memory.
 */
-static void *fuzzMalloc(sqlite3_int64 nByte){
+void *fuzzMalloc(sqlite3_int64 nByte){
   void *pRet = sqlite3_malloc64(nByte);
   if( pRet ){
     memset(pRet, 0, (size_t)nByte);
@@ -353,7 +353,7 @@ static void *fuzzMalloc(sqlite3_int64 nByte){
 ** Free the buffer indicated by the first argument. This function is used
 ** to free buffers allocated by fuzzMalloc().
 */
-static void fuzzFree(void *p){
+void fuzzFree(void *p){
   sqlite3_free(p);
 }
 
@@ -363,7 +363,7 @@ static void fuzzFree(void *p){
 ** returning, this function sets (*pnVal) to the value of that varint, and
 ** returns the number of bytes of space that it takes up.
 */
-static int fuzzGetVarint(u8 *p, int *pnVal){
+int fuzzGetVarint(u8 *p, int *pnVal){
   int i;
   sqlite3_uint64 nVal = 0;
   for(i=0; i<9; i++){
@@ -382,7 +382,7 @@ static int fuzzGetVarint(u8 *p, int *pnVal){
 ** varint. nVal is guaranteed to be between 0 and (2^21-1), inclusive.
 ** Return the number of bytes written to buffer p.
 */
-static int fuzzPutVarint(u8 *p, int nVal){
+int fuzzPutVarint(u8 *p, int nVal){
   assert( nVal>0 && nVal<2097152 );
   if( nVal<128 ){
     p[0] = (u8)nVal;
@@ -404,7 +404,7 @@ static int fuzzPutVarint(u8 *p, int nVal){
 ** Read a 64-bit big-endian integer value from buffer aRec[]. Return
 ** the value read.
 */
-static i64 fuzzGetI64(u8 *aRec){
+i64 fuzzGetI64(u8 *aRec){
   return (i64)(
       (((u64)aRec[0]) << 56)
     + (((u64)aRec[1]) << 48)
@@ -420,7 +420,7 @@ static i64 fuzzGetI64(u8 *aRec){
 /*
 ** Write value iVal to buffer aRec[] as an unsigned 64-bit big-endian integer.
 */
-static void fuzzPutU64(u8 *aRec, u64 iVal){
+void fuzzPutU64(u8 *aRec, u64 iVal){
   aRec[0] = (iVal>>56) & 0xFF;
   aRec[1] = (iVal>>48) & 0xFF;
   aRec[2] = (iVal>>40) & 0xFF;
@@ -436,7 +436,7 @@ static void fuzzPutU64(u8 *aRec, u64 iVal){
 ** object with the results. Return SQLITE_OK if successful, or an error code
 ** otherwise.
 */
-static int fuzzParseHeader(
+int fuzzParseHeader(
   FuzzChangeset *pParse,          /* Changeset parse object */
   u8 **ppHdr,                     /* IN/OUT: Iterator */
   u8 *pEnd,                       /* 1 byte past EOF */
@@ -485,7 +485,7 @@ static int fuzzParseHeader(
 ** buffer does not contain a valid value, SQLITE_CORRUPT is returned and
 ** the final value of (*pSz) is undefined.
 */
-static int fuzzChangeSize(u8 *p, int *pSz){
+int fuzzChangeSize(u8 *p, int *pSz){
   u8 eType = p[0];
   switch( eType ){
     case 0x00:                    /* undefined */
@@ -526,7 +526,7 @@ static int fuzzChangeSize(u8 *p, int *pSz){
 **
 ** SQLITE_OK is returned if successful, or an SQLite error code otherwise.
 */
-static int fuzzParseRecord(
+int fuzzParseRecord(
   u8 **ppRec,                     /* IN/OUT: Iterator */
   u8 *pEnd,                       /* One byte after end of input data */
   FuzzChangeset *pParse,          /* Changeset parse context */
@@ -569,7 +569,7 @@ static int fuzzParseRecord(
 ** Otherwise, return an SQLite error code. The final value of (*ppData) is
 ** undefined in this case.
 */
-static int fuzzParseChanges(u8 **ppData, u8 *pEnd, FuzzChangeset *pParse){
+int fuzzParseChanges(u8 **ppData, u8 *pEnd, FuzzChangeset *pParse){
   u8 cHdr = (pParse->bPatchset ? 'P' : 'T');
   FuzzChangesetGroup *pGrp = pParse->apGroup[pParse->nGroup-1];
   int rc = SQLITE_OK;
@@ -608,7 +608,7 @@ static int fuzzParseChanges(u8 **ppData, u8 *pEnd, FuzzChangeset *pParse){
 ** SQLITE_OK. Or, if an error occurs, return an SQLite error code. The
 ** final state of (*pParse) is undefined in this case.
 */
-static int fuzzParseChangeset(
+int fuzzParseChangeset(
   u8 *pChangeset,                 /* Buffer containing changeset */
   int nChangeset,                 /* Size of buffer in bytes */
   FuzzChangeset *pParse           /* OUT: Results of parse */
@@ -661,7 +661,7 @@ static int fuzzParseChangeset(
 ** been omitted from the record. This occurs for records that are part
 ** of DELETE changes in patchsets.
 */
-static int fuzzPrintRecord(FuzzChangesetGroup *pGrp, u8 **ppRec, int bPKOnly){
+int fuzzPrintRecord(FuzzChangesetGroup *pGrp, u8 **ppRec, int bPKOnly){
   int rc = SQLITE_OK;
   u8 *p = *ppRec;
   int i;
@@ -731,7 +731,7 @@ static int fuzzPrintRecord(FuzzChangesetGroup *pGrp, u8 **ppRec, int bPKOnly){
 ** Print a human-readable version of the table-header and all changes in the
 ** change-group passed as the second argument.
 */
-static void fuzzPrintGroup(FuzzChangeset *pParse, FuzzChangesetGroup *pGrp){
+void fuzzPrintGroup(FuzzChangeset *pParse, FuzzChangesetGroup *pGrp){
   int i;
   u8 *p;
 
@@ -772,7 +772,7 @@ static void fuzzPrintGroup(FuzzChangeset *pParse, FuzzChangesetGroup *pGrp){
 ** produced a non-well-formed changeset. In this case the caller should
 ** call this function again.
 */
-static int fuzzSelectChange(FuzzChangeset *pParse, FuzzChange *pChange){
+int fuzzSelectChange(FuzzChangeset *pParse, FuzzChange *pChange){
   int iSub;
 
   memset(pChange, 0, sizeof(FuzzChange));
@@ -906,7 +906,7 @@ static int fuzzSelectChange(FuzzChangeset *pParse, FuzzChange *pChange){
 ** Copy a single change from the input to the output changeset, making
 ** any modifications specified by (*pFuzz).
 */
-static int fuzzCopyChange(
+int fuzzCopyChange(
   FuzzChangeset *pParse,
   int iGrp,
   FuzzChange *pFuzz,
@@ -1098,7 +1098,7 @@ static int fuzzCopyChange(
 **
 ** Return SQLITE_OK if successful, or an SQLite error code if an error occurs.
 */
-static int fuzzDoOneFuzz(
+int fuzzDoOneFuzz(
   const char *zOut,               /* Filename to write modified changeset to */
   u8 *pBuf,                       /* Buffer to use for modified changeset */
   FuzzChangeset *pParse           /* Parse of input changeset */

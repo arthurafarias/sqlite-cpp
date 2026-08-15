@@ -71,9 +71,9 @@ struct SHA1Context {
 /*
  * Hash a single 512-bit block. This is the core of the algorithm.
  */
-static void SHA1Transform(unsigned int state[5], const unsigned char buffer[64]){
+void SHA1Transform(unsigned int state[5], const unsigned char buffer[64]){
   unsigned int qq[5]; /* a, b, c, d, e; */
-  static int one = 1;
+  int one = 1;
   unsigned int block[16];
   memcpy(block, buffer, 64);
   memcpy(qq,state,5*sizeof(unsigned int));
@@ -138,7 +138,7 @@ static void SHA1Transform(unsigned int state[5], const unsigned char buffer[64])
 
 
 /* Initialize a SHA1 context */
-static void hash_init(SHA1Context *p){
+void hash_init(SHA1Context *p){
   /* SHA1 initialization constants */
   p->state[0] = 0x67452301;
   p->state[1] = 0xEFCDAB89;
@@ -149,7 +149,7 @@ static void hash_init(SHA1Context *p){
 }
 
 /* Add new content to the SHA1 hash */
-static void hash_step(
+void hash_step(
   SHA1Context *p,                 /* Add content to this context */
   const unsigned char *data,      /* Data to be added */
   unsigned int len                /* Number of bytes in data */
@@ -175,7 +175,7 @@ static void hash_step(
 }
 
 /* Compute a string using sqlite3_vsnprintf() and hash it */
-static void hash_step_vformat(
+void hash_step_vformat(
   SHA1Context *p,                 /* Add content to this context */
   const char *zFormat,
   ...
@@ -194,7 +194,7 @@ static void hash_step_vformat(
 /* Add padding and compute the message digest.  Render the
 ** message digest as lower-case hexadecimal and put it into
 ** zOut[].  zOut[] must be at least 41 bytes long. */
-static void hash_finish(
+void hash_finish(
   SHA1Context *p,           /* The SHA1 context to finish and render */
   char *zOut,               /* Store hex or binary hash here */
   int bAsBinary             /* 1 for binary hash, 0 for hex hash */
@@ -202,7 +202,7 @@ static void hash_finish(
   unsigned int i;
   unsigned char finalcount[8];
   unsigned char digest[20];
-  static const char zEncode[] = "0123456789abcdef";
+  const char zEncode[] = "0123456789abcdef";
 
   for (i = 0; i < 8; i++){
     finalcount[i] = (unsigned char)((p->count[(i >= 4 ? 0 : 1)]
@@ -241,7 +241,7 @@ static void hash_finish(
 ** sha1b(X) is the same except that it returns a 20-byte BLOB containing
 ** the binary hash instead of a hexadecimal string.
 */
-static void sha1Func(
+void sha1Func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -285,7 +285,7 @@ static void sha1Func(
 ** is delimited and each row and value within the query is delimited,
 ** with all values being marked with their datatypes.
 */
-static void sha1QueryFunc(
+void sha1QueryFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -398,7 +398,7 @@ int sqlite3_sha_init(
   const sqlite3_api_routines *pApi
 ){
   int rc = SQLITE_OK;
-  static int one = 1;
+  int one = 1;
   SQLITE_EXTENSION_INIT2(pApi);
   (void)pzErrMsg;  /* Unused parameter */
   rc = sqlite3_create_function(db, "sha1", 1, 

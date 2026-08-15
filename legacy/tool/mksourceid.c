@@ -65,12 +65,12 @@ struct SHA3Context {
 /*
 ** A single step of the Keccak mixing function for a 1600-bit state
 */
-static void KeccakF1600Step(SHA3Context *p){
+void KeccakF1600Step(SHA3Context *p){
   int i;
   u64 B0, B1, B2, B3, B4;
   u64 C0, C1, C2, C3, C4;
   u64 D0, D1, D2, D3, D4;
-  static const u64 RC[] = {
+  const u64 RC[] = {
     0x0000000000000001ULL,  0x0000000000008082ULL,
     0x800000000000808aULL,  0x8000000080008000ULL,
     0x000000000000808bULL,  0x0000000080000001ULL,
@@ -387,7 +387,7 @@ static void KeccakF1600Step(SHA3Context *p){
 ** in bits and should be one of 224, 256, 384, or 512.  Or iSize
 ** can be zero to use the default hash size of 256 bits.
 */
-static void SHA3Init(SHA3Context *p, int iSize){
+void SHA3Init(SHA3Context *p, int iSize){
   memset(p, 0, sizeof(*p));
   if( iSize>=128 && iSize<=512 ){
     p->nRate = (1600 - ((iSize + 31)&~31)*2)/8;
@@ -400,7 +400,7 @@ static void SHA3Init(SHA3Context *p, int iSize){
   p->ixMask = 7;  /* Big-endian */
 #else
   {
-    static unsigned int one = 1;
+    unsigned int one = 1;
     if( 1==*(unsigned char*)&one ){
       /* Little endian.  No byte swapping. */
       p->ixMask = 0;
@@ -416,7 +416,7 @@ static void SHA3Init(SHA3Context *p, int iSize){
 ** Make consecutive calls to the SHA3Update function to add new content
 ** to the hash
 */
-static void SHA3Update(
+void SHA3Update(
   SHA3Context *p,
   const unsigned char *aData,
   unsigned int nData
@@ -455,7 +455,7 @@ static void SHA3Update(
 ** the final hash.  The function returns a pointer to the binary
 ** hash value.
 */
-static unsigned char *SHA3Final(SHA3Context *p){
+unsigned char *SHA3Final(SHA3Context *p){
   unsigned int i;
   if( p->nLoaded==p->nRate-1 ){
     const unsigned char c1 = 0x86;
@@ -479,8 +479,8 @@ static unsigned char *SHA3Final(SHA3Context *p){
 ** digest is stored in the first 20 bytes.  zBuf should
 ** be "char zBuf[41]".
 */
-static void DigestToBase16(unsigned char *digest, char *zBuf, int nByte){
-  static const char zEncode[] = "0123456789abcdef";
+void DigestToBase16(unsigned char *digest, char *zBuf, int nByte){
+  const char zEncode[] = "0123456789abcdef";
   int ix;
 
   for(ix=0; ix<nByte; ix++){
@@ -497,7 +497,7 @@ static void DigestToBase16(unsigned char *digest, char *zBuf, int nByte){
 **
 ** Return the number of errors.
 */
-static int sha3sum_file(const char *zFilename, int iSize, char *pCksum){
+int sha3sum_file(const char *zFilename, int iSize, char *pCksum){
   FILE *in;
   SHA3Context ctx;
   char zBuf[10240];
@@ -578,12 +578,12 @@ struct SHA1Context {
 #define d qq[3]
 #define e qq[4]
 
-static void SHA1Transform(
+void SHA1Transform(
   unsigned int state[5],
   const unsigned char buffer[64]
 ){
   unsigned int qq[5]; /* a, b, c, d, e; */
-  static int one = 1;
+  int one = 1;
   unsigned int block[16];
   memcpy(block, buffer, 64);
   memcpy(qq,state,5*sizeof(unsigned int));
@@ -638,7 +638,7 @@ static void SHA1Transform(
 /*
  * SHA1Init - Initialize new context
  */
-static void SHA1Init(SHA1Context *context){
+void SHA1Init(SHA1Context *context){
     /* SHA1 initialization constants */
     context->state[0] = 0x67452301;
     context->state[1] = 0xEFCDAB89;
@@ -652,7 +652,7 @@ static void SHA1Init(SHA1Context *context){
 /*
  * Run your data through this.
  */
-static void SHA1Update(
+void SHA1Update(
   SHA1Context *context,
   const unsigned char *data,
   unsigned int len
@@ -679,7 +679,7 @@ static void SHA1Update(
 /*
  * Add padding and return the message digest.
  */
-static void SHA1Final(unsigned char *digest, SHA1Context *context){
+void SHA1Final(unsigned char *digest, SHA1Context *context){
     unsigned int i;
     unsigned char finalcount[8];
 
@@ -706,7 +706,7 @@ static void SHA1Final(unsigned char *digest, SHA1Context *context){
 **
 ** Return the number of errors.
 */
-static int sha1sum_file(const char *zFilename, char *pCksum){
+int sha1sum_file(const char *zFilename, char *pCksum){
   FILE *in;
   SHA1Context ctx;
   unsigned char zResult[20];
@@ -731,7 +731,7 @@ static int sha1sum_file(const char *zFilename, char *pCksum){
 /*
 ** Print a usage comment and quit.
 */
-static void usage(const char *argv0){
+void usage(const char *argv0){
   fprintf(stderr, 
      "Usage: %s manifest\n"
      "Options:\n"
@@ -744,7 +744,7 @@ static void usage(const char *argv0){
 ** Find the first whitespace character in a string.  Set that whitespace
 ** to a \000 terminator and return a pointer to the next character.
 */
-static char *nextToken(char *z){
+char *nextToken(char *z){
   while( *z && !isspace(*z) ) z++;
   if( *z==0 ) return z;
   *z = 0;

@@ -32,7 +32,7 @@
 # include <sys/time.h>
 #endif
 
-static const char *aVal[] = {
+const char *aVal[] = {
   "-1.01638304862856430",
   "+0.00492438073915869",
   "+7.38187324073439948",
@@ -139,7 +139,7 @@ static const char *aVal[] = {
 /* Return the current wall-clock time in microseconds since the
 ** Unix epoch (1970-01-01T00:00:00Z)
 */
-static sqlite3_int64 timeOfDay(void){
+sqlite3_int64 timeOfDay(void){
 #if defined(_WIN64) && _WIN32_WINNT >= _WIN32_WINNT_WIN8
   sqlite3_uint64 t;
   FILETIME tm;
@@ -150,7 +150,7 @@ static sqlite3_int64 timeOfDay(void){
   t /= 10;
   return t;
 #elif defined(_WIN32)
-  static sqlite3_vfs *clockVfs = 0;
+  sqlite3_vfs *clockVfs = 0;
   sqlite3_int64 t;
   if( clockVfs==0 ) clockVfs = sqlite3_vfs_find(0);
   if( clockVfs==0 ) return 0;  /* Never actually happens */
@@ -172,7 +172,7 @@ static sqlite3_int64 timeOfDay(void){
 /*
 ** Generate text of the i-th test floating-point literal.
 */
-static int fpLiteral(int i, char *z){
+int fpLiteral(int i, char *z){
   int e, ex, len, ix;
   ex = i%401;
   e = ex - 200;

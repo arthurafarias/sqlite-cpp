@@ -40,7 +40,7 @@ typedef short int LogEst;  /* 10 times log2() */
 
 LogEst logEstMultiply(LogEst a, LogEst b){ return a+b; }
 LogEst logEstAdd(LogEst a, LogEst b){
-  static const unsigned char x[] = {
+  const unsigned char x[] = {
      10, 10,                         /* 0,1 */
       9, 9,                          /* 2,3 */
       8, 8,                          /* 4,5 */
@@ -57,7 +57,7 @@ LogEst logEstAdd(LogEst a, LogEst b){
   return a+x[a-b];
 }
 LogEst logEstFromInteger(sqlite3_uint64 x){
-  static LogEst a[] = { 0, 2, 3, 5, 6, 7, 8, 9 };
+  LogEst a[] = { 0, 2, 3, 5, 6, 7, 8, 9 };
   LogEst y = 40;
   if( x<8 ){
     if( x<2 ) return 0;
@@ -68,7 +68,7 @@ LogEst logEstFromInteger(sqlite3_uint64 x){
   }
   return a[x&7] + y - 10;
 }
-static sqlite3_uint64 logEstToInt(LogEst x){
+sqlite3_uint64 logEstToInt(LogEst x){
   sqlite3_uint64 n;
   if( x<10 ) return 1;
   n = x%10;
@@ -79,7 +79,7 @@ static sqlite3_uint64 logEstToInt(LogEst x){
   if( x>=3 ) return (n+8)<<(x-3);
   return (n+8)>>(3-x);
 }
-static LogEst logEstFromDouble(double x){
+LogEst logEstFromDouble(double x){
   sqlite3_uint64 a;
   LogEst e;
   assert( sizeof(x)==8 && sizeof(a)==8 );
@@ -105,7 +105,7 @@ int isFloat(const char *z){
   return z[0]==0;
 }
 
-static void showHelp(const char *zArgv0){
+void showHelp(const char *zArgv0){
   printf("Usage: %s ARGS...\n", zArgv0);
   printf("Arguments:\n"
     "  NUM    Convert NUM from integer to LogEst and push onto the stack\n"

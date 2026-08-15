@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-static void usage(const char *argv0){
+void usage(const char *argv0){
   fprintf(stderr, "Usage: %s database\n", argv0);
   exit(1);
 }
@@ -24,7 +24,7 @@ static void usage(const char *argv0){
 ** on standard output using the format string given and return 1.
 ** If there are no conflicting locks, return 0.
 */
-static int isLocked(
+int isLocked(
   int h,                /* File descriptor to check */
   int type,             /* F_RDLCK or F_WRLCK */
   unsigned int iOfst,   /* First byte of the lock */

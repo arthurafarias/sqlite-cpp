@@ -48,7 +48,7 @@ public final class OutputPointer {
      pointers can only be set by the JNI layer, not by client-level
      code.
   */
-  public static final class sqlite3 {
+  public final class sqlite3 {
     private org.sqlite.jni.capi.sqlite3 value;
     /** Initializes with a null value. */
     public sqlite3(){value = null;}
@@ -69,7 +69,7 @@ public final class OutputPointer {
      pointers can only be set by the JNI layer, not by client-level
      code.
   */
-  public static final class sqlite3_blob {
+  public final class sqlite3_blob {
     private org.sqlite.jni.capi.sqlite3_blob value;
     /** Initializes with a null value. */
     public sqlite3_blob(){value = null;}
@@ -91,7 +91,7 @@ public final class OutputPointer {
      pointers can only be set by the JNI layer, not by client-level
      code.
   */
-  public static final class sqlite3_stmt {
+  public final class sqlite3_stmt {
     private org.sqlite.jni.capi.sqlite3_stmt value;
     /** Initializes with a null value. */
     public sqlite3_stmt(){value = null;}
@@ -113,7 +113,7 @@ public final class OutputPointer {
      pointers can only be set by the JNI layer, not by client-level
      code.
   */
-  public static final class sqlite3_value {
+  public final class sqlite3_value {
     private org.sqlite.jni.capi.sqlite3_value value;
     /** Initializes with a null value. */
     public sqlite3_value(){value = null;}
@@ -133,7 +133,7 @@ public final class OutputPointer {
      Output pointer for use with native routines which return booleans
      via integer output pointers.
   */
-  public static final class Bool {
+  public final class Bool {
     /**
        This is public for ease of use. Accessors are provided for
        consistency with the higher-level types.
@@ -153,7 +153,7 @@ public final class OutputPointer {
      Output pointer for use with native routines which return integers via
      output pointers.
   */
-  public static final class Int32 {
+  public final class Int32 {
     /**
        This is public for ease of use. Accessors are provided for
        consistency with the higher-level types.
@@ -173,7 +173,7 @@ public final class OutputPointer {
      Output pointer for use with native routines which return 64-bit integers
      via output pointers.
   */
-  public static final class Int64 {
+  public final class Int64 {
     /**
        This is public for ease of use. Accessors are provided for
        consistency with the higher-level types.
@@ -193,7 +193,7 @@ public final class OutputPointer {
      Output pointer for use with native routines which return strings via
      output pointers.
   */
-  public static final class String {
+  public final class String {
     /**
        This is public for ease of use. Accessors are provided for
        consistency with the higher-level types.
@@ -213,7 +213,7 @@ public final class OutputPointer {
      Output pointer for use with native routines which return byte
      arrays via output pointers.
   */
-  public static final class ByteArray {
+  public final class ByteArray {
     /**
        This is public for ease of use. Accessors are provided for
        consistency with the higher-level types.
@@ -235,7 +235,7 @@ public final class OutputPointer {
 
      See {@link org.sqlite.jni.capi.CApi#sqlite3_jni_supports_nio}
   */
-  public static final class ByteBuffer {
+  public final class ByteBuffer {
     /**
        This is public for ease of use. Accessors are provided for
        consistency with the higher-level types.

@@ -1373,7 +1373,7 @@ typedef const char *sqlite3_filename;
 **
 ** The pNext field is the only field in the sqlite3_vfs
 ** structure that SQLite will ever modify.  SQLite will only access
-** or modify this field while holding a particular static mutex.
+** or modify this field while holding a particular mutex.
 ** The application should never modify anything within the sqlite3_vfs
 ** object once the object has been registered.
 **
@@ -1667,7 +1667,7 @@ struct sqlite3_vfs {
 ** initialization of the SQLite library.  The sqlite3_os_end()
 ** routine undoes the effect of sqlite3_os_init().  Typical tasks
 ** performed by these routines include allocation or deallocation
-** of static resources, initialization of global variables,
+** of resources, initialization of global variables,
 ** setting up a default [sqlite3_vfs] module, or setting up
 ** a default configuration using [sqlite3_config()].
 **
@@ -1975,7 +1975,7 @@ struct sqlite3_mem_methods {
 ** additional cache line. </dd>
 **
 ** [[SQLITE_CONFIG_HEAP]] <dt>SQLITE_CONFIG_HEAP</dt>
-** <dd> ^The SQLITE_CONFIG_HEAP option specifies a static memory buffer
+** <dd> ^The SQLITE_CONFIG_HEAP option specifies a memory buffer
 ** that SQLite will use for all of its dynamic memory allocation needs
 ** beyond those provided for by [SQLITE_CONFIG_PAGECACHE].
 ** ^The SQLITE_CONFIG_HEAP option is only available if SQLite is compiled
@@ -4981,7 +4981,7 @@ typedef struct sqlite3_context sqlite3_context;
 ** destructor D with a single argument of P when it is finished using
 ** P, even if the call to sqlite3_bind_pointer() fails.  Due to a
 ** historical design quirk, results are undefined if D is
-** SQLITE_TRANSIENT. The T parameter should be a static string,
+** SQLITE_TRANSIENT. The T parameter should be a string,
 ** preferably a string literal. The sqlite3_bind_pointer() routine is
 ** part of the [pointer passing interface] added for SQLite 3.20.0.
 **
@@ -8404,9 +8404,9 @@ int sqlite3_vfs_unregister(sqlite3_vfs*);
 **
 ** ^The other allowed parameters to sqlite3_mutex_alloc() (anything other
 ** than SQLITE_MUTEX_FAST and SQLITE_MUTEX_RECURSIVE) each return
-** a pointer to a static preexisting mutex.  ^Nine static mutexes are
+** a pointer to a preexisting mutex.  ^Nine mutexes are
 ** used by the current version of SQLite.  Future versions of SQLite
-** may add additional static mutexes.  Static mutexes are for internal
+** may add additional mutexes.  Static mutexes are for internal
 ** use by SQLite only.  Applications that use SQLite mutexes should
 ** use only the dynamic mutexes returned by SQLITE_MUTEX_FAST or
 ** SQLITE_MUTEX_RECURSIVE.
@@ -8514,7 +8514,7 @@ void sqlite3_mutex_leave(sqlite3_mutex*);
 **
 ** xMutexInit() must not use SQLite memory allocation ([sqlite3_malloc()]
 ** and its associates).  Similarly, xMutexAlloc() must not use SQLite memory
-** allocation for a static mutex.  ^However xMutexAlloc() may use SQLite
+** allocation for a mutex.  ^However xMutexAlloc() may use SQLite
 ** memory allocation for a fast or recursive mutex.
 **
 ** ^SQLite will invoke the xMutexEnd() method when [sqlite3_shutdown()] is
@@ -8575,9 +8575,9 @@ int sqlite3_mutex_notheld(sqlite3_mutex*);
 ** The [sqlite3_mutex_alloc()] interface takes a single argument
 ** which is one of these integer constants.
 **
-** The set of static mutexes may change from one SQLite release to the
+** The set of mutexes may change from one SQLite release to the
 ** next.  Applications that override the built-in mutex logic must be
-** prepared to accommodate additional static mutexes.
+** prepared to accommodate additional mutexes.
 */
 #define SQLITE_MUTEX_FAST             0
 #define SQLITE_MUTEX_RECURSIVE        1
@@ -11293,7 +11293,7 @@ int sqlite3_deserialize(
 ** The call to X(D) is a destructor for the array P. The destructor X(D)
 ** is invoked even if the call to sqlite3_carray_bind_v2() fails. If the X
 ** parameter is the special-case value [SQLITE_STATIC], then SQLite assumes
-** that the data static and the destructor is never invoked.  If the X
+** that the data and the destructor is never invoked.  If the X
 ** parameter is the special-case value [SQLITE_TRANSIENT], then
 ** sqlite3_carray_bind_v2() makes its own private copy of the data prior
 ** to returning and never invokes the destructor X.

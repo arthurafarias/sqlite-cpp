@@ -32,7 +32,7 @@ SQLITE_EXTENSION_INIT1
 ** Raise an error that has numeric code CODE and text message MSG
 ** using the sqlite3_set_errmsg() API.
 */
-static void seterrmsgfunc(
+void seterrmsgfunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -57,7 +57,7 @@ static void seterrmsgfunc(
 **
 ** Return the value of SQLITE_DBSTATUS_TEMPBUF_SPILL.
 */
-static void tempbuf_spill_func(
+void tempbuf_spill_func(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv

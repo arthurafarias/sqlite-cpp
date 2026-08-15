@@ -56,7 +56,7 @@ struct Fts3termCursor {
 ** These tables have no persistent representation of their own, so xConnect
 ** and xCreate are identical operations.
 */
-static int fts3termConnectMethod(
+int fts3termConnectMethod(
   sqlite3 *db,                    /* Database connection */
   void *pCtx,                     /* Non-zero for an fts4prefix table */
   int argc,                       /* Number of elements in argv array */
@@ -127,7 +127,7 @@ static int fts3termConnectMethod(
 ** These tables have no persistent representation of their own, so xDisconnect
 ** and xDestroy are identical operations.
 */
-static int fts3termDisconnectMethod(sqlite3_vtab *pVtab){
+int fts3termDisconnectMethod(sqlite3_vtab *pVtab){
   Fts3termTable *p = (Fts3termTable *)pVtab;
   Fts3Table *pFts3 = p->pFts3Tab;
   int i;
@@ -149,7 +149,7 @@ static int fts3termDisconnectMethod(sqlite3_vtab *pVtab){
 /*
 ** xBestIndex - Analyze a WHERE and ORDER BY clause.
 */
-static int fts3termBestIndexMethod(
+int fts3termBestIndexMethod(
   sqlite3_vtab *pVTab, 
   sqlite3_index_info *pInfo
 ){
@@ -172,7 +172,7 @@ static int fts3termBestIndexMethod(
 /*
 ** xOpen - Open a cursor.
 */
-static int fts3termOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
+int fts3termOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
   Fts3termCursor *pCsr;            /* Pointer to cursor object to return */
 
   UNUSED_PARAMETER(pVTab);
@@ -188,7 +188,7 @@ static int fts3termOpenMethod(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCsr){
 /*
 ** xClose - Close a cursor.
 */
-static int fts3termCloseMethod(sqlite3_vtab_cursor *pCursor){
+int fts3termCloseMethod(sqlite3_vtab_cursor *pCursor){
   Fts3Table *pFts3 = ((Fts3termTable *)pCursor->pVtab)->pFts3Tab;
   Fts3termCursor *pCsr = (Fts3termCursor *)pCursor;
 
@@ -201,7 +201,7 @@ static int fts3termCloseMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xNext - Advance the cursor to the next row, if any.
 */
-static int fts3termNextMethod(sqlite3_vtab_cursor *pCursor){
+int fts3termNextMethod(sqlite3_vtab_cursor *pCursor){
   Fts3termCursor *pCsr = (Fts3termCursor *)pCursor;
   Fts3Table *pFts3 = ((Fts3termTable *)pCursor->pVtab)->pFts3Tab;
   int rc;
@@ -253,7 +253,7 @@ static int fts3termNextMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xFilter - Initialize a cursor to point at the start of its data.
 */
-static int fts3termFilterMethod(
+int fts3termFilterMethod(
   sqlite3_vtab_cursor *pCursor,   /* The cursor used for this query */
   int idxNum,                     /* Strategy index */
   const char *idxStr,             /* Unused */
@@ -295,7 +295,7 @@ static int fts3termFilterMethod(
 /*
 ** xEof - Return true if the cursor is at EOF, or false otherwise.
 */
-static int fts3termEofMethod(sqlite3_vtab_cursor *pCursor){
+int fts3termEofMethod(sqlite3_vtab_cursor *pCursor){
   Fts3termCursor *pCsr = (Fts3termCursor *)pCursor;
   return pCsr->isEof;
 }
@@ -303,7 +303,7 @@ static int fts3termEofMethod(sqlite3_vtab_cursor *pCursor){
 /*
 ** xColumn - Return a column value.
 */
-static int fts3termColumnMethod(
+int fts3termColumnMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite3_context *pCtx,          /* Context for sqlite3_result_xxx() calls */
   int iCol                        /* Index of column to read value from */
@@ -332,7 +332,7 @@ static int fts3termColumnMethod(
 /*
 ** xRowid - Return the current rowid for the cursor.
 */
-static int fts3termRowidMethod(
+int fts3termRowidMethod(
   sqlite3_vtab_cursor *pCursor,   /* Cursor to retrieve value from */
   sqlite_int64 *pRowid            /* OUT: Rowid value */
 ){
@@ -346,7 +346,7 @@ static int fts3termRowidMethod(
 ** if successful or an error code if sqlite3_create_module() fails.
 */
 int sqlite3Fts3InitTerm(sqlite3 *db){
-  static const sqlite3_module fts3term_module = {
+  const sqlite3_module fts3term_module = {
      0,                           /* iVersion      */
      fts3termConnectMethod,       /* xCreate       */
      fts3termConnectMethod,       /* xConnect      */

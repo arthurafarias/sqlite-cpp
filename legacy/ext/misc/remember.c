@@ -42,7 +42,7 @@ SQLITE_EXTENSION_INIT1
 ** Return the integer value V.  Also save the value of V in a
 ** C-language variable whose address is PTR.
 */
-static void rememberFunc(
+void rememberFunc(
   sqlite3_context *pCtx,
   int argc,
   sqlite3_value **argv

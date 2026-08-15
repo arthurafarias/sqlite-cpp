@@ -14,18 +14,18 @@
   typedef unsigned long long int u64;
 #endif
 
-static int hexValue(char c){
+int hexValue(char c){
   if( c>='0' && c<='9' ) return c - '0';
   if( c>='a' && c<='f' ) return c - 'a' + 10;
   if( c>='A' && c<='F' ) return c - 'A' + 10;
   return -1;
 }
 
-static char toHex(unsigned char c){
+char toHex(unsigned char c){
   return "0123456789abcdef"[c&0xf];
 }
 
-static int putVarint(unsigned char *p, u64 v){
+int putVarint(unsigned char *p, u64 v){
   int i, j, n;
   unsigned char buf[10];
   if( v & (((u64)0xff000000)<<32) ){

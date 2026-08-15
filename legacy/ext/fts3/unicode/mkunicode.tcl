@@ -49,7 +49,7 @@ proc print_rd {map} {
   puts "** E\"). The resuls of passing a codepoint that corresponds to an"
   puts "** uppercase letter are undefined."
   puts "*/"
-  puts "static int ${::remove_diacritic}(int c, int bComplex)\{"
+  puts "int ${::remove_diacritic}(int c, int bComplex)\{"
   puts "  unsigned short aDia\[\] = \{"
   puts -nonewline "        0, "
   set i 1
@@ -190,7 +190,7 @@ proc an_print_range_array {lRange} {
   ** using this format.
   */
   }]
-  puts -nonewline "  static const unsigned int aEntry\[\] = \{"
+  puts -nonewline "  const unsigned int aEntry\[\] = \{"
   set i 0
   foreach range $lRange {
     foreach {iFirst nRange} $range {}
@@ -218,7 +218,7 @@ proc an_print_ascii_bitmap {lRange} {
     lset aAscii $idx [expr [lindex $aAscii $idx] | (1 << ($key&0x001F))]
   }
 
-  puts "  static const unsigned int aAscii\[4\] = \{"
+  puts "  const unsigned int aAscii\[4\] = \{"
   puts -nonewline "   "
   foreach v $aAscii { puts -nonewline [format " 0x%08X," $v] }
   puts ""
@@ -267,7 +267,7 @@ proc print_test_isalnum {zFunc lRange} {
     for {set i $iFirst} {$i < ($iFirst+$nRange)} {incr i} { set a($i) 1 }
   }
 
-  puts "static int isalnum_test(int *piCode)\{"
+  puts "int isalnum_test(int *piCode)\{"
   puts -nonewline "  unsigned char aAlnum\[\] = \{"
   for {set i 0} {$i < 70000} {incr i} {
     if {($i % 32)==0} { puts "" ; puts -nonewline "    " }
@@ -393,7 +393,7 @@ proc tl_print_table_header {} {
   ** http://www.unicode.org for details.
   */
   }]
-  puts "  static const struct TableEntry \{"
+  puts "  const struct TableEntry \{"
   puts "    unsigned short iCode;"
   puts "    unsigned char flags;"
   puts "    unsigned char nRange;"
@@ -457,7 +457,7 @@ proc tl_generate_ioff_table {lRecord} {
 }
 
 proc tl_print_ioff_table {liOff} {
-  puts -nonewline "  static const unsigned short aiOff\[\] = \{"
+  puts -nonewline "  const unsigned short aiOff\[\] = \{"
   set i 0
   foreach off $liOff {
     if {($i % 8)==0} {puts "" ; puts -nonewline "   "}
@@ -699,9 +699,9 @@ proc print_categories {lMap} {
   set aMapArray [intarray $aMap]
   set aDataArray [intarray $aData]
   puts [code {
-    static u16 aFts5UnicodeBlock[] = {$aBlockArray};
-    static u16 aFts5UnicodeMap[] = {$aMapArray};
-    static u16 aFts5UnicodeData[] = {$aDataArray};
+    u16 aFts5UnicodeBlock[] = {$aBlockArray};
+    u16 aFts5UnicodeMap[] = {$aMapArray};
+    u16 aFts5UnicodeData[] = {$aDataArray};
 
     int sqlite3Fts5UnicodeCategory(u32 iCode) { 
       int iRes = -1;
@@ -767,7 +767,7 @@ proc print_test_categories {lMap} {
 
 
   puts [code {
-    static int categories_test (int *piCode){
+    int categories_test (int *piCode){
       struct Codepoint {
         int iCode;
         const char *zCat;
@@ -812,8 +812,8 @@ proc print_fold_test {zFunc mappings} {
     }
   }
 
-  puts "static int fold_test(int *piCode)\{"
-  puts -nonewline "  static int aLookup\[\] = \{"
+  puts "int fold_test(int *piCode)\{"
+  puts -nonewline "  int aLookup\[\] = \{"
   for {set i 0} {$i < 70000} {incr i} {
 
     set expected $i

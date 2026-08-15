@@ -74,7 +74,7 @@ void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
 **      defensive mode, and the current sqlite3_prepare()
 **      is for a top-level SQL statement.
 */
-static int vtabIsReadOnly(Parse *pParse, Table *pTab){
+int vtabIsReadOnly(Parse *pParse, Table *pTab){
   assert( IsVirtual(pTab) );
   if( sqlite3GetVTable(pParse->db, pTab)->pMod->pModule->xUpdate==0 ){
     return 1;
@@ -95,7 +95,7 @@ static int vtabIsReadOnly(Parse *pParse, Table *pTab){
   }
   return 0;
 }
-static int tabIsReadOnly(Parse *pParse, Table *pTab){
+int tabIsReadOnly(Parse *pParse, Table *pTab){
   sqlite3 *db;
   if( IsVirtual(pTab) ){
     return vtabIsReadOnly(pParse, pTab);

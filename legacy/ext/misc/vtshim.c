@@ -66,7 +66,7 @@ struct vtshim_cursor {
   } while (0)
 
 /* Methods for the vtshim module */
-static int vtshimCreate(
+int vtshimCreate(
   sqlite3 *db,
   void *ppAux,
   int argc,
@@ -105,7 +105,7 @@ static int vtshimCreate(
   return rc;
 }
 
-static int vtshimConnect(
+int vtshimConnect(
   sqlite3 *db,
   void *ppAux,
   int argc,
@@ -144,7 +144,7 @@ static int vtshimConnect(
   return rc;
 }
 
-static int vtshimBestIndex(
+int vtshimBestIndex(
   sqlite3_vtab *pBase,
   sqlite3_index_info *pIdxInfo
 ){
@@ -159,7 +159,7 @@ static int vtshimBestIndex(
   return rc;
 }
 
-static int vtshimDisconnect(sqlite3_vtab *pBase){
+int vtshimDisconnect(sqlite3_vtab *pBase){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc = SQLITE_OK;
@@ -172,7 +172,7 @@ static int vtshimDisconnect(sqlite3_vtab *pBase){
   return rc;
 }
 
-static int vtshimDestroy(sqlite3_vtab *pBase){
+int vtshimDestroy(sqlite3_vtab *pBase){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc = SQLITE_OK;
@@ -185,7 +185,7 @@ static int vtshimDestroy(sqlite3_vtab *pBase){
   return rc;
 }
 
-static int vtshimOpen(sqlite3_vtab *pBase, sqlite3_vtab_cursor **ppCursor){
+int vtshimOpen(sqlite3_vtab *pBase, sqlite3_vtab_cursor **ppCursor){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   vtshim_cursor *pCur;
@@ -210,7 +210,7 @@ static int vtshimOpen(sqlite3_vtab *pBase, sqlite3_vtab_cursor **ppCursor){
   return SQLITE_OK;
 }
 
-static int vtshimClose(sqlite3_vtab_cursor *pX){
+int vtshimClose(sqlite3_vtab_cursor *pX){
   vtshim_cursor *pCur = (vtshim_cursor*)pX;
   vtshim_vtab *pVtab = (vtshim_vtab*)pCur->base.pVtab;
   vtshim_aux *pAux = pVtab->pAux;
@@ -227,7 +227,7 @@ static int vtshimClose(sqlite3_vtab_cursor *pX){
   return rc;
 }
 
-static int vtshimFilter(
+int vtshimFilter(
   sqlite3_vtab_cursor *pX,
   int idxNum,
   const char *idxStr,
@@ -246,7 +246,7 @@ static int vtshimFilter(
   return rc;
 }
 
-static int vtshimNext(sqlite3_vtab_cursor *pX){
+int vtshimNext(sqlite3_vtab_cursor *pX){
   vtshim_cursor *pCur = (vtshim_cursor*)pX;
   vtshim_vtab *pVtab = (vtshim_vtab*)pCur->base.pVtab;
   vtshim_aux *pAux = pVtab->pAux;
@@ -259,7 +259,7 @@ static int vtshimNext(sqlite3_vtab_cursor *pX){
   return rc;
 }
 
-static int vtshimEof(sqlite3_vtab_cursor *pX){
+int vtshimEof(sqlite3_vtab_cursor *pX){
   vtshim_cursor *pCur = (vtshim_cursor*)pX;
   vtshim_vtab *pVtab = (vtshim_vtab*)pCur->base.pVtab;
   vtshim_aux *pAux = pVtab->pAux;
@@ -270,7 +270,7 @@ static int vtshimEof(sqlite3_vtab_cursor *pX){
   return rc;
 }
 
-static int vtshimColumn(sqlite3_vtab_cursor *pX, sqlite3_context *ctx, int i){
+int vtshimColumn(sqlite3_vtab_cursor *pX, sqlite3_context *ctx, int i){
   vtshim_cursor *pCur = (vtshim_cursor*)pX;
   vtshim_vtab *pVtab = (vtshim_vtab*)pCur->base.pVtab;
   vtshim_aux *pAux = pVtab->pAux;
@@ -283,7 +283,7 @@ static int vtshimColumn(sqlite3_vtab_cursor *pX, sqlite3_context *ctx, int i){
   return rc;
 }
 
-static int vtshimRowid(sqlite3_vtab_cursor *pX, sqlite3_int64 *pRowid){
+int vtshimRowid(sqlite3_vtab_cursor *pX, sqlite3_int64 *pRowid){
   vtshim_cursor *pCur = (vtshim_cursor*)pX;
   vtshim_vtab *pVtab = (vtshim_vtab*)pCur->base.pVtab;
   vtshim_aux *pAux = pVtab->pAux;
@@ -296,7 +296,7 @@ static int vtshimRowid(sqlite3_vtab_cursor *pX, sqlite3_int64 *pRowid){
   return rc;
 }
 
-static int vtshimUpdate(
+int vtshimUpdate(
   sqlite3_vtab *pBase,
   int argc,
   sqlite3_value **argv,
@@ -313,7 +313,7 @@ static int vtshimUpdate(
   return rc;
 }
 
-static int vtshimBegin(sqlite3_vtab *pBase){
+int vtshimBegin(sqlite3_vtab *pBase){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -325,7 +325,7 @@ static int vtshimBegin(sqlite3_vtab *pBase){
   return rc;
 }
 
-static int vtshimSync(sqlite3_vtab *pBase){
+int vtshimSync(sqlite3_vtab *pBase){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -337,7 +337,7 @@ static int vtshimSync(sqlite3_vtab *pBase){
   return rc;
 }
 
-static int vtshimCommit(sqlite3_vtab *pBase){
+int vtshimCommit(sqlite3_vtab *pBase){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -349,7 +349,7 @@ static int vtshimCommit(sqlite3_vtab *pBase){
   return rc;
 }
 
-static int vtshimRollback(sqlite3_vtab *pBase){
+int vtshimRollback(sqlite3_vtab *pBase){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -361,7 +361,7 @@ static int vtshimRollback(sqlite3_vtab *pBase){
   return rc;
 }
 
-static int vtshimFindFunction(
+int vtshimFindFunction(
   sqlite3_vtab *pBase,
   int nArg,
   const char *zName,
@@ -377,7 +377,7 @@ static int vtshimFindFunction(
   return rc;
 }
 
-static int vtshimRename(sqlite3_vtab *pBase, const char *zNewName){
+int vtshimRename(sqlite3_vtab *pBase, const char *zNewName){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -389,7 +389,7 @@ static int vtshimRename(sqlite3_vtab *pBase, const char *zNewName){
   return rc;
 }
 
-static int vtshimSavepoint(sqlite3_vtab *pBase, int n){
+int vtshimSavepoint(sqlite3_vtab *pBase, int n){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -401,7 +401,7 @@ static int vtshimSavepoint(sqlite3_vtab *pBase, int n){
   return rc;
 }
 
-static int vtshimRelease(sqlite3_vtab *pBase, int n){
+int vtshimRelease(sqlite3_vtab *pBase, int n){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -413,7 +413,7 @@ static int vtshimRelease(sqlite3_vtab *pBase, int n){
   return rc;
 }
 
-static int vtshimRollbackTo(sqlite3_vtab *pBase, int n){
+int vtshimRollbackTo(sqlite3_vtab *pBase, int n){
   vtshim_vtab *pVtab = (vtshim_vtab*)pBase;
   vtshim_aux *pAux = pVtab->pAux;
   int rc;
@@ -426,7 +426,7 @@ static int vtshimRollbackTo(sqlite3_vtab *pBase, int n){
 }
 
 /* The destructor function for a disposable module */
-static void vtshimAuxDestructor(void *pXAux){
+void vtshimAuxDestructor(void *pXAux){
   vtshim_aux *pAux = (vtshim_aux*)pXAux;
   assert( pAux->pAllVtab==0 );
   if( !pAux->bDisposed && pAux->xChildDestroy ){
@@ -438,7 +438,7 @@ static void vtshimAuxDestructor(void *pXAux){
   sqlite3_free(pAux);
 }
 
-static int vtshimCopyModule(
+int vtshimCopyModule(
   const sqlite3_module *pMod,   /* Source module to be copied */
   sqlite3_module **ppMod        /* Destination for copied module */
 ){

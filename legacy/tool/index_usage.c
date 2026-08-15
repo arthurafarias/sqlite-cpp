@@ -20,7 +20,7 @@
 #include <assert.h>
 #include <string.h>
 
-static void usage(const char *argv0){
+void usage(const char *argv0){
   printf("Usage: %s [OPTIONS] DATABASE LOG\n\n", argv0);
   printf(
     "DATABASE is an SQLite database against which various statements\n"

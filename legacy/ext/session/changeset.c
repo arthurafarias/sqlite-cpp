@@ -24,7 +24,7 @@
 /*
 ** Show a usage message on stderr then quit.
 */
-static void usage(const char *argv0){
+void usage(const char *argv0){
   fprintf(stderr, "Usage: %s FILENAME COMMAND ...\n", argv0);
   fprintf(stderr,
     "COMMANDs:\n"
@@ -46,7 +46,7 @@ static void usage(const char *argv0){
 /*
 ** Read the content of a disk file into an in-memory buffer
 */
-static void readFile(const char *zFilename, int *pSz, void **ppBuf){
+void readFile(const char *zFilename, int *pSz, void **ppBuf){
   FILE *f;
   sqlite3_int64 sz;
   void *pBuf;
@@ -78,7 +78,7 @@ static void readFile(const char *zFilename, int *pSz, void **ppBuf){
 
 /* Array for converting from half-bytes (nybbles) into ASCII hex
 ** digits. */
-static const char hexdigits[] = {
+const char hexdigits[] = {
   '0', '1', '2', '3', '4', '5', '6', '7',
   '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' 
 };
@@ -86,7 +86,7 @@ static const char hexdigits[] = {
 /*
 ** Render an sqlite3_value as an SQL string.
 */
-static void renderValue(sqlite3_value *pVal){
+void renderValue(sqlite3_value *pVal){
   switch( sqlite3_value_type(pVal) ){
     case SQLITE_FLOAT: {
       double r1;
@@ -134,12 +134,12 @@ static void renderValue(sqlite3_value *pVal){
 /*
 ** Number of conflicts seen
 */
-static int nConflict = 0;
+int nConflict = 0;
 
 /*
 ** The conflict callback
 */
-static int conflictCallback(
+int conflictCallback(
   void *pCtx,
   int eConflict,
   sqlite3_changeset_iter *pIter

@@ -74,7 +74,7 @@ set ::headCode "
 ** only a handful of compile-time options, so most times this array is usually
 ** rather short and uses little memory space.
 */
-static const char * const sqlite3azCompileOpt\[\] = $::lb
+const char * const sqlite3azCompileOpt\[\] = $::lb
 "
 
 set ::tailCode "

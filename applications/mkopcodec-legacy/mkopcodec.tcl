@@ -19,7 +19,7 @@ puts "#else"
 puts "# define OpHelp(X)"
 puts "#endif"
 puts "const char *sqlite3OpcodeName(int i)\173"
-puts " static const char *const azName\[\] = \173"
+puts " const char *const azName\[\] = \173"
 set mx 0
 
 set in [open [lindex $argv 0]]

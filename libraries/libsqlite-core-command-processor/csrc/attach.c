@@ -32,7 +32,7 @@
 **
 ** will fail because neither abc or def can be resolved.
 */
-static int resolveAttachExpr(NameContext *pName, Expr *pExpr)
+int resolveAttachExpr(NameContext *pName, Expr *pExpr)
 {
   int rc = SQLITE_OK;
   if( pExpr ){
@@ -71,7 +71,7 @@ int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName){
 ** new database, close the database on db->init.iDb and reopen it as an
 ** empty MemDB.
 */
-static void attachFunc(
+void attachFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **argv
@@ -290,7 +290,7 @@ attach_error:
 **
 **     SELECT sqlite_detach(x)
 */
-static void detachFunc(
+void detachFunc(
   sqlite3_context *context,
   int NotUsed,
   sqlite3_value **argv
@@ -352,7 +352,7 @@ detach_error:
 ** This procedure generates VDBE code for a single invocation of either the
 ** sqlite_detach() or sqlite_attach() SQL user functions.
 */
-static void codeAttach(
+void codeAttach(
   Parse *pParse,       /* The parser context */
   int type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
   FuncDef const *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
@@ -427,7 +427,7 @@ attach_end:
 **     DETACH pDbname
 */
 void sqlite3Detach(Parse *pParse, Expr *pDbname){
-  static const FuncDef detach_func = {
+  const FuncDef detach_func = {
     1,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -447,7 +447,7 @@ void sqlite3Detach(Parse *pParse, Expr *pDbname){
 **     ATTACH p AS pDbname KEY pKey
 */
 void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
-  static const FuncDef attach_func = {
+  const FuncDef attach_func = {
     3,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -465,7 +465,7 @@ void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
 /*
 ** Expression callback used by sqlite3FixAAAA() routines.
 */
-static int fixExprCb(Walker *p, Expr *pExpr){
+int fixExprCb(Walker *p, Expr *pExpr){
   DbFixer *pFix = p->u.pFix;
   if( !pFix->bTemp ) ExprSetProperty(pExpr, EP_FromDDL);
   if( pExpr->op==TK_VARIABLE ){
@@ -482,7 +482,7 @@ static int fixExprCb(Walker *p, Expr *pExpr){
 /*
 ** Select callback used by sqlite3FixAAAA() routines.
 */
-static int fixSelectCb(Walker *p, Select *pSelect){
+int fixSelectCb(Walker *p, Select *pSelect){
   DbFixer *pFix = p->u.pFix;
   int i;
   SrcItem *pItem;

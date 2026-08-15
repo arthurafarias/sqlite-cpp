@@ -42,7 +42,7 @@ int sqlite3_release_memory(int n){
 /*
 ** State information local to the memory allocation subsystem.
 */
-static SQLITE_WSD struct Mem0Global {
+SQLITE_WSD struct Mem0Global {
   sqlite3_mutex *mutex;         /* Mutex to serialize access */
   sqlite3_int64 alarmThreshold; /* The soft heap limit */
   sqlite3_int64 hardLimit;      /* The hard upper bound on memory */
@@ -214,7 +214,7 @@ sqlite3_int64 sqlite3_memory_highwater(int resetFlag){
 /*
 ** Trigger the alarm 
 */
-static void sqlite3MallocAlarm(int nByte){
+void sqlite3MallocAlarm(int nByte){
   if( mem0.alarmThreshold<=0 ) return;
   sqlite3_mutex_leave(mem0.mutex);
   sqlite3_release_memory(nByte);
@@ -228,8 +228,8 @@ static void sqlite3MallocAlarm(int nByte){
 ** code debuggers when working on out-of-memory conditions, for example
 ** caused by PRAGMA hard_heap_limit=N.
 */
-static SQLITE_NOINLINE void test_oom_breakpoint(u64 n){
-  static u64 nOomFault = 0;
+SQLITE_NOINLINE void test_oom_breakpoint(u64 n){
+  u64 nOomFault = 0;
   nOomFault += n;
   /* The assert() is never reached in a human lifetime.  It  is here mostly
   ** to prevent code optimizers from optimizing out this function. */
@@ -243,7 +243,7 @@ static SQLITE_NOINLINE void test_oom_breakpoint(u64 n){
 ** Do a memory allocation with statistics and alarms.  Assume the
 ** lock is already held.
 */
-static void mallocWithAlarm(int n, void **pp){
+void mallocWithAlarm(int n, void **pp){
   void *p;
   int nFull;
   assert( sqlite3_mutex_held(mem0.mutex) );
@@ -330,7 +330,7 @@ void *sqlite3_malloc64(sqlite3_uint64 n){
 ** TRUE if p is a lookaside memory allocation from db
 */
 #ifndef SQLITE_OMIT_LOOKASIDE
-static int isLookaside(sqlite3 *db, const void *p){
+int isLookaside(sqlite3 *db, const void *p){
   return SQLITE_WITHIN(p, db->lookaside.pStart, db->lookaside.pTrueEnd);
 }
 #else
@@ -345,7 +345,7 @@ int sqlite3MallocSize(const void *p){
   assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
   return sqlite3GlobalConfig.m.xSize((void*)p);
 }
-static int lookasideMallocSize(sqlite3 *db, const void *p){
+int lookasideMallocSize(sqlite3 *db, const void *p){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE    
   return p<db->lookaside.pMiddle ? db->lookaside.szTrue : LOOKASIDE_SMALL;
 #else
@@ -407,7 +407,7 @@ void sqlite3_free(void *p){
 ** Add the size of memory allocation "p" to the count in
 ** *db->pnBytesFreed.
 */
-static SQLITE_NOINLINE void measureAllocationSize(sqlite3 *db, void *p){
+SQLITE_NOINLINE void measureAllocationSize(sqlite3 *db, void *p){
   *db->pnBytesFreed += sqlite3DbMallocSize(db,p);
 }
 
@@ -601,7 +601,7 @@ void *sqlite3DbMallocZero(sqlite3 *db, u64 n){
 /* Finish the work of sqlite3DbMallocRawNN for the unusual and
 ** slower case when the allocation cannot be fulfilled using lookaside.
 */
-static SQLITE_NOINLINE void *dbMallocRawFinish(sqlite3 *db, u64 n){
+SQLITE_NOINLINE void *dbMallocRawFinish(sqlite3 *db, u64 n){
   void *p;
   assert( db!=0 );
   p = sqlite3Malloc(n);
@@ -690,7 +690,7 @@ void *sqlite3DbMallocRawNN(sqlite3 *db, u64 n){
 }
 
 /* Forward declaration */
-static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n);
+SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n);
 
 /*
 ** Resize the block of memory pointed to by p to n bytes. If the
@@ -712,7 +712,7 @@ void *sqlite3DbRealloc(sqlite3 *db, void *p, u64 n){
   }
   return dbReallocFinish(db, p, n);
 }
-static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n){
+SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n){
   void *pNew = 0;
   assert( db!=0 );
   assert( p!=0 );
@@ -863,7 +863,7 @@ void sqlite3OomClear(sqlite3 *db){
 /*
 ** Take actions at the end of an API call to deal with error codes.
 */
-static SQLITE_NOINLINE int apiHandleError(sqlite3 *db, int rc){
+SQLITE_NOINLINE int apiHandleError(sqlite3 *db, int rc){
   if( db->mallocFailed || rc==SQLITE_IOERR_NOMEM ){
     sqlite3OomClear(db);
     sqlite3Error(db, SQLITE_NOMEM);

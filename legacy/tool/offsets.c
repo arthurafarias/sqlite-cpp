@@ -36,7 +36,7 @@ struct GState {
 /*
 ** Write an error.
 */
-static void ofstError(GState *p, const char *zFormat, ...){
+void ofstError(GState *p, const char *zFormat, ...){
   va_list ap;
   sqlite3_free(p->zErr);
   va_start(ap, zFormat);
@@ -47,7 +47,7 @@ static void ofstError(GState *p, const char *zFormat, ...){
 /*
 ** Write a trace message
 */
-static void ofstTrace(GState *p, const char *zFormat, ...){
+void ofstTrace(GState *p, const char *zFormat, ...){
   va_list ap;
   if( p->bTrace ){
     va_start(ap, zFormat);
@@ -59,7 +59,7 @@ static void ofstTrace(GState *p, const char *zFormat, ...){
 /*
 ** Find the root page of the table and the column number of the column.
 */
-static void ofstRootAndColumn(
+void ofstRootAndColumn(
   GState *p,              /* Global state */
   const char *zFile,      /* Name of the database file */
   const char *zTable,     /* Name of the table */
@@ -130,7 +130,7 @@ rootAndColumn_exit:
 /*
 ** Pop a page from the stack
 */
-static void ofstPopPage(GState *p){
+void ofstPopPage(GState *p){
   if( p->nStack<=0 ) return;
   p->nStack--;
   sqlite3_free(p->aStack[p->nStack]);
@@ -142,7 +142,7 @@ static void ofstPopPage(GState *p){
 /*
 ** Push a new page onto the stack.
 */
-static void ofstPushPage(GState *p, int pgno){
+void ofstPushPage(GState *p, int pgno){
   u8 *pPage;
   size_t got;
   if( p->zErr ) return;
@@ -168,13 +168,13 @@ static void ofstPushPage(GState *p, int pgno){
 }
 
 /* Read a two-byte integer at the given offset into the current page */
-static int ofst2byte(GState *p, int ofst){
+int ofst2byte(GState *p, int ofst){
   int x = p->aPage[ofst];
   return (x<<8) + p->aPage[ofst+1];
 }
 
 /* Read a four-byte integer at the given offset into the current page */
-static int ofst4byte(GState *p, int ofst){
+int ofst4byte(GState *p, int ofst){
   int x = p->aPage[ofst];
   x = (x<<8) + p->aPage[ofst+1];
   x = (x<<8) + p->aPage[ofst+2];
@@ -183,7 +183,7 @@ static int ofst4byte(GState *p, int ofst){
 }
 
 /* Read a variable-length integer.  Update the offset */
-static sqlite3_int64 ofstVarint(GState *p, int *pOfst){
+sqlite3_int64 ofstVarint(GState *p, int *pOfst){
   sqlite3_int64 x = 0;
   u8 *a = &p->aPage[*pOfst];
   int n = 0;
@@ -203,13 +203,13 @@ static sqlite3_int64 ofstVarint(GState *p, int *pOfst){
 
 /* Return the absolute offset into a file for the given offset
 ** into the current page */
-static int ofstInFile(GState *p, int ofst){
+int ofstInFile(GState *p, int ofst){
   return p->szPg*(p->pgno-1) + ofst;
 }
 
 /* Return the size (in bytes) of the data corresponding to the
 ** given serial code */
-static int ofstSerialSize(int scode){
+int ofstSerialSize(int scode){
   if( scode<5 ) return scode;
   if( scode==5 ) return 6;
   if( scode<8 ) return 8;
@@ -218,10 +218,10 @@ static int ofstSerialSize(int scode){
 }
 
 /* Forward reference */
-static void ofstWalkPage(GState*, int);
+void ofstWalkPage(GState*, int);
 
 /* Walk an interior btree page */
-static void ofstWalkInteriorPage(GState *p){
+void ofstWalkInteriorPage(GState *p){
   int nCell;
   int i;
   int ofst;
@@ -238,7 +238,7 @@ static void ofstWalkInteriorPage(GState *p){
 }
 
 /* Walk a leaf btree page */
-static void ofstWalkLeafPage(GState *p){
+void ofstWalkLeafPage(GState *p){
   int nCell;
   int i;
   int ofst;
@@ -281,7 +281,7 @@ static void ofstWalkLeafPage(GState *p){
 /*
 ** Output results from a single page.
 */
-static void ofstWalkPage(GState *p, int pgno){
+void ofstWalkPage(GState *p, int pgno){
   if( p->zErr ) return;
   ofstPushPage(p, pgno);
   if( p->zErr ) return;

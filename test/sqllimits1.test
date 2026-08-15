@@ -301,7 +301,7 @@ do_test sqllimits1-5.9 {
 } {1 {string or blob too big}}
 
 do_test sqllimits1-5.10 {
-  # Prior to 3.37.0 strftime() allocated a large static buffer into
+  # Prior to 3.37.0 strftime() allocated a large buffer into
   # which to format its output. Using that strategy, 2100 repeats was
   # enough to exceed 100KiB and provoke the error. As of 3.37.0 strftime()
   # uses the StrAccum functions, so it requires 12100 to fail.
@@ -877,7 +877,7 @@ do_test sqllimits1-15.2 {
 # This test case doesn't really belong with the other limits tests.
 # It is in this file because it is taxing to run, like the limits tests.
 #
-# Update for 3.37.0: strftime() used to allocate a large static buffer
+# Update for 3.37.0: strftime() used to allocate a large buffer
 # into which it would write its result. With that implementation, the
 # following would trigger an SQLITE_TOOBIG error. But strftime() now
 # uses the StrAccum functions, causing this test to fail.

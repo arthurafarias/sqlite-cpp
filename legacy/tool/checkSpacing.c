@@ -14,7 +14,7 @@
 #define CR_OK      0x001
 #define WSEOL_OK   0x002
 
-static void checkSpacing(const char *zFile, unsigned flags){
+void checkSpacing(const char *zFile, unsigned flags){
   FILE *in = fopen(zFile, "rb");
   int i;
   int seenSpace;

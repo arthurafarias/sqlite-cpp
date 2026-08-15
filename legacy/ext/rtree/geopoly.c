@@ -20,7 +20,7 @@
 
 /* Enable -DGEOPOLY_ENABLE_DEBUG for debugging facilities */
 #ifdef GEOPOLY_ENABLE_DEBUG
-  static int geo_debug = 0;
+  int geo_debug = 0;
 # define GEODEBUG(X) if(geo_debug)printf X
 #else
 # define GEODEBUG(X)
@@ -46,7 +46,7 @@
 ** Growing our own isspace() routine this way is twice as fast as
 ** the library isspace() function.
 */
-static const char geopolyIsSpace[] = {
+const char geopolyIsSpace[] = {
   0, 0, 0, 0, 0, 0, 0, 0,     0, 1, 1, 0, 0, 1, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
   1, 0, 0, 0, 0, 0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0,
@@ -142,7 +142,7 @@ struct GeoParse {
 };
 
 /* Do a 4-byte byte swap */
-static void geopolySwab32(unsigned char *a){
+void geopolySwab32(unsigned char *a){
   unsigned char t = a[0];
   a[0] = a[3];
   a[3] = t;
@@ -152,7 +152,7 @@ static void geopolySwab32(unsigned char *a){
 }
 
 /* Skip whitespace.  Return the next non-whitespace character. */
-static char geopolySkipSpace(GeoParse *p){
+char geopolySkipSpace(GeoParse *p){
   while( fast_isspace(p->z[0]) ) p->z++;
   return p->z[0];
 }
@@ -160,7 +160,7 @@ static char geopolySkipSpace(GeoParse *p){
 /* Parse out a number.  Write the value into *pVal if pVal!=0.
 ** return non-zero on success and zero if the next token is not a number.
 */
-static int geopolyParseNumber(GeoParse *p, GeoCoord *pVal){
+int geopolyParseNumber(GeoParse *p, GeoCoord *pVal){
   char c = geopolySkipSpace(p);
   const unsigned char *z = p->z;
   int j = 0;
@@ -218,7 +218,7 @@ static int geopolyParseNumber(GeoParse *p, GeoCoord *pVal){
 **
 ** If any error occurs, return NULL.
 */
-static GeoPoly *geopolyParseJson(const unsigned char *z, int *pRc){
+GeoPoly *geopolyParseJson(const unsigned char *z, int *pRc){
   GeoParse s;
   int rc = SQLITE_OK;
   memset(&s, 0, sizeof(s));
@@ -295,7 +295,7 @@ parse_json_err:
 ** return a pointer to that object.  Or if the input is not a well-formed
 ** polygon, put an error message in sqlite3_context and return NULL.
 */
-static GeoPoly *geopolyFuncParam(
+GeoPoly *geopolyFuncParam(
   sqlite3_context *pCtx,      /* Context for error messages */
   sqlite3_value *pVal,        /* The value to decode */
   int *pRc                    /* Write error here */
@@ -356,7 +356,7 @@ static GeoPoly *geopolyFuncParam(
 ** then return the BLOB representation of the polygon.  Otherwise
 ** return NULL.
 */
-static void geopolyBlobFunc(
+void geopolyBlobFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -376,7 +376,7 @@ static void geopolyBlobFunc(
 ** Interpret X as a polygon and render it as a JSON array
 ** of coordinates.  Or, if X is not a valid polygon, return NULL.
 */
-static void geopolyJsonFunc(
+void geopolyJsonFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -403,7 +403,7 @@ static void geopolyJsonFunc(
 ** Interpret X as a polygon and render it as a SVG <polyline>.
 ** Additional arguments are added as attributes to the <polyline>.
 */
-static void geopolySvgFunc(
+void geopolySvgFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -450,7 +450,7 @@ static void geopolySvgFunc(
 **
 **      geopoly_xform(poly, cos(R), sin(R), -sin(R), cos(R), 0, 0)
 */
-static void geopolyXformFunc(
+void geopolyXformFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -487,7 +487,7 @@ static void geopolyXformFunc(
 ** the wrong direction.  Polygons are suppose to be counter-clockwise (CCW).
 ** This routine returns a negative value for clockwise (CW) polygons.
 */
-static double geopolyArea(GeoPoly *p){
+double geopolyArea(GeoPoly *p){
   double rArea = 0.0;
   int ii;
   for(ii=0; ii<p->nVertex-1; ii++){
@@ -509,7 +509,7 @@ static double geopolyArea(GeoPoly *p){
 ** of counterclockwise (as it should) then return the negative of the
 ** enclosed area.  Otherwise return NULL.
 */
-static void geopolyAreaFunc(
+void geopolyAreaFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -535,7 +535,7 @@ static void geopolyAreaFunc(
 ** Use this routine to sanitize historical inputs that that sometimes
 ** contain polygons that wind in the wrong direction.
 */
-static void geopolyCcwFunc(
+void geopolyCcwFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -564,7 +564,7 @@ static void geopolyCcwFunc(
 
 /* Fast approximation for sine(X) for X between -0.5*pi and 2*pi
 */
-static double geopolySine(double r){
+double geopolySine(double r){
   assert( r>=-0.5*GEOPOLY_PI && r<=2.0*GEOPOLY_PI );
   if( r>=1.5*GEOPOLY_PI ){
     r -= 2.0*GEOPOLY_PI;
@@ -585,7 +585,7 @@ static double geopolySine(double r){
 ** Construct a simple, convex, regular polygon centered at X, Y
 ** with circumradius R and with N sides.
 */
-static void geopolyRegularFunc(
+void geopolyRegularFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -629,7 +629,7 @@ static void geopolyRegularFunc(
 ** If pPoly is NULL but aCoord is not NULL, then compute a new GeoPoly from
 ** the bounding box in aCoord and return a pointer to that GeoPoly.
 */
-static GeoPoly *geopolyBBox(
+GeoPoly *geopolyBBox(
   sqlite3_context *context,   /* For recording the error */
   sqlite3_value *pPoly,       /* The polygon */
   RtreeCoord *aCoord,         /* Results here */
@@ -700,7 +700,7 @@ static GeoPoly *geopolyBBox(
 /*
 ** Implementation of the geopoly_bbox(X) SQL function.
 */
-static void geopolyBBoxFunc(
+void geopolyBBoxFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -727,7 +727,7 @@ struct GeoBBox {
 /*
 ** Implementation of the geopoly_group_bbox(X) aggregate SQL function.
 */
-static void geopolyBBoxStep(
+void geopolyBBoxStep(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -751,7 +751,7 @@ static void geopolyBBoxStep(
     }
   }
 }
-static void geopolyBBoxFinal(
+void geopolyBBoxFinal(
   sqlite3_context *context
 ){
   GeoPoly *p;
@@ -781,7 +781,7 @@ static void geopolyBBoxFinal(
 ** The left-most coordinate min(x1,x2) is not considered to be part of
 ** the line segment for the purposes of this analysis.
 */
-static int pointBeneathLine(
+int pointBeneathLine(
   double x0, double y0,
   double x1, double y1,
   double x2, double y2
@@ -812,7 +812,7 @@ static int pointBeneathLine(
 ** Return +1 if point X,Y is on the polygon boundary.
 ** Return 0 if point X,Y is outside the polygon
 */
-static void geopolyContainsPointFunc(
+void geopolyContainsPointFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -847,7 +847,7 @@ static void geopolyContainsPointFunc(
 }
 
 /* Forward declaration */
-static int geopolyOverlap(GeoPoly *p1, GeoPoly *p2);
+int geopolyOverlap(GeoPoly *p1, GeoPoly *p2);
 
 /*
 ** SQL function:    geopoly_within(P1,P2)
@@ -857,7 +857,7 @@ static int geopolyOverlap(GeoPoly *p1, GeoPoly *p2);
 ** Return 0 if any part of P2 is on the outside of P1
 **
 */
-static void geopolyWithinFunc(
+void geopolyWithinFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -905,7 +905,7 @@ struct GeoOverlap {
 /*
 ** Add a single segment and its associated events.
 */
-static void geopolyAddOneSegment(
+void geopolyAddOneSegment(
   GeoOverlap *p,
   GeoCoord x0,
   GeoCoord y0,
@@ -949,7 +949,7 @@ static void geopolyAddOneSegment(
 /*
 ** Insert all segments and events for polygon pPoly.
 */
-static void geopolyAddSegments(
+void geopolyAddSegments(
   GeoOverlap *p,          /* Add segments to this Overlap object */
   GeoPoly *pPoly,         /* Take all segments from this polygon */
   unsigned char side      /* The side of pPoly */
@@ -967,7 +967,7 @@ static void geopolyAddSegments(
 /*
 ** Merge two lists of sorted events by X coordinate
 */
-static GeoEvent *geopolyEventMerge(GeoEvent *pLeft, GeoEvent *pRight){
+GeoEvent *geopolyEventMerge(GeoEvent *pLeft, GeoEvent *pRight){
   GeoEvent head, *pLast;
   head.pNext = 0;
   pLast = &head;
@@ -989,7 +989,7 @@ static GeoEvent *geopolyEventMerge(GeoEvent *pLeft, GeoEvent *pRight){
 /*
 ** Sort an array of nEvent event objects into a list.
 */
-static GeoEvent *geopolySortEventsByX(GeoEvent *aEvent, int nEvent){
+GeoEvent *geopolySortEventsByX(GeoEvent *aEvent, int nEvent){
   int mx = 0;
   int i, j;
   GeoEvent *p;
@@ -1014,7 +1014,7 @@ static GeoEvent *geopolySortEventsByX(GeoEvent *aEvent, int nEvent){
 /*
 ** Merge two lists of sorted segments by Y, and then by C.
 */
-static GeoSegment *geopolySegmentMerge(GeoSegment *pLeft, GeoSegment *pRight){
+GeoSegment *geopolySegmentMerge(GeoSegment *pLeft, GeoSegment *pRight){
   GeoSegment head, *pLast;
   head.pNext = 0;
   pLast = &head;
@@ -1039,7 +1039,7 @@ static GeoSegment *geopolySegmentMerge(GeoSegment *pLeft, GeoSegment *pRight){
 ** Sort a list of GeoSegments in order of increasing Y and in the event of
 ** a tie, increasing C (slope).
 */
-static GeoSegment *geopolySortSegmentsByYAndC(GeoSegment *pList){
+GeoSegment *geopolySortSegmentsByYAndC(GeoSegment *pList){
   int mx = 0;
   int i;
   GeoSegment *p;
@@ -1065,7 +1065,7 @@ static GeoSegment *geopolySortSegmentsByYAndC(GeoSegment *pList){
 /*
 ** Determine the overlap between two polygons
 */
-static int geopolyOverlap(GeoPoly *p1, GeoPoly *p2){
+int geopolyOverlap(GeoPoly *p1, GeoPoly *p2){
   sqlite3_int64 nVertex = p1->nVertex + p2->nVertex + 2;
   GeoOverlap *p;
   sqlite3_int64 nByte;
@@ -1188,7 +1188,7 @@ geopolyOverlapDone:
 **   4     P1 and P2 are the same polygon
 **   NULL  Either P1 or P2 or both are not valid polygons
 */
-static void geopolyOverlapFunc(
+void geopolyOverlapFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1211,7 +1211,7 @@ static void geopolyOverlapFunc(
 /*
 ** Enable or disable debugging output
 */
-static void geopolyDebugFunc(
+void geopolyDebugFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -1234,7 +1234,7 @@ static void geopolyDebugFunc(
 **   argv[2]   -> table name
 **   argv[...] -> column names...
 */
-static int geopolyInit(
+int geopolyInit(
   sqlite3 *db,                        /* Database connection */
   void *pAux,                         /* One of the RTREE_COORD_* constants */
   int argc, const char *const*argv,   /* Parameters to CREATE TABLE statement */
@@ -1328,7 +1328,7 @@ geopolyInit_fail:
 /* 
 ** GEOPOLY virtual table module xCreate method.
 */
-static int geopolyCreate(
+int geopolyCreate(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -1341,7 +1341,7 @@ static int geopolyCreate(
 /* 
 ** GEOPOLY virtual table module xConnect method.
 */
-static int geopolyConnect(
+int geopolyConnect(
   sqlite3 *db,
   void *pAux,
   int argc, const char *const*argv,
@@ -1364,7 +1364,7 @@ static int geopolyConnect(
 **                that contains polygon argv[0]
 **      4         full table scan
 */
-static int geopolyFilter(
+int geopolyFilter(
   sqlite3_vtab_cursor *pVtabCursor,     /* The cursor to initialize */
   int idxNum,                           /* Query plan */
   const char *idxStr,                   /* Not Used */
@@ -1497,7 +1497,7 @@ geopoly_filter_end:
 **     4        "fullscan"    full-table scan.
 **   ------------------------------------------------
 */
-static int geopolyBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+int geopolyBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   int ii;
   int iRowidTerm = -1;
   int iFuncTerm = -1;
@@ -1550,7 +1550,7 @@ static int geopolyBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 /* 
 ** GEOPOLY virtual table module xColumn method.
 */
-static int geopolyColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+int geopolyColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   Rtree *pRtree = (Rtree *)cur->pVtab;
   RtreeCursor *pCsr = (RtreeCursor *)cur;
   RtreeSearchPoint *p = rtreeSearchPointFirst(pCsr);
@@ -1605,7 +1605,7 @@ static int geopolyColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
 **     argv[2] = new value for _shape
 **     argv[3] = new value for first application-defined column....
 */
-static int geopolyUpdate(
+int geopolyUpdate(
   sqlite3_vtab *pVtab, 
   int nData, 
   sqlite3_value **aData, 
@@ -1741,7 +1741,7 @@ geopoly_update_end:
 ** Report that geopoly_overlap() is an overloaded function suitable
 ** for use in xBestIndex.
 */
-static int geopolyFindFunction(
+int geopolyFindFunction(
   sqlite3_vtab *pVtab,
   int nArg,
   const char *zName,
@@ -1764,7 +1764,7 @@ static int geopolyFindFunction(
 }
 
 
-static sqlite3_module geopolyModule = {
+sqlite3_module geopolyModule = {
   3,                          /* iVersion */
   geopolyCreate,              /* xCreate - create a table */
   geopolyConnect,             /* xConnect - connect to an existing table */
@@ -1792,9 +1792,9 @@ static sqlite3_module geopolyModule = {
   rtreeIntegrity              /* xIntegrity */
 };
 
-static int sqlite3_geopoly_init(sqlite3 *db){
+int sqlite3_geopoly_init(sqlite3 *db){
   int rc = SQLITE_OK;
-  static const struct {
+  const struct {
     void (*xFunc)(sqlite3_context*,int,sqlite3_value**);
     signed char nArg;
     unsigned char bPure;
@@ -1813,7 +1813,7 @@ static int sqlite3_geopoly_init(sqlite3 *db){
      { geopolyRegularFunc,       4, 1,    "geopoly_regular"          },
      { geopolyCcwFunc,           1, 1,    "geopoly_ccw"              },
   };
-  static const struct {
+  const struct {
     void (*xStep)(sqlite3_context*,int,sqlite3_value**);
     void (*xFinal)(sqlite3_context*);
     const char *zName;

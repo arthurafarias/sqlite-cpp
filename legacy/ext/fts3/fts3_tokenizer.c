@@ -34,7 +34,7 @@
 ** has been activated via a prior call to sqlite3_db_config(db,
 ** SQLITE_DBCONFIG_ENABLE_FTS3_TOKENIZER, 1, 0);
 */
-static int fts3TokenizerEnabled(sqlite3_context *context){
+int fts3TokenizerEnabled(sqlite3_context *context){
   sqlite3 *db = sqlite3_context_db_handle(context);
   int isEnabled = 0;
   sqlite3_db_config(db,SQLITE_DBCONFIG_ENABLE_FTS3_TOKENIZER,-1,&isEnabled);
@@ -61,7 +61,7 @@ static int fts3TokenizerEnabled(sqlite3_context *context){
 ** is a blob containing the pointer stored as the hash data corresponding
 ** to string <key-name> (after the hash-table is updated, if applicable).
 */
-static void fts3TokenizerFunc(
+void fts3TokenizerFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -112,7 +112,7 @@ static void fts3TokenizerFunc(
 }
 
 int sqlite3Fts3IsIdChar(char c){
-  static const char isFtsIdChar[] = {
+  const char isFtsIdChar[] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 0x */
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 1x */
       0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  /* 2x */
@@ -254,7 +254,7 @@ int sqlite3Fts3InitTokenizer(
 **   "{0 i I 1 dont don't 2 see see 3 how how}"
 **   
 */
-static void testFunc(
+void testFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
@@ -416,7 +416,7 @@ void sqlite3Fts3SimpleTokenizerModule(sqlite3_tokenizer_module const**ppModule);
 **     SELECT fts3_tokenizer_internal_test();
 **
 */
-static void intTestFunc(
+void intTestFunc(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
