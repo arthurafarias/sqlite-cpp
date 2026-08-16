@@ -7,6 +7,7 @@ extern C {
 #include "sqlite/Pgno.h"
 #include "sqlite/i64.h"
 #include "sqlite/u16.h"
+#include "sqlite/u8.h"
 
   typedef struct PgHdr PgHdr;
 

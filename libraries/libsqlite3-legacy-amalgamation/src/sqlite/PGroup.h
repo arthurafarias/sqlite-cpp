@@ -4,9 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/PgHdr1.h"
+  typedef struct sqlite3_mutex sqlite3_mutex;
 
   typedef struct PGroup PGroup;
   struct PGroup {

@@ -4,10 +4,6 @@ void codeDeferredSeek(WhereInfo *pWInfo, Index *pIdx, int iCur, int iIdxCur) {
   Parse *pParse = pWInfo->pParse;
   Vdbe *v = pParse->pVdbe;
 
-
-
-
-
   pWInfo->bDeferredSeek = 1;
   sqlite3VdbeAddOp3(v, 143, iIdxCur, 0, iCur);
   if ((pWInfo->wctrlFlags & (0x0020 | 0x1000)) && ((((pParse)->pToplevel ? (pParse)->pToplevel : (pParse))->writeMask) == 0)) {
@@ -117,7 +113,6 @@ __attribute__((noinline)) void sqlite3WhereRightJoinLoop(WhereInfo *pWInfo, int 
   memcpy(&pFrom->a[0], pTabItem, sizeof(SrcItem));
   pFrom->a[0].fg.jointype = 0;
 
-
   pParse->withinRJSubrtn++;
   pSubWInfo = sqlite3WhereBegin(pParse, pFrom, pSubWhere, 0, 0, 0, 0x1000, 0);
   if (pSubWInfo) {
@@ -151,7 +146,6 @@ __attribute__((noinline)) void sqlite3WhereRightJoinLoop(WhereInfo *pWInfo, int 
   sqlite3ExprDelete(pParse->db, pSubWhere);
   sqlite3VdbeExplainPop(pParse);
 
-
   pParse->withinRJSubrtn--;
 }
 
@@ -169,15 +163,10 @@ int sqlite3WhereOrderByLimitOptLabel(WhereInfo *pWInfo) {
   }
   pInner = &pWInfo->a[pWInfo->nLevel - 1];
 
-
   return pInner->pRJ ? pWInfo->iContinue : pInner->addrNxt;
 }
 
-int sqlite3WhereContinueLabel(WhereInfo *pWInfo) {
-
-
-  return pWInfo->iContinue;
-}
+int sqlite3WhereContinueLabel(WhereInfo *pWInfo) { return pWInfo->iContinue; }
 
 int sqlite3WhereBreakLabel(WhereInfo *pWInfo) { return pWInfo->iBreak; }
 
@@ -232,14 +221,6 @@ __attribute__((noinline)) void sqlite3ConstructBloomFilter(WhereInfo *pWInfo, in
   saved_pIdxPartExpr = pParse->pIdxPartExpr;
   pParse->pIdxEpr = 0;
   pParse->pIdxPartExpr = 0;
-
-
-
-
-
-
-
-
 
   addrOnce = sqlite3VdbeAddOp0(v, 15);
   ;
@@ -349,12 +330,7 @@ sqlite3_index_info *allocateIndexInfo(WhereInfo *pWInfo, WhereClause *pWC, Bitma
   ExprList *pOrderBy = pWInfo->pOrderBy;
   WhereClause *p;
 
-
   pTab = pSrc->pSTab;
-
-
-
-
 
   for (p = pWC, nTerm = 0; p; p = p->pOuter) {
     for (i = 0, pTerm = p->a; i < p->nTerm; i++, pTerm++) {
@@ -570,7 +546,6 @@ sqlite3_index_info *allocateIndexInfo(WhereInfo *pWInfo, WhereClause *pWC, Bitma
     }
   }
 
-
   pIdxInfo->nConstraint = j;
   for (i = j = 0; i < nOrderBy; i++) {
     Expr *pExpr = pOrderBy->a[i].pExpr;
@@ -637,7 +612,6 @@ __attribute__((noinline)) int wherePathMatchSubqueryOB(WhereInfo *pWInfo, WhereL
 
   pSubOB = pLoop->u.btree.pOrderBy;
 
-
   for (iOB = 0; ((((Bitmask)1) << (iOB)) & *pOBSat) != 0; iOB++) {
   }
   for (jSub = 0; jSub < pSubOB->nExpr && iOB < pOrderBy->nExpr; jSub++, iOB++) {
@@ -702,7 +676,6 @@ i8 wherePathSatisfiesOrderBy(WhereInfo *pWInfo, ExprList *pOrderBy, WherePath *p
   Bitmask obDone;
   Bitmask orderDistinctMask;
   Bitmask ready;
-
 
   if (nLoop && (((db)->dbOptFlags & (0x00000040)) != 0))
     return 0;
@@ -965,21 +938,11 @@ i8 wherePathSatisfiesOrderBy(WhereInfo *pWInfo, ExprList *pOrderBy, WherePath *p
   return -1;
 }
 
-int sqlite3WhereIsSorted(WhereInfo *pWInfo) {
-
-
-
-
-  return pWInfo->sorted;
-}
+int sqlite3WhereIsSorted(WhereInfo *pWInfo) { return pWInfo->sorted; }
 
 LogEst whereSortingCost(WhereInfo *pWInfo, LogEst nRow, int nOrderBy, int nSorted) {
 
   LogEst rSortCost, nCol;
-
-
-
-
 
   nCol = sqlite3LogEst((pWInfo->pSelect->pEList->nExpr + 59) / 30);
   rSortCost = nRow + nCol;
@@ -1126,8 +1089,6 @@ int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst) {
     mxChoice = computeMxChoice(pWInfo);
   }
 
-
-
   if (pWInfo->pOrderBy == 0 || nRowEst == 0) {
     nOrderBy = 0;
   } else {
@@ -1152,15 +1113,9 @@ int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst) {
     memset(aSortCost, 0, sizeof(LogEst) * nOrderBy);
   }
 
-
-
-
-
   aFrom[0].nRow = ((pParse->nQueryLoop) < (48) ? (pParse->nQueryLoop) : (48));
 
-
   nFrom = 1;
-
 
   if (nOrderBy) {
 
@@ -1284,10 +1239,7 @@ int wherePathSolver(WhereInfo *pWInfo, LogEst nRowEst) {
     return 1;
   }
 
-
   pFrom = aFrom;
-
-
 
   for (iLoop = 0; iLoop < nLoop; iLoop++) {
     WhereLevel *pLevel = pWInfo->a + iLoop;
@@ -1389,14 +1341,6 @@ __attribute__((noinline)) Bitmask whereOmitNoopJoin(WhereInfo *pWInfo, Bitmask n
   Bitmask tabUsed;
   int hasRightJoin;
 
-
-
-
-
-
-
-
-
   tabUsed = sqlite3WhereExprListUsage(&pWInfo->sMaskSet, pWInfo->pResultSet);
   if (pWInfo->pOrderBy) {
     tabUsed |= sqlite3WhereExprListUsage(&pWInfo->sMaskSet, pWInfo->pOrderBy);
@@ -1456,9 +1400,6 @@ __attribute__((noinline)) Bitmask whereOmitNoopJoin(WhereInfo *pWInfo, Bitmask n
 __attribute__((noinline)) void whereCheckIfBloomFilterIsUseful(const WhereInfo *pWInfo) {
   int i;
   LogEst nSearch = 0;
-
-
-
 
   for (i = 0; i < pWInfo->nLevel; i++) {
     WhereLoop *pLoop = pWInfo->a[i].pWLoop;
@@ -1670,7 +1611,6 @@ void sqlite3WhereEnd(WhereInfo *pWInfo) {
 
     ;
   }
-
 
   for (i = 0, pLevel = pWInfo->a; i < pWInfo->nLevel; i++, pLevel++) {
     int k, last;

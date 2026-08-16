@@ -46,7 +46,6 @@ PgHdr1 *pcache1AllocPage(PCache1 *pCache, int benignMalloc) {
   PgHdr1 *p = 0;
   void *pPg;
 
-
   if (pCache->pFree || (pCache->nPage == 0 && pcache1InitBulk(pCache))) {
 
     ((void)(0))
@@ -95,13 +94,10 @@ void pcache1ResizeHash(PCache1 *p) {
   u64 nNew;
   u32 i;
 
-
-
   nNew = 2 * (u64)p->nHash;
   if (nNew < 256) {
     nNew = 256;
   }
-
 
   if (p->nHash) {
     sqlite3BeginBenignMalloc();
@@ -110,7 +106,6 @@ void pcache1ResizeHash(PCache1 *p) {
   if (p->nHash) {
     sqlite3EndBenignMalloc();
   }
-
 
   if (apNew) {
     for (i = 0; i < p->nHash; i++) {
@@ -133,7 +128,6 @@ void pcache1EnforceMaxPage(PCache1 *pCache) {
   PGroup *pGroup = pCache->pGroup;
   PgHdr1 *p;
 
-
   while (pGroup->nPurgeable > pGroup->nMaxPage && (p = pGroup->lru.pLruPrev)->isAnchor == 0) {
 
     ((void)(0))
@@ -155,11 +149,6 @@ void pcache1EnforceMaxPage(PCache1 *pCache) {
 void pcache1TruncateUnsafe(PCache1 *pCache, unsigned int iLimit) {
 
   unsigned int h, iStop;
-
-
-
-
-
 
   if (pCache->iMaxKey - iLimit < pCache->nHash) {
 
@@ -194,8 +183,6 @@ void pcache1TruncateUnsafe(PCache1 *pCache, unsigned int iLimit) {
       break;
     h = (h + 1) % pCache->nHash;
   }
-
-
 }
 
 __attribute__((noinline)) PgHdr1 *pcache1FetchStage2(PCache1 *pCache, unsigned int iKey, int createFlag) {
@@ -203,11 +190,7 @@ __attribute__((noinline)) PgHdr1 *pcache1FetchStage2(PCache1 *pCache, unsigned i
   PGroup *pGroup = pCache->pGroup;
   PgHdr1 *pPage = 0;
 
-
   nPinned = pCache->nPage - pCache->nRecyclable;
-
-
-
 
   if (createFlag == 1 && (nPinned >= pGroup->mxPinned || nPinned >= pCache->n90pct || (pcache1UnderMemoryPressure(pCache) && pCache->nRecyclable < nPinned))) {
     return 0;
@@ -215,8 +198,6 @@ __attribute__((noinline)) PgHdr1 *pcache1FetchStage2(PCache1 *pCache, unsigned i
 
   if (pCache->nPage >= pCache->nHash)
     pcache1ResizeHash(pCache);
-
-
 
   if (pCache->bPurgeable && !pGroup->lru.pLruPrev->isAnchor && ((pCache->nPage + 1 >= pCache->nMax) || pcache1UnderMemoryPressure(pCache))) {
     PCache1 *pOther;

@@ -5,7 +5,9 @@ extern C {
 #endif
 
 #include "sqlite/FilePoint.h"
-#include "sqlite/_TypeIndex.h"
+  typedef struct FileChunk FileChunk;
+  typedef struct sqlite3_io_methods sqlite3_io_methods;
+  typedef struct sqlite3_vfs sqlite3_vfs;
 
   typedef struct MemJournal MemJournal;
 

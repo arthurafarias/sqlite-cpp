@@ -10,6 +10,8 @@ extern C {
 #include "sqlite/u8.h"
 
 #include "sqlite/BtLock.h"
+#include "sqlite/i64.h"
+  typedef struct Pager Pager;
 
   typedef struct BtCursor BtCursor;
   typedef struct Btree Btree;

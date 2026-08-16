@@ -3,7 +3,6 @@
 void sqlite3VdbeFrameMemDel(void *pArg) {
   VdbeFrame *pFrame = (VdbeFrame *)pArg;
 
-
   pFrame->pParent = pFrame->v->pDelFrame;
   pFrame->v->pDelFrame = pFrame;
 }
@@ -12,7 +11,6 @@ void sqlite3VdbeFrameDelete(VdbeFrame *p) {
   int i;
   Mem *aMem = ((Mem *)&((u8 *)p)[(((sizeof(VdbeFrame)) + 7) & ~7)]);
   VdbeCursor **apCsr = (VdbeCursor **)&aMem[p->nChildMem];
-
 
   for (i = 0; i < p->nChildCsr; i++) {
     if (apCsr[i])

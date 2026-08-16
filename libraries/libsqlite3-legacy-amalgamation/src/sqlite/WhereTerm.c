@@ -12,7 +12,6 @@ WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N) {
 
 int constraintCompatibleWithOuterJoin(const WhereTerm *pTerm, const SrcItem *pSrc) {
 
-
   ;
   ;
 
@@ -35,13 +34,11 @@ int termCanDriveIndex(const WhereTerm *pTerm, const SrcItem *pSrc, const Bitmask
   if ((pTerm->eOperator & (0x0002 | 0x0080)) == 0)
     return 0;
 
-
   if ((pSrc->fg.jointype & (0x08 | 0x40 | 0x10)) != 0 && !constraintCompatibleWithOuterJoin(pTerm, pSrc)) {
     return 0;
   }
   if ((pTerm->prereqRight & notReady) != 0)
     return 0;
-
 
   leftCol = pTerm->u.x.leftColumn;
   if (leftCol < 0)
@@ -69,8 +66,4 @@ LogEst whereRangeAdjust(WhereTerm *pTerm, LogEst nNew) {
   return nRet;
 }
 
-int isLimitTerm(WhereTerm *pTerm) {
-
-
-  return pTerm->eMatchOp >= 73 && pTerm->eMatchOp <= 74;
-}
+int isLimitTerm(WhereTerm *pTerm) { return pTerm->eMatchOp >= 73 && pTerm->eMatchOp <= 74; }

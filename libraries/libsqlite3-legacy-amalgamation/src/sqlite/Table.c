@@ -10,7 +10,6 @@ const char *sqlite3RowidAlias(Table *pTab) {
   const char *azOpt[] = {"_ROWID_", "ROWID", "OID"};
   int ii;
 
-
   for (ii = 0; ii < ((int)(sizeof(azOpt) / sizeof(azOpt[0]))); ii++) {
     if (sqlite3ColumnIndex(pTab, azOpt[ii]) < 0)
       return azOpt[ii];
@@ -51,7 +50,6 @@ i16 sqlite3StorageColumnToTable(Table *pTab, i16 iCol) {
 i16 sqlite3TableColumnToStorage(Table *pTab, i16 iCol) {
   int i;
   i16 n;
-
 
   if ((pTab->tabFlags & 0x00000020) == 0 || iCol < 0)
     return iCol;
@@ -133,7 +131,6 @@ int sqlite3ColumnIndex(Table *pTab, const char *zCol) {
   nCol = pTab->nCol;
 
   i = pTab->aHx[h % sizeof(pTab->aHx)];
-
 
   if (aCol[i].hName == h && sqlite3StrICmp(aCol[i].zCnName, zCol) == 0) {
     return i;

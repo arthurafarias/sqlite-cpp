@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/WhereClause.h"
 
   typedef struct WhereAndInfo WhereAndInfo;

@@ -4,12 +4,6 @@ int sqlite3ThreadCreate(SQLiteThread **ppThread, void *(*xTask)(void *), void *p
   SQLiteThread *p;
   int rc;
 
-
-
-
-
-
-
   *ppThread = 0;
   p = sqlite3Malloc(sizeof(*p));
   if (p == 0)
@@ -33,7 +27,6 @@ int sqlite3ThreadCreate(SQLiteThread **ppThread, void *(*xTask)(void *), void *p
 
 int sqlite3ThreadJoin(SQLiteThread *p, void **ppOut) {
   int rc;
-
 
   if ((p == 0))
     return 7;

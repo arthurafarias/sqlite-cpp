@@ -2,7 +2,6 @@
 
 RecordCompare sqlite3VdbeFindCompare(UnpackedRecord *p) {
 
-
   if (p->pKeyInfo->nAllField <= 13) {
     int flags = p->aMem[0].flags;
     if (p->pKeyInfo->aSortFlags[0]) {

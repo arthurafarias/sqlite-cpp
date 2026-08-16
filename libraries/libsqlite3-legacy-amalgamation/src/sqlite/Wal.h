@@ -4,9 +4,19 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/Pgno.h"
 #include "sqlite/WalIndexHdr.h"
+#include "sqlite/ht_slot.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct PgHdr PgHdr;
+  typedef struct WalCkptInfo WalCkptInfo;
+  typedef struct WalHashLoc WalHashLoc;
+  typedef struct WalIterator WalIterator;
+  typedef struct sqlite3 sqlite3;
+  typedef struct sqlite3_vfs sqlite3_vfs;
 
   typedef struct Wal Wal;
 

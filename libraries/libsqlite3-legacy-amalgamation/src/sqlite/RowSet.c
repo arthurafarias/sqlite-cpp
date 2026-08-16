@@ -22,7 +22,6 @@ void sqlite3RowSetDelete(void *pArg) {
 
 struct RowSetEntry *rowSetEntryAlloc(RowSet *p) {
 
-
   if (p->nFresh == 0) {
 
     struct RowSetChunk *pNew;
@@ -43,8 +42,6 @@ void sqlite3RowSetInsert(RowSet *p, i64 rowid) {
   struct RowSetEntry *pEntry;
   struct RowSetEntry *pLast;
 
-
-
   pEntry = rowSetEntryAlloc(p);
   if (pEntry == 0)
     return;
@@ -64,10 +61,6 @@ void sqlite3RowSetInsert(RowSet *p, i64 rowid) {
 }
 
 int sqlite3RowSetNext(RowSet *p, i64 *pRowid) {
-
-
-
-
 
   if ((p->rsFlags & 0x02) == 0) {
     if ((p->rsFlags & 0x01) == 0) {
@@ -91,8 +84,6 @@ int sqlite3RowSetNext(RowSet *p, i64 *pRowid) {
 
 int sqlite3RowSetTest(RowSet *pRowSet, int iBatch, sqlite3_int64 iRowid) {
   struct RowSetEntry *p, *pTree;
-
-
 
   if (iBatch != pRowSet->iBatch) {
     p = pRowSet->pEntry;

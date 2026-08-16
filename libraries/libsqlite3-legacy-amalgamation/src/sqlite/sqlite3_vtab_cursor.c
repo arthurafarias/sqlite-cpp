@@ -13,7 +13,6 @@ int pragmaVtabNext(sqlite3_vtab_cursor *pVtabCursor) {
 
   pCsr->iRowid++;
 
-
   if (100 != sqlite3_step(pCsr->pPragma)) {
     rc = sqlite3_finalize(pCsr->pPragma);
     pCsr->pPragma = 0;

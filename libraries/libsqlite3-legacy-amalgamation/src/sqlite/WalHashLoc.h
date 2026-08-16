@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/ht_slot.h"
+#include "sqlite/u32.h"
   typedef struct WalHashLoc WalHashLoc;
   typedef struct WalHashLoc WalHashLoc;
   struct WalHashLoc {

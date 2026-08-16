@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u64.h"
   typedef struct RCStr RCStr;
 
   struct RCStr {

@@ -4,8 +4,11 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
+  typedef struct sqlite3_mutex sqlite3_mutex;
+  typedef struct unixInodeInfo unixInodeInfo;
+  typedef struct unixShm unixShm;
   typedef struct unixShmNode unixShmNode;
 
   struct unixShmNode {

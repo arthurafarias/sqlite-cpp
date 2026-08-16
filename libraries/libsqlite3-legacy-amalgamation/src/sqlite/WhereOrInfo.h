@@ -6,7 +6,6 @@ extern C {
 
 #include "sqlite/BitMask.h"
 #include "sqlite/WhereClause.h"
-#include "sqlite/_TypeIndex.h"
 
   typedef struct WhereOrInfo WhereOrInfo;
   struct WhereOrInfo {

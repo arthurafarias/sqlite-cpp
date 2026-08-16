@@ -4,7 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include <pthread.h>
 
   typedef struct SQLiteThread SQLiteThread;

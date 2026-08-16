@@ -4,8 +4,11 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct ExprList ExprList;
+  typedef struct Select Select;
+  typedef struct SrcList SrcList;
+  typedef struct Table Table;
+  typedef struct Window Window;
   typedef struct WindowRewrite WindowRewrite;
   struct WindowRewrite {
     Window *pWin;

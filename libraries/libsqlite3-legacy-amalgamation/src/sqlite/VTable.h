@@ -4,8 +4,10 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/u8.h"
+  typedef struct Module Module;
+  typedef struct sqlite3 sqlite3;
+  typedef struct sqlite3_vtab sqlite3_vtab;
 
   typedef struct VTable VTable;
 

@@ -23,7 +23,6 @@ int btreePayloadToLocal(MemPage *pPage, i64 nPayload) {
   int maxLocal;
   maxLocal = pPage->maxLocal;
 
-
   if (nPayload <= maxLocal) {
     return (int)nPayload;
   } else {
@@ -36,12 +35,6 @@ int btreePayloadToLocal(MemPage *pPage, i64 nPayload) {
 }
 
 void btreeParseCellPtrNoPayload(MemPage *pPage, u8 *pCell, CellInfo *pInfo) {
-
-
-
-
-
-
 
   (void)(pPage);
 
@@ -56,13 +49,6 @@ void btreeParseCellPtr(MemPage *pPage, u8 *pCell, CellInfo *pInfo) {
   u8 *pIter;
   u64 nPayload;
   u64 iKey;
-
-
-
-
-
-
-
 
   pIter = pCell;
 
@@ -115,7 +101,6 @@ void btreeParseCellPtr(MemPage *pPage, u8 *pCell, CellInfo *pInfo) {
   ;
   ;
 
-
   if (nPayload <= pPage->maxLocal) {
 
     pInfo->nSize = (u16)nPayload + (u16)(pIter - pCell);
@@ -130,11 +115,6 @@ void btreeParseCellPtr(MemPage *pPage, u8 *pCell, CellInfo *pInfo) {
 void btreeParseCellPtrIndex(MemPage *pPage, u8 *pCell, CellInfo *pInfo) {
   u8 *pIter;
   u32 nPayload;
-
-
-
-
-
 
   pIter = pCell + pPage->childPtrSize;
   nPayload = *pIter;
@@ -151,9 +131,6 @@ void btreeParseCellPtrIndex(MemPage *pPage, u8 *pCell, CellInfo *pInfo) {
   pInfo->pPayload = pIter;
   ;
   ;
-
-
-
 
   if (nPayload <= pPage->maxLocal) {
 
@@ -172,7 +149,6 @@ u16 cellSizePtr(MemPage *pPage, u8 *pCell) {
   u8 *pIter = pCell + 4;
   u8 *pEnd;
   u32 nSize;
-
 
   nSize = *pIter;
   if (nSize >= 0x80) {
@@ -202,7 +178,6 @@ u16 cellSizePtr(MemPage *pPage, u8 *pCell) {
     nSize += 4 + (u16)(pIter - pCell);
   }
 
-
   return (u16)nSize;
 }
 
@@ -210,7 +185,6 @@ u16 cellSizePtrIdxLeaf(MemPage *pPage, u8 *pCell) {
   u8 *pIter = pCell;
   u8 *pEnd;
   u32 nSize;
-
 
   nSize = *pIter;
   if (nSize >= 0x80) {
@@ -238,7 +212,6 @@ u16 cellSizePtrIdxLeaf(MemPage *pPage, u8 *pCell) {
     nSize += 4 + (u16)(pIter - pCell);
   }
 
-
   return (u16)nSize;
 }
 
@@ -248,11 +221,9 @@ u16 cellSizePtrNoPayload(MemPage *pPage, u8 *pCell) {
 
   (void)(pPage);
 
-
   pEnd = pIter + 9;
   while ((*pIter++) & 0x80 && pIter < pEnd)
     ;
-
 
   return (u16)(pIter - pCell);
 }
@@ -291,7 +262,6 @@ u16 cellSizePtrTableLeaf(MemPage *pPage, u8 *pCell) {
     nSize += 4 + (u16)(pIter - pCell);
   }
 
-
   return (u16)nSize;
 }
 
@@ -299,7 +269,6 @@ void ptrmapPutOvflPtr(MemPage *pPage, MemPage *pSrc, u8 *pCell, int *pRC) {
   CellInfo info;
   if (*pRC)
     return;
-
 
   pPage->xParseCell(pPage, pCell, &info);
   if (info.nLocal < info.nPayload) {
@@ -330,20 +299,10 @@ int defragmentPage(MemPage *pPage, int nMaxFrag) {
   int iCellLast;
   int iCellStart;
 
-
-
-
-
-
-
-
-
-
   data = pPage->aData;
   hdr = pPage->hdrOffset;
   cellOffset = pPage->cellOffset;
   nCell = pPage->nCell;
-
 
   iCellFirst = cellOffset + 2 * nCell;
   usableSize = pPage->pBt->usableSize;
@@ -436,17 +395,14 @@ int defragmentPage(MemPage *pPage, int nMaxFrag) {
 
 defragment_out:
 
-
   if (data[hdr + 7] + cbrk - iCellFirst != pPage->nFree) {
     return sqlite3CorruptError(74947);
   }
-
 
   ((&data[hdr + 5])[0] = (u8)((cbrk) >> 8), (&data[hdr + 5])[1] = (u8)(cbrk));
   data[hdr + 1] = 0;
   data[hdr + 2] = 0;
   memset(&data[iCellFirst], 0, cbrk - iCellFirst);
-
 
   return 0;
 }
@@ -460,7 +416,6 @@ u8 *pageFindSlot(MemPage *pPg, int nByte, int *pRc) {
   int x;
   int maxPC = pPg->pBt->usableSize - nByte;
   int size;
-
 
   while (pc <= maxPC) {
 
@@ -513,24 +468,7 @@ __attribute__((always_inline)) inline int allocateSpace(MemPage *pPage, int nByt
   u8 *pTmp;
   int gap;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   gap = pPage->cellOffset + 2 * pPage->nCell;
-
-
 
   pTmp = &data[hdr + 5];
   top = ((pTmp)[0] << 8 | (pTmp)[1]);
@@ -589,7 +527,6 @@ __attribute__((always_inline)) inline int allocateSpace(MemPage *pPage, int nByt
   top -= nByte;
   ((&data[hdr + 5])[0] = (u8)((top) >> 8), (&data[hdr + 5])[1] = (u8)(top));
 
-
   *pIdx = top;
   return 0;
 }
@@ -604,20 +541,6 @@ int freeSpace(MemPage *pPage, int iStart, int iSize) {
   int iEnd = iStart + iSize;
   unsigned char *data = pPage->aData;
   u8 *pTmp;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   hdr = pPage->hdrOffset;
   iPtr = hdr + 1;
@@ -697,9 +620,6 @@ int freeSpace(MemPage *pPage, int iStart, int iSize) {
 int decodeFlags(MemPage *pPage, int flagByte) {
   BtShared *pBt;
 
-
-
-
   pBt = pPage->pBt;
   pPage->max1bytePayload = pBt->max1bytePayload;
   if (flagByte >= (0x02 | 0x08)) {
@@ -763,22 +683,6 @@ int btreeComputeFreeSpace(MemPage *pPage) {
   int top;
   int iCellFirst;
   int iCellLast;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   usableSize = pPage->pBt->usableSize;
   hdr = pPage->hdrOffset;
@@ -866,27 +770,12 @@ int btreeInitPage(MemPage *pPage) {
   u8 *data;
   BtShared *pBt;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   pBt = pPage->pBt;
   data = pPage->aData + pPage->hdrOffset;
 
   if (decodeFlags(pPage, data[0])) {
     return sqlite3CorruptError(75460);
   }
-
 
   pPage->maskPage = (u16)(pBt->pageSize - 1);
   pPage->nOverflow = 0;
@@ -901,7 +790,6 @@ int btreeInitPage(MemPage *pPage) {
     return sqlite3CorruptError(75474);
   };
 
-
   pPage->nFree = -1;
   pPage->isInit = 1;
   if (pBt->db->flags & 0x00200000) {
@@ -915,15 +803,6 @@ void zeroPage(MemPage *pPage, int flags) {
   BtShared *pBt = pPage->pBt;
   int hdr = pPage->hdrOffset;
   int first;
-
-
-
-
-
-
-
-
-
 
   if (pBt->btsFlags & 0x000c) {
     memset(&data[hdr], 0, pBt->usableSize - hdr);
@@ -941,50 +820,19 @@ void zeroPage(MemPage *pPage, int flags) {
   pPage->aDataOfst = &data[pPage->childPtrSize];
   pPage->nOverflow = 0;
 
-
   pPage->maskPage = (u16)(pBt->pageSize - 1);
   pPage->nCell = 0;
   pPage->isInit = 1;
 }
 
-void releasePageNotNull(MemPage *pPage) {
-
-
-
-
-
-
-
-
-
-
-
-
-  sqlite3PagerUnrefNotNull(pPage->pDbPage);
-}
+void releasePageNotNull(MemPage *pPage) { sqlite3PagerUnrefNotNull(pPage->pDbPage); }
 
 void releasePage(MemPage *pPage) {
   if (pPage)
     releasePageNotNull(pPage);
 }
 
-void releasePageOne(MemPage *pPage) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  sqlite3PagerUnrefPageOne(pPage->pDbPage);
-}
+void releasePageOne(MemPage *pPage) { sqlite3PagerUnrefPageOne(pPage->pDbPage); }
 
 int setChildPtrmaps(MemPage *pPage) {
   int i;
@@ -992,7 +840,6 @@ int setChildPtrmaps(MemPage *pPage) {
   int rc;
   BtShared *pBt = pPage->pBt;
   Pgno pgno = pPage->pgno;
-
 
   rc = pPage->isInit ? 0 : btreeInitPage(pPage);
   if (rc != 0)
@@ -1019,9 +866,6 @@ int setChildPtrmaps(MemPage *pPage) {
 }
 
 int modifyPagePointer(MemPage *pPage, Pgno iFrom, Pgno iTo, u8 eType) {
-
-
-
 
   if (eType == 4) {
 
@@ -1110,9 +954,6 @@ __attribute__((noinline)) int clearCellOverflow(MemPage *pPage, unsigned char *p
   int nOvfl;
   u32 ovflPageSize;
 
-
-
-
   ;
   ;
   if (pCell + pInfo->nSize > pPage->aDataEnd) {
@@ -1122,10 +963,8 @@ __attribute__((noinline)) int clearCellOverflow(MemPage *pPage, unsigned char *p
   ovflPgno = sqlite3Get4byte(pCell + pInfo->nSize - 4);
   pBt = pPage->pBt;
 
-
   ovflPageSize = pBt->usableSize - 4;
   nOvfl = (pInfo->nPayload - pInfo->nLocal + ovflPageSize - 1) / ovflPageSize;
-
 
   while (nOvfl--) {
     Pgno iNext = 0;
@@ -1168,10 +1007,6 @@ int fillInCell(MemPage *pPage, unsigned char *pCell, const BtreePayload *pX, int
   BtShared *pBt;
   Pgno pgnoOvfl;
   int nHeader;
-
-
-
-
 
   nHeader = pPage->childPtrSize;
   if (pPage->intKey) {
@@ -1312,20 +1147,8 @@ void dropCell(MemPage *pPage, int idx, int sz, int *pRC) {
   if (*pRC)
     return;
 
-
-
-
-
-
-
-
-
-
-
-
   data = pPage->aData;
   ptr = &pPage->aCellIdx[2 * idx];
-
 
   pc = ((ptr)[0] << 8 | (ptr)[1]);
   hdr = pPage->hdrOffset;
@@ -1358,23 +1181,6 @@ int insertCell(MemPage *pPage, int i, u8 *pCell, int sz, u8 *pTemp, Pgno iChild)
   int j;
   u8 *data;
   u8 *pIns;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   if (pPage->nOverflow || sz + 2 > pPage->nFree) {
     if (pTemp) {
@@ -1460,23 +1266,6 @@ int insertCellFast(MemPage *pPage, int i, u8 *pCell, int sz) {
   u8 *data;
   u8 *pIns;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   if (sz + 2 > pPage->nFree) {
     j = pPage->nOverflow++;
 
@@ -1556,10 +1345,8 @@ int pageInsertArray(MemPage *pPg, u8 *pBegin, u8 **ppData, u8 *pCellptr, int iFi
   int k;
   u8 *pEnd;
 
-
   if (iEnd <= iFirst)
     return 0;
-
 
   for (k = 0; pCArray->ixNx[k] <= i; k++) {
   }
@@ -1672,7 +1459,6 @@ int editPage(MemPage *pPg, int iOld, int iNew, int nNew, CellArray *pCArray) {
   int iOldEnd = iOld + pPg->nCell + pPg->nOverflow;
   int iNewEnd = iNew + nNew;
 
-
   if (iOld < iNew) {
     int nShift = pageFreeArray(pPg, iOld, iNew - iOld, pCArray);
     if ((nShift > nCell))
@@ -1726,12 +1512,10 @@ int editPage(MemPage *pPg, int iOld, int iNew, int nNew, CellArray *pCArray) {
     }
   }
 
-
   pCellptr = &pPg->aCellIdx[nCell * 2];
   if (pageInsertArray(pPg, pBegin, &pData, pCellptr, iNew + nCell, nNew - nCell, pCArray)) {
     goto editpage_fail;
   }
-
 
   pPg->nCell = (u16)nNew;
   pPg->nOverflow = 0;
@@ -1754,18 +1538,8 @@ int balance_quick(MemPage *pParent, MemPage *pPage, u8 *pSpace) {
   int rc;
   Pgno pgnoNew;
 
-
-
-
-
-
-
   if (pPage->nCell == 0)
     return sqlite3CorruptError(81242);
-
-
-
-
 
   rc = allocateBtreePage(pBt, &pNew, &pgnoNew, 0, 0);
 
@@ -1897,24 +1671,13 @@ int balance_nonroot(MemPage *pParent, int iParentIdx, u8 *aOvflSpace, int isRoot
 
   memset(abDone, 0, sizeof(abDone));
 
-
   memset(&b, 0, sizeof(b) - sizeof(b.ixNx[0]));
   b.ixNx[3 * 2 - 1] = 0x7fffffff;
   pBt = pParent->pBt;
 
-
-
-
-
-
-
-
-
   if (!aOvflSpace) {
     return 7;
   }
-
-
 
   i = pParent->nOverflow + pParent->nCell;
   if (i < 2) {
@@ -1986,7 +1749,6 @@ int balance_nonroot(MemPage *pParent, int iParentIdx, u8 *aOvflSpace, int isRoot
 
   szScratch = nMaxCells * sizeof(u8 *) + nMaxCells * sizeof(u16) + pBt->pageSize;
 
-
   b.apCell = sqlite3DbMallocRaw(0, szScratch);
   if (b.apCell == 0) {
     rc = 7;
@@ -1994,8 +1756,6 @@ int balance_nonroot(MemPage *pParent, int iParentIdx, u8 *aOvflSpace, int isRoot
   }
   b.szCell = (u16 *)&b.apCell[nMaxCells];
   aSpace1 = (u8 *)&b.szCell[nMaxCells];
-
-
 
   b.pRef = apOld[0];
   leafCorrection = b.pRef->leaf * 4;
@@ -2217,8 +1977,6 @@ int balance_nonroot(MemPage *pParent, int iParentIdx, u8 *aOvflSpace, int isRoot
     }
   }
 
-
-
   ;
 
   pageFlags = apOld[0]->aData[0];
@@ -2289,11 +2047,6 @@ int balance_nonroot(MemPage *pParent, int iParentIdx, u8 *aOvflSpace, int isRoot
   }
 
   ;
-
-
-
-
-
 
   sqlite3Put4byte(pRight, apNew[nNew - 1]->pgno);
 
@@ -2470,12 +2223,6 @@ int balance_nonroot(MemPage *pParent, int iParentIdx, u8 *aOvflSpace, int isRoot
     }
   }
 
-
-
-
-
-
-
   if (isRoot && pParent->nCell == 0 && pParent->hdrOffset <= apNew[0]->nFree) {
 
     ((void)(0))
@@ -2496,8 +2243,6 @@ int balance_nonroot(MemPage *pParent, int iParentIdx, u8 *aOvflSpace, int isRoot
       ptrmapPut(pBt, key, 5, apNew[i]->pgno, &rc);
     }
   }
-
-
 
   ;
 
@@ -2523,10 +2268,6 @@ int balance_deeper(MemPage *pRoot, MemPage **ppChild) {
   Pgno pgnoChild = 0;
   BtShared *pBt = pRoot->pBt;
 
-
-
-
-
   rc = sqlite3PagerWrite(pRoot->pDbPage);
   if (rc == 0) {
     rc = allocateBtreePage(pBt, &pChild, &pgnoChild, pRoot->pgno, 0);
@@ -2540,12 +2281,6 @@ int balance_deeper(MemPage *pRoot, MemPage **ppChild) {
     releasePage(pChild);
     return rc;
   }
-
-
-
-
-
-
 
   ;
 

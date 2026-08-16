@@ -4,9 +4,13 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Mem.h"
+#include "sqlite/RecordCompare.h"
+#include "sqlite/i64.h"
+#include "sqlite/i8.h"
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
+  typedef struct KeyInfo KeyInfo;
 
   typedef struct UnpackedRecord UnpackedRecord;
 

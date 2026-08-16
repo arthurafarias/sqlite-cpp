@@ -4,8 +4,16 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/BitMask.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/u16.h"
+  typedef struct Index Index;
+  typedef struct SrcItem SrcItem;
+  typedef struct WhereClause WhereClause;
+  typedef struct WhereInfo WhereInfo;
+  typedef struct WhereLoop WhereLoop;
+  typedef struct WhereOrSet WhereOrSet;
+  typedef struct sqlite3_index_info sqlite3_index_info;
   typedef struct WhereLoopBuilder WhereLoopBuilder;
 
   struct WhereLoopBuilder {

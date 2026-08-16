@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
   typedef struct Fts5PhraseIter Fts5PhraseIter;
 
   struct Fts5PhraseIter {

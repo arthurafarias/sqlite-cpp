@@ -133,7 +133,7 @@ int getDigits(const char *zDate, const char *zFormat, ...) {
   int cnt = 0;
   char nextC;
 
-  __builtin_c23_va_start(
+  va_start(
 
       ap, zFormat
 
@@ -164,7 +164,7 @@ int getDigits(const char *zDate, const char *zFormat, ...) {
     }
     *
 
-        __builtin_va_arg(
+        va_arg(
 
             ap
 
@@ -181,7 +181,7 @@ int getDigits(const char *zDate, const char *zFormat, ...) {
   } while (nextC);
 end_getDigits:
 
-  __builtin_va_end(
+  va_end(
 
       ap
 
@@ -327,10 +327,6 @@ void mallocWithAlarm(int n, void **pp) {
   void *p;
   int nFull;
 
-
-
-
-
   nFull = sqlite3Config.m.xRoundup(n);
 
   sqlite3StatusHighwater(5, n);
@@ -408,7 +404,6 @@ u64 powerOfTen(int p, u32 *pLo) {
   u64 s, x;
   u32 lo;
 
-
   if (p < 0) {
     if (p == (-1)) {
       *pLo = aScaleLo[13];
@@ -482,7 +477,6 @@ int __attribute__((noinline)) putVarint64(unsigned char *p, u64 v) {
     v >>= 7;
   } while (v != 0);
   buf[0] &= 0x7f;
-
 
   for (i = 0, j = n - 1; j >= 0; j--, i++) {
     p[i] = buf[j];
@@ -640,17 +634,9 @@ int robust_open(const char *z, int f, mode_t m) {
   return fd;
 }
 
-void unixEnterMutex(void) {
+void unixEnterMutex(void) { sqlite3_mutex_enter(unixBigLock); }
 
-
-  sqlite3_mutex_enter(unixBigLock);
-}
-
-void unixLeaveMutex(void) {
-
-
-  sqlite3_mutex_leave(unixBigLock);
-}
+void unixLeaveMutex(void) { sqlite3_mutex_leave(unixBigLock); }
 
 int robust_ftruncate(int h, sqlite3_int64 sz) {
   int rc;
@@ -670,7 +656,6 @@ int robust_ftruncate(int h, sqlite3_int64 sz) {
 }
 
 int sqliteErrorFromPosixError(int posixError, int sqliteIOErr) {
-
 
   switch (posixError) {
   case
@@ -737,11 +722,6 @@ int unixLogErrorAtLine(int errcode, const char *zFunc, const char *zPath, int iL
 
 int seekAndWriteFd(int fd, i64 iOff, const void *pBuf, int nBuf, int *piErrno) {
   int rc = 0;
-
-
-
-
-
 
   nBuf &= 0x1ffff;
   ;
@@ -1000,7 +980,6 @@ int findCreateFileMode(const char *zPath, int flags, mode_t *pMode, uid_t *pUid,
 void *pcache1Alloc(int nByte) {
   void *p = 0;
 
-
   if (nByte <= (pcache1_g).szSlot) {
     sqlite3_mutex_enter((pcache1_g).mutex);
     p = (PgHdr1 *)(pcache1_g).pFree;
@@ -1073,7 +1052,6 @@ void pcache1Free(void *p) {
 int pcache1Init(void *NotUsed) {
   (void)(NotUsed);
 
-
   memset(&(pcache1_g), 0, sizeof((pcache1_g)));
 
   (pcache1_g).separateCache = sqlite3Config.pPage == 0 || sqlite3Config.bCoreMutex > 0;
@@ -1096,7 +1074,6 @@ int pcache1Init(void *NotUsed) {
 void pcache1Shutdown(void *NotUsed) {
   (void)(NotUsed);
 
-
   memset(&(pcache1_g), 0, sizeof((pcache1_g)));
 }
 
@@ -1104,10 +1081,6 @@ sqlite3_pcache *pcache1Create(int szPage, int szExtra, int bPurgeable) {
   PCache1 *pCache;
   PGroup *pGroup;
   i64 sz;
-
-
-
-
 
   sz = sizeof(PCache1) + sizeof(PGroup) * (pcache1_g).separateCache;
   pCache = (PCache1 *)sqlite3MallocZero(sz);
@@ -1206,7 +1179,6 @@ int serialGet7(const unsigned char *buf, Mem *pMem) {
   u32 y = (((u32)(buf + 4)[0] << 24) | ((buf + 4)[1] << 16) | ((buf + 4)[2] << 8) | (buf + 4)[3]);
   x = (x << 32) + y;
 
-
   ;
   memcpy(&pMem->u.r, &x, sizeof(x));
   if ((((x) & (((u64)0x7ff) << 52)) == (((u64)0x7ff) << 52) && ((x) & ((((u64)1) << 52) - 1)) != 0)) {
@@ -1228,7 +1200,6 @@ int isAllZero(const char *z, int n) {
 
 int invokeValueDestructor(const void *p, void (*xDel)(void *), sqlite3_context *pCtx) {
 
-
   if (xDel == 0) {
 
   } else if (xDel == ((sqlite3_destructor_type)-1)) {
@@ -1236,7 +1207,6 @@ int invokeValueDestructor(const void *p, void (*xDel)(void *), sqlite3_context *
   } else {
     xDel((void *)p);
   }
-
 
   sqlite3_result_error_toobig(pCtx);
 
@@ -1273,9 +1243,6 @@ i64 findNextHostParameter(const char *zSql, i64 *pnToken) {
 
 __attribute__((noinline)) int isValidSchemaTableName(const char *zTab, Table *pTab, const char *zDb) {
   const char *zLegacy;
-
-
-
 
   if (sqlite3_strnicmp(zTab, "sqlite_", 7) != 0)
     return 0;
@@ -1360,8 +1327,6 @@ void decodeIntArray(char *zIntArray, int nOut, tRowcnt *aOut, LogEst *aLog, Inde
   int i;
   tRowcnt v;
 
-
-
   for (i = 0; *z && i < nOut; i++) {
     v = 0;
     while ((c = z[0]) >= '0' && c <= '9') {
@@ -1382,7 +1347,6 @@ void decodeIntArray(char *zIntArray, int nOut, tRowcnt *aOut, LogEst *aLog, Inde
     if (*z == ' ')
       z++;
   }
-
 
   {
 
@@ -1413,7 +1377,6 @@ int analysisLoader(void *pData, int argc, char **argv, char **NotUsed) {
   Index *pIndex;
   Table *pTable;
   const char *z;
-
 
   (void)(NotUsed), (void)(argc);
 
@@ -1501,7 +1464,6 @@ int hasColumn(const i16 *aiCol, int nCol, int x) {
 
 int collationMatch(const char *zColl, Index *pIndex) {
   int i;
-
 
   for (i = 0; i < pIndex->nColumn; i++) {
     const char *z = pIndex->azColl[i];
@@ -1694,7 +1656,6 @@ double radToDeg(double x) {
 
 int percentIsInfinity(double r) {
   sqlite3_uint64 u;
-
 
   memcpy(&u, &r, sizeof(u));
   return ((u >> 52) & 0x7ff) == 0x7ff;
@@ -2023,19 +1984,6 @@ int inAnyUsingClause(const char *zName, SrcItem *pBase, int N) {
 
 int allowedOp(int op) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   if (op > 58)
     return 0;
   if (op >= 54)
@@ -2045,7 +1993,6 @@ int allowedOp(int op) {
 
 u16 operatorMask(int op) {
   u16 c;
-
 
   if (op >= 54) {
 
@@ -2064,21 +2011,6 @@ u16 operatorMask(int op) {
         ;
     c = 0x0080;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   return c;
 }
@@ -2181,8 +2113,6 @@ unsigned short int yy_find_shift_action(unsigned short int iLookAhead, unsigned 
   if (stateno > 599)
     return stateno;
 
-
-
   do {
     i = yy_shift_ofst[stateno];
 
@@ -2253,16 +2183,9 @@ unsigned short int yy_find_shift_action(unsigned short int iLookAhead, unsigned 
 unsigned short int yy_find_reduce_action(unsigned short int stateno, unsigned short int iLookAhead) {
   int i;
 
-
-
   i = yy_reduce_ofst[stateno];
 
-
   i += iLookAhead;
-
-
-
-
 
   return yy_action[i];
 }
@@ -2309,7 +2232,6 @@ const unsigned char aKWCode[148] = {
 i64 keywordCode(const char *z, i64 n, int *pType) {
   i64 i, j;
   const char *zKW;
-
 
   i = ((sqlite3UpperToLower[(unsigned char)z[0]] * 4) ^ (sqlite3UpperToLower[(unsigned char)z[n - 1]] * 3) ^ n * 1) % 127;
   for (i = (int)aKWHash[i]; i > 0; i = aKWNext[i]) {
@@ -2526,7 +2448,6 @@ int binCollFunc(void *NotUsed, int nKey1, const void *pKey1, int nKey2, const vo
   (void)(NotUsed);
   n = nKey1 < nKey2 ? nKey1 : nKey2;
 
-
   rc = memcmp(pKey1, pKey2, n);
   if (rc == 0) {
     rc = nKey1 - nKey2;
@@ -2561,7 +2482,6 @@ int sqliteDefaultBusyCallback(void *ptr, int count) {
   sqlite3 *db = (sqlite3 *)ptr;
   int tmout = db->busyTimeout;
   int delay, prior;
-
 
   if (count < ((int)(sizeof(delays) / sizeof(delays[0])))) {
     delay = delays[count];
@@ -2652,7 +2572,6 @@ int openDatabase(const char *zFilename, sqlite3 **ppDb, unsigned int flags, cons
   db->lookaside.sz = 0;
   db->nFpDigit = 17;
 
-
   memcpy(db->aLimit, aHardLimit, sizeof(db->aLimit));
   db->aLimit[11] = 0;
   db->autoCommit = 1;
@@ -2687,11 +2606,6 @@ int openDatabase(const char *zFilename, sqlite3 **ppDb, unsigned int flags, cons
 
   db->openFlags = flags;
 
-
-
-
-
-
   ;
   ;
   ;
@@ -2709,8 +2623,6 @@ int openDatabase(const char *zFilename, sqlite3 **ppDb, unsigned int flags, cons
     sqlite3_free(zErrMsg);
     goto opendb_out;
   }
-
-
 
   rc = sqlite3BtreeOpen(db->pVfs, zOpen, db, &db->aDb[0].pBt, 0, flags | 0x00000100);
   if (rc != 0) {
@@ -2771,7 +2683,6 @@ opendb_out:
   }
   rc = sqlite3_errcode(db);
 
-
   if ((rc & 0xff) == 7) {
     sqlite3_close(db);
     db = 0;
@@ -2824,7 +2735,7 @@ void jsonPrintf(int N, JsonString *p, const char *zFormat, ...) {
   if ((p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N))
     return;
 
-  __builtin_c23_va_start(
+  va_start(
 
       ap, zFormat
 
@@ -2833,7 +2744,7 @@ void jsonPrintf(int N, JsonString *p, const char *zFormat, ...) {
       ;
   sqlite3_vsnprintf(N, p->zBuf + p->nUsed, zFormat, ap);
 
-  __builtin_va_end(
+  va_end(
 
       ap
 
@@ -3017,7 +2928,6 @@ int jsonBlobOverwrite(u8 *aOut, const u8 *aIns, u32 nIns, u32 d) {
   }
   }
 
-
   aOut[0] = (aIns[0] & 0x0f) | aType[i - 2];
   memcpy(&aOut[i], &aIns[szHdr], nIns - szHdr);
   szPayload = nIns - szHdr;
@@ -3028,7 +2938,6 @@ int jsonBlobOverwrite(u8 *aOut, const u8 *aIns, u32 nIns, u32 d) {
       break;
     szPayload >>= 8;
   }
-
 
   return 1;
 }
@@ -3060,9 +2969,6 @@ u32 jsonBytesToBypass(const char *z, u32 n) {
 }
 
 u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut) {
-
-
-
 
   if (n < 2) {
     *piOut = 0x99999;
@@ -3155,7 +3061,6 @@ u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut) {
 
 __attribute__((noinline)) int jsonLabelCompareEscaped(const char *zLeft, u32 nLeft, int rawLeft, const char *zRight, u32 nRight, int rawRight) {
   u32 cLeft, cRight;
-
 
   while (1) {
     if (nLeft == 0) {

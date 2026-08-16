@@ -25,9 +25,6 @@ int whereLoopCheaperProperSubset(const WhereLoop *pX, const WhereLoop *pY) {
   if (pX->rRun > pY->rRun && pX->nOut > pY->nOut)
     return 0;
 
-
-
-
   if (pX->u.btree.nEq < pY->u.btree.nEq && pX->u.btree.pIndex == pY->u.btree.pIndex && pX->nSkip == 0 && pY->nSkip == 0) {
     return 1;
   }

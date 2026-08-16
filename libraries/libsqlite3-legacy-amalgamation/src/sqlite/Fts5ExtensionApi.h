@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Fts5Context.h"
 #include "sqlite/Fts5PhraseIter.h"
 #include "sqlite/sqlite3_int64.h"

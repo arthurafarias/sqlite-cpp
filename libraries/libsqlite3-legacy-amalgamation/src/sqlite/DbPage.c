@@ -4,7 +4,6 @@ void sqlite3PagerRef(DbPage *pPg) { sqlite3PcacheRef(pPg); }
 
 void sqlite3PagerUnrefNotNull(DbPage *pPg) {
 
-
   if (pPg->flags & 0x020) {
 
     ((void)(0))
@@ -14,8 +13,6 @@ void sqlite3PagerUnrefNotNull(DbPage *pPg) {
   } else {
     sqlite3PcacheRelease(pPg);
   }
-
-
 }
 
 void sqlite3PagerUnref(DbPage *pPg) {
@@ -26,11 +23,6 @@ void sqlite3PagerUnref(DbPage *pPg) {
 void sqlite3PagerUnrefPageOne(DbPage *pPg) {
   Pager *pPager;
 
-
-
-
-
-
   pPager = pPg->pPager;
   sqlite3PcacheRelease(pPg);
   pagerUnlockIfUnused(pPager);
@@ -40,16 +32,11 @@ int sqlite3PagerPageRefcount(DbPage *pPage) { return sqlite3PcachePageRefcount(p
 
 void sqlite3PagerRekey(DbPage *pPg, Pgno iNew, u16 flags) {
 
-
   pPg->flags = flags;
   sqlite3PcacheMove(pPg, iNew);
 }
 
-void *sqlite3PagerGetData(DbPage *pPg) {
-
-
-  return pPg->pData;
-}
+void *sqlite3PagerGetData(DbPage *pPg) { return pPg->pData; }
 
 void *sqlite3PagerGetExtra(DbPage *pPg) { return pPg->pExtra; }
 
@@ -63,14 +50,12 @@ MemPage *btreePageFromDbPage(DbPage *pDbPage, Pgno pgno, BtShared *pBt) {
     pPage->hdrOffset = pgno == 1 ? 100 : 0;
   }
 
-
   return pPage;
 }
 
 void pageReinit(DbPage *pData) {
   MemPage *pPage;
   pPage = (MemPage *)sqlite3PagerGetExtra(pData);
-
 
   if (pPage->isInit) {
 

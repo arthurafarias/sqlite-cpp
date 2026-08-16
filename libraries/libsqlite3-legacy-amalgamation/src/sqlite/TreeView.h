@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u8.h"
   typedef struct TreeView TreeView;
   struct TreeView {
     int iLevel;    /* Which level of the tree we are on */

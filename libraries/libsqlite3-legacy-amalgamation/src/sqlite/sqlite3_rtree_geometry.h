@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/sqlite3_rtree_dbl.h"
 
   typedef struct sqlite3_rtree_geometry sqlite3_rtree_geometry;

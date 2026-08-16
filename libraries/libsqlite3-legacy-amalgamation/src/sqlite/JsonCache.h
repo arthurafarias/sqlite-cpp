@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct JsonParse JsonParse;
+  typedef struct sqlite3 sqlite3;
   typedef struct JsonCache JsonCache;
   struct JsonCache {
     sqlite3 *db;

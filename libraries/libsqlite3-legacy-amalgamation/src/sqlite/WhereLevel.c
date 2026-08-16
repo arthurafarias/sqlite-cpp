@@ -3,7 +3,6 @@
 void disableTerm(WhereLevel *pLevel, WhereTerm *pTerm) {
   int nLoop = 0;
 
-
   while ((pTerm->wtFlags & 0x0004) == 0 && (pLevel->iLeftJoin == 0 || (((pTerm->pExpr)->flags & (u32)(0x000001)) != 0)) && (pLevel->notReady & pTerm->prereqAll) == 0) {
     if (nLoop && (pTerm->wtFlags & 0x0400) != 0) {
       pTerm->wtFlags |= 0x0200;

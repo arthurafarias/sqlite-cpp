@@ -4,8 +4,10 @@
 extern C {
 #endif
 
+#include "sqlite/BitMask.h"
+#include "sqlite/LogEst.h"
 #include "sqlite/WhereOrCost.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/u16.h"
 
   typedef struct WhereOrSet WhereOrSet;
   struct WhereOrSet {

@@ -9,18 +9,6 @@ int backupOnePage(sqlite3_backup *p, Pgno iSrcPg, const u8 *zSrcData, int bUpdat
   int rc = 0;
   i64 iOff;
 
-
-
-
-
-
-
-
-
-
-
-
-
   for (iOff = iEnd - (i64)nSrcPgsz; rc == 0 && iOff < iEnd; iOff += nDestPgsz) {
     DbPage *pDestPg = 0;
     Pgno iDest = (Pgno)(iOff / nDestPgsz) + 1;
@@ -45,7 +33,6 @@ int backupOnePage(sqlite3_backup *p, Pgno iSrcPg, const u8 *zSrcData, int bUpdat
 
 void attachBackupObject(sqlite3_backup *p) {
   sqlite3_backup **pp;
-
 
   pp = sqlite3PagerBackupPtr(sqlite3BtreePager(p->pSrc));
   p->pNext = *pp;
@@ -320,7 +307,6 @@ int sqlite3_backup_remaining(sqlite3_backup *p) { return p->nRemaining; }
 int sqlite3_backup_pagecount(sqlite3_backup *p) { return p->nPagecount; }
 
 __attribute__((noinline)) void backupUpdate(sqlite3_backup *p, Pgno iPage, const u8 *aData) {
-
 
   do {
 

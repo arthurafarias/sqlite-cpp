@@ -48,11 +48,6 @@ void computeJD(DateTime *p) {
 
 void computeFloor(DateTime *p) {
 
-
-
-
-
-
   if (p->D <= 28) {
     p->nFloor = 0;
   } else if ((1 << p->M) & 0x15aa) {
@@ -182,11 +177,6 @@ void autoAdjustDate(DateTime *p) {
 int daysAfterJan01(DateTime *pDate) {
   DateTime jan01 = *pDate;
 
-
-
-
-
-
   jan01.validJD = 0;
   jan01.M = 1;
   jan01.D = 1;
@@ -194,14 +184,6 @@ int daysAfterJan01(DateTime *pDate) {
   return (int)((pDate->iJD - jan01.iJD + 43200000) / 86400000);
 }
 
-int daysAfterMonday(DateTime *pDate) {
+int daysAfterMonday(DateTime *pDate) { return (int)((pDate->iJD + 43200000) / 86400000) % 7; }
 
-
-  return (int)((pDate->iJD + 43200000) / 86400000) % 7;
-}
-
-int daysAfterSunday(DateTime *pDate) {
-
-
-  return (int)((pDate->iJD + 129600000) / 86400000) % 7;
-}
+int daysAfterSunday(DateTime *pDate) { return (int)((pDate->iJD + 129600000) / 86400000) % 7; }

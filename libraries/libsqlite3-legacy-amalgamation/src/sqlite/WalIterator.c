@@ -7,7 +7,6 @@ int walIteratorNext(WalIterator *p, u32 *piPage, u32 *piFrame) {
 
   iMin = p->iPrior;
 
-
   for (i = p->nSegment - 1; i >= 0; i--) {
     struct WalSegment *pSegment = &p->aSegment[i];
     while (pSegment->iNext < pSegment->nEntry) {

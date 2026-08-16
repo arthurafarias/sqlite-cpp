@@ -4,10 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/u16.h"
 #include "sqlite/u8.h"
+  typedef struct MemPage MemPage;
 
   typedef struct CellArray CellArray;
   struct CellArray {

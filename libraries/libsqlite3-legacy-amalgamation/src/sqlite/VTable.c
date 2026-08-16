@@ -5,12 +5,6 @@ void sqlite3VtabLock(VTable *pVTab) { pVTab->nRef++; }
 void sqlite3VtabUnlock(VTable *pVTab) {
   sqlite3 *db = pVTab->db;
 
-
-
-
-
-
-
   pVTab->nRef--;
   if (pVTab->nRef == 0) {
     sqlite3_vtab *p = pVTab->pVtab;

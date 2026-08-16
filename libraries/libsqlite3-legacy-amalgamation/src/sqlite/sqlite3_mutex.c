@@ -7,7 +7,6 @@ sqlite3_mutex *sqlite3_mutex_alloc(int id) {
   if (id > 1 && sqlite3MutexInit())
     return 0;
 
-
   return sqlite3Config.mutex.xMutexAlloc(id);
 }
 
@@ -75,25 +74,16 @@ void noopMutexLeave(sqlite3_mutex *p) {
 
 void pthreadMutexFree(sqlite3_mutex *p) {
 
-
-
   {
     pthread_mutex_destroy(&p->mutex);
     sqlite3_free(p);
   }
 }
 
-void pthreadMutexEnter(sqlite3_mutex *p) {
-
-
-
-  pthread_mutex_lock(&p->mutex);
-}
+void pthreadMutexEnter(sqlite3_mutex *p) { pthread_mutex_lock(&p->mutex); }
 
 int pthreadMutexTry(sqlite3_mutex *p) {
   int rc;
-
-
 
   if (pthread_mutex_trylock(&p->mutex) == 0) {
 
@@ -105,13 +95,6 @@ int pthreadMutexTry(sqlite3_mutex *p) {
   return rc;
 }
 
-void pthreadMutexLeave(sqlite3_mutex *p) {
-
-
-
-
-
-  pthread_mutex_unlock(&p->mutex);
-}
+void pthreadMutexLeave(sqlite3_mutex *p) { pthread_mutex_unlock(&p->mutex); }
 
 sqlite3_mutex *unixBigLock = 0;

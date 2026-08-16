@@ -4,14 +4,32 @@
 extern C {
 #endif
 
+#include "sqlite/BitMask.h"
 #include "sqlite/Mem.h"
 #include "sqlite/Op.h"
+#include "sqlite/VList.h"
 #include "sqlite/VdbeOpList.h"
+#include "sqlite/bft.h"
+#include "sqlite/i64.h"
 #include "sqlite/sqlite3_value.h"
 #include "sqlite/u16.h"
+#include "sqlite/u32.h"
 #include "sqlite/u8.h"
 #include "sqlite/yDbMask.h"
 #include "sqlite/ynVar.h"
+  typedef struct AuxData AuxData;
+  typedef struct FuncDef FuncDef;
+  typedef struct MergeEngine MergeEngine;
+  typedef struct PragmaName PragmaName;
+  typedef struct SubProgram SubProgram;
+  typedef struct Table Table;
+  typedef struct UnpackedRecord UnpackedRecord;
+  typedef struct VdbeCursor VdbeCursor;
+  typedef struct VdbeFrame VdbeFrame;
+  typedef struct WhereInfo WhereInfo;
+  typedef struct WhereLevel WhereLevel;
+  typedef struct WhereTerm WhereTerm;
+  typedef struct sqlite3_vtab sqlite3_vtab;
 
   typedef struct Vdbe Vdbe;
   typedef struct Parse Parse;

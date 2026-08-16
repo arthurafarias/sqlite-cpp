@@ -8,6 +8,12 @@ extern "C" {
 
 #include "sqlite/CollSeq.h"
 #include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+typedef struct FuncDef FuncDef;
+typedef struct VdbeOp Op;
+typedef struct sqlite3 sqlite3;
 
 typedef struct sqlite3_value Mem;
 

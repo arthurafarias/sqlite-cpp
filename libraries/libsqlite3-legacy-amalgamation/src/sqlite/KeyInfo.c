@@ -4,7 +4,6 @@ UnpackedRecord *sqlite3VdbeAllocUnpackedRecord(KeyInfo *pKeyInfo) {
   UnpackedRecord *p;
   u64 nByte;
 
-
   nByte = (sizeof(UnpackedRecord)) + sizeof(Mem) * (pKeyInfo->nKeyField + 1);
   p = (UnpackedRecord *)sqlite3DbMallocRaw(pKeyInfo->db, nByte);
   if (!p)

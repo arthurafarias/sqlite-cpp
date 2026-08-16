@@ -4,8 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
   typedef struct WalIndexHdr WalIndexHdr;
   struct WalIndexHdr {
     u32 iVersion;

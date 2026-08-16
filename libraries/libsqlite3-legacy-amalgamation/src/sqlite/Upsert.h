@@ -4,8 +4,11 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u8.h"
+  typedef struct Expr Expr;
+  typedef struct ExprList ExprList;
+  typedef struct Index Index;
+  typedef struct SrcList SrcList;
   typedef struct Upsert Upsert;
 
   struct Upsert {

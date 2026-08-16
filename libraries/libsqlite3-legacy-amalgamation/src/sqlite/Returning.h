@@ -4,11 +4,12 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
   typedef struct Returning Returning;
 
 #include "sqlite/Trigger.h"
+#include "sqlite/TriggerStep.h"
+  typedef struct ExprList ExprList;
+  typedef struct Parse Parse;
 
   struct Returning {
     Parse *pParse;

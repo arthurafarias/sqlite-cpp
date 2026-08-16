@@ -4,8 +4,11 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/i16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct FuncDestructor FuncDestructor;
+  typedef struct sqlite3_context sqlite3_context;
   typedef struct FuncDef FuncDef;
   typedef struct sqlite3_value sqlite3_value;
 

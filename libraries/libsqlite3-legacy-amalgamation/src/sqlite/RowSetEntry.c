@@ -6,7 +6,6 @@ struct RowSetEntry *rowSetEntryMerge(struct RowSetEntry *pA, struct RowSetEntry 
 
   pTail = &head;
 
-
   for (;;) {
 
     ((void)(0))
@@ -62,7 +61,6 @@ struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn) {
 
 void rowSetTreeToList(struct RowSetEntry *pIn, struct RowSetEntry **ppFirst, struct RowSetEntry **ppLast) {
 
-
   if (pIn->pLeft) {
     struct RowSetEntry *p;
     rowSetTreeToList(pIn->pLeft, ppFirst, &p);
@@ -75,8 +73,6 @@ void rowSetTreeToList(struct RowSetEntry *pIn, struct RowSetEntry **ppFirst, str
   } else {
     *ppLast = pIn;
   }
-
-
 }
 
 struct RowSetEntry *rowSetNDeepTree(struct RowSetEntry **ppList, int iDepth) {
@@ -109,7 +105,6 @@ struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList) {
   int iDepth;
   struct RowSetEntry *p;
   struct RowSetEntry *pLeft;
-
 
   p = pList;
   pList = p->pRight;

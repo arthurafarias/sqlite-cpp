@@ -5,7 +5,10 @@ extern C {
 #endif
 
 #include "sqlite/SrcItem.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/u32.h"
+  typedef struct Expr Expr;
+  typedef struct WhereClause WhereClause;
+  typedef struct WhereTerm WhereTerm;
 
   typedef struct SrcList SrcList;
 

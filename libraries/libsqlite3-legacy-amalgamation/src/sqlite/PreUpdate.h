@@ -6,7 +6,14 @@ extern C {
 
 #include "sqlite/KeyInfo.h"
 #include "sqlite/Mem.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/i64.h"
+#include "sqlite/u8.h"
+  typedef struct Index Index;
+  typedef struct Table Table;
+  typedef struct UnpackedRecord UnpackedRecord;
+  typedef struct Vdbe Vdbe;
+  typedef struct VdbeCursor VdbeCursor;
+  typedef struct sqlite3_value sqlite3_value;
 
   typedef struct PreUpdate PreUpdate;
 

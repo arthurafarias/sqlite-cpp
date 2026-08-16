@@ -7,11 +7,11 @@ extern C {
 
 #include "sqlite/TriggerStep.h"
 #include "sqlite/u8.h"
+  typedef struct Table Table;
 
   typedef struct Expr Expr;
   typedef struct IdList IdList;
   typedef struct Schema Schema;
-  typedef struct TrigerStep TrigerStep;
   typedef struct Trigger Trigger;
 
   struct Trigger {

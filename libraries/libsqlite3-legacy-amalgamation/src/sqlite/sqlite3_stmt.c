@@ -75,7 +75,6 @@ int sqlite3_clear_bindings(sqlite3_stmt *pStmt) {
     p->aVar[i].flags = 0x0001;
   }
 
-
   if (p->expmask) {
     p->expired = 1;
   }
@@ -145,7 +144,6 @@ Mem *columnMem(sqlite3_stmt *pStmt, int i) {
   pVm = (Vdbe *)pStmt;
   if (pVm == 0)
     return (Mem *)columnNullValue();
-
 
   sqlite3_mutex_enter(pVm->db->mutex);
   if (pVm->pResultRow != 0 && i < pVm->nResColumn && i >= 0) {
@@ -252,7 +250,6 @@ const void *columnName(sqlite3_stmt *pStmt, int N, int useUtf16, int useType) {
   p = (Vdbe *)pStmt;
   db = p->db;
 
-
   sqlite3_mutex_enter(db->mutex);
 
   if (p->explain) {
@@ -347,11 +344,7 @@ int bindText(sqlite3_stmt *pStmt, int i, const void *zData, i64 nData, void (*xD
 
 int sqlite3_bind_blob(sqlite3_stmt *pStmt, int i, const void *zData, int nData, void (*xDel)(void *)) { return bindText(pStmt, i, zData, nData, xDel, 0); }
 
-int sqlite3_bind_blob64(sqlite3_stmt *pStmt, int i, const void *zData, sqlite3_uint64 nData, void (*xDel)(void *)) {
-
-
-  return bindText(pStmt, i, zData, nData, xDel, 0);
-}
+int sqlite3_bind_blob64(sqlite3_stmt *pStmt, int i, const void *zData, sqlite3_uint64 nData, void (*xDel)(void *)) { return bindText(pStmt, i, zData, nData, xDel, 0); }
 
 int sqlite3_bind_double(sqlite3_stmt *pStmt, int i, double rValue) {
   int rc;
@@ -419,7 +412,6 @@ int sqlite3_bind_pointer(sqlite3_stmt *pStmt, int i, void *pPtr, const char *zPT
 int sqlite3_bind_text(sqlite3_stmt *pStmt, int i, const char *zData, int nData, void (*xDel)(void *)) { return bindText(pStmt, i, zData, nData, xDel, 1); }
 
 int sqlite3_bind_text64(sqlite3_stmt *pStmt, int i, const char *zData, sqlite3_uint64 nData, void (*xDel)(void *), unsigned char enc) {
-
 
   if (enc != 1 && enc != 16) {
     if (enc == 4)
@@ -521,9 +513,6 @@ int sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt) {
   Vdbe *pTo = (Vdbe *)pToStmt;
   int i;
 
-
-
-
   sqlite3_mutex_enter(pTo->db->mutex);
   for (i = 0; i < pFrom->nVar; i++) {
     sqlite3VdbeMemMove(&pTo->aVar[i], &pFrom->aVar[i]);
@@ -539,11 +528,9 @@ int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt) {
     return 1;
   }
 
-
   if (pTo->expmask) {
     pTo->expired = 1;
   }
-
 
   if (pFrom->expmask) {
     pFrom->expired = 1;

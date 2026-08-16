@@ -2,7 +2,6 @@
 
 Index *indexIteratorFirst(IndexIterator *pIter, int *pIx) {
 
-
   if (pIter->eType) {
     *pIx = pIter->u.ax.aIdx[0].ix;
     return pIter->u.ax.aIdx[0].p;

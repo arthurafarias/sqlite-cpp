@@ -28,9 +28,6 @@ int jsonSkipLabel(JsonEachCursor *p) {
 
 void jsonAppendPathName(JsonEachCursor *p) {
 
-
-
-
   if (p->eType == 11) {
     jsonPrintf(30, &p->path, "[%lld]", p->aParent[p->nParent - 1].iKey);
   } else {

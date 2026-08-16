@@ -5,7 +5,7 @@ extern C {
 #endif
 
 #include "sqlite/BitMask.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/LogEst.h"
 
   typedef struct WhereOrCost WhereOrCost;
   struct WhereOrCost {

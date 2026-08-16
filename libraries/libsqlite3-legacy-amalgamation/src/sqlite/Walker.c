@@ -194,10 +194,7 @@ int resolveExprStep(Walker *pWalker, Expr *pExpr) {
 
   pNC = pWalker->u.pNC;
 
-
   pParse = pNC->pParse;
-
-
 
   switch (pExpr->op) {
 
@@ -647,7 +644,6 @@ int resolveExprStep(Walker *pWalker, Expr *pExpr) {
   }
   }
 
-
   return pParse->nErr ? 2 : 0;
 }
 
@@ -670,7 +666,6 @@ int resolveSelectStep(Walker *pWalker, Select *p) {
   ExprList *pGroupBy;
   Select *pLeftmost;
   sqlite3 *db;
-
 
   if (p->selFlags & 0x0000004) {
     return 1;
@@ -925,7 +920,6 @@ __attribute__((noinline)) int exprNodeIsConstantFunction(Walker *pWalker, Expr *
   FuncDef *pDef;
   sqlite3 *db;
 
-
   if ((((pExpr)->flags & (u32)(0x010000)) != 0) || (pList = pExpr->x.pList) == 0) {
     ;
     n = 0;
@@ -945,8 +939,6 @@ __attribute__((noinline)) int exprNodeIsConstantFunction(Walker *pWalker, Expr *
 }
 
 int exprNodeIsConstant(Walker *pWalker, Expr *pExpr) {
-
-
 
   if (pWalker->eCode == 2 && (((pExpr)->flags & (u32)(0x000001)) != 0)) {
     pWalker->eCode = 0;
@@ -1012,9 +1004,6 @@ int exprNodeIsConstant(Walker *pWalker, Expr *pExpr) {
 
 int exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect) {
 
-
-
-
   if ((pSelect->selFlags & 0x20000000) != 0) {
     pWalker->eCode = 0;
     return 2;
@@ -1054,7 +1043,6 @@ int exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr) {
   if (pExpr->op != 172) {
     return 1;
   }
-
 
   db = pWalker->pParse->db;
   n = (pExpr->x.pList) ? pExpr->x.pList->nExpr : 0;
@@ -1279,9 +1267,6 @@ int analyzeAggregate(Walker *pWalker, Expr *pExpr) {
   Parse *pParse = pNC->pParse;
   SrcList *pSrcList = pNC->pSrcList;
   AggInfo *pAggInfo = pNC->uNC.pAggInfo;
-
-
-
 
   switch (pExpr->op) {
   default: {
@@ -1758,13 +1743,6 @@ int renumberCursorsCb(Walker *pWalker, Expr *pExpr) {
 int propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr) {
   WhereConst *pConst = pWalker->u.pConst;
 
-
-
-
-
-
-
-
   if (pConst->bHasAffBlob) {
     if ((pExpr->op >= 54 && pExpr->op <= 58) || pExpr->op == 45) {
       propagateConstantExprRewriteOne(pConst, pExpr->pLeft, 0);
@@ -1816,7 +1794,6 @@ int convertCompoundSelectToSubquery(Walker *pWalker, Select *p) {
   memset(&dummy, 0, sizeof(dummy));
   pNewSrc = sqlite3SrcListAppendFromTerm(pParse, 0, 0, 0, &dummy, pNew, 0);
 
-
   if (pParse->nErr) {
     sqlite3SrcListDelete(db, pNewSrc);
     return 2;
@@ -1837,9 +1814,7 @@ int convertCompoundSelectToSubquery(Walker *pWalker, Select *p) {
 
   p->selFlags &= ~(u32)0x0000100;
 
-
   p->selFlags |= 0x0010000;
-
 
   pNew->pPrior->pNext = pNew;
   pNew->pLimit = 0;
@@ -1875,7 +1850,6 @@ int selectExpander(Walker *pWalker, Select *p) {
   if (db->mallocFailed) {
     return 2;
   }
-
 
   if ((selFlags & 0x0000040) != 0) {
     return 1;
@@ -2010,7 +1984,6 @@ int selectExpander(Walker *pWalker, Select *p) {
       return 2;
     }
   }
-
 
   if (pParse->nErr || sqlite3ProcessJoin(pParse, p)) {
     return 2;
@@ -2285,7 +2258,6 @@ void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p) {
   p->selFlags |= 0x0000080;
   pParse = pWalker->pParse;
 
-
   pTabList = p->pSrc;
   for (i = 0, pFrom = pTabList->a; i < pTabList->nSrc; i++, pFrom++) {
     Table *pTab = pFrom->pSTab;
@@ -2316,7 +2288,6 @@ int aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr) {
   pAggInfo = pExpr->pAggInfo;
   if ((pExpr->iAgg >= pAggInfo->nColumn))
     return 0;
-
 
   pCol = &pAggInfo->aCol[pExpr->iAgg];
   pExpr->op = 170;
@@ -2418,9 +2389,7 @@ int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect) {
   int i;
   SrcList *pSrc;
 
-
   pSrc = pSelect->pSrc;
-
 
   for (i = 0; i < pSrc->nSrc; i++) {
     if (pSrc->a[i].pSTab == pWalker->u.pTab) {
@@ -2504,10 +2473,6 @@ int exprNodeIsDeterministic(Walker *pWalker, Expr *pExpr) {
 int selectWindowRewriteExprCb(Walker *pWalker, Expr *pExpr) {
   struct WindowRewrite *p = pWalker->u.pRewrite;
   Parse *pParse = pWalker->pParse;
-
-
-
-
 
   if (p->pSubSelect) {
     if (pExpr->op != 168) {

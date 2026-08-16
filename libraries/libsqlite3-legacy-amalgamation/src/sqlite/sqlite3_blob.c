@@ -97,7 +97,6 @@ int sqlite3_blob_reopen(sqlite3_blob *pBlob, sqlite3_int64 iRow) {
 
   rc = sqlite3ApiExit(db, rc);
 
-
   sqlite3_mutex_leave(db->mutex);
   return rc;
 }

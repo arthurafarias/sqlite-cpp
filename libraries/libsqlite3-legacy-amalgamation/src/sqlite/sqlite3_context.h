@@ -4,14 +4,24 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Mem.h"
 
+#include "sqlite/i64.h"
 #include "sqlite/sqlite3_destructor_type.h"
 #include "sqlite/sqlite3_int64.h"
 #include "sqlite/sqlite3_uint64.h"
 #include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct CollSeq CollSeq;
+  typedef struct DateTime DateTime;
+  typedef struct FuncDef FuncDef;
+  typedef struct JsonParse JsonParse;
+  typedef struct Parse Parse;
+  typedef struct RenameCtx RenameCtx;
+  typedef struct sqlite3_str StrAccum;
+  typedef struct Vdbe Vdbe;
 
   typedef struct sqlite3_context sqlite3_context;
   typedef struct sqlite3 sqlite3;

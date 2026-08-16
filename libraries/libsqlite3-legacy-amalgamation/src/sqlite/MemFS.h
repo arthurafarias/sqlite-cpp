@@ -1,4 +1,5 @@
 #include "sqlite/_All.h"
+typedef struct MemStore MemStore;
 
 typedef struct sqlite3_vfs MemVfs;
 typedef struct MemFile MemFile;

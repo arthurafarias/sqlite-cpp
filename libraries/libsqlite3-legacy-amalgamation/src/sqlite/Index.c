@@ -4,9 +4,6 @@ int sqlite3TableColumnToIndex(Index *pIdx, int iCol) {
   int i;
   i16 iCol16;
 
-
-
-
   iCol16 = iCol;
   for (i = 0; i < pIdx->nColumn; i++) {
     if (iCol16 == pIdx->aiColumn[i]) {
@@ -34,18 +31,8 @@ void estimateIndexWidth(Index *pIdx) {
 int isDupColumn(Index *pIdx, int nKey, Index *pPk, int iCol) {
   int i, j;
 
-
-
-
-
-
-
-
-
-
   ;
   j = pPk->aiColumn[iCol];
-
 
   for (i = 0; i < nKey; i++) {
 
@@ -73,8 +60,6 @@ void recomputeColumnsNotIndexed(Index *pIdx) {
     }
   }
   pIdx->colNotIdxed = ~m;
-
-
 }
 
 void sqlite3DefaultRowEst(Index *pIdx) {
@@ -85,10 +70,7 @@ void sqlite3DefaultRowEst(Index *pIdx) {
   int nCopy = ((((int)(sizeof(aVal) / sizeof(aVal[0])))) < (pIdx->nKeyCol) ? (((int)(sizeof(aVal) / sizeof(aVal[0])))) : (pIdx->nKeyCol));
   int i;
 
-
-
   x = pIdx->pTable->nRowLogEst;
-
 
   if (x < 99) {
     pIdx->pTable->nRowLogEst = x = 99;
@@ -111,16 +93,12 @@ void sqlite3DefaultRowEst(Index *pIdx) {
         ;
   }
 
-
   if (((pIdx)->onError != 0))
     a[pIdx->nKeyCol] = 0;
 }
 
 int xferCompatibleIndex(Index *pDest, Index *pSrc) {
   int i;
-
-
-
 
   if (pDest->nKeyCol != pSrc->nKeyCol || pDest->nColumn != pSrc->nColumn) {
     return 0;
@@ -167,15 +145,9 @@ int sqlite3IndexHasDuplicateRootPage(Index *pIndex) {
 int indexColumnIsBeingUpdated(Index *pIdx, int iCol, int *aXRef, int chngRowid) {
   i16 iIdxCol = pIdx->aiColumn[iCol];
 
-
   if (iIdxCol >= 0) {
     return aXRef[iIdxCol] >= 0;
   }
-
-
-
-
-
 
   return sqlite3ExprReferencesUpdatedColumn(pIdx->aColExpr->a[iCol].pExpr, aXRef, chngRowid);
 }
@@ -197,9 +169,6 @@ const char *explainIndexColumnName(Index *pIdx, int i) {
 
 int indexColumnNotNull(Index *pIdx, int iCol) {
   int j;
-
-
-
 
   j = pIdx->aiColumn[iCol];
   if (j >= 0) {

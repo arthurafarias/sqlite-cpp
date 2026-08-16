@@ -2,9 +2,6 @@
 
 void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol) {
 
-
-
-
   if (pItem->fg.isNestedFrom) {
     ExprList *pResults;
 
@@ -41,17 +38,13 @@ int disableUnusedSubqueryResultColumns(SrcItem *pItem) {
   int nChng = 0;
   Bitmask colUsed;
 
-
   if (pItem->fg.isCorrelated || pItem->fg.isCte) {
     return 0;
   }
 
-
   pTab = pItem->pSTab;
 
-
   pSub = pItem->u4.pSubq->pSelect;
-
 
   for (pX = pSub; pX; pX = pX->pPrior) {
     if ((pX->selFlags & (0x0000001 | 0x0000008)) != 0) {

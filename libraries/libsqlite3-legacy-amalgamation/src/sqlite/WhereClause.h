@@ -4,8 +4,17 @@
 extern C {
 #endif
 
+#include "sqlite/BitMask.h"
+#include "sqlite/LogEst.h"
 #include "sqlite/WhereTerm.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct Expr Expr;
+  typedef struct Index Index;
+  typedef struct Select Select;
+  typedef struct WhereInfo WhereInfo;
+  typedef struct WhereLoop WhereLoop;
   typedef struct WhereClause WhereClause;
   struct WhereClause {
     WhereInfo *pWInfo;

@@ -4,8 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/u8.h"
+  typedef struct Btree Btree;
+  typedef struct Schema Schema;
 
   typedef struct Db Db;
 

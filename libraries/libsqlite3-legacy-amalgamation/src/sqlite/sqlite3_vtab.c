@@ -91,7 +91,6 @@ int jsonEachBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo) {
   int idxMask = 0;
   const struct sqlite3_index_constraint *pConstraint;
 
-
   (void)(tab);
   aIdx[0] = aIdx[1] = -1;
   pConstraint = pIdxInfo->aConstraint;

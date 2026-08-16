@@ -6,10 +6,15 @@ extern C {
 #endif
 
 #include "sqlite/AggInfo.h"
+#include "sqlite/BitMask.h"
 #include "sqlite/i16.h"
+#include "sqlite/u16.h"
 #include "sqlite/u32.h"
 #include "sqlite/u8.h"
 #include "sqlite/ynVar.h"
+  typedef struct Parse Parse;
+  typedef struct Table Table;
+  typedef struct WhereClause WhereClause;
 
   typedef struct ExprList ExprList;
   typedef struct Select Select;

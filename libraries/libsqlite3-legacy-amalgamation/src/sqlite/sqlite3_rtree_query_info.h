@@ -4,7 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/sqlite3_int64.h"
 #include "sqlite/sqlite3_rtree_dbl.h"
 #include "sqlite/sqlite3_value.h"

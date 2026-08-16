@@ -2,9 +2,6 @@
 
 void sqlite3DequoteExpr(Expr *p) {
 
-
-
-
   p->flags |= p->u.zToken[0] == '"' ? 0x4000000 | 0x000080 : 0x4000000;
   sqlite3Dequote(p->u.zToken);
 }
@@ -25,11 +22,7 @@ Bitmask sqlite3ExprColUsed(Expr *pExpr) {
 
   n = pExpr->iColumn;
 
-
   pExTab = pExpr->y.pTab;
-
-
-
 
   if ((pExTab->tabFlags & 0x00000060) != 0 && (pExTab->aCol[n].colFlags & 0x0060) != 0) {
     ;
@@ -49,9 +42,7 @@ int exprProbability(Expr *p) {
   if (p->op != 154)
     return -1;
 
-
   sqlite3AtoF(p->u.zToken, &r);
-
 
   if (r > 1.0)
     return -1;
@@ -270,9 +261,6 @@ char sqlite3CompareAffinity(const Expr *pExpr, char aff2) {
 char comparisonAffinity(const Expr *pExpr) {
   char aff;
 
-
-
-
   aff = sqlite3ExprAffinity(pExpr->pLeft);
   if (pExpr->pRight) {
     aff = sqlite3CompareAffinity(pExpr->pRight, aff);
@@ -325,7 +313,6 @@ int sqlite3ExprVectorSize(const Expr *pExpr) {
 }
 
 Expr *sqlite3VectorFieldSubexpr(Expr *pVector, int i) {
-
 
   if (sqlite3ExprIsVector(pVector)) {
 
@@ -414,11 +401,6 @@ int exprStructSize(const Expr *p) {
 int dupedExprStructSize(const Expr *p, int flags) {
   int nSize;
 
-
-
-
-
-
   if (0 == flags || (((p)->flags & (u32)(0x020000)) != 0)) {
     nSize = sizeof(Expr);
   } else {
@@ -482,20 +464,17 @@ int dupedExprNodeSize(const Expr *p, int flags) {
 int dupedExprSize(const Expr *p) {
   int nByte;
 
-
   nByte = dupedExprNodeSize(p, 0x0001);
   if (p->pLeft)
     nByte += dupedExprSize(p->pLeft);
   if (p->pRight)
     nByte += dupedExprSize(p->pRight);
 
-
   return nByte;
 }
 
 int sqlite3ExprIdToTrueFalse(Expr *pExpr) {
   u32 v;
-
 
   if (!(((pExpr)->flags & (u32)(0x4000000 | 0x000800)) != 0) && (v = sqlite3IsTrueOrFalse(pExpr->u.zToken)) != 0) {
     pExpr->op = 171;
@@ -508,16 +487,10 @@ int sqlite3ExprIdToTrueFalse(Expr *pExpr) {
 int sqlite3ExprTruthValue(const Expr *pExpr) {
   pExpr = sqlite3ExprSkipCollateAndLikely((Expr *)pExpr);
 
-
-
-
-
-
   return pExpr->u.zToken[4] == 0;
 }
 
 Expr *sqlite3ExprSimplifiedAndOr(Expr *pExpr) {
-
 
   if (pExpr->op == 44 || pExpr->op == 43) {
     Expr *pRight = sqlite3ExprSimplifiedAndOr(pExpr->pRight);
@@ -583,18 +556,12 @@ int sqlite3ExprIsSingleTableConstraint(Expr *pExpr, const SrcList *pSrcList, int
   return sqlite3ExprIsTableConstant(pExpr, pSrc->iCursor, bAllowSubq);
 }
 
-int sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit) {
-
-
-  return exprIsConst(0, p, 4 + isInit);
-}
+int sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit) { return exprIsConst(0, p, 4 + isInit); }
 
 int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse) {
   int rc = 0;
   if ((p == 0))
     return 0;
-
-
 
   if (p->flags & 0x000800) {
     *pValue = p->u.iValue;
@@ -647,7 +614,6 @@ int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse) {
 
 int sqlite3ExprCanBeNull(const Expr *p) {
   u8 op;
-
 
   while (p->op == 173 || p->op == 174) {
     p = p->pLeft;
@@ -736,13 +702,11 @@ Select *isCandidateForInOpt(const Expr *pX) {
     return 0;
   }
 
-
   if (p->pLimit)
     return 0;
   if (p->pWhere)
     return 0;
   pSrc = p->pSrc;
-
 
   if (pSrc->nSrc != 1)
     return 0;
@@ -750,14 +714,9 @@ Select *isCandidateForInOpt(const Expr *pX) {
     return 0;
   pTab = pSrc->a[0].pSTab;
 
-
-
-
   if (((pTab)->eTabType == 1))
     return 0;
   pEList = p->pEList;
-
-
 
   for (i = 0; i < pEList->nExpr; i++) {
     Expr *pRes = pEList->a[i].pExpr;
@@ -865,7 +824,6 @@ int sqlite3ExprReferencesUpdatedColumn(Expr *pExpr, int *aiChng, int chngRowid) 
 
 void sqlite3SetJoinExpr(Expr *p, int iTable, u32 joinFlag) {
 
-
   while (p) {
     (p)->flags |= (u32)(joinFlag);
 
@@ -952,9 +910,6 @@ int sqlite3ExprIsLikeOperator(const Expr *pExpr) {
     unsigned char eOp;
   } aOp[] = {{"match", 64}, {"glob", 66}, {"like", 65}, {"regexp", 67}};
   int i;
-
-
-
 
   for (i = 0; i < ((int)(sizeof(aOp) / sizeof(aOp[0]))); i++) {
     if (sqlite3StrICmp(pExpr->u.zToken, aOp[i].zOp) == 0) {

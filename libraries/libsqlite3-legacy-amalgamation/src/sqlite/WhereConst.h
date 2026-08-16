@@ -4,8 +4,10 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct Expr Expr;
+  typedef struct Parse Parse;
   typedef struct WhereConst WhereConst;
   struct WhereConst {
     Parse *pParse;

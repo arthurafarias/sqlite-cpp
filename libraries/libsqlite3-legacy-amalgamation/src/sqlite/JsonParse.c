@@ -2,7 +2,6 @@
 
 void jsonParseReset(JsonParse *pParse) {
 
-
   if (pParse->bJsonIsRCStr) {
     sqlite3RCStrUnref(pParse->zJson);
     pParse->zJson = 0;
@@ -32,7 +31,6 @@ int jsonBlobExpand(JsonParse *pParse, u32 N) {
   u8 *aNew;
   u64 t;
 
-
   if (pParse->nBlobAlloc == 0) {
     t = 100;
   } else {
@@ -46,7 +44,6 @@ int jsonBlobExpand(JsonParse *pParse, u32 N) {
     return 1;
   }
 
-
   pParse->aBlob = aNew;
   pParse->nBlobAlloc = (u32)t;
   return 0;
@@ -55,7 +52,6 @@ int jsonBlobExpand(JsonParse *pParse, u32 N) {
 int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra) {
   u8 *aOld;
   u32 nSize;
-
 
   if (pParse->oom)
     return 0;
@@ -67,7 +63,6 @@ int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra) {
   if (jsonBlobExpand(pParse, nSize)) {
     return 0;
   }
-
 
   memcpy(pParse->aBlob, aOld, pParse->nBlob);
   return 1;
@@ -104,7 +99,6 @@ void jsonBlobAppendNode(JsonParse *pParse, u8 eType, u64 szPayload, const void *
     jsonBlobExpandAndAppendNode(pParse, eType, szPayload, aPayload);
     return;
   }
-
 
   a = &pParse->aBlob[pParse->nBlob];
   if (szPayload <= 11) {
@@ -1279,9 +1273,6 @@ void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot) {
   u32 sz = 0;
   u32 nBlob;
 
-
-
-
   nBlob = pParse->nBlob;
   pParse->nBlob = pParse->nBlobAlloc;
   (void)jsonbPayloadSize(pParse, iRoot, &sz);
@@ -1292,7 +1283,6 @@ void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot) {
 
 void jsonBlobEdit(JsonParse *pParse, u32 iDel, u32 nDel, const u8 *aIns, u32 nIns) {
   i64 d = (i64)nIns - (i64)nDel;
-
 
   if (d < 0 && d >= (-8) && aIns != 0 && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (int)-d)) {
     return;
@@ -1615,7 +1605,6 @@ void jsonReturnFromBlob(JsonParse *pParse, u32 i, sqlite3_context *pCtx, int eMo
   int rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
 
-
   n = jsonbPayloadSize(pParse, i, &sz);
   if (n == 0) {
     sqlite3_result_error(pCtx, "malformed JSON", -1);
@@ -1818,9 +1807,6 @@ int jsonMergePatch(JsonParse *pTarget, u32 iTarget, const JsonParse *pPatch, u32
   u32 iPValue;
   u32 nPValue;
   u32 szPValue;
-
-
-
 
   x = pPatch->aBlob[iPatch] & 0x0f;
   if (x != 12) {

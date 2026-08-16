@@ -89,15 +89,11 @@ int whereLoopAddBtreeIndex(WhereLoopBuilder *pBuilder, SrcItem *pSrc, Index *pPr
 
   pNew = pBuilder->pNew;
 
-
   if (pParse->nErr) {
     return pParse->rc;
   }
 
   ;
-
-
-
 
   if (pNew->wsFlags & 0x00000020) {
     opMask = (0x0002 << (57 - 54)) | (0x0002 << (56 - 54));
@@ -111,10 +107,6 @@ int whereLoopAddBtreeIndex(WhereLoopBuilder *pBuilder, SrcItem *pSrc, Index *pPr
   if (pProbe->bUnordered) {
     opMask &= ~((0x0002 << (55 - 54)) | (0x0002 << (58 - 54)) | (0x0002 << (57 - 54)) | (0x0002 << (56 - 54)));
   }
-
-
-
-
 
   saved_nEq = pNew->u.btree.nEq;
   saved_nBtm = pNew->u.btree.nBtm;
@@ -361,7 +353,6 @@ int whereLoopAddBtreeIndex(WhereLoopBuilder *pBuilder, SrcItem *pSrc, Index *pPr
   pNew->nOut = saved_nOut;
   pNew->nLTerm = saved_nLTerm;
 
-
   if (saved_nEq == saved_nSkip && saved_nEq + 1 < pProbe->nKeyCol && saved_nEq == pNew->nLTerm && pProbe->noSkipScan == 0 && pProbe->hasStat1 != 0 && (((db)->dbOptFlags & (0x00004000)) == 0) && pProbe->aiRowLogEst[saved_nEq + 1] >= 42 && pSrc->fg.fromExists == 0 && (rc = whereLoopResize(db, pNew, pNew->nLTerm + 1)) == 0) {
     LogEst nIter;
     pNew->u.btree.nEq++;
@@ -438,8 +429,6 @@ int whereLoopAddBtree(WhereLoopBuilder *pBuilder, Bitmask mPrereq) {
   pSrc = pTabList->a + pNew->iTab;
   pTab = pSrc->pSTab;
   pWC = pBuilder->pWC;
-
-
 
   if (pSrc->fg.isIndexedBy) {
 
@@ -666,7 +655,6 @@ int whereLoopAddVirtualOne(WhereLoopBuilder *pBuilder, Bitmask mPrereq, Bitmask 
   SrcItem *pSrc = &pBuilder->pWInfo->pTabList->a[pNew->iTab];
   int nConstraint = pIdxInfo->nConstraint;
 
-
   *pbIn = 0;
   pNew->prereq = mPrereq;
 
@@ -680,7 +668,6 @@ int whereLoopAddVirtualOne(WhereLoopBuilder *pBuilder, Bitmask mPrereq, Bitmask 
   }
 
   memset(pUsage, 0, sizeof(pUsage[0]) * nConstraint);
-
 
   pIdxInfo->idxStr = 0;
   pIdxInfo->idxNum = 0;
@@ -702,7 +689,6 @@ int whereLoopAddVirtualOne(WhereLoopBuilder *pBuilder, Bitmask mPrereq, Bitmask 
   }
 
   mxTerm = -1;
-
 
   memset(pNew->aLTerm, 0, sizeof(pNew->aLTerm[0]) * nConstraint);
   memset(&pNew->u.vtab, 0, sizeof(pNew->u.vtab));
@@ -784,7 +770,6 @@ int whereLoopAddVirtualOne(WhereLoopBuilder *pBuilder, Bitmask mPrereq, Bitmask 
     }
   }
 
-
   pNew->u.vtab.idxNum = pIdxInfo->idxNum;
   pNew->u.vtab.needFree = pIdxInfo->needToFreeIdxStr;
   pIdxInfo->needToFreeIdxStr = 0;
@@ -825,13 +810,11 @@ int whereLoopAddVirtual(WhereLoopBuilder *pBuilder, Bitmask mPrereq, Bitmask mUn
   u16 mNoOmit;
   int bRetry = 0;
 
-
   pWInfo = pBuilder->pWInfo;
   pParse = pWInfo->pParse;
   pWC = pBuilder->pWC;
   pNew = pBuilder->pNew;
   pSrc = &pWInfo->pTabList->a[pNew->iTab];
-
 
   p = allocateIndexInfo(pWInfo, pWC, mUnusable, pSrc, &mNoOmit);
   if (p == 0)
@@ -1035,14 +1018,6 @@ int whereLoopAddAll(WhereLoopBuilder *pBuilder) {
 
   pNew = pBuilder->pNew;
 
-
-
-
-
-
-
-
-
   pBuilder->iPlanLimit = 20000;
   for (iTab = 0, pItem = pTabList->a; pItem < pEnd; iTab++, pItem++) {
     Bitmask mUnusable = 0;
@@ -1119,7 +1094,6 @@ int whereShortCut(WhereLoopBuilder *pBuilder) {
   pWInfo = pBuilder->pWInfo;
   if (pWInfo->wctrlFlags & 0x0020)
     return 0;
-
 
   pItem = pWInfo->pTabList->a;
   pTab = pItem->pSTab;

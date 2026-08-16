@@ -120,9 +120,6 @@ void yy_destructor(yyParser *yypParser, unsigned short int yymajor, YYMINORTYPE 
 void yy_pop_parser_stack(yyParser *pParser) {
   yyStackEntry *yytos;
 
-
-
-
   yytos = pParser->yytos--;
 
   yy_destructor(pParser, yytos->major, &yytos->minor);
@@ -1733,14 +1730,9 @@ unsigned short int yy_reduce(yyParser *yypParser, unsigned int yyruleno, int yyL
     break;
   };
 
-
   yygoto = yyRuleInfoLhs[yyruleno];
   yysize = yyRuleInfoNRhs[yyruleno];
   yyact = yy_find_reduce_action(yymsp[yysize].stateno, (unsigned short int)yygoto);
-
-
-
-
 
   yymsp += yysize + 1;
   yypParser->yytos = yymsp;
@@ -1767,8 +1759,6 @@ void yy_syntax_error(yyParser *yypParser, int yymajor, Token yyminor) {
 void yy_accept(yyParser *yypParser) {
 
   Parse *pParse = yypParser->pParse;
-
-
 
   yypParser->pParse = pParse;
 }

@@ -46,13 +46,11 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
   PrintfArguments *pArgList = 0;
   char buf[70];
 
-
-
   bufpt = 0;
   if ((pAccum->printfFlags & 0x02) != 0) {
     pArgList =
 
-        __builtin_va_arg(
+        va_arg(
 
             ap
 
@@ -181,7 +179,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
         } else {
           width =
 
-              __builtin_va_arg(
+              va_arg(
 
                   ap
 
@@ -212,7 +210,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           } else {
             precision =
 
-                __builtin_va_arg(
+                va_arg(
 
                     ap
 
@@ -283,7 +281,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           if (flag_long == 2) {
             v =
 
-                __builtin_va_arg(
+                va_arg(
 
                     ap
 
@@ -297,7 +295,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           } else {
             v =
 
-                __builtin_va_arg(
+                va_arg(
 
                     ap
 
@@ -312,7 +310,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
         } else {
           v =
 
-              __builtin_va_arg(
+              va_arg(
 
                   ap
 
@@ -341,7 +339,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           if (flag_long == 2) {
             longvalue =
 
-                __builtin_va_arg(
+                va_arg(
 
                     ap
 
@@ -355,7 +353,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
           } else {
             longvalue =
 
-                __builtin_va_arg(
+                va_arg(
 
                     ap
 
@@ -370,7 +368,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
         } else {
           longvalue =
 
-              __builtin_va_arg(
+              va_arg(
 
                   ap
 
@@ -466,7 +464,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       } else {
         realvalue =
 
-            __builtin_va_arg(
+            va_arg(
 
                 ap
 
@@ -706,7 +704,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       if (!bArgList) {
         *(
 
-            __builtin_va_arg(
+            va_arg(
 
                 ap
 
@@ -742,7 +740,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       } else {
         unsigned int ch =
 
-            __builtin_va_arg(
+            va_arg(
 
                 ap
 
@@ -788,7 +786,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       } else {
         bufpt =
 
-            __builtin_va_arg(
+            va_arg(
 
                 ap
 
@@ -861,7 +859,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
       } else {
         escarg =
 
-            __builtin_va_arg(
+            va_arg(
 
                 ap
 
@@ -973,7 +971,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
 
         Expr *pExpr =
 
-            __builtin_va_arg(
+            va_arg(
 
                 ap
 
@@ -992,7 +990,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
 
         Token *pToken =
 
-            __builtin_va_arg(
+            va_arg(
 
                 ap
 
@@ -1021,7 +1019,7 @@ void sqlite3_str_vappendf(sqlite3_str *pAccum, const char *fmt, va_list ap) {
         return;
       pItem =
 
-          __builtin_va_arg(
+          va_arg(
 
               ap
 
@@ -1104,13 +1102,6 @@ void sqlite3_str_appendchar(sqlite3_str *p, int N, char c) {
 }
 
 void sqlite3_str_append(sqlite3_str *p, const char *z, int N) {
-
-
-
-
-
-
-
 
   if (p->nChar + N >= p->nAlloc) {
     enlargeAndAppend(p, z, N);

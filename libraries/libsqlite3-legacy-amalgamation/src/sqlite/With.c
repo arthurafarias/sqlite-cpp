@@ -4,9 +4,6 @@ struct Cte *searchWith(With *pWith, SrcItem *pItem, With **ppContext) {
   const char *zName = pItem->zName;
   With *p;
 
-
-
-
   for (p = pWith; p; p = p->pOuter) {
     int i;
     for (i = 0; i < p->nCte; i++) {

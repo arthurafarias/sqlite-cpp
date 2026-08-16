@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
   typedef struct sqlite3_mem_methods sqlite3_mem_methods;
 
   struct sqlite3_mem_methods {

@@ -3,9 +3,6 @@
 void analyzeAggFuncArgs(AggInfo *pAggInfo, NameContext *pNC) {
   int i;
 
-
-
-
   pNC->ncFlags |= 0x020000;
   for (i = 0; i < pAggInfo->nFunc; i++) {
     Expr *pExpr = pAggInfo->aFunc[i].pFExpr;

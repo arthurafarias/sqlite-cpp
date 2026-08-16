@@ -4,8 +4,10 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/i64.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+  typedef struct IncrMerger IncrMerger;
   typedef struct sqlite3_file sqlite3_file;
 
   typedef struct PmaReader PmaReader;

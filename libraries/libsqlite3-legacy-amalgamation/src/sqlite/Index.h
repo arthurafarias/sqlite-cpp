@@ -5,8 +5,15 @@ extern C {
 #endif
 
 #include "sqlite/BitMask.h"
+#include "sqlite/LogEst.h"
 #include "sqlite/Pgno.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/i16.h"
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
+  typedef struct Expr Expr;
+  typedef struct ExprList ExprList;
+  typedef struct Schema Schema;
+  typedef struct Table Table;
 
   typedef struct Index Index;
 

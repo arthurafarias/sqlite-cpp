@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/AggInfo.h"
 #include "sqlite/DbPage.h"
 #include "sqlite/FuncDef.h"

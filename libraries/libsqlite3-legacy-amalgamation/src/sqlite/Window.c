@@ -19,7 +19,6 @@ void sqlite3WindowUnlinkFromSelect(Window *p) {
 int windowArgCount(Window *pWin) {
   const ExprList *pList;
 
-
   pList = pWin->pOwner->x.pList;
   return (pList ? pList->nExpr : 0);
 }

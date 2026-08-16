@@ -57,10 +57,6 @@ int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr) {
     }
   }
 
-
-
-
-
   *pzErr = zErr;
   return rc;
 }

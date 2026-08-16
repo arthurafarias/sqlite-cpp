@@ -4,7 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
   typedef struct sqlite3_snapshot sqlite3_snapshot;
   struct sqlite3_snapshot {
     unsigned char hidden[48];

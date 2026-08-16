@@ -6,6 +6,7 @@ extern C {
 #endif
 
 #include "sqlite/Pgno.h"
+#include "sqlite/i64.h"
 #include "sqlite/sqlite3_pcache.h"
 #include "sqlite/u8.h"
 

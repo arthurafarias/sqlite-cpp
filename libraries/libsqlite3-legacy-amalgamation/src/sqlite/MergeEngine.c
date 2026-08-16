@@ -61,8 +61,6 @@ void vdbeMergeEngineCompare(MergeEngine *pMerger, int iOut) {
   PmaReader *p1;
   PmaReader *p2;
 
-
-
   if (iOut >= (pMerger->nTree / 2)) {
     i1 = (iOut - pMerger->nTree / 2) * 2;
     i2 = i1 + 1;

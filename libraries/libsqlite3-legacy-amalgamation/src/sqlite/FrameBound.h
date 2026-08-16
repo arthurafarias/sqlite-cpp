@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 #include "Expr.h"
+typedef struct Expr Expr;
 
 typedef struct FrameBound FrameBound;
 

@@ -7,10 +7,12 @@
 
 #include "sqlite/Btree.h"
 #include "sqlite/Pager.h"
+#include "sqlite/i64.h"
 #include "sqlite/sqlite3_backup.h"
 #include "sqlite/sqlite3_filename.h"
 #include "sqlite/sqlite3_int64.h"
 #include "sqlite/sqlite3_syscall_ptr.h"
+typedef struct Wal Wal;
 
 typedef struct sqlite3_vfs sqlite3_vfs;
 typedef struct sqlite3_file sqlite3_file;

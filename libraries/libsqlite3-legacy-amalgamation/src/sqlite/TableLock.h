@@ -4,9 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Pgno.h"
+#include "sqlite/u8.h"
 
   typedef struct TableLock TableLock;
   struct TableLock {

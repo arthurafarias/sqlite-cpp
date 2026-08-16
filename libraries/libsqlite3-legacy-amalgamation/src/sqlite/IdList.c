@@ -3,7 +3,6 @@
 int sqlite3IdListIndex(IdList *pList, const char *zName) {
   int i;
 
-
   for (i = 0; i < pList->nId; i++) {
     if (sqlite3StrICmp(pList->a[i].zName, zName) == 0)
       return i;

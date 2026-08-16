@@ -5,12 +5,17 @@ extern C {
 #endif
 
 #include "sqlite/Bitvec.h"
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/sqlite3_libversion.h"
 #include "sqlite/sqlite3_libversion_number.h"
 #include "sqlite/sqlite3_sourceid.h"
 
+#include "sqlite/Pgno.h"
+#include "sqlite/i64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
 #include "sqlite/u8.h"
+  typedef struct BtLock BtLock;
+  typedef struct Btree Btree;
 
   typedef struct Pager Pager;
   typedef struct sqlite3 sqlite3;

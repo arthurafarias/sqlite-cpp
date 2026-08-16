@@ -19,8 +19,6 @@ int vdbePmaReadBlob(PmaReader *p, int nByte, u8 **ppOut) {
     return 0;
   }
 
-
-
   iBuf = p->iReadOff % p->nBuffer;
   if (iBuf == 0) {
     int nRead;
@@ -164,8 +162,6 @@ int vdbePmaReaderIncrMergeInit(PmaReader *pReadr, int eMode) {
   IncrMerger *pIncr = pReadr->pIncr;
   SortSubtask *pTask = pIncr->pTask;
   sqlite3 *db = pTask->pSorter->db;
-
-
 
   rc = vdbeMergeEngineInit(pTask, pIncr->pMerger, eMode);
 

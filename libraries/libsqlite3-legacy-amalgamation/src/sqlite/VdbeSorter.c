@@ -26,7 +26,6 @@ void *vdbeSorterFlushThread(void *pCtx) {
   SortSubtask *pTask = (SortSubtask *)pCtx;
   int rc;
 
-
   rc = vdbeSorterListToPMA(pTask, &pTask->list);
   pTask->bDone = 1;
   return ((void *)(intptr_t)(rc));
@@ -112,7 +111,6 @@ int vdbeSorterMergeTreeBuild(VdbeSorter *pSorter, MergeEngine **ppOut) {
   MergeEngine *pMain = 0;
   int rc = 0;
   int iTask;
-
 
   if (pSorter->nTask > 1) {
     pMain = vdbeMergeEngineNew(pSorter->nTask);

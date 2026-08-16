@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u8.h"
+  typedef struct VdbeOp VdbeOp;
   typedef struct SubProgram SubProgram;
 
   struct SubProgram {

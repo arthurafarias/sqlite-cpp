@@ -12,7 +12,12 @@ extern C {
 #include "sqlite/u16.h"
 #include "sqlite/u8.h"
 
+#include "sqlite/BitMask.h"
 #include "sqlite/sqlite3_int64.h"
+#include "sqlite/u32.h"
+  typedef struct Index Index;
+  typedef struct KeyInfo KeyInfo;
+  typedef struct sqlite3_value Mem;
 
   typedef struct MemPage MemPage;
   typedef struct Btree Btree;

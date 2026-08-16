@@ -32,15 +32,10 @@ int sqlite3OsFileSize(sqlite3_file *id, i64 *pSize) {
 int sqlite3OsLock(sqlite3_file *id, int lockType) {
   ;
 
-
   return id->pMethods->xLock(id, lockType);
 }
 
-int sqlite3OsUnlock(sqlite3_file *id, int lockType) {
-
-
-  return id->pMethods->xUnlock(id, lockType);
-}
+int sqlite3OsUnlock(sqlite3_file *id, int lockType) { return id->pMethods->xUnlock(id, lockType); }
 
 int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut) {
   ;
@@ -90,7 +85,6 @@ int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p) { return id->pMethods-
 
 void sqlite3OsCloseFree(sqlite3_file *pFile) {
 
-
   sqlite3OsClose(pFile);
   sqlite3_free(pFile);
 }
@@ -101,9 +95,6 @@ int unixCheckReservedLock(sqlite3_file *id, int *pResOut) {
   unixFile *pFile = (unixFile *)id;
 
   ;
-
-
-
 
   sqlite3_mutex_enter(pFile->pInode->pLockMutex);
 
@@ -161,8 +152,6 @@ int unixLock(sqlite3_file *id, int eFileLock) {
   struct flock lock;
   int tErrno = 0;
 
-
-
   ;
 
   if (pFile->eFileLock >= eFileLock) {
@@ -170,12 +159,6 @@ int unixLock(sqlite3_file *id, int eFileLock) {
     ;
     return 0;
   }
-
-
-
-
-
-
 
   pInode = pFile->pInode;
   sqlite3_mutex_enter(pInode->pLockMutex);
@@ -349,17 +332,13 @@ int posixUnlock(sqlite3_file *id, int eFileLock, int handleNFSUnlock) {
   struct flock lock;
   int rc = 0;
 
-
-
   ;
-
 
   if (pFile->eFileLock <= eFileLock) {
     return 0;
   }
   pInode = pFile->pInode;
   sqlite3_mutex_enter(pInode->pLockMutex);
-
 
   if (pFile->eFileLock > 1) {
 
@@ -474,12 +453,7 @@ end_unlock:
   return rc;
 }
 
-int unixUnlock(sqlite3_file *id, int eFileLock) {
-
-
-
-  return posixUnlock(id, eFileLock, 0);
-}
+int unixUnlock(sqlite3_file *id, int eFileLock) { return posixUnlock(id, eFileLock, 0); }
 
 int closeUnixFile(sqlite3_file *id) {
   unixFile *pFile = (unixFile *)id;
@@ -503,13 +477,10 @@ int unixClose(sqlite3_file *id) {
   unixFile *pFile = (unixFile *)id;
   unixInodeInfo *pInode = pFile->pInode;
 
-
   verifyDbFile(pFile);
   unixUnlock(id, 0);
 
-
   unixEnterMutex();
-
 
   sqlite3_mutex_enter(pInode->pLockMutex);
   if (pInode->nLock) {
@@ -518,7 +489,6 @@ int unixClose(sqlite3_file *id) {
   }
   sqlite3_mutex_leave(pInode->pLockMutex);
   releaseInodeInfo(pFile);
-
 
   rc = closeUnixFile(id);
   unixLeaveMutex();
@@ -604,11 +574,7 @@ int dotlockUnlock(sqlite3_file *id, int eFileLock) {
   char *zLockFile = (char *)pFile->lockingContext;
   int rc;
 
-
-
   ;
-
-
 
   if (pFile->eFileLock == eFileLock) {
     return 0;
@@ -618,7 +584,6 @@ int dotlockUnlock(sqlite3_file *id, int eFileLock) {
     pFile->eFileLock = 1;
     return 0;
   }
-
 
   rc = ((int (*)(const char *))aSyscall[19].pCurrent)(zLockFile);
   if (rc < 0) {
@@ -646,7 +611,6 @@ int dotlockUnlock(sqlite3_file *id, int eFileLock) {
 int dotlockClose(sqlite3_file *id) {
   unixFile *pFile = (unixFile *)id;
 
-
   dotlockUnlock(id, 0);
   sqlite3_free(pFile->lockingContext);
   return closeUnixFile(id);
@@ -655,12 +619,6 @@ int dotlockClose(sqlite3_file *id) {
 int unixRead(sqlite3_file *id, void *pBuf, int amt, sqlite3_int64 offset) {
   unixFile *pFile = (unixFile *)id;
   int got;
-
-
-
-
-
-
 
   if (offset < pFile->mmapSize) {
     if (offset + amt <= pFile->mmapSize) {
@@ -713,10 +671,6 @@ int unixWrite(sqlite3_file *id, const void *pBuf, int amt, sqlite3_int64 offset)
   unixFile *pFile = (unixFile *)id;
   int wrote = 0;
 
-
-
-
-
   while ((wrote = seekAndWrite(pFile, offset, pBuf, amt)) < amt && wrote > 0) {
     amt -= wrote;
     offset += wrote;
@@ -748,10 +702,7 @@ int unixSync(sqlite3_file *id, int flags) {
   int isDataOnly = (flags & 0x00010);
   int isFullsync = (flags & 0x0F) == 0x00003;
 
-
-
   ;
-
 
   ;
   rc = full_fsync(pFile->h, isFullsync, isDataOnly);
@@ -789,7 +740,6 @@ int unixTruncate(sqlite3_file *id, i64 nByte) {
   unixFile *pFile = (unixFile *)id;
   int rc;
 
-
   ;
 
   if (pFile->szChunk > 0) {
@@ -817,7 +767,6 @@ int unixTruncate(sqlite3_file *id, i64 nByte) {
 int unixFileSize(sqlite3_file *id, i64 *pSize) {
   int rc;
   struct stat buf;
-
 
   rc = ((int (*)(int, struct stat *))aSyscall[5].pCurrent)(((unixFile *)id)->h, &buf);
   ;
@@ -956,14 +905,6 @@ int unixShmMap(sqlite3_file *fd, int iRegion, int szRegion, int bExtend, void vo
     pShmNode->isUnlocked = 0;
   }
 
-
-
-
-
-
-
-
-
   nReqRegion = ((iRegion + nShmPerMap) / nShmPerMap) * nShmPerMap;
 
   if (pShmNode->nRegion < nReqRegion) {
@@ -1086,23 +1027,6 @@ int unixShmLock(sqlite3_file *fd, int ofst, int n, int flags) {
   if ((pShmNode == 0))
     return (10 | (20 << 8));
   aLock = pShmNode->aLock;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   if (((flags & 1) && ((p->exclMask | p->sharedMask) & mask)) || (flags == (4 | 2) && 0 == (p->sharedMask & mask)) || (flags == (8 | 2))) {
 
@@ -1227,7 +1151,6 @@ void unixShmBarrier(sqlite3_file *fd) {
   (void)(fd);
   sqlite3MemoryBarrier();
 
-
   unixEnterMutex();
   unixLeaveMutex();
 }
@@ -1244,10 +1167,6 @@ int unixShmUnmap(sqlite3_file *fd, int deleteFlag) {
     return 0;
   pShmNode = p->pShmNode;
 
-
-
-
-
   sqlite3_mutex_enter(pShmNode->pShmMutex);
   for (pp = &pShmNode->pFirst; (*pp) != p; pp = &(*pp)->pNext) {
   }
@@ -1257,9 +1176,7 @@ int unixShmUnmap(sqlite3_file *fd, int deleteFlag) {
   pDbFd->pShm = 0;
   sqlite3_mutex_leave(pShmNode->pShmMutex);
 
-
   unixEnterMutex();
-
 
   pShmNode->nRef--;
   if (pShmNode->nRef == 0) {
@@ -1301,17 +1218,11 @@ int unixUnfetch(sqlite3_file *fd, i64 iOff, void *p) {
   unixFile *pFd = (unixFile *)fd;
   (void)(iOff);
 
-
-
-
-
   if (p) {
     pFd->nFetchOut--;
   } else {
     unixUnmapfile(pFd);
   }
-
-
 
   return 0;
 }
@@ -1429,12 +1340,6 @@ int memdbLock(sqlite3_file *pFile, int eLock) {
     return 0;
   memdbEnter(p);
 
-
-
-
-
-
-
   if (eLock > 1 && (p->mFlags & 4)) {
     rc = 8;
   } else {
@@ -1498,7 +1403,6 @@ int memdbUnlock(sqlite3_file *pFile, int eLock) {
   if (eLock >= pThis->eLock)
     return 0;
   memdbEnter(p);
-
 
   if (eLock == 1) {
     if ((pThis->eLock > 1)) {
@@ -1667,7 +1571,6 @@ int memjrnlRead(sqlite3_file *pJfd, void *zBuf, int iAmt, sqlite_int64 iOfst) {
     return (10 | (2 << 8));
   }
 
-
   if (p->readpoint.iOffset != iOfst || iOfst == 0) {
     sqlite3_int64 iOff = 0;
     for (pChunk = p->pFirst; (pChunk) && (iOff + p->nChunkSize) <= iOfst; pChunk = pChunk->pNext) {
@@ -1771,7 +1674,6 @@ int memjrnlWrite(sqlite3_file *pJfd, const void *zBuf, int iAmt, sqlite_int64 iO
 
 int memjrnlTruncate(sqlite3_file *pJfd, sqlite_int64 size) {
   MemJournal *p = (MemJournal *)pJfd;
-
 
   if (size < p->endpoint.iOffset) {
     FileChunk *pIter = 0;

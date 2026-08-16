@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct PmaReader PmaReader;
+  typedef struct SortSubtask SortSubtask;
   typedef struct MergeEngine MergeEngine;
   struct MergeEngine {
     int nTree;

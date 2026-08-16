@@ -8,7 +8,6 @@ WhereTerm *whereScanNext(WhereScan *pScan) {
   WhereTerm *pTerm;
   int k = pScan->k;
 
-
   pWC = pScan->pWC;
   while (1) {
     iColumn = pScan->aiColumn[pScan->iEquiv - 1];

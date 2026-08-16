@@ -51,7 +51,6 @@ void markTermAsChild(WhereClause *pWC, int iChild, int iParent) {
   pWC->a[iChild].iParent = iParent;
   pWC->a[iChild].truthProb = pWC->a[iParent].truthProb;
 
-
   pWC->a[iParent].nChild++;
   ;
 }
@@ -59,7 +58,6 @@ void markTermAsChild(WhereClause *pWC, int iChild, int iParent) {
 void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op) {
   Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pExpr);
   pWC->op = op;
-
 
   if (pE2 == 0)
     return;
@@ -101,7 +99,6 @@ void whereAddLimitExpr(WhereClause *pWC, int iReg, Expr *pExpr, int iCsr, int eM
 }
 
 void __attribute__((noinline)) sqlite3WhereAddLimit(WhereClause *pWC, Select *p) {
-
 
   if (p->pGroupBy == 0 && (p->selFlags & (0x0000001 | 0x0000008)) == 0 && (p->pSrc->nSrc == 1 && ((p->pSrc->a[0].pSTab)->eTabType == 1))) {
     ExprList *pOrderBy = p->pOrderBy;
@@ -174,7 +171,6 @@ void sqlite3WhereClauseInit(WhereClause *pWC, WhereInfo *pWInfo) {
 void sqlite3WhereClauseClear(WhereClause *pWC) {
   sqlite3 *db = pWC->pWInfo->pParse->db;
 
-
   if (pWC->nTerm > 0) {
     WhereTerm *a = pWC->a;
     WhereTerm *aLast = &pWC->a[pWC->nTerm - 1];
@@ -245,7 +241,6 @@ void whereLoopOutputAdjust(WhereClause *pWC, WhereLoop *pLoop, LogEst nRow) {
   Bitmask notAllowed = ~(pLoop->prereq | pLoop->maskSelf);
   int i, j;
   LogEst iReduce = 0;
-
 
   for (i = pWC->nBase, pTerm = pWC->a; i > 0; i--, pTerm++) {
 

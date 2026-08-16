@@ -4,10 +4,10 @@
 extern "C" {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/ExprList.h"
 #include "sqlite/Parse.h"
+typedef struct Expr Expr;
+typedef struct Select Select;
 
 typedef struct SubstContext SubstContext;
 

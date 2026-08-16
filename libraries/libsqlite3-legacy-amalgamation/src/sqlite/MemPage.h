@@ -4,10 +4,17 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/DbPage.h"
 #include "sqlite/Pgno.h"
+#include "sqlite/RecordCompare.h"
+#include "sqlite/i64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
+  typedef struct BtShared BtShared;
+  typedef struct BtreePayload BtreePayload;
+  typedef struct CellArray CellArray;
+  typedef struct CellInfo CellInfo;
+  typedef struct UnpackedRecord UnpackedRecord;
 
   typedef struct MemPage MemPage;
 

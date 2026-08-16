@@ -6,7 +6,12 @@ extern C {
 #endif
 
 #include "sqlite/StrAccum.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/i64.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct BtShared BtShared;
+  typedef struct Pager Pager;
+  typedef struct sqlite3 sqlite3;
 
   typedef struct IntegrityCk IntegrityCk;
   struct IntegrityCk {

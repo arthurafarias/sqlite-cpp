@@ -4,9 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/sqlite3_vtab.h"
+#include "sqlite/u8.h"
+  typedef struct sqlite3 sqlite3;
 
   typedef struct JsonEachConnection JsonEachConnection;
   struct JsonEachConnection {

@@ -4,8 +4,11 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/i64.h"
+#include "sqlite/u16.h"
+  typedef struct RowSetChunk RowSetChunk;
+  typedef struct RowSetEntry RowSetEntry;
+  typedef struct sqlite3 sqlite3;
   typedef struct RowSet RowSet;
 
   struct RowSet {

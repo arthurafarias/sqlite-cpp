@@ -25,8 +25,6 @@ int vdbeIncrPopulate(IncrMerger *pIncr) {
   MergeEngine *pMerger = pIncr->pMerger;
   PmaWriter writer;
 
-
-
   ;
 
   vdbePmaWriterInit(pOut->pFd, &writer, pTask->pSorter->pgsz, iStart);
@@ -59,7 +57,6 @@ int vdbeIncrPopulate(IncrMerger *pIncr) {
 
 int vdbeIncrBgPopulate(IncrMerger *pIncr) {
   void *p = (void *)pIncr;
-
 
   return vdbeSorterCreateThread(pIncr->pTask, vdbeIncrPopulateThread, p);
 }

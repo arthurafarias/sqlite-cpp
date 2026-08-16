@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct Select Select;
   typedef struct Subquery Subquery;
 
   struct Subquery {

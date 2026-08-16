@@ -4,7 +4,6 @@ void pcache1Cachesize(sqlite3_pcache *p, int nMax) {
   PCache1 *pCache = (PCache1 *)p;
   u32 n;
 
-
   if (pCache->bPurgeable) {
     PGroup *pGroup = pCache->pGroup;
 
@@ -51,9 +50,7 @@ int pcache1Pagecount(sqlite3_pcache *p) {
   int n;
   PCache1 *pCache = (PCache1 *)p;
 
-
   n = pCache->nPage;
-
 
   return n;
 }
@@ -83,18 +80,6 @@ PgHdr1 *pcache1FetchNoMutex(sqlite3_pcache *p, unsigned int iKey, int createFlag
 
 sqlite3_pcache_page *pcache1Fetch(sqlite3_pcache *p, unsigned int iKey, int createFlag) {
 
-
-
-
-
-
-
-
-
-
-
-
-
   {
     return (sqlite3_pcache_page *)pcache1FetchNoMutex(p, iKey, createFlag);
   }
@@ -104,14 +89,6 @@ void pcache1Unpin(sqlite3_pcache *p, sqlite3_pcache_page *pPg, int reuseUnlikely
   PCache1 *pCache = (PCache1 *)p;
   PgHdr1 *pPage = (PgHdr1 *)pPg;
   PGroup *pGroup = pCache->pGroup;
-
-
-
-
-
-
-
-
 
   if (reuseUnlikely || pGroup->nPurgeable > pGroup->nMaxPage) {
     pcache1RemoveFromHash(pPage, 1);
@@ -123,8 +100,6 @@ void pcache1Unpin(sqlite3_pcache *p, sqlite3_pcache_page *pPg, int reuseUnlikely
     *ppFirst = pPage;
     pCache->nRecyclable++;
   }
-
-
 }
 
 void pcache1Rekey(sqlite3_pcache *p, sqlite3_pcache_page *pPg, unsigned int iOld, unsigned int iNew) {
@@ -133,22 +108,12 @@ void pcache1Rekey(sqlite3_pcache *p, sqlite3_pcache_page *pPg, unsigned int iOld
   PgHdr1 **pp;
   unsigned int hOld, hNew;
 
-
-
-
-
-
-
-
-
-
   hOld = iOld % pCache->nHash;
   pp = &pCache->apHash[hOld];
   while ((*pp) != pPage) {
     pp = &(*pp)->pNext;
   }
   *pp = pPage->pNext;
-
 
   hNew = iNew % pCache->nHash;
   pPage->iKey = iNew;
@@ -157,40 +122,29 @@ void pcache1Rekey(sqlite3_pcache *p, sqlite3_pcache_page *pPg, unsigned int iOld
   if (iNew > pCache->iMaxKey) {
     pCache->iMaxKey = iNew;
   }
-
-
 }
 
 void pcache1Truncate(sqlite3_pcache *p, unsigned int iLimit) {
   PCache1 *pCache = (PCache1 *)p;
 
-
   if (iLimit <= pCache->iMaxKey) {
     pcache1TruncateUnsafe(pCache, iLimit);
     pCache->iMaxKey = iLimit - 1;
   }
-
-
 }
 
 void pcache1Destroy(sqlite3_pcache *p) {
   PCache1 *pCache = (PCache1 *)p;
   PGroup *pGroup = pCache->pGroup;
 
-
-
-
   if (pCache->nPage)
     pcache1TruncateUnsafe(pCache, 0);
 
-
   pGroup->nMaxPage -= pCache->nMax;
-
 
   pGroup->nMinPage -= pCache->nMin;
   pGroup->mxPinned = pGroup->nMaxPage + 10 - pGroup->nMinPage;
   pcache1EnforceMaxPage(pCache);
-
 
   sqlite3_free(pCache->pBulk);
   sqlite3_free(pCache->apHash);

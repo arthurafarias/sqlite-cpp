@@ -4,10 +4,15 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/SortSubtask.h"
+#include "sqlite/SorterCompare.h"
 #include "sqlite/SorterList.h"
+#include "sqlite/u8.h"
+  typedef struct KeyInfo KeyInfo;
+  typedef struct MergeEngine MergeEngine;
+  typedef struct PmaReader PmaReader;
+  typedef struct UnpackedRecord UnpackedRecord;
+  typedef struct sqlite3 sqlite3;
 
   struct VdbeSorter {
     int mnPmaSize;

@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Fts5Tokenizer.h"
 
   typedef struct fts5_tokenizer fts5_tokenizer;

@@ -8,9 +8,16 @@ extern C {
 
 #include "sqlite/DbPage.h"
 #include "sqlite/Pgno.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
 #include "sqlite/sqlite3_int64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
 #include "sqlite/u64.h"
 #include "sqlite/u8.h"
+  typedef struct PCache PCache;
+  typedef struct PgHdr PgHdr;
+  typedef struct Wal Wal;
 
   typedef struct sqlite3_backup sqlite3_backup;
   typedef struct sqlite3 sqlite3;

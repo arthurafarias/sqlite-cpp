@@ -6,15 +6,6 @@ void sqlite3MemSetArrayInt64(sqlite3_value *aMem, int iIdx, i64 val) { sqlite3Vd
 
 __attribute__((noinline)) const void *valueToText(sqlite3_value *pVal, u8 enc) {
 
-
-
-
-
-
-
-
-
-
   if (pVal->flags & (0x0010 | 0x0002)) {
     if ((((pVal)->flags & 0x0400) ? sqlite3VdbeMemExpandBlob(pVal) : 0))
       return 0;
@@ -40,7 +31,6 @@ __attribute__((noinline)) const void *valueToText(sqlite3_value *pVal, u8 enc) {
         ;
   }
 
-
   if (pVal->enc == (enc & ~8)) {
 
     ((void)(0))
@@ -55,11 +45,6 @@ __attribute__((noinline)) const void *valueToText(sqlite3_value *pVal, u8 enc) {
 const void *sqlite3ValueText(sqlite3_value *pVal, u8 enc) {
   if (!pVal)
     return 0;
-
-
-
-
-
 
   if ((pVal->flags & (0x0002 | 0x0200)) == (0x0002 | 0x0200) && pVal->enc == enc) {
 
@@ -98,7 +83,6 @@ __attribute__((noinline)) int valueBytes(sqlite3_value *pVal, u8 enc) { return v
 
 int sqlite3ValueBytes(sqlite3_value *pVal, u8 enc) {
   Mem *p = (Mem *)pVal;
-
 
   if ((p->flags & 0x0002) != 0 && pVal->enc == enc) {
     return p->n;

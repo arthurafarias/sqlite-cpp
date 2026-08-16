@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct Table Table;
+  typedef struct sqlite3_module sqlite3_module;
   typedef struct Module Module;
 
   struct Module {

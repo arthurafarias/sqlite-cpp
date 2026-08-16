@@ -4,11 +4,10 @@
 extern "C" {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Wal.h"
 #include "sqlite/sqlite3_file.h"
 #include "sqlite/sqlite3_int64.h"
+typedef struct PgHdr PgHdr;
 
 typedef struct WalWriter WalWriter;
 

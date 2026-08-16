@@ -4,7 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/u32.h"
 
   typedef struct sqlite3AutoExtList sqlite3AutoExtList;

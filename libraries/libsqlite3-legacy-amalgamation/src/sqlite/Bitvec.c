@@ -3,7 +3,6 @@
 Bitvec *sqlite3BitvecCreate(u32 iSize) {
   Bitvec *p;
 
-
   p = sqlite3MallocZero(sizeof(*p));
   if (p) {
     p->iSize = iSize;
@@ -12,7 +11,6 @@ Bitvec *sqlite3BitvecCreate(u32 iSize) {
 }
 
 int sqlite3BitvecTestNotNull(Bitvec *p, u32 i) {
-
 
   i--;
   if (i >= p->iSize)
@@ -44,9 +42,6 @@ int sqlite3BitvecSet(Bitvec *p, u32 i) {
   u32 h;
   if (p == 0)
     return 0;
-
-
-
 
   i--;
   while ((p->iSize > (((((512 - (3 * sizeof(u32))) / sizeof(Bitvec *)) * sizeof(Bitvec *)) / sizeof(u8)) * 8)) && p->iDivisor) {
@@ -114,7 +109,6 @@ bitvec_set_end:
 void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf) {
   if (p == 0)
     return;
-
 
   i--;
   while (p->iDivisor) {

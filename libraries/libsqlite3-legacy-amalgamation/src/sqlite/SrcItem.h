@@ -5,7 +5,17 @@ extern C {
 #endif
 
 #include "sqlite/BitMask.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct CteUse CteUse;
+  typedef struct Expr Expr;
+  typedef struct ExprList ExprList;
+  typedef struct IdList IdList;
+  typedef struct Index Index;
+  typedef struct Schema Schema;
+  typedef struct SrcList SrcList;
+  typedef struct Subquery Subquery;
+  typedef struct Table Table;
 
   typedef struct SrcItem SrcItem;
 

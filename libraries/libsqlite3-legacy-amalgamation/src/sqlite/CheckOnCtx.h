@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct SrcList SrcList;
   typedef struct CheckOnCtx CheckOnCtx;
   struct CheckOnCtx {
     SrcList *pSrc;

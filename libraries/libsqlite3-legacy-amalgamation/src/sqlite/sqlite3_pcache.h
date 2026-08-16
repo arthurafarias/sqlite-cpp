@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/PCache.h"
-#include "sqlite/_TypeIndex.h"
+  typedef struct PgHdr1 PgHdr1;
+  typedef struct sqlite3_pcache_page sqlite3_pcache_page;
 
   typedef struct sqlite3_pcache sqlite3_pcache;
 

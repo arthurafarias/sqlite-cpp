@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct Index Index;
+  typedef struct IndexListTerm IndexListTerm;
   typedef struct IndexIterator IndexIterator;
   struct IndexIterator {
     int eType;

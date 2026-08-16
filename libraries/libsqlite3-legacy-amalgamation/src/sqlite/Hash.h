@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct HashElem HashElem;
   typedef struct Hash Hash;
   struct Hash {
     unsigned int htsize;

@@ -4,8 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
+  typedef struct unixShmNode unixShmNode;
   typedef struct unixShm unixShm;
   struct unixShm {
     unixShmNode *pShmNode;

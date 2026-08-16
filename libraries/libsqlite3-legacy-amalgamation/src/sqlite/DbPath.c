@@ -2,9 +2,6 @@
 
 void appendOnePathElement(DbPath *pPath, const char *zName, int nName) {
 
-
-
-
   if (zName[0] == '.') {
     if (nName == 1)
       return;

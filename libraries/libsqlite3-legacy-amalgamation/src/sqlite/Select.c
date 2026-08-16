@@ -93,11 +93,6 @@ int compoundHasDifferentAffinities(Select *p) {
   int ii;
   ExprList *pList;
 
-
-
-
-
-
   pList = p->pEList;
   for (ii = 0; ii < pList->nExpr; ii++) {
     char aff;
@@ -132,20 +127,14 @@ Table *isSimpleCount(Select *p, AggInfo *pAggInfo) {
   Table *pTab;
   Expr *pExpr;
 
-
-
   if (p->pWhere || p->pEList->nExpr != 1 || p->pSrc->nSrc != 1 || p->pSrc->a[0].fg.isSubquery || pAggInfo->nFunc != 1 || p->pHaving) {
     return 0;
   }
   pTab = p->pSrc->a[0].pSTab;
 
-
-
-
   if (!((pTab)->eTabType == 0))
     return 0;
   pExpr = p->pEList->a[0].pExpr;
-
 
   if (pExpr->op != 169)
     return 0;
@@ -153,7 +142,6 @@ Table *isSimpleCount(Select *p, AggInfo *pAggInfo) {
     return 0;
   if ((pAggInfo->aFunc[0].pFunc->funcFlags & 0x0100) == 0)
     return 0;
-
 
   ;
   ;

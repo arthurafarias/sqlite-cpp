@@ -4,6 +4,40 @@
 extern "C" {
 #endif
 
+#include "sqlite/LogEst.h"
+#include "sqlite/NanInfName.h"
+#include "sqlite/PragmaName.h"
+#include "sqlite/et_info.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/tRowcnt.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/unix_syscall.h"
+#include <stdarg.h>
+#include <sys/types.h>
+#include <time.h>
+typedef struct PgHdr DbPage;
+typedef struct Expr Expr;
+typedef struct Index Index;
+typedef struct JsonString JsonString;
+typedef struct sqlite3_value Mem;
+typedef struct Parse Parse;
+typedef struct SrcItem SrcItem;
+typedef struct Table Table;
+typedef struct UnixUnusedFd UnixUnusedFd;
+typedef struct WhereClause WhereClause;
+typedef struct compareInfo compareInfo;
+typedef struct sqlite3 sqlite3;
+typedef struct sqlite3_context sqlite3_context;
+typedef struct sqlite3_io_methods sqlite3_io_methods;
+typedef struct sqlite3_mutex sqlite3_mutex;
+typedef struct sqlite3_pcache sqlite3_pcache;
+typedef struct unixFile unixFile;
 /* Functions with no clear owning container (free helpers, glibc-shadowed
    symbols, etc.) collected here for manual triage. */
 

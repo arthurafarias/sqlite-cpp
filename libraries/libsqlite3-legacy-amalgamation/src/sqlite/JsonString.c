@@ -29,7 +29,6 @@ void jsonStringOom(JsonString *p) {
 void jsonStringTooDeep(JsonString *p) {
   p->eErr |= 0x04;
 
-
   sqlite3_result_error(p->pCtx, "JSON nested too deep", -1);
   jsonStringReset(p);
 }
@@ -62,7 +61,6 @@ int jsonStringGrow(JsonString *p, u32 N) {
 
 __attribute__((noinline)) void jsonStringExpandAndAppend(JsonString *p, const char *zIn, u32 N) {
 
-
   if (jsonStringGrow(p, N))
     return;
   memcpy(p->zBuf + p->nUsed, zIn, N);
@@ -81,7 +79,6 @@ void jsonAppendRaw(JsonString *p, const char *zIn, u32 N) {
 }
 
 void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N) {
-
 
   if (N + p->nUsed >= p->nAlloc) {
     jsonStringExpandAndAppend(p, zIn, N);
@@ -133,21 +130,6 @@ void jsonAppendSeparator(JsonString *p) {
 
 void jsonAppendControlChar(JsonString *p, u8 c) {
   static const char aSpecial[] = {0, 0, 0, 0, 0, 0, 0, 0, 'b', 't', 'n', 0, 'f', 'r', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   if (aSpecial[c]) {
     p->zBuf[p->nUsed] = '\\';
@@ -231,8 +213,6 @@ void jsonAppendString(JsonString *p, const char *zIn, u32 N) {
     N--;
   }
   p->zBuf[p->nUsed++] = '"';
-
-
 }
 
 void jsonAppendSqlValue(JsonString *p, sqlite3_value *pValue) {
@@ -278,9 +258,6 @@ void jsonAppendSqlValue(JsonString *p, sqlite3_value *pValue) {
 
 void jsonReturnString(JsonString *p, JsonParse *pParse, sqlite3_context *ctx) {
 
-
-
-
   jsonStringTerminate(p);
   if (p->eErr == 0) {
     int flags = ((int)(intptr_t)(sqlite3_user_data(p->pCtx)));
@@ -315,7 +292,6 @@ void jsonReturnString(JsonString *p, JsonParse *pParse, sqlite3_context *ctx) {
 
 void jsonReturnStringAsBlob(JsonString *pStr) {
   JsonParse px;
-
 
   memset(&px, 0, sizeof(px));
   px.zJson = pStr->zBuf;

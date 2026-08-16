@@ -63,6 +63,5 @@ int sqlite3_vtab_rhs_value(sqlite3_index_info *pIdxInfo, int iCons, sqlite3_valu
 int sqlite3_vtab_distinct(sqlite3_index_info *pIdxInfo) {
   HiddenIndexInfo *pHidden = (HiddenIndexInfo *)&pIdxInfo[1];
 
-
   return pHidden->eDistinct;
 }

@@ -4,10 +4,13 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Mem.h"
 #include "sqlite/Op.h"
+#include "sqlite/i64.h"
+#include "sqlite/u8.h"
+  typedef struct AuxData AuxData;
+  typedef struct Vdbe Vdbe;
+  typedef struct VdbeCursor VdbeCursor;
 
   typedef struct VdbeFrame VdbeFrame;
   struct VdbeFrame {

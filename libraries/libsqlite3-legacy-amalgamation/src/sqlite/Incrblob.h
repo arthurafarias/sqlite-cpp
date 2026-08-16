@@ -4,8 +4,12 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/u16.h"
+  typedef struct BtCursor BtCursor;
+  typedef struct Table Table;
+  typedef struct sqlite3 sqlite3;
+  typedef struct Vdbe sqlite3_stmt;
   typedef struct Incrblob Incrblob;
   struct Incrblob {
     int nByte;

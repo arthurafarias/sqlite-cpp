@@ -7,6 +7,10 @@ extern C {
 #include "sqlite/u8.h"
 
 #include "sqlite/Walker.h"
+  typedef struct Expr Expr;
+  typedef struct Select Select;
+  typedef struct SrcList SrcList;
+  typedef struct TriggerStep TriggerStep;
 
   typedef struct DbFixer DbFixer;
   typedef struct Parse Parse;

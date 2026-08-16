@@ -2,7 +2,6 @@
 
 void *allocSpace(struct ReusableSpace *p, void *pBuf, sqlite3_int64 nByte) {
 
-
   if (pBuf == 0) {
     nByte = (nByte);
     if (nByte <= p->nFree) {
@@ -12,7 +11,6 @@ void *allocSpace(struct ReusableSpace *p, void *pBuf, sqlite3_int64 nByte) {
       p->nNeeded += nByte;
     }
   }
-
 
   return pBuf;
 }

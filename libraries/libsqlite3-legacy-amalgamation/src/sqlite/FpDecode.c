@@ -10,8 +10,6 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound) {
 
   p->isSpecial = 0;
 
-
-
   if (r < 0.0) {
     p->sign = '-';
     r = -r;
@@ -43,9 +41,6 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound) {
     e -= 1086;
   }
   sqlite3Fp2Convert10(v, e, (iRound <= 0 || iRound >= 18) ? 18 : iRound + 1, &v, &exp);
-
-
-
 
   zBuf = p->zBuf;
 
@@ -80,11 +75,7 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound) {
     zBuf[--i] = v + '0';
   }
 
-
   n = 20 - i;
-
-
-
 
   p->iDP = n + exp;
   if (iRound <= 0) {
@@ -155,7 +146,6 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound) {
       }
     }
   }
-
 
   while (z[n - 1] == '0') {
     n--;

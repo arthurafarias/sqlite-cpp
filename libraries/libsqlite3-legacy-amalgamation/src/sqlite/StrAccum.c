@@ -2,7 +2,6 @@
 
 void sqlite3StrAccumSetError(StrAccum *p, u8 eError) {
 
-
   p->accError = eError;
   if (p->mxAlloc)
     sqlite3_str_reset(p);
@@ -12,7 +11,6 @@ void sqlite3StrAccumSetError(StrAccum *p, u8 eError) {
 
 int sqlite3StrAccumEnlarge(StrAccum *p, i64 N) {
   char *zNew;
-
 
   if (p->accError) {
     ;
@@ -58,7 +56,6 @@ int sqlite3StrAccumEnlarge(StrAccum *p, i64 N) {
     }
   }
 
-
   return (int)N;
 }
 
@@ -79,7 +76,6 @@ void __attribute__((noinline)) enlargeAndAppend(StrAccum *p, const char *z, int 
 
 __attribute__((noinline)) char *strAccumFinishRealloc(StrAccum *p) {
   char *zText;
-
 
   zText = sqlite3DbMallocRaw(p->db, 1 + (u64)p->nChar);
   if (zText) {
@@ -125,7 +121,7 @@ void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, int n, int mx) {
 void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...) {
   va_list ap;
 
-  __builtin_c23_va_start(
+  va_start(
 
       ap, zFormat
 
@@ -134,7 +130,7 @@ void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...) {
       ;
   sqlite3_str_vappendf(p, zFormat, ap);
 
-  __builtin_va_end(
+  va_end(
 
       ap
 
@@ -144,8 +140,6 @@ void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...) {
 }
 
 void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape) {
-
-
 
   switch (sqlite3_value_type(pValue)) {
   case 2: {
@@ -198,7 +192,6 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape) {
 
 void explainAppendTerm(StrAccum *pStr, Index *pIdx, int nTerm, int iTerm, int bAnd, const char *zOp) {
   int i;
-
 
   if (bAnd)
     sqlite3_str_append(pStr, " AND ", 5);

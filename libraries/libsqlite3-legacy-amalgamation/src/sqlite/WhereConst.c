@@ -3,10 +3,6 @@
 void constInsert(WhereConst *pConst, Expr *pColumn, Expr *pValue, Expr *pExpr) {
   int i;
 
-
-
-
-
   if ((((pColumn)->flags & (u32)(0x000020)) != 0))
     return;
   if (sqlite3ExprAffinity(pValue) != 0)
@@ -25,7 +21,6 @@ void constInsert(WhereConst *pConst, Expr *pColumn, Expr *pValue, Expr *pExpr) {
       return;
     }
   }
-
 
   if (sqlite3ExprAffinity(pColumn) <= 0x41) {
     pConst->bHasAffBlob = 1;
@@ -59,9 +54,6 @@ void findConstInWhere(WhereConst *pConst, Expr *pExpr) {
     return;
   pRight = pExpr->pRight;
   pLeft = pExpr->pLeft;
-
-
-
 
   if (pRight->op == 168 && sqlite3ExprIsConstant(pConst->pParse, pLeft)) {
     constInsert(pConst, pRight, pLeft, pExpr);

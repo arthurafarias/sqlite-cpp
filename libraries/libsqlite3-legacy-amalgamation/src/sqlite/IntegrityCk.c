@@ -37,7 +37,7 @@ void checkAppendMsg(IntegrityCk *pCheck, const char *zFormat, ...) {
   pCheck->mxErr--;
   pCheck->nErr++;
 
-  __builtin_c23_va_start(
+  va_start(
 
       ap, zFormat
 
@@ -52,7 +52,7 @@ void checkAppendMsg(IntegrityCk *pCheck, const char *zFormat, ...) {
   }
   sqlite3_str_vappendf(&pCheck->errMsg, zFormat, ap);
 
-  __builtin_va_end(
+  va_end(
 
       ap
 
@@ -64,21 +64,9 @@ void checkAppendMsg(IntegrityCk *pCheck, const char *zFormat, ...) {
   }
 }
 
-int getPageReferenced(IntegrityCk *pCheck, Pgno iPg) {
+int getPageReferenced(IntegrityCk *pCheck, Pgno iPg) { return (pCheck->aPgRef[iPg / 8] & (1 << (iPg & 0x07))); }
 
-
-
-
-  return (pCheck->aPgRef[iPg / 8] & (1 << (iPg & 0x07)));
-}
-
-void setPageReferenced(IntegrityCk *pCheck, Pgno iPg) {
-
-
-
-
-  pCheck->aPgRef[iPg / 8] |= (1 << (iPg & 0x07));
-}
+void setPageReferenced(IntegrityCk *pCheck, Pgno iPg) { pCheck->aPgRef[iPg / 8] |= (1 << (iPg & 0x07)); }
 
 int checkRef(IntegrityCk *pCheck, Pgno iPage) {
   if (iPage > pCheck->nCkPage || iPage == 0) {
@@ -235,17 +223,13 @@ int checkTreePage(IntegrityCk *pCheck, Pgno iPage, i64 *piMinKey, i64 maxKey) {
   pCheck->zPfx = "Tree %u page %u cell %u: ";
   contentOffset = (((((int)((&data[hdr + 5])[0] << 8 | (&data[hdr + 5])[1])) - 1) & 0xffff) + 1);
 
-
-
   nCell = ((&data[hdr + 3])[0] << 8 | (&data[hdr + 3])[1]);
-
 
   if (pPage->leaf || pPage->intKey == 0) {
     pCheck->nRow += nCell;
   }
 
   cellStart = hdr + 12 - 4 * pPage->leaf;
-
 
   pCellIdx = &data[cellStart + 2 * (nCell - 1)];
 

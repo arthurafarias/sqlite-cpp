@@ -5,7 +5,11 @@ extern "C" {
 #endif
 
 #include "sqlite/i64.h"
+#include "sqlite/sqlite3_int64.h"
 #include "sqlite/sqlite_int64.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+typedef struct PmaWriter PmaWriter;
 
 typedef struct sqlite3_file sqlite3_file;
 typedef struct sqlite3_io_methods sqlite3_io_methods;

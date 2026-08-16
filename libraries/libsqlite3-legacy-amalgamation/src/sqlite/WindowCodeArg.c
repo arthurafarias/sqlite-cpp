@@ -189,7 +189,6 @@ void windowFullScan(WindowCodeArg *p) {
 
   ;
 
-
   csr = pMWin->csrApp;
   nPeer = (pMWin->pOrderBy ? pMWin->pOrderBy->nExpr : 0);
 
@@ -350,9 +349,6 @@ void windowCodeRangeTest(WindowCodeArg *p, int op, int csr1, int regVal, int csr
   windowReadPeerValues(p, csr1, reg1);
   windowReadPeerValues(p, csr2, reg2);
 
-
-
-
   if (pOrderBy->a[0].fg.sortFlags & 0x01) {
     switch (op) {
     case 58:
@@ -420,7 +416,6 @@ void windowCodeRangeTest(WindowCodeArg *p, int op, int csr1, int regVal, int csr
   sqlite3VdbeAppendP4(v, (void *)pColl, (-2));
   sqlite3VdbeChangeP5(v, 0x80);
   sqlite3VdbeResolveLabel(v, addrDone);
-
 
   ;
   ;

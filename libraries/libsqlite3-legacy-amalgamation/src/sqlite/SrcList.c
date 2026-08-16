@@ -4,12 +4,6 @@ int tableAndColumnIndex(SrcList *pSrc, int iStart, int iEnd, const char *zCol, i
   int i;
   int iCol;
 
-
-
-
-
-
-
   for (i = iStart; i <= iEnd; i++) {
     iCol = sqlite3ColumnIndex(pSrc->a[i].pSTab, zCol);
     if (iCol >= 0 && (bIgnoreHidden == 0 || (((&pSrc->a[i].pSTab->aCol[iCol])->colFlags & 0x0002) != 0) == 0)) {
@@ -28,9 +22,7 @@ SrcItem *isSelfJoinView(SrcList *pTabList, SrcItem *pThis, int iFirst, int iEnd)
   SrcItem *pItem;
   Select *pSel;
 
-
   pSel = pThis->u4.pSubq->pSelect;
-
 
   if (pSel->selFlags & 0x1000000)
     return 0;
@@ -88,9 +80,6 @@ void whereCombineDisjuncts(SrcList *pSrc, WhereClause *pWC, WhereTerm *pOne, Whe
   pA = pOne->pExpr;
   pB = pTwo->pExpr;
 
-
-
-
   if (sqlite3ExprCompare(0, pA->pLeft, pB->pLeft, -1))
     return;
   if (sqlite3ExprCompare(0, pA->pRight, pB->pRight, -1))
@@ -138,9 +127,6 @@ void exprAnalyzeOrTerm(SrcList *pSrc, WhereClause *pWC, int idxTerm) {
   Bitmask chngToIN;
   Bitmask indexable;
 
-
-
-
   pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, sizeof(*pOrInfo));
   if (pOrInfo == 0)
     return;
@@ -152,8 +138,6 @@ void exprAnalyzeOrTerm(SrcList *pSrc, WhereClause *pWC, int idxTerm) {
   sqlite3WhereExprAnalyze(pSrc, pOrWc);
   if (db->mallocFailed)
     return;
-
-
 
   indexable = ~(Bitmask)0;
   chngToIN = ~(Bitmask)0;
@@ -401,11 +385,6 @@ __attribute__((noinline)) int exprMightBeIndexed2(SrcList *pFrom, int *aiCurCol,
 int exprMightBeIndexed(SrcList *pFrom, int *aiCurCol, Expr *pExpr, int op) {
   int i;
 
-
-
-
-
-
   if (pExpr->op == 177 && (op >= 55 && (op <= 58))) {
 
     ((void)(0))
@@ -452,14 +431,10 @@ void exprAnalyze(SrcList *pSrc, WhereClause *pWC, int idxTerm) {
     return;
   }
 
-
   pTerm = &pWC->a[idxTerm];
 
   pMaskSet = &pWInfo->sMaskSet;
   pExpr = pTerm->pExpr;
-
-
-
 
   pMaskSet->bVarSelect = 0;
   prereqLeft = sqlite3WhereExprUsage(pMaskSet, pExpr->pLeft);

@@ -4,7 +4,6 @@ void populateCellCache(CellArray *p, int idx, int N) {
   MemPage *pRef = p->pRef;
   u16 *szCell = p->szCell;
 
-
   while (N > 0) {
 
     ((void)(0))
@@ -25,15 +24,11 @@ void populateCellCache(CellArray *p, int idx, int N) {
 
 __attribute__((noinline)) u16 computeCellSize(CellArray *p, int N) {
 
-
-
-
   p->szCell[N] = p->pRef->xCellSize(p->pRef, p->apCell[N]);
   return p->szCell[N];
 }
 
 u16 cachedCellSize(CellArray *p, int N) {
-
 
   if (p->szCell[N])
     return p->szCell[N];
@@ -54,15 +49,11 @@ int rebuildPage(CellArray *pCArray, int iFirst, int nCell, MemPage *pPg) {
   int k;
   u8 *pSrcEnd;
 
-
-
-
   j = ((&aData[hdr + 5])[0] << 8 | (&aData[hdr + 5])[1]);
   if (j > (u32)usableSize) {
     j = 0;
   }
   memcpy(&pTmp[j], &aData[j], usableSize - j);
-
 
   for (k = 0; pCArray->ixNx[k] <= i; k++) {
   }
@@ -102,7 +93,6 @@ int rebuildPage(CellArray *pCArray, int iFirst, int nCell, MemPage *pPg) {
       pSrcEnd = pCArray->apEnd[k];
     }
   }
-
 
   pPg->nCell = (u16)nCell;
   pPg->nOverflow = 0;

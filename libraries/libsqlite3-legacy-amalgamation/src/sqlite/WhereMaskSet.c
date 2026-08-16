@@ -89,11 +89,6 @@ Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList) {
 Bitmask sqlite3WhereGetMask(WhereMaskSet *pMaskSet, int iCursor) {
   int i;
 
-
-
-
-
-
   if (pMaskSet->ix[0] == iCursor) {
     return 1;
   }
@@ -105,8 +100,4 @@ Bitmask sqlite3WhereGetMask(WhereMaskSet *pMaskSet, int iCursor) {
   return 0;
 }
 
-void createMask(WhereMaskSet *pMaskSet, int iCursor) {
-
-
-  pMaskSet->ix[pMaskSet->n++] = iCursor;
-}
+void createMask(WhereMaskSet *pMaskSet, int iCursor) { pMaskSet->ix[pMaskSet->n++] = iCursor; }

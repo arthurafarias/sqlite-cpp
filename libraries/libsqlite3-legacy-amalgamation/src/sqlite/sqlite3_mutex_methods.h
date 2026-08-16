@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
   typedef struct sqlite3_mutex_methods sqlite3_mutex_methods;
   typedef struct sqlite3_mutex sqlite3_mutex;
 

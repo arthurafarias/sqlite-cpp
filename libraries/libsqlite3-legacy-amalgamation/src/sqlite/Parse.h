@@ -10,12 +10,59 @@ extern C {
 #include "sqlite/AutoincInfo.h"
 #include "sqlite/Token.h"
 
+#include "sqlite/BitMask.h"
 #include "sqlite/LogEst.h"
+#include "sqlite/Pgno.h"
 #include "sqlite/Returning.h"
 #include "sqlite/TriggerPrg.h"
 #include "sqlite/VList.h"
 #include "sqlite/bft.h"
+#include "sqlite/i16.h"
+#include "sqlite/i8.h"
+#include "sqlite/u16.h"
 #include "sqlite/yDbMask.h"
+#include "sqlite/ynVar.h"
+  typedef struct AggInfo AggInfo;
+  typedef struct AuthContext AuthContext;
+  typedef struct CollSeq CollSeq;
+  typedef struct Column Column;
+  typedef struct Cte Cte;
+  typedef struct DateTime DateTime;
+  typedef struct DistinctCtx DistinctCtx;
+  typedef struct Expr Expr;
+  typedef struct FKey FKey;
+  typedef struct FuncDef FuncDef;
+  typedef struct IdList IdList;
+  typedef struct Index Index;
+  typedef struct KeyInfo KeyInfo;
+  typedef struct Module Module;
+  typedef struct NameContext NameContext;
+  typedef struct OnOrUsing OnOrUsing;
+  typedef struct ParseCleanup ParseCleanup;
+  typedef struct RenameCtx RenameCtx;
+  typedef struct RenameToken RenameToken;
+  typedef struct RowLoadInfo RowLoadInfo;
+  typedef struct Schema Schema;
+  typedef struct Select Select;
+  typedef struct SelectDest SelectDest;
+  typedef struct SortCtx SortCtx;
+  typedef struct SrcItem SrcItem;
+  typedef struct SrcList SrcList;
+  typedef struct SubrtnSig SubrtnSig;
+  typedef struct Trigger Trigger;
+  typedef struct TriggerStep TriggerStep;
+  typedef struct Upsert Upsert;
+  typedef struct Walker Walker;
+  typedef struct WhereClause WhereClause;
+  typedef struct WhereInfo WhereInfo;
+  typedef struct WhereLevel WhereLevel;
+  typedef struct WhereLoop WhereLoop;
+  typedef struct WhereLoopBuilder WhereLoopBuilder;
+  typedef struct WhereTerm WhereTerm;
+  typedef struct Window Window;
+  typedef struct With With;
+  typedef struct sqlite3_index_info sqlite3_index_info;
+  typedef struct sqlite3_vfs sqlite3_vfs;
 
   typedef struct sqlite3 sqlite3;
   typedef struct Vdbe Vdbe;

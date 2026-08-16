@@ -4,8 +4,7 @@
 extern "C" {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/etByte.h"
 typedef struct et_info et_info;
 
 struct et_info {

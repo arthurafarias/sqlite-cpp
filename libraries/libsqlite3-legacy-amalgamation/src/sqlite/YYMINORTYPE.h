@@ -18,6 +18,8 @@ extern "C" {
 #include "sqlite/Upsert.h"
 #include "sqlite/Window.h"
 #include "sqlite/With.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 
 typedef union YYMINORTYPE YYMINORTYPE;
 

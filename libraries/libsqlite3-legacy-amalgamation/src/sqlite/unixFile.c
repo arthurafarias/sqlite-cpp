@@ -13,7 +13,6 @@ void closePendingFds(unixFile *pFile) {
   UnixUnusedFd *p;
   UnixUnusedFd *pNext;
 
-
   for (p = pInode->pUnused; p; p = pNext) {
     pNext = p->pNext;
     robust_close(pFile, p->fd, 41675);
@@ -24,9 +23,6 @@ void closePendingFds(unixFile *pFile) {
 
 void releaseInodeInfo(unixFile *pFile) {
   unixInodeInfo *pInode = pFile->pInode;
-
-
-
 
   if ((pInode)) {
     pInode->nRef--;
@@ -71,8 +67,6 @@ int findInodeInfo(unixFile *pFile, unixInodeInfo **ppInode) {
   struct stat statbuf;
   unixInodeInfo *pInode = 0;
 
-
-
   fd = pFile->h;
   rc = ((int (*)(int, struct stat *))aSyscall[5].pCurrent)(fd, &statbuf);
   if (rc != 0) {
@@ -89,7 +83,6 @@ int findInodeInfo(unixFile *pFile, unixInodeInfo **ppInode) {
   fileId.dev = statbuf.st_dev;
 
   fileId.ino = (u64)statbuf.st_ino;
-
 
   pInode = inodeList;
   while (pInode && memcmp(&fileId, &pInode->fileId, sizeof(fileId))) {
@@ -162,9 +155,6 @@ int unixFileLock(unixFile *pFile, struct flock *pLock) {
   int rc;
   unixInodeInfo *pInode = pFile->pInode;
 
-
-
-
   if ((pFile->ctrlFlags & (0x01 | 0x02)) == 0x01) {
     if (pInode->bProcessLock == 0) {
       struct flock lock;
@@ -210,7 +200,6 @@ void setPendingFd(unixFile *pFile) {
   unixInodeInfo *pInode = pFile->pInode;
   UnixUnusedFd *p = pFile->pPreallocatedUnused;
 
-
   p->pNext = pInode->pUnused;
   pInode->pUnused = p;
   pFile->h = -1;
@@ -222,9 +211,6 @@ int seekAndRead(unixFile *id, sqlite3_int64 offset, void *pBuf, int cnt) {
   int prior = 0;
 
   ;
-
-
-
 
   do {
 
@@ -335,7 +321,6 @@ void unixModeBit(unixFile *pFile, unsigned char mask, int *pArg) {
 
 void setDeviceCharacteristics(unixFile *pFd) {
 
-
   if (pFd->sectorSize == 0) {
 
     if (pFd->ctrlFlags & 0x10) {
@@ -398,8 +383,6 @@ int unixIsSharingShmNode(unixFile *pFile) {
     return 0;
   pShmNode = pFile->pShm->pShmNode;
 
-
-
   memset(&lock, 0, sizeof(lock));
   lock.l_whence =
 
@@ -433,9 +416,6 @@ int unixShmSystemLock(unixFile *pFile, int lockType, int ofst, int n) {
 
   pShmNode = pFile->pInode->pShmNode;
 
-
-
-
   if (ofst == (((22 + 8) * 4) + 8)) {
 
     ((void)(0))
@@ -455,14 +435,6 @@ int unixShmSystemLock(unixFile *pFile, int lockType, int ofst, int n) {
 
         ;
   }
-
-
-
-
-
-
-
-
 
   if (pShmNode->hShm >= 0) {
     int res;
@@ -492,7 +464,6 @@ int unixShmSystemLock(unixFile *pFile, int lockType, int ofst, int n) {
 
 void unixShmPurge(unixFile *pFd) {
   unixShmNode *p = pFd->pInode->pShmNode;
-
 
   if (p && (p->nRef == 0)) {
     int nShmPerMap = unixShmRegionPerMap();
@@ -600,9 +571,6 @@ int unixOpenSharedMemory(unixFile *pDbFd) {
     return 7;
   memset(p, 0, sizeof(*p));
 
-
-
-
   unixEnterMutex();
   pInode = pDbFd->pInode;
   pShmNode = pInode->pShmNode;
@@ -704,7 +672,6 @@ shm_open_err:
 
 void unixUnmapfile(unixFile *pFd) {
 
-
   if (pFd->pMapRegion) {
     ((int (*)(void *, size_t))aSyscall[23].pCurrent)(pFd->pMapRegion, pFd->mmapSizeActual);
     pFd->pMapRegion = 0;
@@ -724,18 +691,6 @@ void unixRemapfile(unixFile *pFd, i64 nNew) {
       0x1
 
       ;
-
-
-
-
-
-
-
-
-
-
-
-
 
   if (pOrig) {
 
@@ -789,9 +744,6 @@ void unixRemapfile(unixFile *pFd, i64 nNew) {
 
 int unixMapfile(unixFile *pFd, i64 nMap) {
 
-
-
-
   if (pFd->nFetchOut > 0)
     return 0;
 
@@ -805,7 +757,6 @@ int unixMapfile(unixFile *pFd, i64 nMap) {
   if (nMap > pFd->mmapSizeMax) {
     nMap = pFd->mmapSizeMax;
   }
-
 
   if (nMap != pFd->mmapSize) {
     unixRemapfile(pFd, nMap);

@@ -2,7 +2,6 @@
 
 void sqlite3HashInit(Hash *pNew) {
 
-
   pNew->first = 0;
   pNew->count = 0;
   pNew->htsize = 0;
@@ -11,7 +10,6 @@ void sqlite3HashInit(Hash *pNew) {
 
 void sqlite3HashClear(Hash *pH) {
   HashElem *elem;
-
 
   elem = pH->first;
   pH->first = 0;
@@ -149,21 +147,12 @@ void removeElement(Hash *pH, HashElem *elem) {
   }
 }
 
-void *sqlite3HashFind(const Hash *pH, const char *pKey) {
-
-
-
-
-  return findElementWithHash(pH, pKey, 0)->data;
-}
+void *sqlite3HashFind(const Hash *pH, const char *pKey) { return findElementWithHash(pH, pKey, 0)->data; }
 
 void *sqlite3HashInsert(Hash *pH, const char *pKey, void *data) {
   unsigned int h;
   HashElem *elem;
   HashElem *new_elem;
-
-
-
 
   elem = findElementWithHash(pH, pKey, &h);
   if (elem->data) {

@@ -46,16 +46,7 @@ void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls) {
   if (p == 0)
     return;
 
-
-
-
-
-
-
-
-
   pItem = &p->a[p->nExpr - 1];
-
 
   if (iSortOrder == -1) {
     iSortOrder = 0;
@@ -73,7 +64,6 @@ void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls) {
 u32 sqlite3ExprListFlags(const ExprList *pList) {
   int i;
   u32 m = 0;
-
 
   for (i = 0; i < pList->nExpr; i++) {
     Expr *pExpr = pList->a[i].pExpr;
@@ -108,7 +98,6 @@ int sqlite3ExprListCompare(const ExprList *pA, const ExprList *pB, int iTab) {
 
 void renameSetENames(ExprList *pEList, int val) {
 
-
   if (pEList) {
     int i;
     for (i = 0; i < pEList->nExpr; i++) {
@@ -122,7 +111,6 @@ void renameSetENames(ExprList *pEList, int val) {
 }
 
 int sqlite3CopySortOrder(ExprList *p1, ExprList *p2) {
-
 
   if (p2 && p1->nExpr == p2->nExpr) {
     int ii;

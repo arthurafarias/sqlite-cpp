@@ -4,10 +4,26 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Mem.h"
 #include "sqlite/u16.h"
+  typedef struct CheckOnCtx CheckOnCtx;
+  typedef struct CoveringIndexCheck CoveringIndexCheck;
+  typedef struct DbFixer DbFixer;
+  typedef struct Expr Expr;
+  typedef struct ExprList ExprList;
+  typedef struct IdxCover IdxCover;
+  typedef struct NameContext NameContext;
+  typedef struct Parse Parse;
+  typedef struct RefSrcList RefSrcList;
+  typedef struct RenameCtx RenameCtx;
+  typedef struct Select Select;
+  typedef struct SrcItem SrcItem;
+  typedef struct SrcList SrcList;
+  typedef struct Table Table;
+  typedef struct Trigger Trigger;
+  typedef struct WhereConst WhereConst;
+  typedef struct Window Window;
+  typedef struct WindowRewrite WindowRewrite;
 
   typedef struct Walker Walker;
 

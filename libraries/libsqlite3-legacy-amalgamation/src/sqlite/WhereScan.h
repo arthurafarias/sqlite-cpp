@@ -4,8 +4,12 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/i16.h"
+#include "sqlite/u32.h"
+  typedef struct Expr Expr;
+  typedef struct Index Index;
+  typedef struct WhereClause WhereClause;
+  typedef struct WhereTerm WhereTerm;
   typedef struct WhereScan WhereScan;
   struct WhereScan {
     WhereClause *pOrigWC;

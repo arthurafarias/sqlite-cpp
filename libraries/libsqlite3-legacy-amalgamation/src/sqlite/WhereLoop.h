@@ -5,7 +5,14 @@ extern C {
 #endif
 
 #include "sqlite/BitMask.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/i8.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct ExprList ExprList;
+  typedef struct Index Index;
+  typedef struct WhereTerm WhereTerm;
 
   typedef struct WhereLoop WhereLoop;
 

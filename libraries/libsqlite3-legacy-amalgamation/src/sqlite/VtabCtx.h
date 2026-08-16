@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct Table Table;
+  typedef struct VTable VTable;
   typedef struct VtabCtx VtabCtx;
   struct VtabCtx {
     VTable *pVTable;

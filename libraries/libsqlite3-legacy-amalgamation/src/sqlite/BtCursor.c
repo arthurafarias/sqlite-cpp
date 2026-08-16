@@ -18,12 +18,6 @@ void btreeReleaseAllCursorPages(BtCursor *pCur) {
 int saveCursorKey(BtCursor *pCur) {
   int rc = 0;
 
-
-
-
-
-
-
   if (pCur->curIntKey) {
 
     pCur->nKey = sqlite3BtreeIntegerKey(pCur);
@@ -45,18 +39,11 @@ int saveCursorKey(BtCursor *pCur) {
     }
   }
 
-
   return rc;
 }
 
 int saveCursorPosition(BtCursor *pCur) {
   int rc;
-
-
-
-
-
-
 
   if (pCur->curFlags & 0x40) {
     return (19 | (11 << 8));
@@ -97,7 +84,6 @@ int __attribute__((noinline)) saveCursorsOnList(BtCursor *p, Pgno iRoot, BtCurso
 
 void sqlite3BtreeClearCursor(BtCursor *pCur) {
 
-
   sqlite3_free(pCur->pKey);
   pCur->pKey = 0;
   pCur->eState = 1;
@@ -134,9 +120,6 @@ int btreeRestoreCursorPosition(BtCursor *pCur) {
   int rc;
   int skipNext = 0;
 
-
-
-
   if (pCur->eState == 4) {
     return pCur->skipNext;
   }
@@ -162,21 +145,10 @@ int btreeRestoreCursorPosition(BtCursor *pCur) {
   return rc;
 }
 
-int sqlite3BtreeCursorHasMoved(BtCursor *pCur) {
-
-
-
-
-
-
-  return 0 != *(u8 *)pCur;
-}
+int sqlite3BtreeCursorHasMoved(BtCursor *pCur) { return 0 != *(u8 *)pCur; }
 
 int sqlite3BtreeCursorRestore(BtCursor *pCur, int *pDifferentRow) {
   int rc;
-
-
-
 
   rc = (pCur->eState >= 3 ? btreeRestoreCursorPosition(pCur) : 0);
   if (rc) {
@@ -191,11 +163,7 @@ int sqlite3BtreeCursorRestore(BtCursor *pCur, int *pDifferentRow) {
   return 0;
 }
 
-void sqlite3BtreeCursorHintFlags(BtCursor *pCur, unsigned x) {
-
-
-  pCur->hints = (u8)x;
-}
+void sqlite3BtreeCursorHintFlags(BtCursor *pCur, unsigned x) { pCur->hints = (u8)x; }
 
 void sqlite3BtreeCursorZero(BtCursor *p) {
   memset(p, 0,
@@ -261,39 +229,19 @@ __attribute__((noinline)) void getCellInfo(BtCursor *pCur) {
   }
 }
 
-int sqlite3BtreeCursorIsValidNN(BtCursor *pCur) {
-
-
-  return pCur->eState == 0;
-}
+int sqlite3BtreeCursorIsValidNN(BtCursor *pCur) { return pCur->eState == 0; }
 
 i64 sqlite3BtreeIntegerKey(BtCursor *pCur) {
-
-
-
-
-
 
   getCellInfo(pCur);
   return pCur->info.nKey;
 }
 
-void sqlite3BtreeCursorPin(BtCursor *pCur) {
+void sqlite3BtreeCursorPin(BtCursor *pCur) { pCur->curFlags |= 0x40; }
 
-
-  pCur->curFlags |= 0x40;
-}
-
-void sqlite3BtreeCursorUnpin(BtCursor *pCur) {
-
-
-  pCur->curFlags &= ~0x40;
-}
+void sqlite3BtreeCursorUnpin(BtCursor *pCur) { pCur->curFlags &= ~0x40; }
 
 i64 sqlite3BtreeOffset(BtCursor *pCur) {
-
-
-
 
   getCellInfo(pCur);
   return (i64)pCur->pBt->pageSize * ((i64)pCur->pPage->pgno - 1) + (i64)(pCur->info.pPayload - pCur->pPage->aData);
@@ -301,20 +249,11 @@ i64 sqlite3BtreeOffset(BtCursor *pCur) {
 
 u32 sqlite3BtreePayloadSize(BtCursor *pCur) {
 
-
-
-
   getCellInfo(pCur);
   return pCur->info.nPayload;
 }
 
-sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor *pCur) {
-
-
-
-
-  return pCur->pBt->pageSize * (sqlite3_int64)pCur->pBt->nPage;
-}
+sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor *pCur) { return pCur->pBt->pageSize * (sqlite3_int64)pCur->pBt->nPage; }
 
 int accessPayload(BtCursor *pCur, u32 offset, u32 amt, unsigned char *pBuf, int eOp) {
   unsigned char *aPayload;
@@ -325,22 +264,12 @@ int accessPayload(BtCursor *pCur, u32 offset, u32 amt, unsigned char *pBuf, int 
 
   unsigned char *const pBufStart = pBuf;
 
-
-
-
-
-
   if (pCur->ix >= pPage->nCell) {
     return sqlite3CorruptError(78370);
   }
 
-
-
   getCellInfo(pCur);
   aPayload = pCur->info.pPayload;
-
-
-
 
   if ((uptr)(aPayload - pPage->aData) > (pBt->usableSize - pCur->info.nLocal)) {
 
@@ -484,22 +413,13 @@ int accessPayload(BtCursor *pCur, u32 offset, u32 amt, unsigned char *pBuf, int 
   return rc;
 }
 
-int sqlite3BtreePayload(BtCursor *pCur, u32 offset, u32 amt, void *pBuf) {
-
-
-
-
-
-
-  return accessPayload(pCur, offset, amt, (unsigned char *)pBuf, 0);
-}
+int sqlite3BtreePayload(BtCursor *pCur, u32 offset, u32 amt, void *pBuf) { return accessPayload(pCur, offset, amt, (unsigned char *)pBuf, 0); }
 
 __attribute__((noinline)) int accessPayloadChecked(BtCursor *pCur, u32 offset, u32 amt, void *pBuf) {
   int rc;
   if (pCur->eState == 1) {
     return 4;
   }
-
 
   rc = btreeRestoreCursorPosition(pCur);
   return rc ? rc : accessPayload(pCur, offset, amt, pBuf, 0);
@@ -520,21 +440,6 @@ int sqlite3BtreePayloadChecked(BtCursor *pCur, u32 offset, u32 amt, void *pBuf) 
 const void *fetchPayload(BtCursor *pCur, u32 *pAmt) {
   int amt;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   amt = pCur->info.nLocal;
   if (amt > (int)(pCur->pPage->aDataEnd - pCur->info.pPayload)) {
 
@@ -552,13 +457,6 @@ const void *sqlite3BtreePayloadFetch(BtCursor *pCur, u32 *pAmt) { return fetchPa
 int moveToChild(BtCursor *pCur, u32 newPgno) {
   int rc;
 
-
-
-
-
-
-
-
   if (pCur->iPage >= (20 - 1)) {
     return sqlite3CorruptError(78686);
   }
@@ -569,7 +467,6 @@ int moveToChild(BtCursor *pCur, u32 newPgno) {
   pCur->ix = 0;
   pCur->iPage++;
   rc = getAndInitPage(pCur->pBt, newPgno, &pCur->pPage, pCur->curPagerFlags);
-
 
   if (rc == 0 && (pCur->pPage->nCell < 1 || pCur->pPage->intKey != pCur->curIntKey)) {
     releasePage(pCur->pPage);
@@ -584,14 +481,6 @@ int moveToChild(BtCursor *pCur, u32 newPgno) {
 void moveToParent(BtCursor *pCur) {
   MemPage *pLeaf;
 
-
-
-
-
-
-
-
-
   ;
   ;
   pCur->info.nSize = 0;
@@ -605,18 +494,6 @@ void moveToParent(BtCursor *pCur) {
 int moveToRoot(BtCursor *pCur) {
   MemPage *pRoot;
   int rc = 0;
-
-
-
-
-
-
-
-
-
-
-
-
 
   if (pCur->iPage >= 0) {
     if (pCur->iPage) {
@@ -655,9 +532,6 @@ int moveToRoot(BtCursor *pCur) {
   }
   pRoot = pCur->pPage;
 
-
-
-
   if (pRoot->isInit == 0 || (pCur->pKeyInfo == 0) != pRoot->intKey) {
     return sqlite3CorruptError(78835);
   }
@@ -688,9 +562,6 @@ int moveToLeftmost(BtCursor *pCur) {
   int rc = 0;
   MemPage *pPage;
 
-
-
-
   while (rc == 0 && !(pPage = pCur->pPage)->leaf) {
 
     ((void)(0))
@@ -707,9 +578,6 @@ int moveToRightmost(BtCursor *pCur) {
   int rc = 0;
   MemPage *pPage = 0;
 
-
-
-
   while (!(pPage = pCur->pPage)->leaf) {
     pgno = sqlite3Get4byte(&pPage->aData[pPage->hdrOffset + 8]);
     pCur->ix = pPage->nCell;
@@ -719,17 +587,11 @@ int moveToRightmost(BtCursor *pCur) {
   }
   pCur->ix = pPage->nCell - 1;
 
-
-
-
   return 0;
 }
 
 int sqlite3BtreeFirst(BtCursor *pCur, int *pRes) {
   int rc;
-
-
-
 
   rc = moveToRoot(pCur);
   if (rc == 0) {
@@ -752,9 +614,6 @@ int sqlite3BtreeFirst(BtCursor *pCur, int *pRes) {
 
 int sqlite3BtreeIsEmpty(BtCursor *pCur, int *pRes) {
   int rc;
-
-
-
 
   if ((pCur->eState == 0)) {
     *pRes = 0;
@@ -797,10 +656,6 @@ __attribute__((noinline)) int btreeLast(BtCursor *pCur, int *pRes) {
 
 int sqlite3BtreeLast(BtCursor *pCur, int *pRes) {
 
-
-
-
-
   if (0 == pCur->eState && (pCur->curFlags & 0x08) != 0) {
 
     ((void)(0))
@@ -814,16 +669,6 @@ int sqlite3BtreeLast(BtCursor *pCur, int *pRes) {
 
 int sqlite3BtreeTableMoveto(BtCursor *pCur, i64 intKey, int biasRight, int *pRes) {
   int rc;
-
-
-
-
-
-
-
-
-
-
 
   if (pCur->eState == 0 && (pCur->curFlags & 0x02) != 0) {
     if (pCur->info.nKey == intKey) {
@@ -867,18 +712,6 @@ int sqlite3BtreeTableMoveto(BtCursor *pCur, i64 intKey, int biasRight, int *pRes
     }
     return rc;
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
   for (;;) {
     int lwr, upr, idx, c;
@@ -978,13 +811,11 @@ int sqlite3BtreeTableMoveto(BtCursor *pCur, i64 intKey, int biasRight, int *pRes
 moveto_table_finish:
   pCur->info.nSize = 0;
 
-
   return rc;
 }
 
 int cursorOnLastPage(BtCursor *pCur) {
   int i;
-
 
   for (i = 0; i < pCur->iPage; i++) {
     MemPage *pPage = pCur->apPage[i];
@@ -998,18 +829,8 @@ int sqlite3BtreeIndexMoveto(BtCursor *pCur, UnpackedRecord *pIdxKey, int *pRes) 
   int rc;
   RecordCompare xRecordCompare;
 
-
-
-
-
-
-
-
-
   xRecordCompare = sqlite3VdbeFindCompare(pIdxKey);
   pIdxKey->errCode = 0;
-
-
 
   if (pCur->eState == 0 && pCur->pPage->leaf && cursorOnLastPage(pCur)) {
     int c;
@@ -1041,17 +862,6 @@ int sqlite3BtreeIndexMoveto(BtCursor *pCur, UnpackedRecord *pIdxKey, int *pRes) 
   }
 
 bypass_moveto_root:
-
-
-
-
-
-
-
-
-
-
-
 
   for (;;) {
     int lwr, upr, idx, c;
@@ -1189,7 +999,6 @@ bypass_moveto_root:
 moveto_index_finish:
   pCur->info.nSize = 0;
 
-
   return rc;
 }
 
@@ -1198,10 +1007,6 @@ int sqlite3BtreeEof(BtCursor *pCur) { return (0 != pCur->eState); }
 i64 sqlite3BtreeRowCountEst(BtCursor *pCur) {
   i64 n;
   u8 i;
-
-
-
-
 
   if (pCur->eState != 0)
     return 0;
@@ -1219,7 +1024,6 @@ __attribute__((noinline)) int btreeNext(BtCursor *pCur) {
   int rc;
   int idx;
   MemPage *pPage;
-
 
   if (pCur->eState != 0) {
 
@@ -1280,9 +1084,6 @@ int sqlite3BtreeNext(BtCursor *pCur, int flags) {
   MemPage *pPage;
   (void)(flags);
 
-
-
-
   pCur->info.nSize = 0;
   pCur->curFlags &= ~(0x02 | 0x04);
   if (pCur->eState != 0)
@@ -1302,11 +1103,6 @@ int sqlite3BtreeNext(BtCursor *pCur, int flags) {
 __attribute__((noinline)) int btreePrevious(BtCursor *pCur) {
   int rc;
   MemPage *pPage;
-
-
-
-
-
 
   if (pCur->eState != 0) {
     rc = (pCur->eState >= 3 ? btreeRestoreCursorPosition(pCur) : 0);
@@ -1364,9 +1160,6 @@ __attribute__((noinline)) int btreePrevious(BtCursor *pCur) {
 }
 
 int sqlite3BtreePrevious(BtCursor *pCur, int flags) {
-
-
-
 
   (void)(flags);
   pCur->curFlags &= ~(0x08 | 0x04 | 0x02);
@@ -1489,16 +1282,11 @@ __attribute__((noinline)) int btreeOverwriteOverflowCell(BtCursor *pCur, const B
   Pgno ovflPgno;
   u32 ovflPageSize;
 
-
-
   rc = btreeOverwriteContent(pPage, pCur->info.pPayload, pX, 0, pCur->info.nLocal);
   if (rc)
     return rc;
 
   iOffset = pCur->info.nLocal;
-
-
-
 
   ovflPgno = sqlite3Get4byte(pCur->info.pPayload + iOffset);
   pBt = pPage->pBt;
@@ -1551,10 +1339,6 @@ int sqlite3BtreeInsert(BtCursor *pCur, const BtreePayload *pX, int flags, int se
   unsigned char *oldCell;
   unsigned char *newCell = 0;
 
-
-
-
-
   if (pCur->curFlags & 0x20) {
     rc = saveAllCursors(p->pBt, pCur->pgnoRoot, pCur);
     if (rc)
@@ -1572,14 +1356,6 @@ int sqlite3BtreeInsert(BtCursor *pCur, const BtreePayload *pX, int flags, int se
     if (rc && rc != 16)
       return rc;
   }
-
-
-
-
-
-
-
-
 
   if (pCur->pKeyInfo == 0) {
 
@@ -1648,12 +1424,7 @@ int sqlite3BtreeInsert(BtCursor *pCur, const BtreePayload *pX, int flags, int se
     }
   }
 
-
-
   pPage = pCur->pPage;
-
-
-
 
   if (pPage->nFree < 0) {
     if ((pCur->eState > 1)) {
@@ -1668,11 +1439,7 @@ int sqlite3BtreeInsert(BtCursor *pCur, const BtreePayload *pX, int flags, int se
 
   ;
 
-
   newCell = p->pBt->pTmpSpace;
-
-
-
 
   if (flags & 0x80) {
     rc = 0;
@@ -1696,9 +1463,6 @@ int sqlite3BtreeInsert(BtCursor *pCur, const BtreePayload *pX, int flags, int se
     if (rc)
       goto end_insert;
   }
-
-
-
 
   idx = pCur->ix;
   pCur->info.nSize = 0;
@@ -1759,10 +1523,6 @@ int sqlite3BtreeInsert(BtCursor *pCur, const BtreePayload *pX, int flags, int se
   }
   rc = insertCellFast(pPage, idx, newCell, szNew);
 
-
-
-
-
   if (pPage->nOverflow) {
 
     ((void)(0))
@@ -1791,8 +1551,6 @@ int sqlite3BtreeInsert(BtCursor *pCur, const BtreePayload *pX, int flags, int se
       pCur->nKey = pX->nKey;
     }
   }
-
-
 
 end_insert:
   return rc;
@@ -1910,19 +1668,6 @@ int sqlite3BtreeDelete(BtCursor *pCur, u8 flags) {
   CellInfo info;
   u8 bPreserve;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   if (pCur->eState != 0) {
     if (pCur->eState >= 3) {
       rc = btreeRestoreCursorPosition(pCur);
@@ -1936,8 +1681,6 @@ int sqlite3BtreeDelete(BtCursor *pCur, u8 flags) {
       return sqlite3CorruptError(83090);
     }
   }
-
-
 
   iCellDepth = pCur->iPage;
   iCellIdx = pCur->ix;
@@ -2036,9 +1779,6 @@ int sqlite3BtreeDelete(BtCursor *pCur, u8 flags) {
       return rc;
   }
 
-
-
-
   if (pCur->pPage->nFree * 3 <= (int)pCur->pBt->usableSize * 2) {
 
     rc = 0;
@@ -2094,17 +1834,10 @@ int sqlite3BtreeClearTableOfCursor(BtCursor *pCur) { return sqlite3BtreeClearTab
 int sqlite3BtreePutData(BtCursor *pCsr, u32 offset, u32 amt, void *z) {
   int rc;
 
-
-
-
-
-
-
   rc = (pCsr->eState >= 3 ? btreeRestoreCursorPosition(pCsr) : 0);
   if (rc != 0) {
     return rc;
   }
-
 
   if (pCsr->eState != 0) {
     return 4;
@@ -2112,19 +1845,9 @@ int sqlite3BtreePutData(BtCursor *pCsr, u32 offset, u32 amt, void *z) {
 
   saveAllCursors(pCsr->pBt, pCsr->pgnoRoot, pCsr);
 
-
-
   if ((pCsr->curFlags & 0x01) == 0) {
     return 8;
   }
-
-
-
-
-
-
-
-
 
   return accessPayload(pCsr, offset, amt, (unsigned char *)z, 1);
 }
@@ -2164,14 +1887,7 @@ int sqlite3VdbeMemFromBtreeZeroOffset(BtCursor *pCur, u32 amt, Mem *pMem) {
   u32 available = 0;
   int rc = 0;
 
-
-
-
-
-
   pMem->z = (char *)sqlite3BtreePayloadFetch(pCur, &available);
-
-
 
   if (amt <= available) {
     pMem->flags = 0x0010 | 0x4000;

@@ -4,8 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u32.h"
+  typedef struct SubProgram SubProgram;
+  typedef struct Trigger Trigger;
   typedef struct TriggerPrg TriggerPrg;
 
   struct TriggerPrg {

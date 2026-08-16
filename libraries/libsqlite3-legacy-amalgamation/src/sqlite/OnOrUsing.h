@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+  typedef struct Expr Expr;
+  typedef struct IdList IdList;
   typedef struct OnOrUsing OnOrUsing;
 
   struct OnOrUsing {

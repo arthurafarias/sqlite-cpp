@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/sqlite3_int64.h"
+  typedef struct sqlite3_mutex sqlite3_mutex;
   typedef struct MemStore MemStore;
   struct MemStore {
     sqlite3_int64 sz;

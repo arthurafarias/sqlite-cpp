@@ -4,8 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u8.h"
+  typedef struct ExprList ExprList;
+  typedef struct RowLoadInfo RowLoadInfo;
   typedef struct SortCtx SortCtx;
   struct SortCtx {
     ExprList *pOrderBy;

@@ -5,6 +5,8 @@ extern "C" {
 #include "sqlite/PgHdr.h"
 #include "sqlite/Pgno.h"
 #include "sqlite/u16.h"
+typedef struct BtShared BtShared;
+typedef struct MemPage MemPage;
 
 typedef struct PgHdr PgHdr;
 typedef struct PgHdr DbPage;

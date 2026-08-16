@@ -4,9 +4,21 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/Bool.h"
 #include "sqlite/Pgno.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/i8.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct BtCursor BtCursor;
+  typedef struct Btree Btree;
+  typedef struct KeyInfo KeyInfo;
+  typedef struct sqlite3_value Mem;
+  typedef struct VdbeSorter VdbeSorter;
+  typedef struct VdbeTxtBlbCache VdbeTxtBlbCache;
+  typedef struct sqlite3_vtab_cursor sqlite3_vtab_cursor;
 
   typedef struct VdbeCursor VdbeCursor;
   struct VdbeCursor {

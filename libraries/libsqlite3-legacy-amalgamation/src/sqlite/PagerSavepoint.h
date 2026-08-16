@@ -6,7 +6,9 @@ extern C {
 #endif
 
 #include "sqlite/Pgno.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/i64.h"
+#include "sqlite/u32.h"
+  typedef struct Bitvec Bitvec;
 
   typedef struct PagerSavepoint PagerSavepoint;
   struct PagerSavepoint {

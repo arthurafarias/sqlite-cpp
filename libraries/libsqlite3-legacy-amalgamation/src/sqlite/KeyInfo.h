@@ -4,8 +4,12 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct CollSeq CollSeq;
+  typedef struct UnpackedRecord UnpackedRecord;
+  typedef struct sqlite3 sqlite3;
   typedef struct KeyInfo KeyInfo;
 
   struct KeyInfo {

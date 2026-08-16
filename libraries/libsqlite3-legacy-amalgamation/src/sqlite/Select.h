@@ -6,9 +6,16 @@ extern C {
 #endif
 
 #include "sqlite/ExprList.h"
+#include "sqlite/LogEst.h"
 #include "sqlite/With.h"
 #include "sqlite/u32.h"
 #include "sqlite/u8.h"
+  typedef struct AggInfo AggInfo;
+  typedef struct Expr Expr;
+  typedef struct SrcItem SrcItem;
+  typedef struct SrcList SrcList;
+  typedef struct Table Table;
+  typedef struct Window Window;
 
   typedef i16 LogEst;
   typedef struct Select Select;

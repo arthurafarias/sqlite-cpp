@@ -4,10 +4,19 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/SorterCompare.h"
 #include "sqlite/SorterFile.h"
 #include "sqlite/SorterList.h"
+#include "sqlite/i64.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+  typedef struct IncrMerger IncrMerger;
+  typedef struct MergeEngine MergeEngine;
+  typedef struct PmaReader PmaReader;
+  typedef struct SQLiteThread SQLiteThread;
+  typedef struct SorterRecord SorterRecord;
+  typedef struct UnpackedRecord UnpackedRecord;
+  typedef struct VdbeSorter VdbeSorter;
 
   typedef struct SortSubtask SortSubtask;
   struct SortSubtask {

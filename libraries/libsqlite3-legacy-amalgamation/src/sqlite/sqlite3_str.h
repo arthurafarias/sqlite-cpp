@@ -6,6 +6,7 @@ extern C {
 
 #include <stdarg.h>
 
+#include "sqlite/sqlite3_int64.h"
 #include "sqlite/u32.h"
 #include "sqlite/u8.h"
 

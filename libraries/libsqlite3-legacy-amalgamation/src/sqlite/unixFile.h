@@ -4,8 +4,14 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3_int64.h"
+  typedef struct UnixUnusedFd UnixUnusedFd;
+  typedef struct sqlite3_io_methods sqlite3_io_methods;
+  typedef struct sqlite3_vfs sqlite3_vfs;
+  typedef struct unixInodeInfo unixInodeInfo;
+  typedef struct unixShm unixShm;
+  typedef struct unixShmNode unixShmNode;
   typedef struct unixFile unixFile;
   struct unixFile {
     sqlite3_io_methods const *pMethod;

@@ -15,8 +15,6 @@ int vdbeSorterMapFile(SortSubtask *pTask, SorterFile *pFile, u8 **pp) {
 int vdbePmaReaderSeek(SortSubtask *pTask, PmaReader *pReadr, SorterFile *pFile, i64 iOff) {
   int rc = 0;
 
-
-
   if (sqlite3FaultSim(201))
     return (10 | (1 << 8));
   if (pReadr->aMap) {
@@ -52,14 +50,6 @@ int vdbePmaReaderSeek(SortSubtask *pTask, PmaReader *pReadr, SorterFile *pFile, 
 
 int vdbePmaReaderInit(SortSubtask *pTask, SorterFile *pFile, i64 iStart, PmaReader *pReadr, i64 *pnByte) {
   int rc;
-
-
-
-
-
-
-
-
 
   rc = vdbePmaReaderSeek(pTask, pReadr, pFile, iStart);
   if (rc == 0) {
@@ -144,10 +134,6 @@ int vdbeSorterCompareInt(SortSubtask *pTask, int *pbKey2Cached, const void *pKey
   const u8 *const v2 = &p2[p2[0]];
   int res;
 
-
-
-
-
   if (s1 == s2) {
 
     static const u8 aLen[] = {0, 1, 2, 3, 4, 6, 8, 0, 0, 0};
@@ -186,7 +172,6 @@ int vdbeSorterCompareInt(SortSubtask *pTask, int *pbKey2Cached, const void *pKey
     }
   }
 
-
   if (res == 0) {
     if (pTask->pSorter->pKeyInfo->nKeyField > 1) {
       res = vdbeSorterCompareTail(pTask, pbKey2Cached, pKey1, nKey1, pKey2, nKey2);
@@ -221,11 +206,7 @@ int vdbeSorterJoinThread(SortSubtask *pTask) {
   return rc;
 }
 
-int vdbeSorterCreateThread(SortSubtask *pTask, void *(*xTask)(void *), void *pIn) {
-
-
-  return sqlite3ThreadCreate(&pTask->pThread, xTask, pIn);
-}
+int vdbeSorterCreateThread(SortSubtask *pTask, void *(*xTask)(void *), void *pIn) { return sqlite3ThreadCreate(&pTask->pThread, xTask, pIn); }
 
 int vdbeSortAllocUnpacked(SortSubtask *pTask) {
   if (pTask->pUnpacked == 0) {
@@ -242,7 +223,6 @@ SorterRecord *vdbeSorterMerge(SortSubtask *pTask, SorterRecord *p1, SorterRecord
   SorterRecord *pFinal = 0;
   SorterRecord **pp = &pFinal;
   int bCached = 0;
-
 
   for (;;) {
     int res;
@@ -321,7 +301,6 @@ int vdbeSorterSort(SortSubtask *pTask, SorterList *pList) {
   }
   pList->pList = p;
 
-
   return pTask->pUnpacked->errCode;
 }
 
@@ -332,8 +311,6 @@ int vdbeSorterListToPMA(SortSubtask *pTask, SorterList *pList) {
 
   ;
   memset(&writer, 0, sizeof(PmaWriter));
-
-
 
   if (pTask->file.pFd == 0) {
     rc = vdbeSorterOpenTempFile(db, 0, &pTask->file.pFd);
@@ -379,9 +356,6 @@ int vdbeSorterListToPMA(SortSubtask *pTask, SorterList *pList) {
 
   ;
 
-
-
-
   return rc;
 }
 
@@ -398,7 +372,6 @@ int vdbeIncrMergerNew(SortSubtask *pTask, MergeEngine *pMerger, IncrMerger **ppO
     rc = 7;
   }
 
-
   return rc;
 }
 
@@ -406,11 +379,6 @@ int vdbeMergeEngineInit(SortSubtask *pTask, MergeEngine *pMerger, int eMode) {
   int rc = 0;
   int i;
   int nTree;
-
-
-
-
-
 
   pMerger->pTask = pTask;
 

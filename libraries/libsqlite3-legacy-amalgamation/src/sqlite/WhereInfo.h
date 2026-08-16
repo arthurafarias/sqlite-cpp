@@ -4,12 +4,26 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/BitMask.h"
+#include "sqlite/LogEst.h"
 #include "sqlite/WhereClause.h"
 #include "sqlite/WhereLevel.h"
 #include "sqlite/WhereMaskSet.h"
+#include "sqlite/i8.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+  typedef struct ExprList ExprList;
+  typedef struct Index Index;
+  typedef struct Parse Parse;
+  typedef struct Select Select;
+  typedef struct SrcItem SrcItem;
+  typedef struct SrcList SrcList;
+  typedef struct WhereLoop WhereLoop;
+  typedef struct WhereMemBlock WhereMemBlock;
+  typedef struct WherePath WherePath;
+  typedef struct sqlite3_index_info sqlite3_index_info;
 
   typedef struct WhereInfo WhereInfo;
 

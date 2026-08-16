@@ -3,7 +3,6 @@
 void sqlite3FixInit(DbFixer *pFix, Parse *pParse, int iDb, const char *zType, const Token *pName) {
   sqlite3 *db = pParse->db;
 
-
   pFix->pParse = pParse;
   pFix->zDb = db->aDb[iDb].zDbSName;
   pFix->pSchema = db->aDb[iDb].pSchema;

@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
   typedef struct WindowCsrAndReg WindowCsrAndReg;
 
   struct WindowCsrAndReg {

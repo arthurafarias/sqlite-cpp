@@ -4,9 +4,20 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/LogEst.h"
 #include "sqlite/Pgno.h"
+#include "sqlite/i16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct Column Column;
+  typedef struct Expr Expr;
+  typedef struct ExprList ExprList;
+  typedef struct FKey FKey;
+  typedef struct Index Index;
+  typedef struct Schema Schema;
+  typedef struct Select Select;
+  typedef struct Trigger Trigger;
+  typedef struct VTable VTable;
 
   typedef struct Table Table;
 

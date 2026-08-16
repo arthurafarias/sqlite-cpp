@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/LogEst.h"
   typedef struct ScanStatus ScanStatus;
   struct ScanStatus {
     int addrExplain;

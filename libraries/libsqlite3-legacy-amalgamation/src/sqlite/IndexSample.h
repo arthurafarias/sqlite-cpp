@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/tRowcnt.h"
   typedef struct IndexSample IndexSample;
 
   struct IndexSample {

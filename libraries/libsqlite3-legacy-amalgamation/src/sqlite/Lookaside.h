@@ -4,8 +4,10 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct LookasideSlot LookasideSlot;
   typedef struct Lookaside Lookaside;
   struct Lookaside {
     u32 bDisable;         /* Only operate the lookaside when zero */

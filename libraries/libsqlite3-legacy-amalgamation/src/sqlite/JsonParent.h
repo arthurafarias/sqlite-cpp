@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/i64.h"
+#include "sqlite/u32.h"
   typedef struct JsonParent JsonParent;
   struct JsonParent {
     u32 iHead;

@@ -5,7 +5,9 @@ extern C {
 #endif
 
 #include "sqlite/WindowCsrAndReg.h"
-#include "sqlite/_TypeIndex.h"
+  typedef struct Parse Parse;
+  typedef struct Vdbe Vdbe;
+  typedef struct Window Window;
 
   typedef struct WindowCodeArg WindowCodeArg;
 

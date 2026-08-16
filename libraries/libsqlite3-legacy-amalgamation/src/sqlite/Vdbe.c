@@ -3,9 +3,6 @@
 void vdbeMemRenderNum(int sz, char *zBuf, Mem *p) {
   StrAccum acc;
 
-
-
-
   if (p->flags & (0x0004 | 0x0020)) {
 
     p->n = sqlite3Int64ToText(p->u.i, zBuf);
@@ -32,7 +29,7 @@ void sqlite3VdbeError(Vdbe *p, const char *zFormat, ...) {
   va_list ap;
   sqlite3DbFree(p->db, p->zErrMsg);
 
-  __builtin_c23_va_start(
+  va_start(
 
       ap, zFormat
 
@@ -41,7 +38,7 @@ void sqlite3VdbeError(Vdbe *p, const char *zFormat, ...) {
       ;
   p->zErrMsg = sqlite3VMPrintf(p->db, zFormat, ap);
 
-  __builtin_va_end(
+  va_end(
 
       ap
 
@@ -58,14 +55,12 @@ void sqlite3VdbeSetSql(Vdbe *p, const char *z, int n, u8 prepFlags) {
     p->expmask = 0;
   }
 
-
   p->zSql = sqlite3DbStrNDup(p->db, z, n);
 }
 
 void sqlite3VdbeSwap(Vdbe *pA, Vdbe *pB) {
   Vdbe tmp, *pTmp, **ppTmp;
   char *zTmp;
-
 
   tmp = *pA;
   *pA = *pB;
@@ -98,9 +93,6 @@ int growOpArray(Vdbe *v, int nOp) {
     return 7;
   }
 
-
-
-
   pNew = sqlite3DbRealloc(p->db, v->aOp, nNew * sizeof(Op));
   if (pNew) {
     p->szOpAlloc = sqlite3DbMallocSize(p->db, pNew);
@@ -112,10 +104,8 @@ int growOpArray(Vdbe *v, int nOp) {
 
 __attribute__((noinline)) int growOp3(Vdbe *p, int op, int p1, int p2, int p3) {
 
-
   if (growOpArray(p, 1))
     return 1;
-
 
   return sqlite3VdbeAddOp3(p, op, p1, p2, p3);
 }
@@ -142,17 +132,12 @@ int sqlite3VdbeAddOp3(Vdbe *p, int op, int p1, int p2, int p3) {
 
   i = p->nOp;
 
-
-
-
   if (p->nOpAlloc <= i) {
     return growOp3(p, op, p1, p2, p3);
   }
 
-
   p->nOp++;
   pOp = &p->aOp[i];
-
 
   pOp->opcode = (u8)op;
   pOp->p5 = 0;
@@ -176,7 +161,6 @@ int sqlite3VdbeAddOp4Int(Vdbe *p, int op, int p1, int p2, int p3, int p4) {
   p->nOp++;
   pOp = &p->aOp[i];
 
-
   pOp->opcode = (u8)op;
   pOp->p5 = 0;
   pOp->p1 = p1;
@@ -197,7 +181,7 @@ void sqlite3VdbeMultiLoad(Vdbe *p, int iDest, const char *zTypes, ...) {
   int i;
   char c;
 
-  __builtin_c23_va_start(
+  va_start(
 
       ap, zTypes
 
@@ -208,7 +192,7 @@ void sqlite3VdbeMultiLoad(Vdbe *p, int iDest, const char *zTypes, ...) {
     if (c == 's') {
       const char *z =
 
-          __builtin_va_arg(
+          va_arg(
 
               ap
 
@@ -223,7 +207,7 @@ void sqlite3VdbeMultiLoad(Vdbe *p, int iDest, const char *zTypes, ...) {
     } else if (c == 'i') {
       sqlite3VdbeAddOp2(p, 73,
 
-                        __builtin_va_arg(
+                        va_arg(
 
                             ap
 
@@ -242,7 +226,7 @@ void sqlite3VdbeMultiLoad(Vdbe *p, int iDest, const char *zTypes, ...) {
   sqlite3VdbeAddOp2(p, 86, iDest, i);
 skip_op_resultrow:
 
-  __builtin_va_end(
+  va_end(
 
       ap
 
@@ -284,12 +268,6 @@ void sqlite3VdbeResolveLabel(Vdbe *v, int x) {
   Parse *p = v->pParse;
   int j = (~(x));
 
-
-
-
-
-
-
   if (p->nLabelAlloc + p->nLabel < 0) {
     resizeResolveLabel(p, v, j);
   } else {
@@ -319,11 +297,9 @@ void resolveP2Values(Vdbe *p, int *pMaxVtabArgs) {
   Parse *pParse = p->pParse;
   int *aLabel = pParse->aLabel;
 
-
   p->readOnly = 1;
   p->bIsReader = 0;
   pOp = &p->aOp[p->nOp - 1];
-
 
   while (1) {
 
@@ -428,22 +404,12 @@ resolve_p2_values_loop_exit:
   }
   pParse->nLabel = 0;
   *pMaxVtabArgs = nMaxVtabArgs;
-
-
 }
 
-int sqlite3VdbeCurrentAddr(Vdbe *p) {
-
-
-  return p->nOp;
-}
+int sqlite3VdbeCurrentAddr(Vdbe *p) { return p->nOp; }
 
 VdbeOp *sqlite3VdbeTakeOpArray(Vdbe *p, int *pnOp, int *pnMaxArg) {
   VdbeOp *aOp = p->aOp;
-
-
-
-
 
   resolveP2Values(p, pnMaxArg);
   *pnOp = p->nOp;
@@ -454,9 +420,6 @@ VdbeOp *sqlite3VdbeTakeOpArray(Vdbe *p, int *pnOp, int *pnMaxArg) {
 VdbeOp *sqlite3VdbeAddOpList(Vdbe *p, int nOp, VdbeOpList const *aOp, int iLineno) {
   int i;
   VdbeOp *pOut, *pFirst;
-
-
-
 
   if (p->nOp + nOp > p->nOpAlloc && growOpArray(p, nOp)) {
     return 0;
@@ -484,32 +447,15 @@ VdbeOp *sqlite3VdbeAddOpList(Vdbe *p, int nOp, VdbeOpList const *aOp, int iLinen
   return pFirst;
 }
 
-void sqlite3VdbeChangeOpcode(Vdbe *p, int addr, u8 iNewOpcode) {
+void sqlite3VdbeChangeOpcode(Vdbe *p, int addr, u8 iNewOpcode) { sqlite3VdbeGetOp(p, addr)->opcode = iNewOpcode; }
 
+void sqlite3VdbeChangeP1(Vdbe *p, int addr, int val) { sqlite3VdbeGetOp(p, addr)->p1 = val; }
 
-  sqlite3VdbeGetOp(p, addr)->opcode = iNewOpcode;
-}
+void sqlite3VdbeChangeP2(Vdbe *p, int addr, int val) { sqlite3VdbeGetOp(p, addr)->p2 = val; }
 
-void sqlite3VdbeChangeP1(Vdbe *p, int addr, int val) {
-
-
-  sqlite3VdbeGetOp(p, addr)->p1 = val;
-}
-
-void sqlite3VdbeChangeP2(Vdbe *p, int addr, int val) {
-
-
-  sqlite3VdbeGetOp(p, addr)->p2 = val;
-}
-
-void sqlite3VdbeChangeP3(Vdbe *p, int addr, int val) {
-
-
-  sqlite3VdbeGetOp(p, addr)->p3 = val;
-}
+void sqlite3VdbeChangeP3(Vdbe *p, int addr, int val) { sqlite3VdbeGetOp(p, addr)->p3 = val; }
 
 void sqlite3VdbeChangeP5(Vdbe *p, u16 p5) {
-
 
   if (p->nOp > 0)
     p->aOp[p->nOp - 1].p5 = p5;
@@ -554,7 +500,6 @@ int sqlite3VdbeChangeToNoop(Vdbe *p, int addr) {
   if (p->db->mallocFailed)
     return 0;
 
-
   pOp = &p->aOp[addr];
   freeP4(p->db, pOp->p4type, pOp->p4.p);
   pOp->p4type = 0;
@@ -594,20 +539,13 @@ void sqlite3VdbeChangeP4(Vdbe *p, int addr, const char *zP4, int n) {
   Op *pOp;
   sqlite3 *db;
 
-
   db = p->db;
-
-
-
 
   if (db->mallocFailed) {
     if (n != (-12))
       freeP4(db, n, (void *)*(char **)&zP4);
     return;
   }
-
-
-
 
   if (addr < 0) {
     addr = p->nOp - 1;
@@ -636,9 +574,6 @@ void sqlite3VdbeChangeP4(Vdbe *p, int addr, const char *zP4, int n) {
 void sqlite3VdbeAppendP4(Vdbe *p, void *pP4, int n) {
   VdbeOp *pOp;
 
-
-
-
   if (p->db->mallocFailed) {
     freeP4(p->db, n, pP4);
   } else {
@@ -664,9 +599,6 @@ VdbeOp *sqlite3VdbeGetOp(Vdbe *p, int addr) {
 
   static VdbeOp dummy;
 
-
-
-
   if (p->db->mallocFailed) {
     return (VdbeOp *)&dummy;
   } else {
@@ -677,9 +609,6 @@ VdbeOp *sqlite3VdbeGetOp(Vdbe *p, int addr) {
 VdbeOp *sqlite3VdbeGetLastOp(Vdbe *p) { return sqlite3VdbeGetOp(p, p->nOp - 1); }
 
 void sqlite3VdbeUsesBtree(Vdbe *p, int i) {
-
-
-
 
   ((p->btreeMask) |= (((yDbMask)1) << (i)));
   if (i != 1 && sqlite3BtreeSharable(p->db->aDb[i].pBt)) {
@@ -828,12 +757,6 @@ int sqlite3VdbeList(Vdbe *p) {
   Op *aOp;
   Op *pOp;
 
-
-
-
-
-
-
   releaseMemArray(pMem, 8);
 
   if (p->rc == 7) {
@@ -903,12 +826,6 @@ int sqlite3VdbeList(Vdbe *p) {
 
 void sqlite3VdbeRewind(Vdbe *p) {
 
-
-
-
-
-
-
   p->eVdbeState = 1;
 
   p->pc = -1;
@@ -930,21 +847,9 @@ void sqlite3VdbeMakeReady(Vdbe *p, Parse *pParse) {
   int n;
   struct ReusableSpace x;
 
-
-
-
-
-
-
-
-
-
-
-
   p->pVList = pParse->pVList;
   pParse->pVList = 0;
   db = p->db;
-
 
   nVar = pParse->nVar;
   nMem = pParse->nMem;
@@ -958,12 +863,7 @@ void sqlite3VdbeMakeReady(Vdbe *p, Parse *pParse) {
   n = (sizeof(Op) * p->nOp);
   x.pSpace = &((u8 *)p->aOp)[n];
 
-
   x.nFree = ((pParse->szOpAlloc - n) & ~7);
-
-
-
-
 
   resolveP2Values(p, &nArg);
   p->usesStmtJournal = (u8)(pParse->isMultiWrite && pParse->mayAbort);
@@ -1013,7 +913,6 @@ void sqlite3VdbeFreeCursor(Vdbe *p, VdbeCursor *pCx) {
 
 __attribute__((noinline)) void freeCursorWithCache(Vdbe *p, VdbeCursor *pCx) {
   VdbeTxtBlbCache *pCache = pCx->pCache;
-
 
   pCx->colCache = 0;
   pCx->pCache = 0;
@@ -1079,7 +978,6 @@ void closeAllCursors(Vdbe *p) {
     p->nFrame = 0;
   }
 
-
   closeCursorsInFrame(p);
   releaseMemArray(p->aMem, p->nMem);
   while (p->pDelFrame) {
@@ -1090,8 +988,6 @@ void closeAllCursors(Vdbe *p) {
 
   if (p->pAuxData)
     sqlite3VdbeDeleteAuxData(p->db, &p->pAuxData, -1, 0);
-
-
 }
 
 void sqlite3VdbeSetNumCols(Vdbe *p, int nResColumn) {
@@ -1114,9 +1010,6 @@ int sqlite3VdbeSetColName(Vdbe *p, int idx, int var, const char *zName, void (*x
   int rc;
   Mem *pColName;
 
-
-
-
   if (p->db->mallocFailed) {
 
     ((void)(0))
@@ -1125,10 +1018,8 @@ int sqlite3VdbeSetColName(Vdbe *p, int idx, int var, const char *zName, void (*x
     return 7;
   }
 
-
   pColName = &(p->aColName[idx + var * p->nResAlloc]);
   rc = sqlite3VdbeMemSetText(pColName, zName, -1, xDel);
-
 
   return rc;
 }
@@ -1138,12 +1029,6 @@ __attribute__((noinline)) int vdbeCloseStatement(Vdbe *p, int eOp) {
   int rc = 0;
   int i;
   const int iSavepoint = p->iStatement - 1;
-
-
-
-
-
-
 
   for (i = 0; i < db->nDb; i++) {
     int rc2 = 0;
@@ -1211,7 +1096,6 @@ int sqlite3VdbeCheckFkDeferred(Vdbe *p) {
 int sqlite3VdbeHalt(Vdbe *p) {
   int rc;
   sqlite3 *db = p->db;
-
 
   if (db->mallocFailed) {
     p->rc = 7;
@@ -1334,11 +1218,6 @@ int sqlite3VdbeHalt(Vdbe *p) {
   if (p->bIsReader)
     db->nVdbeRead--;
 
-
-
-
-
-
   p->eVdbeState = 3;
   ;
   if (db->mallocFailed) {
@@ -1348,7 +1227,6 @@ int sqlite3VdbeHalt(Vdbe *p) {
   if (db->autoCommit) {
     ;
   }
-
 
   return (p->rc == 5 ? 5 : 0);
 }
@@ -1403,11 +1281,6 @@ int sqlite3VdbeReset(Vdbe *p) {
 int sqlite3VdbeFinalize(Vdbe *p) {
   int rc = 0;
 
-
-
-
-
-
   if (p->eVdbeState >= 1) {
     rc = sqlite3VdbeReset(p);
 
@@ -1422,11 +1295,7 @@ int sqlite3VdbeFinalize(Vdbe *p) {
 void sqlite3VdbeDelete(Vdbe *p) {
   sqlite3 *db;
 
-
   db = p->db;
-
-
-
 
   sqlite3VdbeClearObject(db, p);
   if (db->pnBytesFreed == 0) {
@@ -1454,11 +1323,7 @@ u32 sqlite3VdbeSerialTypeLen(u32 serial_type) {
   }
 }
 
-u8 sqlite3VdbeOneByteSerialTypeLen(u8 serial_type) {
-
-
-  return sqlite3SmallTypeSizes[serial_type];
-}
+u8 sqlite3VdbeOneByteSerialTypeLen(u8 serial_type) { return sqlite3SmallTypeSizes[serial_type]; }
 
 void sqlite3VdbeSerialGet(const unsigned char *buf, u32 serial_type, Mem *pMem) {
   switch (serial_type) {
@@ -1547,7 +1412,6 @@ void sqlite3VdbeRecordUnpack(int nKey, const void *pKey, UnpackedRecord *p) {
 
   p->default_rc = 0;
 
-
   idx = (u8)((*(aKey) < (u8)0x80) ? ((szHdr) = (u32) * (aKey)), 1 : sqlite3GetVarint32((aKey), (u32 *)&(szHdr)));
   d = szHdr;
   u = 0;
@@ -1576,13 +1440,11 @@ void sqlite3VdbeRecordUnpack(int nKey, const void *pKey, UnpackedRecord *p) {
   };
   ;
 
-
   p->nField = u;
 }
 
 i64 vdbeRecordDecodeInt(u32 serial_type, const u8 *aKey) {
   u32 y;
-
 
   switch (serial_type) {
   case 0:
@@ -1647,13 +1509,6 @@ int sqlite3VdbeRecordCompareWithSkip(int nKey1, const void *pKey1, UnpackedRecor
     pPKey2->errCode = (u8)sqlite3CorruptError(92646);
     return 0;
   }
-
-
-
-
-
-
-
 
   while (1) {
     u32 serial_type;
@@ -1817,9 +1672,6 @@ int sqlite3VdbeRecordCompareWithSkip(int nKey1, const void *pKey1, UnpackedRecor
     }
   }
 
-
-
-
   pPKey2->eqSeen = 1;
   return pPKey2->default_rc;
 }
@@ -1836,7 +1688,6 @@ int vdbeRecordCompareInt(int nKey1, const void *pKey1, UnpackedRecord *pPKey2) {
   i64 lhs;
 
   ;
-
 
   switch (serial_type) {
   case 1: {
@@ -1887,7 +1738,6 @@ int vdbeRecordCompareInt(int nKey1, const void *pKey1, UnpackedRecord *pPKey2) {
     return sqlite3VdbeRecordCompare(nKey1, pKey1, pPKey2);
   }
 
-
   v = pPKey2->u.i;
   if (v > lhs) {
     res = pPKey2->r1;
@@ -1902,7 +1752,6 @@ int vdbeRecordCompareInt(int nKey1, const void *pKey1, UnpackedRecord *pPKey2) {
     pPKey2->eqSeen = 1;
   }
 
-
   return res;
 }
 
@@ -1910,11 +1759,6 @@ int vdbeRecordCompareString(int nKey1, const void *pKey1, UnpackedRecord *pPKey2
   const u8 *aKey1 = (const u8 *)pKey1;
   int serial_type;
   int res;
-
-
-
-
-
 
   ;
   serial_type = (signed char)(aKey1[1]);
@@ -1967,7 +1811,6 @@ vrcs_restart:
     }
   }
 
-
   return res;
 }
 
@@ -1978,7 +1821,6 @@ sqlite3 *sqlite3VdbeDb(Vdbe *v) { return v->db; }
 u8 sqlite3VdbePrepareFlags(Vdbe *v) { return v->prepFlags; }
 
 sqlite3_value *sqlite3VdbeGetBoundValue(Vdbe *v, int iVar, u8 aff) {
-
 
   if (v) {
     Mem *pMem = &v->aVar[iVar - 1];
@@ -1999,9 +1841,6 @@ sqlite3_value *sqlite3VdbeGetBoundValue(Vdbe *v, int iVar, u8 aff) {
 }
 
 void sqlite3VdbeSetVarmask(Vdbe *v, int iVar) {
-
-
-
 
   if (iVar >= 32) {
     v->expmask |= 0x80000000;
@@ -2058,7 +1897,6 @@ int vdbeSafetyNotNull(Vdbe *p) {
 int sqlite3Step(Vdbe *p) {
   sqlite3 *db;
   int rc;
-
 
   db = p->db;
   if (p->eVdbeState != 2) {
@@ -2162,7 +2000,6 @@ int sqlite3Step(Vdbe *p) {
   }
 end_of_step:
 
-
   return (rc & db->errMask);
 }
 
@@ -2189,7 +2026,6 @@ int vdbeUnbind(Vdbe *p, unsigned int i) {
   sqlite3VdbeMemRelease(pVar);
   pVar->flags = 0x0001;
   p->db->errCode = 0;
-
 
   if (p->expmask != 0 && (p->expmask & (i >= 31 ? 0x80000000 : (u32)1 << i)) != 0) {
     p->expired = 1;
@@ -2352,20 +2188,13 @@ VdbeCursor *allocateCursor(Vdbe *p, int iCur, int nField, u8 eCurType) {
             ~7) +
            ((nField) + 1) * sizeof(u64));
 
-
   if (eCurType == 0)
     nByte += sqlite3BtreeCursorSize();
-
 
   if (p->apCsr[iCur]) {
     sqlite3VdbeFreeCursorNN(p, p->apCsr[iCur]);
     p->apCsr[iCur] = 0;
   }
-
-
-
-
-
 
   if (pMem->szMalloc < nByte) {
     if (pMem->szMalloc > 0) {
@@ -2425,9 +2254,6 @@ VdbeCursor *allocateCursor(Vdbe *p, int iCur, int nField, u8 eCurType) {
 Mem *out2Prerelease(Vdbe *p, VdbeOp *pOp) {
   Mem *pOut;
 
-
-
-
   pOut = &p->aMem[pOp->p2];
   ;
   if ((((pOut)->flags & (0x8000 | 0x1000)) != 0)) {
@@ -2484,7 +2310,6 @@ int sqlite3VdbeExec(Vdbe *p) {
   Mem *pOut = 0;
   u32 colCacheCtr = 0;
 
-
   if (((p->lockMask) != 0)) {
     sqlite3VdbeEnter(p);
   }
@@ -2505,13 +2330,10 @@ int sqlite3VdbeExec(Vdbe *p) {
     goto no_mem;
   }
 
-
   ;
   p->rc = 0;
 
-
   p->iCurrentTime = 0;
-
 
   db->busyHandler.nBusy = 0;
   if (__atomic_load_n((&db->u1.isInterrupted), 0))
@@ -9111,8 +8933,6 @@ abort_due_to_error:
     rc = sqlite3CorruptError(105897);
   }
 
-
-
   if (p->zErrMsg == 0 && rc != (10 | (12 << 8))) {
     sqlite3VdbeError(p, "%s", sqlite3ErrStr(rc));
   }
@@ -9148,7 +8968,6 @@ vdbe_return:
     sqlite3VdbeLeave(p);
   }
 
-
   return rc;
 
 too_big:
@@ -9164,7 +8983,6 @@ no_mem:
 
 abort_due_to_interrupt:
 
-
   rc = 9;
   goto abort_due_to_error;
 }
@@ -9173,8 +8991,6 @@ MergeEngine *vdbeMergeEngineNew(int nReader) {
   int N = 2;
   i64 nByte;
   MergeEngine *pNew;
-
-
 
   while (N < nReader)
     N += N;
@@ -9233,11 +9049,6 @@ void codeReal(Vdbe *v, const char *z, int negateFlag, int iMem) {
 
 void sqlite3ExprCodeGetColumnOfTable(Vdbe *v, Table *pTab, int iTabCur, int iCol, int regOut) {
   Column *pCol;
-
-
-
-
-
 
   if (iCol < 0 || iCol == pTab->iPKey) {
     sqlite3VdbeAddOp2(v, 137, iTabCur, regOut);
@@ -9328,7 +9139,6 @@ void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg) {
     }
     pTab->zColAff = zColAff;
   }
-
 
   i = (strlen(zColAff) & 0x3fffffff);
   if (i) {
@@ -9425,12 +9235,9 @@ int sqlite3Reprepare(Vdbe *p) {
   sqlite3 *db;
   u8 prepFlags;
 
-
   zSql = sqlite3_sql((sqlite3_stmt *)p);
 
-
   db = sqlite3VdbeDb(p);
-
 
   prepFlags = sqlite3VdbePrepareFlags(p);
   rc = sqlite3LockAndPrepare(db, zSql, -1, prepFlags, p, &pNew, 0);
@@ -9466,9 +9273,6 @@ void codeOffset(Vdbe *v, int iOffset, int iContinue) {
 
 void sqlite3ColumnDefault(Vdbe *v, Table *pTab, int i, int iReg) {
   Column *pCol;
-
-
-
 
   pCol = &pTab->aCol[i];
   if (pCol->iDflt) {

@@ -4,9 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/sqlite3_vtab_cursor.h"
 #include "sqlite/sqlite_int64.h"
+  typedef struct Vdbe sqlite3_stmt;
 
   typedef struct PragmaVtabCursor PragmaVtabCursor;
   struct PragmaVtabCursor {

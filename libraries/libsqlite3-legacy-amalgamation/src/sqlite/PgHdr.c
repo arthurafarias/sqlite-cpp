@@ -85,7 +85,6 @@ void pcacheUnpin(PgHdr *p) {
 
 void __attribute__((noinline)) sqlite3PcacheRelease(PgHdr *p) {
 
-
   p->pCache->nRefSum--;
   if ((--p->nRef) == 0) {
     if (p->flags & 0x001) {
@@ -102,17 +101,11 @@ void __attribute__((noinline)) sqlite3PcacheRelease(PgHdr *p) {
 
 void sqlite3PcacheRef(PgHdr *p) {
 
-
-
-
   p->nRef++;
   p->pCache->nRefSum++;
 }
 
 void sqlite3PcacheDrop(PgHdr *p) {
-
-
-
 
   if (p->flags & 0x002) {
     pcacheManageDirtyList(p, 1);
@@ -122,9 +115,6 @@ void sqlite3PcacheDrop(PgHdr *p) {
 }
 
 void sqlite3PcacheMakeDirty(PgHdr *p) {
-
-
-
 
   if (p->flags & (0x001 | 0x010)) {
     p->flags &= ~0x010;
@@ -150,16 +140,10 @@ void sqlite3PcacheMakeDirty(PgHdr *p) {
 
 void sqlite3PcacheMakeClean(PgHdr *p) {
 
-
-
-
-
-
   pcacheManageDirtyList(p, 1);
   p->flags &= ~(0x002 | 0x008 | 0x004);
   p->flags |= 0x001;
   ;
-
 
   if (p->nRef == 0) {
     pcacheUnpin(p);
@@ -169,11 +153,6 @@ void sqlite3PcacheMakeClean(PgHdr *p) {
 void sqlite3PcacheMove(PgHdr *p, Pgno newPgno) {
   PCache *pCache = p->pCache;
   sqlite3_pcache_page *pOther;
-
-
-
-
-
 
   ;
   pOther = sqlite3Config.pcache2.xFetch(pCache->pCache, newPgno, 0);
@@ -201,7 +180,6 @@ void sqlite3PcacheMove(PgHdr *p, Pgno newPgno) {
 PgHdr *pcacheMergeDirtyList(PgHdr *pA, PgHdr *pB) {
   PgHdr result, *pTail;
   pTail = &result;
-
 
   for (;;) {
     if (pA->pgno < pB->pgno) {
@@ -281,10 +259,6 @@ int readDbPage(PgHdr *pPg) {
 
   u32 iFrame = 0;
 
-
-
-
-
   if (((pPager)->pWal != 0)) {
     rc = sqlite3WalFindFrame(pPager->pWal, pPg->pgno, &iFrame);
     if (rc)
@@ -336,7 +310,6 @@ void pagerReleaseMapPage(PgHdr *pPg) {
   pPager->nMmapOut--;
   pPg->pDirty = pPager->pMmapFreelist;
   pPager->pMmapFreelist = pPg;
-
 
   sqlite3OsUnfetch(pPager->fd, (i64)(pPg->pgno - 1) * pPager->pageSize, pPg->pData);
 }
@@ -401,9 +374,6 @@ __attribute__((noinline)) int pagerAddPageToRollbackJournal(PgHdr *pPg) {
   char *pData2;
   i64 iOff = pPager->journalOff;
 
-
-
-
   pData2 = pPg->pData;
   cksum = pager_cksum(pPager, (u8 *)pData2);
 
@@ -427,13 +397,10 @@ __attribute__((noinline)) int pagerAddPageToRollbackJournal(PgHdr *pPg) {
   pPager->journalOff += 8 + pPager->pageSize;
   pPager->nRec++;
 
-
   rc = sqlite3BitvecSet(pPager->pInJournal, pPg->pgno);
   ;
 
-
   rc |= addToSavepointBitvecs(pPager, pPg->pgno);
-
 
   return rc;
 }
@@ -441,13 +408,6 @@ __attribute__((noinline)) int pagerAddPageToRollbackJournal(PgHdr *pPg) {
 int pager_write(PgHdr *pPg) {
   Pager *pPager = pPg->pPager;
   int rc = 0;
-
-
-
-
-
-
-
 
   ;
 
@@ -457,12 +417,7 @@ int pager_write(PgHdr *pPg) {
       return rc;
   }
 
-
-
-
-
   sqlite3PcacheMakeDirty(pPg);
-
 
   if (pPager->pInJournal != 0 && sqlite3BitvecTestNotNull(pPager->pInJournal, pPg->pgno) == 0) {
 
@@ -505,9 +460,6 @@ __attribute__((noinline)) int pagerWriteLargeSector(PgHdr *pPg) {
   Pager *pPager = pPg->pPager;
   Pgno nPagePerSector = (pPager->sectorSize / pPager->pageSize);
 
-
-
-
   pPager->doNotSpill |= 0x04;
 
   pg1 = ((pPg->pgno - 1) & ~(nPagePerSector - 1)) + 1;
@@ -520,12 +472,6 @@ __attribute__((noinline)) int pagerWriteLargeSector(PgHdr *pPg) {
   } else {
     nPage = nPagePerSector;
   }
-
-
-
-
-
-
 
   for (ii = 0; ii < nPage && rc == 0; ii++) {
     Pgno pg = pg1 + ii;
@@ -563,18 +509,12 @@ __attribute__((noinline)) int pagerWriteLargeSector(PgHdr *pPg) {
     }
   }
 
-
   pPager->doNotSpill &= ~0x04;
   return rc;
 }
 
 int sqlite3PagerWrite(PgHdr *pPg) {
   Pager *pPager = pPg->pPager;
-
-
-
-
-
 
   if ((pPg->flags & 0x004) != 0 && pPager->dbSize >= pPg->pgno) {
     if (pPager->nSavepoint)

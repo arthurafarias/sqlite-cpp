@@ -8,6 +8,7 @@ extern C {
 
 #include "sqlite/Pgno.h"
 #include "sqlite/u32.h"
+#include "sqlite/u8.h"
 
   typedef struct sqlite3 sqlite3;
   typedef struct Btree Btree;

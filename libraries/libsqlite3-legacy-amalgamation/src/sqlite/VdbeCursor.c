@@ -3,11 +3,6 @@
 int __attribute__((noinline)) sqlite3VdbeFinishMoveto(VdbeCursor *p) {
   int res, rc;
 
-
-
-
-
-
   rc = sqlite3BtreeTableMoveto(p->uc.pCursor, p->movetoTarget, 0, &res);
   if (rc)
     return rc;
@@ -22,11 +17,6 @@ int __attribute__((noinline)) sqlite3VdbeFinishMoveto(VdbeCursor *p) {
 int __attribute__((noinline)) sqlite3VdbeHandleMovedCursor(VdbeCursor *p) {
   int isDifferentRow, rc;
 
-
-
-
-
-
   rc = sqlite3BtreeCursorRestore(p->uc.pCursor, &isDifferentRow);
   p->cacheStatus = 0;
   if (isDifferentRow)
@@ -35,7 +25,6 @@ int __attribute__((noinline)) sqlite3VdbeHandleMovedCursor(VdbeCursor *p) {
 }
 
 int sqlite3VdbeCursorRestore(VdbeCursor *p) {
-
 
   if (sqlite3BtreeCursorHasMoved(p->uc.pCursor)) {
     return sqlite3VdbeHandleMovedCursor(p);
@@ -48,7 +37,6 @@ __attribute__((noinline)) int vdbeColumnFromOverflow(VdbeCursor *pC, int iCol, u
   sqlite3 *db = pDest->db;
   int encoding = pDest->enc;
   int len = sqlite3VdbeSerialTypeLen(t);
-
 
   if (len > db->aLimit[0])
     return 18;
@@ -116,7 +104,6 @@ int sqlite3VdbeSorterWrite(const VdbeCursor *pCsr, Mem *pVal) {
   i64 nPMA;
   int t;
 
-
   pSorter = pCsr->uc.pSorter;
   t = (u32) * ((const u8 *)&pVal->z[1]);
   if (t >= 0x80)
@@ -128,8 +115,6 @@ int sqlite3VdbeSorterWrite(const VdbeCursor *pCsr, Mem *pVal) {
   } else {
     pSorter->typeMask = 0;
   }
-
-
 
   nReq = pVal->n + sizeof(SorterRecord);
   nPMA = pVal->n + sqlite3VarintLen(pVal->n);
@@ -205,10 +190,7 @@ int sqlite3VdbeSorterRewind(const VdbeCursor *pCsr, int *pbEof) {
   VdbeSorter *pSorter;
   int rc = 0;
 
-
   pSorter = pCsr->uc.pSorter;
-
-
 
   if (pSorter->bUsePMA == 0) {
     if (pSorter->list.pList) {
@@ -220,13 +202,11 @@ int sqlite3VdbeSorterRewind(const VdbeCursor *pCsr, int *pbEof) {
     return rc;
   }
 
-
   rc = vdbeSorterFlushPMA(pSorter);
 
   rc = vdbeSorterJoinAll(pSorter, rc);
 
   ;
-
 
   if (rc == 0) {
     rc = vdbeSorterSetupMerge(pSorter);
@@ -241,7 +221,6 @@ int sqlite3VdbeSorterRowkey(const VdbeCursor *pCsr, Mem *pOut) {
   VdbeSorter *pSorter;
   void *pKey;
   int nKey;
-
 
   pSorter = pCsr->uc.pSorter;
   pKey = vdbeSorterRowkey(pSorter, &nKey);
@@ -263,7 +242,6 @@ int sqlite3VdbeSorterCompare(const VdbeCursor *pCsr, Mem *pVal, int nKeyCol, int
   void *pKey;
   int nKey;
 
-
   pSorter = pCsr->uc.pSorter;
   r2 = pSorter->pUnpacked;
   pKeyInfo = pCsr->pKeyInfo;
@@ -273,8 +251,6 @@ int sqlite3VdbeSorterCompare(const VdbeCursor *pCsr, Mem *pVal, int nKeyCol, int
       return 7;
     r2->nField = nKeyCol;
   }
-
-
 
   pKey = vdbeSorterRowkey(pSorter, &nKey);
   sqlite3VdbeRecordUnpack(nKey, pKey, r2);

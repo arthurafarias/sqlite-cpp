@@ -5,7 +5,9 @@ extern C {
 #endif
 
 #include "sqlite/StatSample.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/tRowcnt.h"
+#include "sqlite/u8.h"
+  typedef struct sqlite3 sqlite3;
 
   typedef struct StatAccum StatAccum;
 

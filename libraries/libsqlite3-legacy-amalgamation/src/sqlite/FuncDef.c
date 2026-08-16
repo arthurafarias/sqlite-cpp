@@ -9,10 +9,6 @@ const FuncDef statGetFuncdef = {1 + 0, 1, 0, 0, statGet, 0, 0, 0, "stat_get", {0
 int matchQuality(FuncDef *p, int nArg, u8 enc) {
   int match;
 
-
-
-
-
   if (p->nArg != nArg) {
     if (nArg == (-2))
       return p->xSFunc == 0 ? 0 : 6;

@@ -4,8 +4,6 @@
 extern "C" {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/u32.h"
 
 typedef struct TabResult TabResult;

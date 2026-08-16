@@ -1,8 +1,13 @@
 
 #pragma once
 #include "sqlite/Select.h"
-#include "sqlite/Trigger.h"
+typedef struct Trigger Trigger;
 #include "sqlite/u8.h"
+typedef struct Expr Expr;
+typedef struct ExprList ExprList;
+typedef struct IdList IdList;
+typedef struct SrcList SrcList;
+typedef struct Upsert Upsert;
 #ifdef __cplusplus
 extern C {
 #endif

@@ -5,7 +5,9 @@ extern C {
 #endif
 
 #include "sqlite/BitMask.h"
-#include "sqlite/_TypeIndex.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/i8.h"
+  typedef struct WhereLoop WhereLoop;
 
   typedef struct WherePath WherePath;
   struct WherePath {

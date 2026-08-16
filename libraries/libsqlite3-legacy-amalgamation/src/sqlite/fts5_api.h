@@ -4,8 +4,6 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/fts5_extension_function.h"
 #include "sqlite/fts5_tokenizer.h"
 #include "sqlite/fts5_tokenizer_v2.h"

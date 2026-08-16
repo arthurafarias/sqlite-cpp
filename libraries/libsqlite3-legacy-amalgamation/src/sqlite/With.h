@@ -4,9 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/Cte.h"
+  typedef struct SrcItem SrcItem;
 
   typedef struct With With;
 

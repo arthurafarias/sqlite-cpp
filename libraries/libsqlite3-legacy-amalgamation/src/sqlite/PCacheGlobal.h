@@ -4,8 +4,6 @@
 extern "C" {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/PGroup.h"
 #include "sqlite/PgFreeslot.h"
 #include "sqlite/sqlite3_mutex.h"

@@ -7,7 +7,6 @@ int resolveOrderGroupBy(NameContext *pNC, Select *pSelect, ExprList *pOrderBy, c
   Parse *pParse;
   int nResult;
 
-
   nResult = pSelect->pEList->nExpr;
   pParse = pNC->pParse;
   for (i = 0, pItem = pOrderBy->a; i < pOrderBy->nExpr; i++, pItem++) {
@@ -67,13 +66,9 @@ int sqlite3ResolveExprNames(NameContext *pNC, Expr *pExpr) {
     return 1;
   }
 
-
   sqlite3WalkExprNN(&w, pExpr);
 
   w.pParse->nHeight -= pExpr->nHeight;
-
-
-
 
   ;
   ;
@@ -139,7 +134,6 @@ void sqlite3ExprAnalyzeAggregates(NameContext *pNC, Expr *pExpr) {
   w.u.pNC = pNC;
   w.pParse = 0;
 
-
   sqlite3WalkExpr(&w, pExpr);
 }
 
@@ -172,9 +166,6 @@ const char *columnTypeImpl(NameContext *pNC,
 ) {
   char const *zType = 0;
   int j;
-
-
-
 
   switch (pExpr->op) {
   case 168: {

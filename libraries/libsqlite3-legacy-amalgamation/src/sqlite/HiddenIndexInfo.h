@@ -4,8 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u32.h"
+  typedef struct Parse Parse;
+  typedef struct WhereClause WhereClause;
   typedef struct sqlite3_value sqlite3_value;
 
   typedef struct HiddenIndexInfo HiddenIndexInfo;

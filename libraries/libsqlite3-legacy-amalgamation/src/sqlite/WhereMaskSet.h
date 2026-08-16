@@ -5,7 +5,9 @@ extern C {
 #endif
 
 #include "sqlite/BitMask.h"
-#include "sqlite/_TypeIndex.h"
+  typedef struct Expr Expr;
+  typedef struct ExprList ExprList;
+  typedef struct Select Select;
 
   typedef struct WhereMaskSet WhereMaskSet;
   struct WhereMaskSet {

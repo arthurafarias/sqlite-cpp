@@ -4,11 +4,13 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/JsonParse.h"
 #include "sqlite/JsonString.h"
 #include "sqlite/sqlite3_vtab_cursor.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+  typedef struct JsonParent JsonParent;
+  typedef struct sqlite3 sqlite3;
 
   typedef struct JsonEachCursor JsonEachCursor;
   struct JsonEachCursor {

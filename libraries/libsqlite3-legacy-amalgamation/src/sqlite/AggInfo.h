@@ -6,6 +6,7 @@ extern C {
 
 #include "sqlite/u32.h"
 #include "sqlite/u8.h"
+  typedef struct NameContext NameContext;
 
   typedef struct AggInfo AggInfo;
   typedef struct ExprList ExprList;

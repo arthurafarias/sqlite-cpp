@@ -20,6 +20,75 @@ extern "C" {
 #include "sqlite/u8.h"
 
 #include "sqlite/BusyHandler.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/Token.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3_uint64.h"
+#include <stdarg.h>
+typedef struct AggInfo AggInfo;
+typedef struct AuxData AuxData;
+typedef struct BtCursor BtCursor;
+typedef struct Btree Btree;
+typedef struct CollSeq CollSeq;
+typedef struct Column Column;
+typedef struct Cte Cte;
+typedef struct DbClientData DbClientData;
+typedef struct EdupBuf EdupBuf;
+typedef struct Expr Expr;
+typedef struct ExprList ExprList;
+typedef struct FuncDef FuncDef;
+typedef struct FuncDestructor FuncDestructor;
+typedef struct IdList IdList;
+typedef struct Index Index;
+typedef struct KeyInfo KeyInfo;
+typedef struct sqlite3_value Mem;
+typedef struct MemFile MemFile;
+typedef struct Module Module;
+typedef struct NameContext NameContext;
+typedef struct OnOrUsing OnOrUsing;
+typedef struct VdbeOp Op;
+typedef struct PCache PCache;
+typedef struct Parse Parse;
+typedef struct PgHdr PgHdr;
+typedef struct RenameToken RenameToken;
+typedef struct RowSet RowSet;
+typedef struct Savepoint Savepoint;
+typedef struct Schema Schema;
+typedef struct Select Select;
+typedef struct SortSubtask SortSubtask;
+typedef struct SorterRecord SorterRecord;
+typedef struct SrcItem SrcItem;
+typedef struct SrcList SrcList;
+typedef struct Subquery Subquery;
+typedef struct Table Table;
+typedef struct Trigger Trigger;
+typedef struct TriggerStep TriggerStep;
+typedef struct UnpackedRecord UnpackedRecord;
+typedef struct Upsert Upsert;
+typedef struct VTable VTable;
+typedef struct ValueNewStat4Ctx ValueNewStat4Ctx;
+typedef struct Vdbe Vdbe;
+typedef struct VdbeCursor VdbeCursor;
+typedef struct VdbeSorter VdbeSorter;
+typedef struct VtabCtx VtabCtx;
+typedef struct WhereAndInfo WhereAndInfo;
+typedef struct WhereInfo WhereInfo;
+typedef struct WhereLoop WhereLoop;
+typedef struct WhereOrInfo WhereOrInfo;
+typedef struct Window Window;
+typedef struct With With;
+typedef struct sqlite3_backup sqlite3_backup;
+typedef struct sqlite3_blob sqlite3_blob;
+typedef struct sqlite3_context sqlite3_context;
+typedef struct sqlite3_file sqlite3_file;
+typedef struct sqlite3_index_info sqlite3_index_info;
+typedef struct sqlite3_module sqlite3_module;
+typedef struct sqlite3_mutex sqlite3_mutex;
+typedef struct sqlite3_mutex_methods sqlite3_mutex_methods;
+typedef struct Vdbe sqlite3_stmt;
+typedef struct sqlite3_str sqlite3_str;
+typedef struct sqlite3_vfs sqlite3_vfs;
+typedef struct sqlite3_vtab sqlite3_vtab;
 
 typedef struct sqlite3 sqlite3;
 

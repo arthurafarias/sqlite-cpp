@@ -4,8 +4,12 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+  typedef struct JsonParse JsonParse;
+  typedef struct sqlite3_context sqlite3_context;
+  typedef struct sqlite3_value sqlite3_value;
   typedef struct JsonString JsonString;
 
   struct JsonString {

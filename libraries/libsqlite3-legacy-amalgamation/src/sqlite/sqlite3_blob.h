@@ -4,9 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
-
 #include "sqlite/sqlite3_int64.h"
+#include "sqlite/u32.h"
+  typedef struct BtCursor BtCursor;
 
   typedef struct sqlite3_blob sqlite3_blob;
   struct sqlite3_blob {};
