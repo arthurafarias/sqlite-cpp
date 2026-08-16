@@ -1,2 +1,2 @@
 #include "sqlite/RowLoadInfo.h"
-RowLoadInfo stub;
+RowLoadInfo RowLoadInfo_stub;

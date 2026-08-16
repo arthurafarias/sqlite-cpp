@@ -15,15 +15,13 @@ option(SQLITE_BUILD_APPLICATIONS "Build sqldiff-legacy and sqlite3-rsync-legacy"
 
 enable_testing()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SqliteFeatures.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SqliteCodegen.cmake)
-
 add_subdirectory(libraries/libsqlite3-legacy)
 
 # SRS 001 FR-4: each library builds as its own SHARED object over the
 # csrc/ FR-3 populated, with no target_link_libraries() between siblings
 # (see cmake/SqliteCppLibrary.cmake for why -- the real C symbol graph is
 # cyclic, and CMake refuses target-level cycles between SHARED libraries).
+
 add_subdirectory(libraries/libsqlite-utils)
 add_subdirectory(libraries/libsqlite-backend-os)
 add_subdirectory(libraries/libsqlite-backend-pager)
@@ -40,16 +38,16 @@ add_subdirectory(libraries/libsqlite3-legacy-amalgamation)
 # above (cmake/SqliteCppLibrary.cmake's sqlite_cpp_link_full_split()) instead
 # of embedding the amalgamation or linking libsqlite3-legacy.
 if(SQLITE_BUILD_SHELL)
-    add_subdirectory(applications/sqlite3-shell-legacy)
+    # add_subdirectory(applications/sqlite3-shell-legacy)
 endif()
 if(SQLITE_BUILD_APPLICATIONS)
-    add_subdirectory(applications/sqldiff-legacy)
-    add_subdirectory(applications/sqlite3-rsync-legacy)
+    # add_subdirectory(applications/sqldiff-legacy)
+    # add_subdirectory(applications/sqlite3-rsync-legacy)
 endif()
 if(SQLITE_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
 if(SQLITE_BUILD_BENCHMARKS)
-    add_subdirectory(applications/speedtest1-legacy)
+    # add_subdirectory(applications/speedtest1-legacy)
 endif()

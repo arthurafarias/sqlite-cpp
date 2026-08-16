@@ -1,2 +1,2 @@
 #include "sqlite/unixFile.h"
-unixFile stub;
+unixFile unixFile_stub;

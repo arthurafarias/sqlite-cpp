@@ -6,6 +6,8 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
+typedef struct sqlite3_value sqlite3_value;
+
 typedef struct HiddenIndexInfo HiddenIndexInfo;
 struct HiddenIndexInfo {
   WhereClause *pWC;

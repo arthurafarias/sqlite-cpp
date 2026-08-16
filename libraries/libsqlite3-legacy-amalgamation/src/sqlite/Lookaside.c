@@ -1,2 +1,2 @@
 #include "sqlite/Lookaside.h"
-Lookaside stub;
+Lookaside Lookaside_stub;

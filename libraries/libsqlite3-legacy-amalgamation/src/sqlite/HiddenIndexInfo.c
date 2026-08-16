@@ -1,2 +1,2 @@
 #include "sqlite/HiddenIndexInfo.h"
-HiddenIndexInfo stub;
+HiddenIndexInfo HiddenIndexInfo_stub;

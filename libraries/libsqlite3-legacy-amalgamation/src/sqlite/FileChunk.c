@@ -1,2 +1,2 @@
 #include "sqlite/FileChunk.h"
-FileChunk stub;
+FileChunk FileChunk_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/SrcItem.h"
-SrcItem stub;
+SrcItem SrcItem_stub;

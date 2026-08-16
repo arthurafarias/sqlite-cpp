@@ -1,2 +1,2 @@
 #include "sqlite/WalIterator.h"
-WalIterator stub;
+WalIterator WalIterator_stub;

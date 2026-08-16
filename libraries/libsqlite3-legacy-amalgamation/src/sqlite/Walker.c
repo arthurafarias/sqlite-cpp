@@ -1,2 +1,2 @@
 #include "sqlite/Walker.h"
-Walker stub;
+Walker Walker_stub;

@@ -1,4 +1,4 @@
-# 2010 April 13
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -123,7 +123,7 @@ foreach {testprefix do_wal_checkpoint} {
     } {5 12 0}
 
     # Now do a blocking-checkpoint. Set the busy-handler up so that connection
-    # 2 releases its lock on the 6th invocation. The checkpointer should then
+    
     # proceed to checkpoint the entire log file. Next write should go to the 
     # start of the log file.
     #

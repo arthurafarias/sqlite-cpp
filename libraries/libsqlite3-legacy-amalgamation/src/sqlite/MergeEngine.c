@@ -1,2 +1,2 @@
 #include "sqlite/MergeEngine.h"
-MergeEngine stub;
+MergeEngine MergeEngine_stub;

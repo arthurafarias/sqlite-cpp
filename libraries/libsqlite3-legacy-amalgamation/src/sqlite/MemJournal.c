@@ -1,2 +1,2 @@
 #include "sqlite/MemJournal.h"
-MemJournal stub;
+MemJournal MemJournal_stub;

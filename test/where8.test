@@ -1,4 +1,4 @@
-# 2008 December 23
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -94,7 +94,7 @@ do_test where8-1.7 {
 } {I III 0 1}
 
 do_test where8-1.8 {
-  # 18 searches. 9 on the index cursor and 9 on the table cursor.
+  
   execsql_status2 { SELECT c FROM t1 WHERE a > 1 AND c LIKE 'I%' }
 } {II III IV IX 0 0 18}
 

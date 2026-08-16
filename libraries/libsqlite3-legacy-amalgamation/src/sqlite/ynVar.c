@@ -1,2 +1,2 @@
 #include "sqlite/ynVar.h"
-ynVar stub;
+ynVar ynVar_stub;

@@ -9,6 +9,7 @@ extern "C" {
 #include "sqlite/Lookaside.h"
 #include "sqlite/Pgno.h"
 #include "sqlite/i64.h"
+#include "sqlite/sqlite3_value.h"
 #include "sqlite/sqlite3_int64.h"
 #include "sqlite/sqlite3_xauth.h"
 #include "sqlite/sqlite_int64.h"

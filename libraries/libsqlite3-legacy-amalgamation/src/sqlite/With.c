@@ -1,2 +1,2 @@
 #include "sqlite/With.h"
-With stub;
+With With_stub;

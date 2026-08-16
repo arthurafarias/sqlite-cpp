@@ -1,4 +1,4 @@
-# 2007 March 24
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -44,7 +44,7 @@ do_test cache-1.2 {
 # At one point, repeatedly locking and unlocking the cache was causing
 # a resource leak of one page per repetition. The page wasn't actually
 # leaked, but would not be reused until the pager-cache was full (i.e. 
-# 2000 pages by default).
+
 #
 # This tests that once the pager-cache is initialized, it can be locked
 # and unlocked repeatedly without internally allocating any new pages.

@@ -7,6 +7,7 @@ extern C {
 #include "sqlite/_TypeIndex.h"
 
 typedef struct FuncDef FuncDef;
+typedef struct sqlite3_value sqlite3_value;
 
 struct FuncDef {
   i16 nArg;

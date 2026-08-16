@@ -1,2 +1,2 @@
 #include "sqlite/SQLiteThread.h"
-SQLiteThread stub;
+SQLiteThread SQLiteThread_stub;

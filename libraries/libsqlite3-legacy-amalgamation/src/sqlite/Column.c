@@ -1,2 +1,2 @@
 #include "sqlite/Column.h"
-Column stub;
+Column Column_stub;

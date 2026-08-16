@@ -1,2 +1,2 @@
 #include "sqlite/PragmaVtabCursor.h"
-PragmaVtabCursor stub;
+PragmaVtabCursor PragmaVtabCursor_stub;

@@ -1,4 +1,4 @@
-# 2007 April 26
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -141,7 +141,7 @@ do_test incrvacuum-3.2 {
     INSERT INTO tbl2 VALUES($::str);
     COMMIT;
   }
-  # 5 pages:
+  
   #
   #   1 -> database header
   #   2 -> first back-pointer page
@@ -363,7 +363,7 @@ db2 close
 for {set jj 0} {$jj < 10} {incr jj} {
   # Build some test data. Two tables are created in an empty
   # database. tbl1 data is a contiguous block starting at page 5 (pages
-  # 3 and 4 are the table roots). tbl2 is a contiguous block starting 
+  
   # right after tbl1.
   #
   # Then drop tbl1 so that when an incr vacuum is run the pages

@@ -1,2 +1,2 @@
 #include "sqlite/PagerSavepoint.h"
-PagerSavepoint stub;
+PagerSavepoint PagerSavepoint_stub;

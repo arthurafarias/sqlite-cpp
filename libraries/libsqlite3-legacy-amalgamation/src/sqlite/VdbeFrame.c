@@ -1,2 +1,2 @@
 #include "sqlite/VdbeFrame.h"
-VdbeFrame stub;
+VdbeFrame VdbeFrame_stub;

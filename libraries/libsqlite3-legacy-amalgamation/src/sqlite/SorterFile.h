@@ -5,7 +5,7 @@ extern C {
 #endif
 
 #include "sqlite/_TypeIndex.h"
-
+typedef struct sqlite3_file sqlite3_file;
   typedef struct SorterFile SorterFile;
   typedef struct SorterFile SorterFile;
   struct SorterFile {

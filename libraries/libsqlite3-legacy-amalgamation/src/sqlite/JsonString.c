@@ -1,2 +1,2 @@
 #include "sqlite/JsonString.h"
-JsonString stub;
+JsonString JsonString_stub;

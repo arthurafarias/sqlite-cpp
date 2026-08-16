@@ -1,2 +1,2 @@
 #include "sqlite/Savepoint.h"
-Savepoint stub;
+Savepoint Savepoint_stub;

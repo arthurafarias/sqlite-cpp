@@ -1,2 +1,2 @@
 #include "sqlite/ValueList.h"
-ValueList stub;
+ValueList ValueList_stub;

@@ -18,6 +18,7 @@ extern C {
   typedef struct VdbeOp VdbeOp;
   typedef struct sqlite3 sqlite3;
   typedef struct sqlite3_value sqlite3_value;
+  typedef struct sqlite3_file sqlite3_file;
 
 
 struct Vdbe {

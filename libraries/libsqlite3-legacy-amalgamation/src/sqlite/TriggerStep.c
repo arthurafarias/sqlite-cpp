@@ -1,2 +1,2 @@
 #include "sqlite/TriggerStep.h"
-TriggerStep stub;
+TriggerStep TriggerStep_stub;

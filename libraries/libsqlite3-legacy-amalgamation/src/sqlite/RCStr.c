@@ -1,2 +1,2 @@
 #include "sqlite/RCStr.h"
-RCStr stub;
+RCStr RCStr_stub;

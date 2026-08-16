@@ -1,2 +1,2 @@
 #include "sqlite/PmaWriter.h"
-PmaWriter stub;
+PmaWriter PmaWriter_stub;

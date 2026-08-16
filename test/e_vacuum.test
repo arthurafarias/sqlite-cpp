@@ -1,4 +1,4 @@
-# 2010 September 24
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -49,7 +49,7 @@ proc create_db {{sql ""}} {
 # the table or index named by the only argument. For example, if the table
 # occupies database pages 3, 4, 8 and 9, then this command returns 2 (there
 # are 2 fragments - one consisting of pages 3 and 4, the other of fragments
-# 8 and 9).
+
 #
 proc fragment_count {name} {
   execsql { CREATE VIRTUAL TABLE temp.stat USING dbstat }

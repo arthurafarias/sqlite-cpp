@@ -1,2 +1,2 @@
 #include "sqlite/BtLock.h"
-BtLock stub;
+BtLock BtLock_stub;

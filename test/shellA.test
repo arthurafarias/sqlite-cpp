@@ -299,7 +299,7 @@ one    five   nine    thirteen
 two    six    ten     fourteen
 three  seven  eleven
 four   eight  twelve}
-# 3456789 123456789 123456789
+
 
 do_test shellA-6.2 {
   exec {*}$CLI -noinit test.db \

@@ -1,2 +1,2 @@
 #include "sqlite/SelectDest.h"
-SelectDest stub;
+SelectDest SelectDest_stub;

@@ -1,4 +1,4 @@
-puts {# 2008 December 11
+puts {
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:

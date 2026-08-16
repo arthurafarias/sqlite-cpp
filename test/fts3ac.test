@@ -1,4 +1,4 @@
-# 2006 September 14
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -1102,7 +1102,7 @@ do_test fts3ac-2.5 {
 } {20 {3 0 42 3 3 1 54 8 3 0 129 3 3 0 143 3 3 0 240 3}}
 
 # Document 32 contains 5 instances of the world "child".  But only
-# 3 of them are paired with "product".  Make sure only those instances
+
 # that match the phrase appear in the offsets(email) list.
 #
 do_test fts3ac-3.1 {

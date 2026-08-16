@@ -1,2 +1,2 @@
 #include "sqlite/Bitvec.h"
-Bitvec stub;
+Bitvec Bitvec_stub;

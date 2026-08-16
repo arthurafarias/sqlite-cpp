@@ -1,2 +1,2 @@
 #include "sqlite/IncrMerger.h"
-IncrMerger stub;
+IncrMerger IncrMerger_stub;

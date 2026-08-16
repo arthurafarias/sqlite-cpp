@@ -1,2 +1,2 @@
 #include "sqlite/Select.h"
-Select stub;
+Select Select_stub;

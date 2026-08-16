@@ -1,2 +1,2 @@
 #include "sqlite/SortCtx.h"
-SortCtx stub;
+SortCtx SortCtx_stub;

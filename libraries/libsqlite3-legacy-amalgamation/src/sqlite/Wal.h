@@ -10,6 +10,8 @@ extern C {
 
 typedef struct Wal Wal;
 
+typedef struct sqlite3_file sqlite3_file;
+
 struct Wal {
   sqlite3_vfs *pVfs;
   sqlite3_file *pDbFd;

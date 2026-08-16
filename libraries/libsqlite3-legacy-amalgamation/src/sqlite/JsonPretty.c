@@ -1,2 +1,2 @@
 #include "sqlite/JsonPretty.h"
-JsonPretty stub;
+JsonPretty JsonPretty_stub;

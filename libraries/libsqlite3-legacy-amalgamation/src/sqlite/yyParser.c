@@ -1,2 +1,2 @@
 #include "sqlite/yyParser.h"
-yyParser stub;
+yyParser yyParser_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/DbPath.h"
-DbPath stub;
+DbPath DbPath_stub;

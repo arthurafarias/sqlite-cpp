@@ -6,5 +6,7 @@ project(sqlite-compiler-parser LANGUAGES C)
 # (the grammar source, per SRS 001 FR-3) -- the generated parse.c
 # lemon produces from it is passed explicitly since there's nothing under
 # csrc/ for file(GLOB csrc/*.c) to find.
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCppLibrary.cmake)
-sqlite_cpp_add_library(compiler-parser ${SQLITE_GENDIR}/parse.c)
+
+file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/csrc/*.c)
+
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})

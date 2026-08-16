@@ -1,2 +1,2 @@
 #include "sqlite/DbClientData.h"
-DbClientData stub;
+DbClientData DbClientData_stub;

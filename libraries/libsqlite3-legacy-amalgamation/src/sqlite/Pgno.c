@@ -1,2 +1,2 @@
 #include "sqlite/Pgno.h"
-Pgno stub;
+Pgno Pgno_stub;

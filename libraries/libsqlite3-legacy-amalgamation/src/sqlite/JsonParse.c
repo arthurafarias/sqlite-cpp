@@ -1,2 +1,2 @@
 #include "sqlite/JsonParse.h"
-JsonParse stub;
+JsonParse JsonParse_stub;

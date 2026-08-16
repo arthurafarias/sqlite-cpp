@@ -1,2 +1,2 @@
 #include "sqlite/UnixUnusedFd.h"
-UnixUnusedFd stub;
+UnixUnusedFd UnixUnusedFd_stub;

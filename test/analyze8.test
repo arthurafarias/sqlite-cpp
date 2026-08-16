@@ -1,4 +1,4 @@
-# 2011 August 13
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -87,7 +87,7 @@ do_test 2.1 {
 # 
 # Test 3.2 is a little unstable. It depends on the planner estimating
 # that (b BETWEEN 30 AND 34) will match more rows than (c BETWEEN
-# 800000 AND 900000). Which is a pretty close call (50 vs. 32), so
+
 # the planner could get it wrong with an unlucky set of samples. This
 # case happens to work, but others ("b BETWEEN 40 AND 44" for example) 
 # will fail.

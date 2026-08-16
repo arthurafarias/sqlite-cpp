@@ -1,2 +1,2 @@
 #include "sqlite/Upsert.h"
-Upsert stub;
+Upsert Upsert_stub;

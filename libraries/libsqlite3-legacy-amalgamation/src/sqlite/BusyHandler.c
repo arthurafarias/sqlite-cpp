@@ -1,2 +1,2 @@
 #include "sqlite/BusyHandler.h"
-BusyHandler stub;
+BusyHandler BusyHandler_stub;

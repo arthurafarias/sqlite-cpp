@@ -1,2 +1,2 @@
 #include "sqlite/WhereRightJoin.h"
-WhereRightJoin stub;
+WhereRightJoin WhereRightJoin_stub;

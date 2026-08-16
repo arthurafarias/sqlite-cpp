@@ -1,2 +1,2 @@
 #include "sqlite/WhereOrSet.h"
-WhereOrSet stub;
+WhereOrSet WhereOrSet_stub;

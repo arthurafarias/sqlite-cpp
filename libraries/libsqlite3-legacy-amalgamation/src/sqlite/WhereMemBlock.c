@@ -1,2 +1,2 @@
 #include "sqlite/WhereMemBlock.h"
-WhereMemBlock stub;
+WhereMemBlock WhereMemBlock_stub;

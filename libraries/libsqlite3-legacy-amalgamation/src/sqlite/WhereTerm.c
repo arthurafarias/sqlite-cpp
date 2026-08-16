@@ -1,2 +1,2 @@
 #include "sqlite/WhereTerm.h"
-WhereTerm stub;
+WhereTerm WhereTerm_stub;

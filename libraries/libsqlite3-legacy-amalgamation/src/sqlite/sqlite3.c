@@ -1,2 +1,2 @@
 #include "sqlite/sqlite3.h"
-sqlite3 stub;
+sqlite3 sqlite3_stub;

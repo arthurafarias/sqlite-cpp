@@ -1,4 +1,4 @@
-# 2005 November 30
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -205,7 +205,7 @@ db2 close
 puts "Highwater mark: [sqlite3_memory_highwater]"
 
 # The following two test cases each execute a transaction in which 
-# 10000 rows are inserted into table abc. The first test case is used
+
 # to ensure that more than 1MB of dynamic memory is used to perform
 # the transaction. 
 #

@@ -1,2 +1,2 @@
 #include "sqlite/SortSubtask.h"
-SortSubtask stub;
+SortSubtask SortSubtask_stub;

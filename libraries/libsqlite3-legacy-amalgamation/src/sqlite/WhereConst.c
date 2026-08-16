@@ -1,2 +1,2 @@
 #include "sqlite/WhereConst.h"
-WhereConst stub;
+WhereConst WhereConst_stub;

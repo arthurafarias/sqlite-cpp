@@ -1,2 +1,2 @@
 #include "sqlite/sqlite3_mem_methods.h"
-sqlite3_mem_methods stub;
+sqlite3_mem_methods sqlite3_mem_methods_stub;

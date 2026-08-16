@@ -1,4 +1,4 @@
-# 2013 August 3
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -1116,7 +1116,7 @@ ifcapable stat4&&cte {
   } {SEARCH t6 USING INDEX bb (b>? AND b<?)}
   
   # Term (b BETWEEN ? AND 60) is estimated to return roughly 15 rows -
-  # 60 from (b<=60) multiplied by 0.25 for the b>=? term. Better than
+  
   # (a<20) but not as good as (a<10).
   do_eqp_test 25.4.1 { 
     SELECT * FROM t6 WHERE a < 10 AND (b BETWEEN ? AND 60)

@@ -1,3 +1,3 @@
 #include "unixFileId.h"
 
-unixFileId stub;
+unixFileId unixFileId_stub;

@@ -49,4 +49,4 @@ Sqlite3Config sqlite3Config = {
     0x7fffffff,
     0,
 
-};Sqlite3Config stub;
+};

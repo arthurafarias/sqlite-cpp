@@ -1,2 +1,2 @@
 #include "sqlite/VdbeCursor.h"
-VdbeCursor stub;
+VdbeCursor VdbeCursor_stub;

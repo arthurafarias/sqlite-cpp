@@ -1,2 +1,2 @@
 #include "sqlite/JsonEachCursor.h"
-JsonEachCursor stub;
+JsonEachCursor JsonEachCursor_stub;

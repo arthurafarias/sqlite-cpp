@@ -1,2 +1,2 @@
 #include "sqlite/Db.h"
-Db stub;
+Db Db_stub;

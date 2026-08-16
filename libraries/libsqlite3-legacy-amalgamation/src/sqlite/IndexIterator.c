@@ -1,2 +1,2 @@
 #include "sqlite/IndexIterator.h"
-IndexIterator stub;
+IndexIterator IndexIterator_stub;

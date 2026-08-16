@@ -1,2 +1,2 @@
 #include "sqlite/AuxData.h"
-AuxData stub;
+AuxData AuxData_stub;

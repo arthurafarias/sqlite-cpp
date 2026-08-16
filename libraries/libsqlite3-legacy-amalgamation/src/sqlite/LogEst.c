@@ -1,2 +1,2 @@
 #include "LogEst.h"
-LogEst stub;
+LogEst LogEst_stub;

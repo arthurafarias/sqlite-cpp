@@ -5,14 +5,15 @@
 extern C {
 #endif
 
-#include "sqlite/u8.h"
 #include "sqlite/Pgno.h"
 #include "sqlite/sqlite3_pcache.h"
+#include "sqlite/u8.h"
 
   typedef struct PCache PCache;
 
   typedef struct sqlite3_pcache_page sqlite3_pcache_page;
   typedef struct PgHdr PgHdr;
+  typedef struct PCache sqlite3_pcache;
 
   struct PCache {
     PgHdr *pDirty, *pDirtyTail;      /* List of dirty pages in LRU order */

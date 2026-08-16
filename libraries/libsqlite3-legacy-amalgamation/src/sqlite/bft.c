@@ -1,3 +1,3 @@
 #include "bft.h"
 
-bft stub;
+bft bft_stub;

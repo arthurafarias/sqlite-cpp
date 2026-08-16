@@ -1,2 +1,2 @@
 #include "sqlite/Pager.h"
-Pager stub;
+Pager Pager_stub;

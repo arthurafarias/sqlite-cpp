@@ -1,2 +1,2 @@
 #include "sqlite/RenameCtx.h"
-RenameCtx stub;
+RenameCtx RenameCtx_stub;

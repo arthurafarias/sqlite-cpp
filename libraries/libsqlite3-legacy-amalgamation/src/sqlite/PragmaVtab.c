@@ -1,2 +1,2 @@
 #include "sqlite/PragmaVtab.h"
-PragmaVtab stub;
+PragmaVtab PragmaVtab_stub;

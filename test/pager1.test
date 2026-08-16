@@ -1,4 +1,4 @@
-# 2010 June 15
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -561,7 +561,7 @@ foreach {tn1 tcl} {
   1 { set prefix "test.db" }
   2 { 
     # This test depends on the underlying VFS being able to open paths
-    # 512 bytes in length. The idea is to create a hot-journal file that
+    
     # contains a master-journal pointer so large that it could contain
     # a valid page record (if the file page-size is 512 bytes). So as to
     # make sure SQLite doesn't get confused by this.

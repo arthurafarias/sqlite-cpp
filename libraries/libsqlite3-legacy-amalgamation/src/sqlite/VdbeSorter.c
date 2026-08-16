@@ -1,2 +1,2 @@
 #include "sqlite/VdbeSorter.h"
-VdbeSorter stub;
+VdbeSorter VdbeSorter_stub;

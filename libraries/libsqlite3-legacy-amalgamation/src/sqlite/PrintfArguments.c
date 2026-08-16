@@ -1,2 +1,2 @@
 #include "sqlite/PrintfArguments.h"
-PrintfArguments stub;
+PrintfArguments PrintfArguments_stub;

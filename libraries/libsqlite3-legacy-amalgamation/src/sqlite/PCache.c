@@ -1,2 +1,2 @@
 #include "sqlite/PCache.h"
-PCache stub;
+PCache PCache_stub;

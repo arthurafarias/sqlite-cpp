@@ -1,2 +1,2 @@
 #include "sqlite/NameContext.h"
-NameContext stub;
+NameContext NameContext_stub;

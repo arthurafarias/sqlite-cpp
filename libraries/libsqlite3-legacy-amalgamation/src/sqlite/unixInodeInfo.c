@@ -1,2 +1,2 @@
 #include "sqlite/unixInodeInfo.h"
-unixInodeInfo stub;
+unixInodeInfo unixInodeInfo_stub;

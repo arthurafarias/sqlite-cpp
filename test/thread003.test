@@ -1,4 +1,4 @@
-# 2007 September 10
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -67,7 +67,7 @@ do_test thread003.1.6 {
 # This test opens a connection on each of the large (>2MB) database files
 # created by the previous block. The connections do not share a cache.
 # Both "cache_size" parameters are set to 15, so there is a maximum of
-# 30 pages available globally.
+
 #
 # Then, in separate threads, the databases are randomly queried over and
 # over again. This will force the connections to recycle clean pages from

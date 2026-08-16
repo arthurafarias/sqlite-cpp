@@ -1,2 +1,2 @@
 #include "sqlite/MemStore.h"
-MemStore stub;
+MemStore MemStore_stub;

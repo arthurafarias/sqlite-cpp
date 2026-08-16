@@ -1,2 +1,2 @@
 #include "sqlite/DistinctCtx.h"
-DistinctCtx stub;
+DistinctCtx DistinctCtx_stub;

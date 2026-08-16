@@ -1,2 +1,2 @@
 #include "sqlite/FKey.h"
-FKey stub;
+FKey FKey_stub;

@@ -1,4 +1,4 @@
-# 2003 October 31
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -531,7 +531,7 @@ if {0==[sqlite3 -has-codec]} {
   } {2454629.5}
   
   # Changing the least significant byte of the floating point value between
-  # 00 and FF should always generate a time of either 23:59:59 or 00:00:00,
+  
   # never 24:00:00
   #
   for {set i 0} {$i<=255} {incr i} {

@@ -1,2 +1,2 @@
 #include "sqlite/DbFixer.h"
-DbFixer stub;
+DbFixer DbFixer_stub;

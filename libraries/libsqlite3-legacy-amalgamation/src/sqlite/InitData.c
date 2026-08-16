@@ -1,2 +1,2 @@
 #include "sqlite/InitData.h"
-InitData stub;
+InitData InitData_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/BtCursor.h"
-BtCursor stub;
+BtCursor BtCursor_stub;

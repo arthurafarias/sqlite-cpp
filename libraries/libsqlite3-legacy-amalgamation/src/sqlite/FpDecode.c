@@ -1,2 +1,2 @@
 #include "sqlite/FpDecode.h"
-FpDecode stub;
+FpDecode FpDecode_stub;

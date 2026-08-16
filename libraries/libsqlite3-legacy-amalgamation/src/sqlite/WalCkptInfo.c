@@ -1,2 +1,2 @@
 #include "sqlite/WalCkptInfo.h"
-WalCkptInfo stub;
+WalCkptInfo WalCkptInfo_stub;

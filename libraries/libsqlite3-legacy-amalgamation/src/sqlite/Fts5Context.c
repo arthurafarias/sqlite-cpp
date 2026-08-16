@@ -1,2 +1,2 @@
 #include "sqlite/Fts5Context.h"
-Fts5Context stub;
+Fts5Context Fts5Context_stub;

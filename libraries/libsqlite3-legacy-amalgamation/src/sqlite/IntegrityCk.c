@@ -1,2 +1,2 @@
 #include "sqlite/IntegrityCk.h"
-IntegrityCk stub;
+IntegrityCk IntegrityCk_stub;

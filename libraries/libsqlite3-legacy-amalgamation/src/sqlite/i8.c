@@ -1,2 +1,2 @@
 #include "sqlite/i8.h"
-i8 stub;
+i8 i8_stub;

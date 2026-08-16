@@ -1,2 +1,2 @@
 #include "sqlite/Hash.h"
-Hash stub;
+Hash Hash_stub;

@@ -1,4 +1,4 @@
-# 2003 September 6
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -162,7 +162,7 @@ do_test bind-2.1.8 {
   sqlite3_bind_parameter_index $VM {:hi}
 } 0
 
-# 32 bit Integers
+
 do_test bind-2.2 {
   sqlite3_bind_int $VM 1 123
   sqlite3_bind_int $VM 2 456
@@ -187,7 +187,7 @@ do_test bind-2.5 {
   }
 } {}
 
-# 64 bit Integers
+
 do_test bind-3.1 {
   sqlite3_bind_int64 $VM 1 32
   sqlite3_bind_int64 $VM 2 -2000000000000

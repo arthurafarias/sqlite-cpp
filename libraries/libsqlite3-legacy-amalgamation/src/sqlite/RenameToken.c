@@ -1,2 +1,2 @@
 #include "sqlite/RenameToken.h"
-RenameToken stub;
+RenameToken RenameToken_stub;

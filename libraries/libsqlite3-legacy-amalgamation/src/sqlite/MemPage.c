@@ -1,2 +1,2 @@
 #include "sqlite/MemPage.h"
-MemPage stub;
+MemPage MemPage_stub;

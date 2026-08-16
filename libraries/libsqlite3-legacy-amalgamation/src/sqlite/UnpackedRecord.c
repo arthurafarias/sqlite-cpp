@@ -1,2 +1,2 @@
 #include "sqlite/UnpackedRecord.h"
-UnpackedRecord stub;
+UnpackedRecord UnpackedRecord_stub;

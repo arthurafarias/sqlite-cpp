@@ -1,2 +1,2 @@
 #include "sqlite/MemFile.h"
-MemFile stub;
+MemFile MemFile_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/BenignMallocHooks.h"
-BenignMallocHooks stub;
+BenignMallocHooks BenignMallocHooks_stub;

@@ -6,6 +6,8 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
+typedef struct sqlite3_file sqlite3_file;
+
 typedef struct PmaReader PmaReader;
 struct PmaReader {
   i64 iReadOff;

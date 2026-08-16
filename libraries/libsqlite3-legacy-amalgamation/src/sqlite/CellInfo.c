@@ -1,2 +1,2 @@
 #include "sqlite/CellInfo.h"
-CellInfo stub;
+CellInfo CellInfo_stub;

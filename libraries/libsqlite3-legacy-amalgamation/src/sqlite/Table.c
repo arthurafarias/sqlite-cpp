@@ -1,2 +1,2 @@
 #include "sqlite/Table.h"
-Table stub;
+Table Table_stub;

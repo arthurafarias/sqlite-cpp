@@ -1,2 +1,2 @@
 #include "sqlite/HashElem.h"
-HashElem stub;
+HashElem HashElem_stub;

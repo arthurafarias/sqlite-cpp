@@ -1,2 +1,2 @@
 #include "sqlite/DbPage.h"
-DbPage stub;
+DbPage DbPage_stub;

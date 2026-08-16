@@ -1,4 +1,4 @@
-# 2014 September 15.
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -45,7 +45,7 @@ tvfs delete
 #-------------------------------------------------------------------------
 # Test that the PMA size is determined correctly. The PMA size should be
 # roughly the same amount of memory allocated to the main pager cache, or
-# 250 pages if this is larger.
+
 #
 testvfs tvfs
 tvfs script tv_callback

@@ -1,2 +1,2 @@
 #include "sqlite/WalIndexHdr.h"
-WalIndexHdr stub;
+WalIndexHdr WalIndexHdr_stub;

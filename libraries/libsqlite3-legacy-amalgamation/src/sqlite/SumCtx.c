@@ -1,2 +1,2 @@
 #include "sqlite/SumCtx.h"
-SumCtx stub;
+SumCtx SumCtx_stub;

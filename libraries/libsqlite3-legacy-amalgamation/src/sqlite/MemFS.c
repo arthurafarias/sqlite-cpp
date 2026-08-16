@@ -1,3 +1,3 @@
 #include "sqlite/MemFS.h"
 
-MemFS stub;
+MemFS MemFS_stub;

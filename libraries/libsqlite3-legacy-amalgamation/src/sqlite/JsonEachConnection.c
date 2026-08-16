@@ -1,2 +1,2 @@
 #include "sqlite/JsonEachConnection.h"
-JsonEachConnection stub;
+JsonEachConnection JsonEachConnection_stub;

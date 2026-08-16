@@ -1,2 +1,2 @@
 #include "sqlite/RowSet.h"
-RowSet stub;
+RowSet RowSet_stub;

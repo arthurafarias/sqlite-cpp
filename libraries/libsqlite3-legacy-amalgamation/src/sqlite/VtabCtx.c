@@ -1,2 +1,2 @@
 #include "sqlite/VtabCtx.h"
-VtabCtx stub;
+VtabCtx VtabCtx_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/PmaReader.h"
-PmaReader stub;
+PmaReader PmaReader_stub;

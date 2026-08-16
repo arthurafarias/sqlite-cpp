@@ -1,4 +1,4 @@
-# 2007 May 10
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -67,7 +67,7 @@ proc db_checksum {} {
 # Modify a single byte in the file 'test.db' using tcl IO commands. The
 # argument value, which must be an integer, determines both the offset of
 # the byte that is modified, and the value that it is set to. The lower
-# 8 bits of iMod determine the new byte value. The offset of the byte
+
 # modified is the value of ($iMod >> 8).
 #
 # The return value is the iMod value required to restore the file

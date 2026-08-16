@@ -1,2 +1,2 @@
 #include "sqlite/CollSeq.h"
-CollSeq stub;
+CollSeq CollSeq_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/IndexedExpr.h"
-IndexedExpr stub;
+IndexedExpr IndexedExpr_stub;

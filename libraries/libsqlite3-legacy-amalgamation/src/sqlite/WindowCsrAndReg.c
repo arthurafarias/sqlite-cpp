@@ -1,2 +1,2 @@
 #include "sqlite/WindowCsrAndReg.h"
-WindowCsrAndReg stub;
+WindowCsrAndReg WindowCsrAndReg_stub;

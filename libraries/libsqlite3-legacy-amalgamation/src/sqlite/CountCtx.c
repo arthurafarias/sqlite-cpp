@@ -1,2 +1,2 @@
 #include "sqlite/CountCtx.h"
-CountCtx stub;
+CountCtx CountCtx_stub;

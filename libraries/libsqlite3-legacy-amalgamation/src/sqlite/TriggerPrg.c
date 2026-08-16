@@ -1,2 +1,2 @@
 #include "sqlite/TriggerPrg.h"
-TriggerPrg stub;
+TriggerPrg TriggerPrg_stub;

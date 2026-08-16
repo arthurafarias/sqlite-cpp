@@ -1,2 +1,2 @@
 #include "sqlite/CellArray.h"
-CellArray stub;
+CellArray CellArray_stub;

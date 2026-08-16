@@ -1,2 +1,2 @@
 #include "sqlite/LookasideSlot.h"
-LookasideSlot stub;
+LookasideSlot LookasideSlot_stub;

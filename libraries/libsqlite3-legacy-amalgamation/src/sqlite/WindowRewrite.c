@@ -1,2 +1,2 @@
 #include "sqlite/WindowRewrite.h"
-WindowRewrite stub;
+WindowRewrite WindowRewrite_stub;

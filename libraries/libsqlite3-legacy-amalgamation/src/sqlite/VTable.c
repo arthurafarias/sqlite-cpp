@@ -1,2 +1,2 @@
 #include "sqlite/VTable.h"
-VTable stub;
+VTable VTable_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/KeyInfo.h"
-KeyInfo stub;
+KeyInfo KeyInfo_stub;

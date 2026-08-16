@@ -5,7 +5,7 @@ extern C {
 #endif
 
 #include "sqlite/_TypeIndex.h"
-
+typedef struct sqlite3_file sqlite3_file;
 typedef struct PmaWriter PmaWriter;
 struct PmaWriter {
   int eFWErr;

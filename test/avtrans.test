@@ -1,4 +1,4 @@
-# 2001 September 15
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -854,7 +854,7 @@ proc signature {} {
 }
 
 # Repeat the following group of tests 20 times for quick testing and
-# 40 times for full testing.  Each iteration of the test makes table
+
 # t3 a little larger, and thus takes a little longer, so doing 40 tests
 # is more than 2.0 times slower than doing 20 tests.  Considerably more.
 #

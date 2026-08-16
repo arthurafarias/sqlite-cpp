@@ -1,2 +1,2 @@
 #include <sqlite/ExprList.h>
-ExprList stub;
+ExprList ExprList_stub;

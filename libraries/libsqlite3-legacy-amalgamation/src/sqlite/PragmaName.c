@@ -1,3 +1,3 @@
 #include "sqlite/PragmaName.h"
 
-PragmaName stub;
+PragmaName PragmaName_stub;

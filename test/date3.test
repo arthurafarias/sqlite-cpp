@@ -137,7 +137,7 @@ datetest 4.3 {datetime('2022-01-27','julianday')}      {NULL}
 
 
 # EVIDENCE-OF: R-33431-18865 Unix timestamps for the first 63 days of
-# 1970 will be interpreted as julian day numbers.
+
 #
 do_execsql_test date3-5.0 {
   WITH inc(x) AS (VALUES(-10) UNION ALL SELECT x+1 FROM inc WHERE x<100)

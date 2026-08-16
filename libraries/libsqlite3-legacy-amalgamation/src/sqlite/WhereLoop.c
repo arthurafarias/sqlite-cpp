@@ -1,2 +1,2 @@
 #include "sqlite/WhereLoop.h"
-WhereLoop stub;
+WhereLoop WhereLoop_stub;

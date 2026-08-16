@@ -1,2 +1,2 @@
 #include "sqlite/ParseCleanup.h"
-ParseCleanup stub;
+ParseCleanup ParseCleanup_stub;

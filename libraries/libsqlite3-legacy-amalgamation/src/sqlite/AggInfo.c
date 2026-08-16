@@ -1,2 +1,2 @@
 #include <sqlite/AggInfo.h>
-AggInfo stub;
+AggInfo AggInfo_stub;

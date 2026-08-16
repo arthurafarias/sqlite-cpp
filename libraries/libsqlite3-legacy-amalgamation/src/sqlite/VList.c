@@ -1,2 +1,2 @@
 #include "sqlite/VList.h"
-VList stub;
+VList VList_stub;

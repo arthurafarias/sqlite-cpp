@@ -1,2 +1,2 @@
 #include "sqlite/Expr.h"
-Expr stub;
+Expr Expr_stub;

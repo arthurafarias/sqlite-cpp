@@ -1,2 +1,2 @@
 #include "sqlite/Op.h"
-Op stub;
+Op Op_stub;

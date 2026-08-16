@@ -1,2 +1,2 @@
 #include "sqlite/WalHashLoc.h"
-WalHashLoc stub;
+WalHashLoc WalHashLoc_stub;

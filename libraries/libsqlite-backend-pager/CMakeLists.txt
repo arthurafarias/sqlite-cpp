@@ -3,5 +3,7 @@ project(sqlite-backend-pager LANGUAGES CXX)
 
 # SRS 001 FR-4: see cmake/SqliteCppLibrary.cmake for what this does and why
 # no sibling sqlite-cpp library is linked against here.
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/SqliteCppLibrary.cmake)
-sqlite_cpp_add_library(backend-pager)
+
+file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/csrc/*.c)
+
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})

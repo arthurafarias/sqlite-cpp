@@ -1,2 +1,2 @@
 #include "sqlite/Subquery.h"
-Subquery stub;
+Subquery Subquery_stub;

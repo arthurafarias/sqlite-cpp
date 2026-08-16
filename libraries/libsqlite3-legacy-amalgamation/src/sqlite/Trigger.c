@@ -1,2 +1,2 @@
 #include "sqlite/Trigger.h"
-Trigger stub;
+Trigger Trigger_stub;

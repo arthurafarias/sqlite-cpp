@@ -1,2 +1,2 @@
 #include "sqlite/ScanStatus.h"
-ScanStatus stub;
+ScanStatus ScanStatus_stub;

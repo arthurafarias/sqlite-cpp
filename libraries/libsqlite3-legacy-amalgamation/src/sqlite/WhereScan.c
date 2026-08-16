@@ -1,2 +1,2 @@
 #include "sqlite/WhereScan.h"
-WhereScan stub;
+WhereScan WhereScan_stub;

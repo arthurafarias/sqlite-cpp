@@ -1,2 +1,2 @@
 #include "sqlite/Window.h"
-Window stub;
+Window Window_stub;

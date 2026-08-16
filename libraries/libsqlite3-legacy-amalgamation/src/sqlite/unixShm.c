@@ -1,2 +1,2 @@
 #include "sqlite/unixShm.h"
-unixShm stub;
+unixShm unixShm_stub;

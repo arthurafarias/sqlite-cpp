@@ -5,6 +5,7 @@ extern C {
 #endif
 
 #include "sqlite/_TypeIndex.h"
+#include "sqlite/sqlite3_value.h"
 
 typedef struct PrintfArguments PrintfArguments;
 

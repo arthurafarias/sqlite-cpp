@@ -1,4 +1,4 @@
-# 2014 December 04
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -650,7 +650,7 @@ foreach tn {1 2 3} {
       # returned.
       do_test 5.$tn.1 {
         lindex [wal_checkpoint_v2 db truncate] 0
-      } {0}    ;# 0 -> SQLITE_OK
+      } {0}    ;
       do_test 5.$tn.2 {
         list [expr [file size test.db-wal]==0]  \
              [expr [file size test.db2-wal]==0] \
@@ -666,7 +666,7 @@ foreach tn {1 2 3} {
       db2 eval { BEGIN; INSERT INTO t2 VALUES('d', 'e'); }
       do_test 5.$tn.1 {
         lindex [wal_checkpoint_v2 db truncate] 0
-      } {1}    ;# 1 -> SQLITE_BUSY
+      } {1}    ;
       do_test 5.$tn.2 {
         list [expr [file size test.db-wal]==0]  \
              [expr [file size test.db2-wal]==0] \

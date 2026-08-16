@@ -1,2 +1,2 @@
 #include "sqlite/FuncDefHash.h"
-FuncDefHash stub;
+FuncDefHash FuncDefHash_stub;

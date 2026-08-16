@@ -1,2 +1,2 @@
 #include "sqlite/OnOrUsing.h"
-OnOrUsing stub;
+OnOrUsing OnOrUsing_stub;

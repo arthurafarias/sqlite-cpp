@@ -1,2 +1,2 @@
 #include "sqlite/Wal.h"
-Wal stub;
+Wal Wal_stub;

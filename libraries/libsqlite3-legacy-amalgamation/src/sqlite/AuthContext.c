@@ -1,2 +1,2 @@
 #include "sqlite/AuthContext.h"
-AuthContext stub;
+AuthContext AuthContext_stub;

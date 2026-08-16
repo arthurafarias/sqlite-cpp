@@ -1,2 +1,2 @@
 #include "sqlite/CheckOnCtx.h"
-CheckOnCtx stub;
+CheckOnCtx CheckOnCtx_stub;

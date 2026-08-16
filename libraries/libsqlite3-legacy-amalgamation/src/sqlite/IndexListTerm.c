@@ -1,2 +1,2 @@
 #include "sqlite/IndexListTerm.h"
-IndexListTerm stub;
+IndexListTerm IndexListTerm_stub;

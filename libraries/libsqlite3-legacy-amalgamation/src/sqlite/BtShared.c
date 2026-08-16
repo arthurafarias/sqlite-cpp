@@ -1,2 +1,2 @@
 #include "sqlite/BtShared.h"
-BtShared stub;
+BtShared BtShared_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/Btree.h"
-Btree stub;
+Btree Btree_stub;

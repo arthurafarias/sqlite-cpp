@@ -1,2 +1,2 @@
 #include "sqlite/WherePath.h"
-WherePath stub;
+WherePath WherePath_stub;

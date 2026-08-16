@@ -1,2 +1,2 @@
 #include "sqlite/DateTime.h"
-DateTime stub;
+DateTime DateTime_stub;

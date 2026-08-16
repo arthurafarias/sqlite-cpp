@@ -114,7 +114,7 @@ db close
 if {$tcl_platform(platform) eq "windows"} {
   file attributes test.db -readonly 1
 } else {
-  file attributes test.db -permissions 292  ;# 292 == 0444
+  file attributes test.db -permissions 292  ;
 }
 sqlite3 db test.db -readonly 1
 forcedelete test.db2
@@ -124,7 +124,7 @@ do_execsql_test vacuum-into-500 {
 if {$tcl_platform(platform) eq "windows"} {
   file attributes test.db -readonly 0
 } else {
-  file attributes test.db -permissions 420   ;# 420 = 0644
+  file attributes test.db -permissions 420   ;
 }
 sqlite3 db2 test.db2
 do_test vacuum-into-510 {

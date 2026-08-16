@@ -1,2 +1,2 @@
 #include "sqlite/WhereMaskSet.h"
-WhereMaskSet stub;
+WhereMaskSet WhereMaskSet_stub;

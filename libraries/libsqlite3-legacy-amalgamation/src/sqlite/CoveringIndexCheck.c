@@ -1,2 +1,2 @@
 #include "sqlite/CoveringIndexCheck.h"
-CoveringIndexCheck stub;
+CoveringIndexCheck CoveringIndexCheck_stub;

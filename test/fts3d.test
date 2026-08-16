@@ -1,4 +1,4 @@
-# 2008 June 26
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -196,7 +196,7 @@ db eval {
   UPDATE t1 SET c = 'This is a test' WHERE rowid = 3;
 }
 
-# 2 segments in level 0, 1 in level 1 (18 segments created, 16
+
 # merged).
 do_test fts3d-4.segments {
   execsql {

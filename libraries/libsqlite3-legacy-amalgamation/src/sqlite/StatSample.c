@@ -1,2 +1,2 @@
 #include "sqlite/StatSample.h"
-StatSample stub;
+StatSample StatSample_stub;

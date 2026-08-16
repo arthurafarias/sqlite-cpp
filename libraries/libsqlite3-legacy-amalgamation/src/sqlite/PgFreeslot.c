@@ -1,2 +1,2 @@
 #include "sqlite/PgFreeslot.h"
-PgFreeslot stub;
+PgFreeslot PgFreeslot_stub;

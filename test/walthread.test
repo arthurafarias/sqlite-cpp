@@ -1,4 +1,4 @@
-# 2010 April 13
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -24,7 +24,7 @@ set DBNAME wt-[expr {int(abs(rand()*100000000))}]-test.db
 set sqlite_walsummary_mmap_incr 64
 
 # How long, in seconds, to run each test for. If a test is set to run for
-# 0 seconds, it is omitted entirely.
+
 #
 unset -nocomplain seconds
 set seconds(walthread-1) 20

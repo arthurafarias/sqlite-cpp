@@ -1,2 +1,2 @@
 #include "sqlite/VdbeTxtBlbCache.h"
-VdbeTxtBlbCache stub;
+VdbeTxtBlbCache VdbeTxtBlbCache_stub;

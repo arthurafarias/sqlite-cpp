@@ -1,2 +1,2 @@
 #include "sqlite/FuncDestructor.h"
-FuncDestructor stub;
+FuncDestructor FuncDestructor_stub;

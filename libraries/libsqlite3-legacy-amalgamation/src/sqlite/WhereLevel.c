@@ -1,2 +1,2 @@
 #include "sqlite/WhereLevel.h"
-WhereLevel stub;
+WhereLevel WhereLevel_stub;

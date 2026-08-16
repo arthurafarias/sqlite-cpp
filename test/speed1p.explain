@@ -1,4 +1,4 @@
-# 2008 March 21
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -81,7 +81,7 @@ do_test speed1p-1.0 {
 } {i2a i2b t1 t2}
 
 
-# 50000 INSERTs on an unindexed table
+
 #
 set list {}
 for {set i 1} {$i<=50000} {incr i} {
@@ -99,7 +99,7 @@ db eval BEGIN
 speed_trial_tcl speed1p-insert1 50000 row $script
 db eval COMMIT
 
-# 50000 INSERTs on an indexed table
+
 #
 set list {}
 for {set i 1} {$i<=50000} {incr i} {
@@ -119,7 +119,7 @@ db eval COMMIT
 
 
 
-# 50 SELECTs on an integer comparison.  There is no index so
+
 # a full table scan is required.
 #
 set list {}
@@ -138,7 +138,7 @@ db eval BEGIN
 speed_trial_tcl speed1p-select1 [expr {50*50000}] row $script
 db eval COMMIT
 
-# 50 SELECTs on an LIKE comparison.  There is no index so a full
+
 # table scan is required.
 #
 set list {}
@@ -167,7 +167,7 @@ speed_trial speed1p-createidx 150000 row {
 }
 db eval COMMIT
 
-# 5000 SELECTs on an integer comparison where the integer is
+
 # indexed.
 #
 set list {}
@@ -186,7 +186,7 @@ db eval BEGIN
 speed_trial_tcl speed1p-select3 5000 stmt $script
 db eval COMMIT
 
-# 100000 random SELECTs against rowid.
+
 #
 set list {}
 for {set i 1} {$i<=100000} {incr i} {
@@ -203,7 +203,7 @@ db eval BEGIN
 speed_trial_tcl speed1p-select4 100000 row $script
 db eval COMMIT
 
-# 100000 random SELECTs against a unique indexed column.
+
 #
 set list {}
 for {set i 1} {$i<=100000} {incr i} {
@@ -220,7 +220,7 @@ db eval BEGIN
 speed_trial_tcl speed1p-select5 100000 row $script
 db eval COMMIT
 
-# 50000 random SELECTs against an indexed column text column
+
 #
 set list [db eval {SELECT c FROM t1 ORDER BY random() LIMIT 50000}]
 set script {
@@ -237,7 +237,7 @@ db eval COMMIT
 # Vacuum
 speed_trial speed1p-vacuum 100000 row VACUUM
 
-# 5000 updates of ranges where the field being compared is indexed.
+
 #
 set list {}
 for {set i 0} {$i<5000} {incr i} {
@@ -255,7 +255,7 @@ db eval BEGIN
 speed_trial_tcl speed1p-update1 5000 stmt $script
 db eval COMMIT
 
-# 50000 single-row updates.  An index is used to find the row quickly.
+
 #
 set list {}
 for {set i 0} {$i<50000} {incr i} {
@@ -272,7 +272,7 @@ db eval BEGIN
 speed_trial_tcl speed1p-update2 50000 row $script
 db eval COMMIT
 
-# 1 big text update that touches every row in the table.
+
 #
 explain {UPDATE t1 SET c=a}
 speed_trial speed1p-update3 50000 row {

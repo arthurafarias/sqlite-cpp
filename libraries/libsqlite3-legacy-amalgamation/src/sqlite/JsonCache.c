@@ -1,2 +1,2 @@
 #include "sqlite/JsonCache.h"
-JsonCache stub;
+JsonCache JsonCache_stub;

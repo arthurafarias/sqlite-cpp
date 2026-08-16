@@ -1,2 +1,2 @@
 #include "sqlite/PgHdr.h"
-PgHdr stub;
+PgHdr PgHdr_stub;

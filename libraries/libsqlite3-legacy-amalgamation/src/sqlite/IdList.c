@@ -1,2 +1,2 @@
 #include "sqlite/IdList.h"
-IdList stub;
+IdList IdList_stub;

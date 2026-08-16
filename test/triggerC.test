@@ -1,4 +1,4 @@
-# 2009 August 24
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice', here is a blessing:
@@ -810,7 +810,7 @@ do_test triggerC-10.1 {
 
   # Before the problem was fixed, table t10 would contain the tuple 
   # (world, 0) after running the following script (because the value
-  # 1 written to column "updatecnt" was clobbered by the old value 0).
+  
   #
   execsql {
     UPDATE t10 SET a = 'world';
@@ -848,7 +848,7 @@ do_test triggerC-10.3 {
 
   # Before the problem was fixed, table t10 would contain the tuple 
   # (world, 0) after running the following script (because the value
-  # 1 written to column "updatecnt" was clobbered by the old value 0).
+  
   #
   execsql {
     UPDATE t11 SET c4=35, c33=22, c1=5;

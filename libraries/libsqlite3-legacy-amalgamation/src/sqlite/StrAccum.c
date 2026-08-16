@@ -1,2 +1,2 @@
 #include "sqlite/StrAccum.h"
-StrAccum stub;
+StrAccum StrAccum_stub;

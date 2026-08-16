@@ -1,2 +1,2 @@
 #include "sqlite/WhereOrCost.h"
-WhereOrCost stub;
+WhereOrCost WhereOrCost_stub;

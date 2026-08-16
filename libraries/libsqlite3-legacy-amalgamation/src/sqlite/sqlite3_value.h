@@ -5,12 +5,12 @@ extern C {
 #endif
 
 #include "sqlite/FuncDef.h"
-#include "sqlite/sqlite3.h"
 #include "sqlite/sqlite3_int64.h"
 #include "sqlite/u16.h"
 #include "sqlite/u32.h"
 #include "sqlite/u8.h"
 
+typedef struct sqlite3 sqlite3;
   typedef struct sqlite3_value sqlite3_value;
   struct sqlite3_value {
     union MemValue {

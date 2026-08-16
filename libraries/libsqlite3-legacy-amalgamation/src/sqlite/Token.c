@@ -1,2 +1,2 @@
 #include "sqlite/Token.h"
-Token stub;
+Token Token_stub;

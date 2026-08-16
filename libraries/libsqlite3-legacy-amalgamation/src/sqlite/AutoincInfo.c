@@ -1,2 +1,2 @@
 #include "sqlite/AutoincInfo.h"
-AutoincInfo stub;
+AutoincInfo AutoincInfo_stub;

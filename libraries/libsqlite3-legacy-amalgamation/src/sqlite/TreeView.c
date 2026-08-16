@@ -1,2 +1,2 @@
 #include "sqlite/TreeView.h"
-TreeView stub;
+TreeView TreeView_stub;

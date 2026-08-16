@@ -1,2 +1,2 @@
 #include "sqlite/WhereAndInfo.h"
-WhereAndInfo stub;
+WhereAndInfo WhereAndInfo_stub;

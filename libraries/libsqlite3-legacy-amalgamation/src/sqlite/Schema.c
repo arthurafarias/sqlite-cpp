@@ -1,2 +1,2 @@
 #include "sqlite/Schema.h"
-Schema stub;
+Schema Schema_stub;

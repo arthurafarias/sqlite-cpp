@@ -1,2 +1,2 @@
 #include "sqlite/WindowCodeArg.h"
-WindowCodeArg stub;
+WindowCodeArg WindowCodeArg_stub;

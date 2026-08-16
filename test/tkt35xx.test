@@ -1,4 +1,4 @@
-# 2008 November 20
+
 #
 # The author disclaims copyright to this source code.  In place of
 # a legal notice, here is a blessing:
@@ -52,7 +52,7 @@ do_test tkt35xx-1.1 {
 db close
 delete_file test.db
 sqlite3 db test.db
-set big [string repeat abcdefghij 22]    ;# 220 byte string
+set big [string repeat abcdefghij 22]    ;
 do_test tkt35xx-1.2.1 {
   execsql {
     PRAGMA auto_vacuum = 0;

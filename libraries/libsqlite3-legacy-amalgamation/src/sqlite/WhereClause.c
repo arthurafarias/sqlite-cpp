@@ -1,2 +1,2 @@
 #include "sqlite/WhereClause.h"
-WhereClause stub;
+WhereClause WhereClause_stub;

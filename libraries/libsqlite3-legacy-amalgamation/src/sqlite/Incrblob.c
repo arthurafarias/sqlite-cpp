@@ -1,2 +1,2 @@
 #include "sqlite/Incrblob.h"
-Incrblob stub;
+Incrblob Incrblob_stub;

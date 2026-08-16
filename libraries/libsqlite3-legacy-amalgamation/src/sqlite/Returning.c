@@ -1,2 +1,2 @@
 #include "sqlite/Returning.h"
-Returning stub;
+Returning Returning_stub;

@@ -1,2 +1,2 @@
 #include "sqlite/yDbMask.h"
-yDbMask stub;
+yDbMask yDbMask_stub;

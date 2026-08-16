@@ -1,2 +1,2 @@
 #include "sqlite/JsonParent.h"
-JsonParent stub;
+JsonParent JsonParent_stub;
