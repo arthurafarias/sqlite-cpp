@@ -6,18 +6,16 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct TriggerPrg TriggerPrg;
+  typedef struct TriggerPrg TriggerPrg;
 
-
-struct TriggerPrg {
-  Trigger *pTrigger;
-  TriggerPrg *pNext;
-  SubProgram *pProgram;
-  int orconf;
-  u32 aColmask[2];
-};
+  struct TriggerPrg {
+    Trigger *pTrigger;
+    TriggerPrg *pNext;
+    SubProgram *pProgram;
+    int orconf;
+    u32 aColmask[2];
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

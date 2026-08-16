@@ -34,6 +34,12 @@ struct sqlite3_io_methods {
   int (*xUnfetch)(sqlite3_file *, sqlite3_int64 iOfst, void *p);
 };
 
+extern const sqlite3_io_methods posixIoMethods;
+extern const sqlite3_io_methods nolockIoMethods;
+extern const sqlite3_io_methods dotlockIoMethods;
+extern const sqlite3_io_methods memdb_io_methods;
+extern const struct sqlite3_io_methods MemJournalMethods;
+
 #ifdef __cplusplus
 }
 #endif

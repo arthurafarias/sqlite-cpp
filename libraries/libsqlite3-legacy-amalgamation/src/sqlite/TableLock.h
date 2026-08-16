@@ -8,15 +8,14 @@ extern C {
 
 #include "sqlite/Pgno.h"
 
-typedef struct TableLock TableLock;
-struct TableLock {
-  int iDb;
-  Pgno iTab;
-  u8 isWriteLock;
-  const char *zLockName;
-};
+  typedef struct TableLock TableLock;
+  struct TableLock {
+    int iDb;
+    Pgno iTab;
+    u8 isWriteLock;
+    const char *zLockName;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

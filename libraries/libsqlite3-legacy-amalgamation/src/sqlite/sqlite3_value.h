@@ -10,7 +10,7 @@ extern C {
 #include "sqlite/u32.h"
 #include "sqlite/u8.h"
 
-typedef struct sqlite3 sqlite3;
+  typedef struct sqlite3 sqlite3;
   typedef struct sqlite3_value sqlite3_value;
   struct sqlite3_value {
     union MemValue {
@@ -79,6 +79,12 @@ typedef struct sqlite3 sqlite3;
   void sqlite3ValueSetNull(sqlite3_value *);
   void sqlite3ValueFree(sqlite3_value *);
   void sqlite3ValueApplyAffinity(sqlite3_value *, u8, u8);
+
+  int sqlite3ValueIsOfClass(const sqlite3_value *, void (*)(void *));
+  __attribute__((noinline)) const void *valueToText(sqlite3_value * pVal, u8 enc);
+  __attribute__((noinline)) int valueBytes(sqlite3_value * pVal, u8 enc);
+  int valueFromValueList(sqlite3_value * pVal, sqlite3_value * *ppOut, int bNext);
+  int jsonArgIsJsonb(sqlite3_value * pJson, JsonParse * p);
 
 #ifdef __cplusplus
 }

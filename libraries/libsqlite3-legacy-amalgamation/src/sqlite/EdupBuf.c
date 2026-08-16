@@ -1,2 +1,2 @@
-#include "sqlite/EdupBuf.h"
+#include "sqlite/_All.h"
 EdupBuf EdupBuf_stub;

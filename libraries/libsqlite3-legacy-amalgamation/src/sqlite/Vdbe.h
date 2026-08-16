@@ -4,14 +4,14 @@
 extern C {
 #endif
 
-#include "sqlite/sqlite3_value.h"
+#include "sqlite/Mem.h"
+#include "sqlite/Op.h"
 #include "sqlite/VdbeOpList.h"
+#include "sqlite/sqlite3_value.h"
 #include "sqlite/u16.h"
 #include "sqlite/u8.h"
-#include "sqlite/Mem.h"
-#include "sqlite/ynVar.h"
 #include "sqlite/yDbMask.h"
-#include "sqlite/Op.h"
+#include "sqlite/ynVar.h"
 
   typedef struct Vdbe Vdbe;
   typedef struct Parse Parse;
@@ -20,64 +20,63 @@ extern C {
   typedef struct sqlite3_value sqlite3_value;
   typedef struct sqlite3_file sqlite3_file;
 
+  struct Vdbe {
+    sqlite3 *db;
+    Vdbe **ppVPrev, *pVNext;
+    Parse *pParse;
+    ynVar nVar;
+    int nMem;
+    int nCursor;
+    u32 cacheCtr;
+    int pc;
+    int rc;
+    i64 nChange;
+    int iStatement;
+    i64 iCurrentTime;
+    i64 nFkConstraint;
+    i64 nStmtDefCons;
+    i64 nStmtDefImmCons;
+    Mem *aMem;
+    Mem **apArg;
+    VdbeCursor **apCsr;
+    Mem *aVar;
 
-struct Vdbe {
-  sqlite3 *db;
-  Vdbe **ppVPrev, *pVNext;
-  Parse *pParse;
-  ynVar nVar;
-  int nMem;
-  int nCursor;
-  u32 cacheCtr;
-  int pc;
-  int rc;
-  i64 nChange;
-  int iStatement;
-  i64 iCurrentTime;
-  i64 nFkConstraint;
-  i64 nStmtDefCons;
-  i64 nStmtDefImmCons;
-  Mem *aMem;
-  Mem **apArg;
-  VdbeCursor **apCsr;
-  Mem *aVar;
+    Op *aOp;
+    int nOp;
+    int nOpAlloc;
+    Mem *aColName;
+    Mem *pResultRow;
+    char *zErrMsg;
+    VList *pVList;
 
-  Op *aOp;
-  int nOp;
-  int nOpAlloc;
-  Mem *aColName;
-  Mem *pResultRow;
-  char *zErrMsg;
-  VList *pVList;
+    i64 startTime;
 
-  i64 startTime;
+    u16 nResColumn;
+    u16 nResAlloc;
+    u8 errorAction;
+    u8 minWriteFileFormat;
+    u8 prepFlags;
+    u8 eVdbeState;
+    bft expired : 2;
+    bft explain : 2;
+    bft changeCntOn : 1;
+    bft usesStmtJournal : 1;
+    bft readOnly : 1;
+    bft bIsReader : 1;
+    bft haveEqpOps : 1;
+    yDbMask btreeMask;
+    yDbMask lockMask;
+    u32 aCounter[9];
+    char *zSql;
 
-  u16 nResColumn;
-  u16 nResAlloc;
-  u8 errorAction;
-  u8 minWriteFileFormat;
-  u8 prepFlags;
-  u8 eVdbeState;
-  bft expired : 2;
-  bft explain : 2;
-  bft changeCntOn : 1;
-  bft usesStmtJournal : 1;
-  bft readOnly : 1;
-  bft bIsReader : 1;
-  bft haveEqpOps : 1;
-  yDbMask btreeMask;
-  yDbMask lockMask;
-  u32 aCounter[9];
-  char *zSql;
-
-  void *pFree;
-  VdbeFrame *pFrame;
-  VdbeFrame *pDelFrame;
-  int nFrame;
-  u32 expmask;
-  SubProgram *pProgram;
-  AuxData *pAuxData;
-};
+    void *pFree;
+    VdbeFrame *pFrame;
+    VdbeFrame *pDelFrame;
+    int nFrame;
+    u32 expmask;
+    SubProgram *pProgram;
+    AuxData *pAuxData;
+  };
 
   Parse *sqlite3VdbeParser(Vdbe *);
   int sqlite3VdbeAddOp0(Vdbe *, int);
@@ -130,29 +129,73 @@ struct Vdbe {
   void sqlite3VdbeSetVarmask(Vdbe *, int);
   char *sqlite3VdbeExpandSql(Vdbe *, const char *);
   void sqlite3VdbeLinkSubProgram(Vdbe *, SubProgram *);
-int sqlite3VdbeHasSubProgram(Vdbe *);
-void sqlite3CodeChangeCount(Vdbe *, int, const char *);
-void sqlite3WhereMinMaxOptEarlyOut(Vdbe *, WhereInfo *);
-void sqlite3ExprCodeGetColumnOfTable(Vdbe *, Table *, int, int, int);
-void sqlite3TableAffinity(Vdbe *, Table *, int);
-void sqlite3ColumnDefault(Vdbe *, Table *, int, int);
-void sqlite3VtabImportErrmsg(Vdbe *, sqlite3_vtab *);
-int sqlite3VdbeParameterIndex(Vdbe *, const char *, int);
-int sqlite3Reprepare(Vdbe *);
-void sqlite3VdbeError(Vdbe *, const char *, ...);
-void sqlite3VdbeFreeCursor(Vdbe *, VdbeCursor *);
-void sqlite3VdbeFreeCursorNN(Vdbe *, VdbeCursor *);
-void sqliteVdbePopStack(Vdbe *, int);
-int sqlite3VdbeExec(Vdbe *);
-int sqlite3VdbeNextOpcode(Vdbe *, Mem *, int, int *, int *, Op **);
-int sqlite3VdbeList(Vdbe *);
-int sqlite3VdbeHalt(Vdbe *);
-int sqlite3VdbeCloseStatement(Vdbe *, int);
-int sqlite3VdbeTransferError(Vdbe *p);
-void sqlite3VdbeEnter(Vdbe *);
-void sqlite3VdbeLeave(Vdbe *);
-int sqlite3VdbeCheckFkImmediate(Vdbe *);
-int sqlite3VdbeCheckFkDeferred(Vdbe *);
+  int sqlite3VdbeHasSubProgram(Vdbe *);
+  void sqlite3CodeChangeCount(Vdbe *, int, const char *);
+  void sqlite3WhereMinMaxOptEarlyOut(Vdbe *, WhereInfo *);
+  void sqlite3ExprCodeGetColumnOfTable(Vdbe *, Table *, int, int, int);
+  void sqlite3TableAffinity(Vdbe *, Table *, int);
+  void sqlite3ColumnDefault(Vdbe *, Table *, int, int);
+  void sqlite3VtabImportErrmsg(Vdbe *, sqlite3_vtab *);
+  int sqlite3VdbeParameterIndex(Vdbe *, const char *, int);
+  int sqlite3Reprepare(Vdbe *);
+  void sqlite3VdbeError(Vdbe *, const char *, ...);
+  void sqlite3VdbeFreeCursor(Vdbe *, VdbeCursor *);
+  void sqlite3VdbeFreeCursorNN(Vdbe *, VdbeCursor *);
+  void sqliteVdbePopStack(Vdbe *, int);
+  int sqlite3VdbeExec(Vdbe *);
+  int sqlite3VdbeNextOpcode(Vdbe *, Mem *, int, int *, int *, Op **);
+  int sqlite3VdbeList(Vdbe *);
+  int sqlite3VdbeHalt(Vdbe *);
+  int sqlite3VdbeCloseStatement(Vdbe *, int);
+  int sqlite3VdbeTransferError(Vdbe * p);
+  void sqlite3VdbeEnter(Vdbe *);
+  void sqlite3VdbeLeave(Vdbe *);
+  int sqlite3VdbeCheckFkImmediate(Vdbe *);
+  int sqlite3VdbeCheckFkDeferred(Vdbe *);
+
+  void sqlite3VdbeRecordUnpack(int, const void *, UnpackedRecord *);
+  int sqlite3VdbeRecordCompare(int, const void *, UnpackedRecord *);
+  int sqlite3VdbeRecordCompareWithSkip(int, const void *, UnpackedRecord *, int);
+  u32 sqlite3VdbeSerialTypeLen(u32);
+  u8 sqlite3VdbeOneByteSerialTypeLen(u8);
+  void sqlite3VdbeSerialGet(const unsigned char *, u32, Mem *);
+  void sqlite3VdbeValueListFree(void *);
+  void vdbeMemRenderNum(int sz, char *zBuf, Mem *p);
+  int growOpArray(Vdbe * v, int nOp);
+  __attribute__((noinline)) int growOp3(Vdbe * p, int op, int p1, int p2, int p3);
+  __attribute__((noinline)) int addOp4IntSlow(Vdbe * p, int op, int p1, int p2, int p3, int p4);
+  void resolveP2Values(Vdbe * p, int *pMaxVtabArgs);
+  void __attribute__((noinline)) vdbeChangeP4Full(Vdbe * p, Op * pOp, const char *zP4, int n);
+  __attribute__((noinline)) void vdbeLeave(Vdbe * p);
+  __attribute__((noinline)) void freeCursorWithCache(Vdbe * p, VdbeCursor * pCx);
+  void closeCursorsInFrame(Vdbe * p);
+  void closeAllCursors(Vdbe * p);
+  __attribute__((noinline)) int vdbeCloseStatement(Vdbe * p, int eOp);
+  __attribute__((noinline)) int vdbeFkError(Vdbe * p);
+  i64 vdbeRecordDecodeInt(u32 serial_type, const u8 *aKey);
+  int vdbeRecordCompareInt(int nKey1, const void *pKey1, UnpackedRecord *pPKey2);
+  int vdbeRecordCompareString(int nKey1, const void *pKey1, UnpackedRecord *pPKey2);
+  int vdbeSkipField(Bitmask mask, int iCol, Mem *pMem1, Mem *pMem2, int bIntegrity);
+  int vdbeSafety(Vdbe * p);
+  int vdbeSafetyNotNull(Vdbe * p);
+  int sqlite3Step(Vdbe * p);
+  int vdbeUnbind(Vdbe * p, unsigned int i);
+  VdbeCursor *allocateCursor(Vdbe * p, int iCur, int nField, u8 eCurType);
+  Mem *out2Prerelease(Vdbe * p, VdbeOp * pOp);
+  __attribute__((noinline)) void sqlite3VdbeLogAbort(Vdbe * p, int rc, Op *pOp, Op *aOp);
+  MergeEngine *vdbeMergeEngineNew(int nReader);
+  void *vdbeIncrPopulateThread(void *pCtx);
+  void *vdbePmaReaderBgIncrInit(void *pCtx);
+  void sqlite3SetHasNullFlag(Vdbe * v, int iCur, int regHasNull);
+  void codeReal(Vdbe * v, const char *z, int negateFlag, int iMem);
+  void setDoNotMergeFlagOnCopy(Vdbe * v);
+  void setPragmaResultColumnNames(Vdbe * v, const PragmaName *pPragma);
+  void returnSingleInt(Vdbe * v, i64 value);
+  void returnSingleText(Vdbe * v, const char *zValue);
+  void pragmaFunclistLine(Vdbe * v, FuncDef * p, int isBuiltin, int showInternFuncs);
+  int integrityCheckResultRow(Vdbe * v);
+  void codeOffset(Vdbe * v, int iOffset, int iContinue);
+  void whereLikeOptimizationStringFixup(Vdbe * v, WhereLevel * pLevel, WhereTerm * pTerm);
 
 #ifdef __cplusplus
 }

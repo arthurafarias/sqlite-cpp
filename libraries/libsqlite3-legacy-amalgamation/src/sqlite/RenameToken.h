@@ -8,14 +8,13 @@ extern C {
 
 #include "sqlite/Token.h"
 
-typedef struct RenameToken RenameToken;
-struct RenameToken {
-  const void *p;
-  Token t;
-  RenameToken *pNext;
-};
+  typedef struct RenameToken RenameToken;
+  struct RenameToken {
+    const void *p;
+    Token t;
+    RenameToken *pNext;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

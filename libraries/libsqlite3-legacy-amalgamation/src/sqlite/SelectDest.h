@@ -18,6 +18,8 @@ extern C {
     ExprList *pOrderBy;
   };
 
+  void sqlite3SelectDestInit(SelectDest *, int, int);
+
 #ifdef __cplusplus
 }
 #endif

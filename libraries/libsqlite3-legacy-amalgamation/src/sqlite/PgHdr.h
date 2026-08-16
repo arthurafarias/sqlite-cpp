@@ -38,6 +38,20 @@ extern C {
   void sqlite3PcacheRef(PgHdr *);
   i64 sqlite3PcachePageRefcount(PgHdr *);
 
+  void pcacheManageDirtyList(PgHdr * pPage, u8 addRemove);
+  void pcacheUnpin(PgHdr * p);
+  PgHdr *pcacheMergeDirtyList(PgHdr * pA, PgHdr * pB);
+  PgHdr *pcacheSortDirtyList(PgHdr * pIn);
+  int subjRequiresPage(PgHdr * pPg);
+  int readDbPage(PgHdr * pPg);
+  void pager_write_changecounter(PgHdr * pPg);
+  void pagerReleaseMapPage(PgHdr * pPg);
+  int subjournalPage(PgHdr * pPg);
+  int subjournalPageIfRequired(PgHdr * pPg);
+  __attribute__((noinline)) int pagerAddPageToRollbackJournal(PgHdr * pPg);
+  int pager_write(PgHdr * pPg);
+  __attribute__((noinline)) int pagerWriteLargeSector(PgHdr * pPg);
+
 #ifdef __cplusplus
 }
 #endif

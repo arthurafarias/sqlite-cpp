@@ -6,14 +6,16 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct JsonCache JsonCache;
-struct JsonCache {
-  sqlite3 *db;
-  int nUsed;
-  JsonParse *a[4];
-};
+  typedef struct JsonCache JsonCache;
+  struct JsonCache {
+    sqlite3 *db;
+    int nUsed;
+    JsonParse *a[4];
+  };
+
+  void jsonCacheDelete(JsonCache * p);
+  void jsonCacheDeleteGeneric(void *p);
 
 #ifdef __cplusplus
 }
 #endif
-

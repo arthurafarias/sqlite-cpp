@@ -1,2 +1,2 @@
-#include "sqlite/SubProgram.h"
+#include "sqlite/_All.h"
 SubProgram SubProgram_stub;

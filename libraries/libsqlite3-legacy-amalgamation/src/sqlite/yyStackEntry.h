@@ -8,16 +8,15 @@ extern C {
 
 #include "sqlite/YYMINORTYPE.h"
 
-typedef struct yyStackEntry yyStackEntry;
+  typedef struct yyStackEntry yyStackEntry;
 
-struct yyStackEntry {
-  unsigned short int stateno;
-  unsigned short int major;
+  struct yyStackEntry {
+    unsigned short int stateno;
+    unsigned short int major;
 
-  YYMINORTYPE minor;
-};
+    YYMINORTYPE minor;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

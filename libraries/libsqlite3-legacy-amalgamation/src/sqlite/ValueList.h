@@ -6,15 +6,14 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct sqlite3_value sqlite3_value;
+  typedef struct sqlite3_value sqlite3_value;
 
-typedef struct ValueList ValueList;
-struct ValueList {
-  BtCursor *pCsr;
-  sqlite3_value *pOut;
-};
+  typedef struct ValueList ValueList;
+  struct ValueList {
+    BtCursor *pCsr;
+    sqlite3_value *pOut;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

@@ -45,9 +45,11 @@ extern C {
   };
 
   const char *sqlite3_vtab_collation(sqlite3_index_info *, int);
-int sqlite3_vtab_distinct(sqlite3_index_info *);
-int sqlite3_vtab_in(sqlite3_index_info *, int iCons, int bHandle);
-int sqlite3_vtab_rhs_value(sqlite3_index_info *, int, sqlite3_value **ppVal);
+  int sqlite3_vtab_distinct(sqlite3_index_info *);
+  int sqlite3_vtab_in(sqlite3_index_info *, int iCons, int bHandle);
+  int sqlite3_vtab_rhs_value(sqlite3_index_info *, int, sqlite3_value **ppVal);
+
+  void freeIdxStr(sqlite3_index_info * pIdxInfo);
 
 #ifdef __cplusplus
 }

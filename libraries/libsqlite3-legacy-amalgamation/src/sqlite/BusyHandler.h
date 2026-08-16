@@ -13,7 +13,9 @@ extern C {
     void *pBusyArg;
     int nBusy;
   };
-  
+
+  int sqlite3InvokeBusyHandler(BusyHandler *);
+
 #ifdef __cplusplus
 }
 #endif

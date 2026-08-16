@@ -1,2 +1,2 @@
-#include "sqlite/CteUse.h"
+#include "sqlite/_All.h"
 CteUse CteUse_stub;

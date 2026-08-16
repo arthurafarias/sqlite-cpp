@@ -1,2 +1,2 @@
-#include "sqlite/BitMask.h"
+#include "sqlite/_All.h"
 Bitmask Bitmask_stub;

@@ -6,16 +6,15 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct WindowRewrite WindowRewrite;
-struct WindowRewrite {
-  Window *pWin;
-  SrcList *pSrc;
-  ExprList *pSub;
-  Table *pTab;
-  Select *pSubSelect;
-};
+  typedef struct WindowRewrite WindowRewrite;
+  struct WindowRewrite {
+    Window *pWin;
+    SrcList *pSrc;
+    ExprList *pSub;
+    Table *pTab;
+    Select *pSubSelect;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

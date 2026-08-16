@@ -4,16 +4,15 @@
 extern C {
 #endif
 
-typedef struct sqlite3 sqlite3;
-typedef struct ParseCleanup ParseCleanup;
+  typedef struct sqlite3 sqlite3;
+  typedef struct ParseCleanup ParseCleanup;
 
-struct ParseCleanup {
-  ParseCleanup *pNext;
-  void *pPtr;
-  void (*xCleanup)(sqlite3 *, void *);
-};
+  struct ParseCleanup {
+    ParseCleanup *pNext;
+    void *pPtr;
+    void (*xCleanup)(sqlite3 *, void *);
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

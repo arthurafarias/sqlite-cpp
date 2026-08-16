@@ -1,2 +1,66 @@
-#include "sqlite/Incrblob.h"
-Incrblob Incrblob_stub;
+#include "sqlite/_All.h"
+
+int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr) {
+  int rc;
+  char *zErr = 0;
+  Vdbe *v = (Vdbe *)p->pStmt;
+
+  sqlite3VdbeMemSetInt64(&v->aMem[1], iRow);
+
+  if (v->pc > 4) {
+    v->pc = 4;
+
+    ((void)(0))
+
+        ;
+    rc = sqlite3VdbeExec(v);
+  } else {
+    rc = sqlite3_step(p->pStmt);
+  }
+  if (rc == 100) {
+    VdbeCursor *pC = v->apCsr[0];
+    u32 type;
+
+    ((void)(0))
+
+        ;
+
+    ((void)(0))
+
+        ;
+    type = pC->nHdrParsed > p->iCol ? pC->aType[p->iCol] : 0;
+    ;
+    ;
+    if (type < 12) {
+      zErr = sqlite3MPrintf(p->db, "cannot open value of type %s", type == 0 ? "null" : type == 7 ? "real" : "integer");
+      rc = 1;
+      sqlite3_finalize(p->pStmt);
+      p->pStmt = 0;
+    } else {
+      p->iOffset = pC->aType[p->iCol + pC->nField];
+      p->nByte = sqlite3VdbeSerialTypeLen(type);
+      p->pCsr = pC->uc.pCursor;
+      sqlite3BtreeIncrblobCursor(p->pCsr);
+    }
+  }
+
+  if (rc == 100) {
+    rc = 0;
+  } else if (p->pStmt) {
+    rc = sqlite3_finalize(p->pStmt);
+    p->pStmt = 0;
+    if (rc == 0) {
+      zErr = sqlite3MPrintf(p->db, "no such rowid: %lld", iRow);
+      rc = 1;
+    } else {
+      zErr = sqlite3MPrintf(p->db, "%s", sqlite3_errmsg(p->db));
+    }
+  }
+
+
+
+
+
+  *pzErr = zErr;
+  return rc;
+}

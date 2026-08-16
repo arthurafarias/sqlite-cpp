@@ -13,6 +13,8 @@ extern C {
     Parse *pParse;
   };
 
+  void sqlite3AuthContextPop(AuthContext *);
+
 #ifdef __cplusplus
 }
 #endif

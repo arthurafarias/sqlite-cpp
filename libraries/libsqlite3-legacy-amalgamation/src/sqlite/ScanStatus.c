@@ -1,2 +1,2 @@
-#include "sqlite/ScanStatus.h"
+#include "sqlite/_All.h"
 ScanStatus ScanStatus_stub;

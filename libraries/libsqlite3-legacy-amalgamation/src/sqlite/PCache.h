@@ -13,7 +13,6 @@ extern C {
 
   typedef struct sqlite3_pcache_page sqlite3_pcache_page;
   typedef struct PgHdr PgHdr;
-  typedef struct PCache sqlite3_pcache;
 
   struct PCache {
     PgHdr *pDirty, *pDirtyTail;      /* List of dirty pages in LRU order */
@@ -48,6 +47,11 @@ extern C {
   int sqlite3PCachePercentDirty(PCache *);
   int sqlite3PCacheIsDirty(PCache * pCache);
   int sqlite3PcacheSetPageSize(PCache *, int);
+
+  void sqlite3PCacheBufferSetup(void *, int sz, int n);
+  void sqlite3PCacheSetDefault(void);
+  int numberOfCachePages(PCache * p);
+  __attribute__((noinline)) PgHdr *pcacheFetchFinishWithInit(PCache * pCache, Pgno pgno, sqlite3_pcache_page * pPage);
 
 #ifdef __cplusplus
 }

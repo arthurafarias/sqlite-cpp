@@ -1,2 +1,2 @@
-#include "sqlite/VdbeOp.h"
+#include "sqlite/_All.h"
 VdbeOp VdbeOp_stub;

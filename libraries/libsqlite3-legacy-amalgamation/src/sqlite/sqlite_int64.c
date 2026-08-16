@@ -1,2 +1,2 @@
-#include "sqlite/sqlite_int64.h"
+#include "sqlite/_All.h"
 sqlite_int64 sqlite_int64_stub;

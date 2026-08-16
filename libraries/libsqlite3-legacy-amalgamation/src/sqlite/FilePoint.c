@@ -1,2 +1,2 @@
-#include "sqlite/FilePoint.h"
+#include "sqlite/_All.h"
 FilePoint FilePoint_stub;

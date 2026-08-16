@@ -6,14 +6,13 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct OnOrUsing OnOrUsing;
+  typedef struct OnOrUsing OnOrUsing;
 
-struct OnOrUsing {
-  Expr *pOn;
-  IdList *pUsing;
-};
+  struct OnOrUsing {
+    Expr *pOn;
+    IdList *pUsing;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

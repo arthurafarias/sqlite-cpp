@@ -6,14 +6,13 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct RowLoadInfo RowLoadInfo;
+  typedef struct RowLoadInfo RowLoadInfo;
 
-struct RowLoadInfo {
-  int regResult;
-  u8 ecelFlags;
-};
+  struct RowLoadInfo {
+    int regResult;
+    u8 ecelFlags;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

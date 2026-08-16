@@ -1,2 +1,2 @@
-#include "sqlite/PreUpdate.h"
+#include "sqlite/_All.h"
 PreUpdate PreUpdate_stub;

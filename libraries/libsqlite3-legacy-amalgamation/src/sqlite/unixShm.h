@@ -6,16 +6,18 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct unixShm unixShm;
-struct unixShm {
-  unixShmNode *pShmNode;
-  unixShm *pNext;
-  u8 hasMutex;
-  u8 id;
-  u16 sharedMask;
-  u16 exclMask;
-};
+  typedef struct unixShm unixShm;
+  struct unixShm {
+    unixShmNode *pShmNode;
+    unixShm *pNext;
+    u8 hasMutex;
+    u8 id;
+    u16 sharedMask;
+    u16 exclMask;
+  };
+
+  int unixShmRegionPerMap(void);
+
 #ifdef __cplusplus
 }
 #endif
-

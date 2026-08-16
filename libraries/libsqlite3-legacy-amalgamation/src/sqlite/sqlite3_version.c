@@ -1,3 +1,3 @@
-#include "sqlite/sqlite3_version.h"
+#include "sqlite/_All.h"
 
-const char sqlite3_version[] = "";
+const char sqlite3_version[] = "3.53.4";

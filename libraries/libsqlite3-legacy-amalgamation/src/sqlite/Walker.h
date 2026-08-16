@@ -57,6 +57,61 @@ extern C {
   void sqlite3WalkWinDefnDummyCallback(Walker *, Select *);
   void sqlite3SelectPopWith(Walker *, Select *);
 
+  void sqlite3AggInfoPersistWalkerInit(Walker *, Parse *);
+  int walkWindowList(Walker * pWalker, Window * pList, int bOneOnly);
+  int incrAggDepth(Walker * pWalker, Expr * pExpr);
+  int resolveExprStep(Walker * pWalker, Expr * pExpr);
+  int resolveRemoveWindowsCb(Walker * pWalker, Expr * pExpr);
+  int resolveSelectStep(Walker * pWalker, Select * p);
+  int gatherSelectWindowsCallback(Walker * pWalker, Expr * pExpr);
+  int gatherSelectWindowsSelectCallback(Walker * pWalker, Select * p);
+  __attribute__((noinline)) int exprNodeIsConstantFunction(Walker * pWalker, Expr * pExpr);
+  int exprNodeIsConstant(Walker * pWalker, Expr * pExpr);
+  int exprSelectWalkTableConstant(Walker * pWalker, Select * pSelect);
+  int exprNodeIsConstantOrGroupBy(Walker * pWalker, Expr * pExpr);
+  int exprNodeCanReturnSubtype(Walker * pWalker, Expr * pExpr);
+  void bothImplyNotNullRow(Walker * pWalker, Expr * pE1, Expr * pE2);
+  int impliesNotNullRow(Walker * pWalker, Expr * pExpr);
+  int exprIdxCover(Walker * pWalker, Expr * pExpr);
+  int selectRefEnter(Walker * pWalker, Select * pSelect);
+  void selectRefLeave(Walker * pWalker, Select * pSelect);
+  int exprRefToSrcList(Walker * pWalker, Expr * pExpr);
+  int agginfoPersistExprCb(Walker * pWalker, Expr * pExpr);
+  int analyzeAggregate(Walker * pWalker, Expr * pExpr);
+  int renameUnmapExprCb(Walker * pWalker, Expr * pExpr);
+  void renameWalkWith(Walker * pWalker, Select * pSelect);
+  int renameUnmapSelectCb(Walker * pWalker, Select * p);
+  int renameColumnSelectCb(Walker * pWalker, Select * p);
+  int renameColumnExprCb(Walker * pWalker, Expr * pExpr);
+  void renameWalkTrigger(Walker * pWalker, Trigger * pTrigger);
+  int renameTableExprCb(Walker * pWalker, Expr * pExpr);
+  int renameTableSelectCb(Walker * pWalker, Select * pSelect);
+  int renameQuotefixExprCb(Walker * pWalker, Expr * pExpr);
+  int fixExprCb(Walker * p, Expr * pExpr);
+  int fixSelectCb(Walker * p, Select * pSelect);
+  int exprColumnFlagUnion(Walker * pWalker, Expr * pExpr);
+  int checkConstraintExprNode(Walker * pWalker, Expr * pExpr);
+  int recomputeColumnsUsedExpr(Walker * pWalker, Expr * pExpr);
+  void renumberCursorDoMapping(Walker * pWalker, int *piCursor);
+  int renumberCursorsCb(Walker * pWalker, Expr * pExpr);
+  int propagateConstantExprRewrite(Walker * pWalker, Expr * pExpr);
+  int convertCompoundSelectToSubquery(Walker * pWalker, Select * p);
+  int selectExpander(Walker * pWalker, Select * p);
+  void selectAddSubqueryTypeInfo(Walker * pWalker, Select * p);
+  int aggregateIdxEprRefToColCallback(Walker * pWalker, Expr * pExpr);
+  int havingToWhereExprCb(Walker * pWalker, Expr * pExpr);
+  int selectCheckOnClausesExpr(Walker * pWalker, Expr * pExpr);
+  int selectCheckOnClausesSelect(Walker * pWalker, Select * pSelect);
+  int sqlite3ReturningSubqueryVarSelect(Walker * NotUsed, Expr * pExpr);
+  int sqlite3ReturningSubqueryCorrelated(Walker * pWalker, Select * pSelect);
+  int exprNodePatternLengthEst(Walker * pWalker, Expr * pExpr);
+  int whereIsCoveringIndexWalkCallback(Walker * pWalk, Expr * pExpr);
+  int exprNodeIsDeterministic(Walker * pWalker, Expr * pExpr);
+  int selectWindowRewriteExprCb(Walker * pWalker, Expr * pExpr);
+  int selectWindowRewriteSelectCb(Walker * pWalker, Select * pSelect);
+  int sqlite3WindowExtraAggFuncDepth(Walker * pWalker, Expr * pExpr);
+  int disallowAggregatesInOrderByCb(Walker * pWalker, Expr * pExpr);
+
 #ifdef __cplusplus
 }
 #endif

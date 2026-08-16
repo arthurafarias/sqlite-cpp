@@ -17,6 +17,8 @@ extern C {
   int sqlite3_blob_read(sqlite3_blob *, void *Z, int N, int iOffset);
   int sqlite3_blob_write(sqlite3_blob *, const void *z, int n, int iOffset);
 
+  int blobReadWrite(sqlite3_blob * pBlob, void *z, int n, int iOffset, int (*xCall)(BtCursor *, u32, u32, void *));
+
 #ifdef __cplusplus
 }
 #endif

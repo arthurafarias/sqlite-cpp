@@ -12,6 +12,8 @@ extern C {
     u8 zChunk[8];
   };
 
+  void memjrnlFreeChunks(FileChunk * pFirst);
+
 #ifdef __cplusplus
 }
 #endif

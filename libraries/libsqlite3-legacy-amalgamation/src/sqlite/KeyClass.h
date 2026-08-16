@@ -6,10 +6,9 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct KeyClass KeyClass;
-struct KeyClass{};
+  typedef struct KeyClass KeyClass;
+  struct KeyClass {};
 
 #ifdef __cplusplus
 }
 #endif
-

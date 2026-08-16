@@ -1,2 +1,2 @@
-#include "sqlite/sqlite3AutoExtList.h"
-sqlite3AutoExtList sqlite3AutoExtList_stub;
+#include "sqlite/_All.h"
+sqlite3AutoExtList sqlite3Autoext = {0, 0};

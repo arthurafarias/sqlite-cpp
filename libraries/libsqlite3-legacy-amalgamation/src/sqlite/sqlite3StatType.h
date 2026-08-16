@@ -6,19 +6,15 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct sqlite3StatType sqlite3StatType;
+  typedef struct sqlite3StatType sqlite3StatType;
 
-struct sqlite3StatType {
-  sqlite3StatValueType nowValue[10];
-  sqlite3StatValueType mxValue[10];
-} sqlite3Stat = {{
-                     0,
-                 },
-                 {
-                     0,
-                 }};
+  struct sqlite3StatType {
+    sqlite3StatValueType nowValue[10];
+    sqlite3StatValueType mxValue[10];
+  };
+
+  extern sqlite3StatType sqlite3Stat;
 
 #ifdef __cplusplus
 }
 #endif
-

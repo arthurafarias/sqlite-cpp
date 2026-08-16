@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/sqlite3_int64.h"
 #include "sqlite/_TypeIndex.h"
+#include "sqlite/sqlite3_int64.h"
 
   typedef struct DateTime DateTime;
   struct DateTime {
@@ -24,6 +24,20 @@ extern C {
     unsigned isUtc : 1;
     unsigned isLocal : 1;
   };
+
+  void datetimeError(DateTime * p);
+  void computeJD(DateTime * p);
+  void computeFloor(DateTime * p);
+  void clearYMD_HMS_TZ(DateTime * p);
+  void setRawDateNumber(DateTime * p, double r);
+  void computeYMD(DateTime * p);
+  void computeHMS(DateTime * p);
+  void computeYMD_HMS(DateTime * p);
+  int toLocaltime(DateTime * p, sqlite3_context * pCtx);
+  void autoAdjustDate(DateTime * p);
+  int daysAfterJan01(DateTime * pDate);
+  int daysAfterMonday(DateTime * pDate);
+  int daysAfterSunday(DateTime * pDate);
 
 #ifdef __cplusplus
 }

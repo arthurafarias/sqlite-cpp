@@ -1,3 +1,3 @@
-#include "sqlite/MemFS.h"
+#include "sqlite/_All.h"
 
-MemFS MemFS_stub;
+MemFS memdb_g;

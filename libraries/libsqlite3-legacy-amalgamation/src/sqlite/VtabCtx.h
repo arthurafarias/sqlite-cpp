@@ -6,15 +6,14 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct VtabCtx VtabCtx;
-struct VtabCtx {
-  VTable *pVTable;
-  Table *pTab;
-  VtabCtx *pPrior;
-  int bDeclared;
-};
+  typedef struct VtabCtx VtabCtx;
+  struct VtabCtx {
+    VTable *pVTable;
+    Table *pTab;
+    VtabCtx *pPrior;
+    int bDeclared;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

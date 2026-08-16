@@ -6,14 +6,13 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct sqlite3_pcache_page sqlite3_pcache_page;
+  typedef struct sqlite3_pcache_page sqlite3_pcache_page;
 
-struct sqlite3_pcache_page {
-  void *pBuf;
-  void *pExtra;
-};
+  struct sqlite3_pcache_page {
+    void *pBuf;
+    void *pExtra;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

@@ -1,2 +1,2 @@
-#include "sqlite/BtreePayload.h"
+#include "sqlite/_All.h"
 BtreePayload BtreePayload_stub;

@@ -6,8 +6,8 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-#include "sqlite/u8.h"
 #include "sqlite/u16.h"
+#include "sqlite/u8.h"
 
   typedef struct CellArray CellArray;
   struct CellArray {
@@ -18,6 +18,11 @@ extern C {
     u8 *apEnd[3 * 2];
     int ixNx[3 * 2];
   };
+
+  void populateCellCache(CellArray * p, int idx, int N);
+  __attribute__((noinline)) u16 computeCellSize(CellArray * p, int N);
+  u16 cachedCellSize(CellArray * p, int N);
+  int rebuildPage(CellArray * pCArray, int iFirst, int nCell, MemPage *pPg);
 
 #ifdef __cplusplus
 }

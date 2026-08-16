@@ -1,2 +1,2 @@
-#include "sqlite/TableLock.h"
+#include "sqlite/_All.h"
 TableLock TableLock_stub;

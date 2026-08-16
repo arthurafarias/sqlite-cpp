@@ -1,2 +1,2 @@
-#include "sqlite/unixInodeInfo.h"
-unixInodeInfo unixInodeInfo_stub;
+#include "sqlite/_All.h"
+unixInodeInfo *inodeList = 0;

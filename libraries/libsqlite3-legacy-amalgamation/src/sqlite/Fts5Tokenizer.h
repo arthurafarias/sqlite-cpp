@@ -6,10 +6,9 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct Fts5Tokenizer Fts5Tokenizer;
-struct Fts5Tokenizer{};
+  typedef struct Fts5Tokenizer Fts5Tokenizer;
+  struct Fts5Tokenizer {};
 
 #ifdef __cplusplus
 }
 #endif
-

@@ -1,2 +1,2 @@
-#include "sqlite/SubrtnSig.h"
+#include "sqlite/_All.h"
 SubrtnSig SubrtnSig_stub;

@@ -6,14 +6,13 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct Fts5PhraseIter Fts5PhraseIter;
+  typedef struct Fts5PhraseIter Fts5PhraseIter;
 
-struct Fts5PhraseIter {
-  const unsigned char *a;
-  const unsigned char *b;
-};
+  struct Fts5PhraseIter {
+    const unsigned char *a;
+    const unsigned char *b;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

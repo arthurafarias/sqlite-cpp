@@ -1,2 +1,2 @@
-#include "sqlite/BtLock.h"
+#include "sqlite/_All.h"
 BtLock BtLock_stub;

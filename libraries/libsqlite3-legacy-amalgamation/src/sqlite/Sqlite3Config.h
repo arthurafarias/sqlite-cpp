@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-#include "sqlite/u8.h"
 #include "sqlite/sqlite3_mem_methods.h"
 #include "sqlite/sqlite3_mutex_methods.h"
 #include "sqlite/sqlite3_pcache_methods2.h"
+#include "sqlite/u8.h"
 
 struct Sqlite3Config {
   int bMemstat;
@@ -58,6 +58,8 @@ struct Sqlite3Config {
   u32 szSorterRef;
   unsigned int iPrngSeed;
 };
+
+extern struct Sqlite3Config sqlite3Config;
 
 #ifdef __cplusplus
 }

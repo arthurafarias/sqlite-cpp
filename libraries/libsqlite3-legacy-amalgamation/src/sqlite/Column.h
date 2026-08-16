@@ -6,8 +6,8 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-#include "sqlite/u8.h"
 #include "sqlite/u16.h"
+#include "sqlite/u8.h"
 
   typedef struct Column Column;
 
@@ -21,6 +21,10 @@ extern C {
     u16 iDflt;
     u16 colFlags;
   };
+
+  char *sqlite3ColumnType(Column *, char *);
+  const char *sqlite3ColumnColl(Column *);
+  const Mem *columnNullValue(void);
 
 #ifdef __cplusplus
 }

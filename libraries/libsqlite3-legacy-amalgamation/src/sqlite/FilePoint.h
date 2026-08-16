@@ -4,18 +4,16 @@
 extern C {
 #endif
 
-#include "sqlite/sqlite3_int64.h"
 #include "sqlite/FileChunk.h"
+#include "sqlite/sqlite3_int64.h"
 
-typedef struct FilePoint FilePoint;
+  typedef struct FilePoint FilePoint;
 
-struct FilePoint {
-  sqlite3_int64 iOffset;
-  FileChunk *pChunk;
-};
-
+  struct FilePoint {
+    sqlite3_int64 iOffset;
+    FileChunk *pChunk;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

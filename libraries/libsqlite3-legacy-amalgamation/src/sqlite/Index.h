@@ -4,9 +4,9 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/BitMask.h"
 #include "sqlite/Pgno.h"
+#include "sqlite/_TypeIndex.h"
 
   typedef struct Index Index;
 
@@ -40,6 +40,18 @@ extern C {
     unsigned bHasExpr : 1;
     Bitmask colNotIdxed;
   };
+
+  int sqlite3IndexHasDuplicateRootPage(Index *);
+  int sqlite3TableColumnToIndex(Index *, int);
+  void sqlite3DefaultRowEst(Index *);
+  void estimateIndexWidth(Index * pIdx);
+  int isDupColumn(Index * pIdx, int nKey, Index *pPk, int iCol);
+  void recomputeColumnsNotIndexed(Index * pIdx);
+  int xferCompatibleIndex(Index * pDest, Index * pSrc);
+  int indexColumnIsBeingUpdated(Index * pIdx, int iCol, int *aXRef, int chngRowid);
+  int indexWhereClauseMightChange(Index * pIdx, int *aXRef, int chngRowid);
+  const char *explainIndexColumnName(Index * pIdx, int i);
+  int indexColumnNotNull(Index * pIdx, int iCol);
 
 #ifdef __cplusplus
 }

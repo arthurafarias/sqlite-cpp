@@ -1,2 +1,3 @@
-#include "sqlite/FuncDefHash.h"
-FuncDefHash FuncDefHash_stub;
+#include "sqlite/_All.h"
+
+FuncDefHash sqlite3BuiltinFunctions;

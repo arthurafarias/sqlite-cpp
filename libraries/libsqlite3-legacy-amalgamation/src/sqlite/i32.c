@@ -1,2 +1,2 @@
-#include "sqlite/i32.h"
+#include "sqlite/_All.h"
 i32 i32_stub;

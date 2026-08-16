@@ -6,16 +6,15 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct Subquery Subquery;
+  typedef struct Subquery Subquery;
 
-struct Subquery {
-  Select *pSelect;
-  int addrFillSub;
-  int regReturn;
-  int regResult;
-};
+  struct Subquery {
+    Select *pSelect;
+    int addrFillSub;
+    int regReturn;
+    int regResult;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

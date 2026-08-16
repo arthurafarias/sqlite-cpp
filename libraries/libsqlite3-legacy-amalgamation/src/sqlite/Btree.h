@@ -82,6 +82,27 @@ extern C {
   int sqlite3BtreeConnectionCount(Btree *);
   void sqlite3BtreeLeave(Btree *);
 
+  int sqlite3BtreeCursorSize(void);
+  void lockBtreeMutex(Btree * p);
+  void __attribute__((noinline)) unlockBtreeMutex(Btree * p);
+  void __attribute__((noinline)) btreeLockCarefully(Btree * p);
+  int querySharedCacheTableLock(Btree * p, Pgno iTab, u8 eLock);
+  int setSharedCacheTableLock(Btree * p, Pgno iTable, u8 eLock);
+  void clearAllSharedCacheTableLocks(Btree * p);
+  void downgradeAllSharedCacheTableLocks(Btree * p);
+  void invalidateIncrblobCursors(Btree * pBtree, Pgno pgnoRoot, i64 iRow, int isClearTable);
+  int btreeInvokeBusyHandler(void *pArg);
+  __attribute__((noinline)) int btreeBeginTrans(Btree * p, int wrflag, int *pSchemaVersion);
+  int autoVacuumCommit(Btree * p);
+  void btreeEndTransaction(Btree * p);
+  int btreeCursor(Btree * p, Pgno iTable, int wrFlag, struct KeyInfo *pKeyInfo, BtCursor *pCur);
+  int btreeCursorWithLock(Btree * p, Pgno iTable, int wrFlag, struct KeyInfo *pKeyInfo, BtCursor *pCur);
+  int btreeCreateTable(Btree * p, Pgno * piTable, int createTabFlags);
+  int btreeDropTable(Btree * p, Pgno iTable, int *piMoved);
+  void btreeHeapInsert(u32 * aHeap, u32 x);
+  int btreeHeapPull(u32 * aHeap, u32 * pOut);
+  int setDestPgsz(Btree * pDest, Btree * pSrc);
+
 #ifdef __cplusplus
 }
 #endif

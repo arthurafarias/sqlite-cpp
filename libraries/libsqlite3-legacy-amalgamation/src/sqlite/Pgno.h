@@ -6,9 +6,8 @@ extern C {
 
 #include "sqlite/u32.h"
 
-typedef u32 Pgno;
+  typedef u32 Pgno;
 
 #ifdef __cplusplus
 }
 #endif
-

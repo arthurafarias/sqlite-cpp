@@ -1,2 +1,2 @@
-#include "sqlite/fts5_tokenizer.h"
+#include "sqlite/_All.h"
 fts5_tokenizer fts5_tokenizer_stub;

@@ -1,2 +1,2 @@
-#include "sqlite/analysisInfo.h"
+#include "sqlite/_All.h"
 analysisInfo analysisInfo_stub;

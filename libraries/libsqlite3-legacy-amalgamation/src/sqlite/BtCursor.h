@@ -5,12 +5,12 @@
 extern C {
 #endif
 
+#include "sqlite/CellInfo.h"
 #include "sqlite/Pgno.h"
 #include "sqlite/i64.h"
 #include "sqlite/i8.h"
 #include "sqlite/u16.h"
 #include "sqlite/u8.h"
-#include "sqlite/CellInfo.h"
 
 #include "sqlite/sqlite3_int64.h"
 
@@ -83,6 +83,34 @@ extern C {
   int sqlite3BtreeTransferRow(BtCursor *, BtCursor *, i64);
   void sqlite3BtreeEnterCursor(BtCursor *);
   void sqlite3BtreeLeaveCursor(BtCursor *);
+
+  int sqlite3VdbeMemFromBtree(BtCursor *, u32, u32, Mem *);
+  int sqlite3VdbeMemFromBtreeZeroOffset(BtCursor *, u32, Mem *);
+  int sqlite3VdbeFindIndexKey(BtCursor *, Index *, UnpackedRecord *, int *, int);
+  void btreeReleaseAllCursorPages(BtCursor * pCur);
+  int saveCursorKey(BtCursor * pCur);
+  int saveCursorPosition(BtCursor * pCur);
+  int __attribute__((noinline)) saveCursorsOnList(BtCursor *, Pgno, BtCursor *);
+  int btreeMoveto(BtCursor * pCur, const void *pKey, i64 nKey, int bias, int *pRes);
+  int btreeRestoreCursorPosition(BtCursor * pCur);
+  __attribute__((noinline)) void getCellInfo(BtCursor * pCur);
+  int accessPayload(BtCursor * pCur, u32 offset, u32 amt, unsigned char *pBuf, int eOp);
+  __attribute__((noinline)) int accessPayloadChecked(BtCursor * pCur, u32 offset, u32 amt, void *pBuf);
+  const void *fetchPayload(BtCursor * pCur, u32 * pAmt);
+  int moveToChild(BtCursor * pCur, u32 newPgno);
+  void moveToParent(BtCursor * pCur);
+  int moveToRoot(BtCursor * pCur);
+  int moveToLeftmost(BtCursor * pCur);
+  int moveToRightmost(BtCursor * pCur);
+  __attribute__((noinline)) int btreeLast(BtCursor * pCur, int *pRes);
+  int cursorOnLastPage(BtCursor * pCur);
+  __attribute__((noinline)) int btreeNext(BtCursor * pCur);
+  __attribute__((noinline)) int btreePrevious(BtCursor * pCur);
+  int anotherValidCursor(BtCursor * pCur);
+  int balance(BtCursor * pCur);
+  __attribute__((noinline)) int btreeOverwriteOverflowCell(BtCursor * pCur, const BtreePayload *pX);
+  int btreeOverwriteCell(BtCursor * pCur, const BtreePayload *pX);
+  int vdbeIsMatchingIndexKey(BtCursor * pCur, int bInt, Bitmask mask, UnpackedRecord *p, int *piRes);
 
 #ifdef __cplusplus
 }

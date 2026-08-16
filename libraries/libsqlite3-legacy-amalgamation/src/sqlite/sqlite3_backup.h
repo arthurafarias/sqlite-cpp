@@ -41,6 +41,10 @@ extern C {
   void sqlite3BackupRestart(sqlite3_backup *);
   void sqlite3BackupUpdate(sqlite3_backup *, Pgno, const u8 *);
 
+  int backupOnePage(sqlite3_backup * p, Pgno iSrcPg, const u8 *zSrcData, int bUpdate);
+  void attachBackupObject(sqlite3_backup * p);
+  __attribute__((noinline)) void backupUpdate(sqlite3_backup * p, Pgno iPage, const u8 *aData);
+
 #ifdef __cplusplus
 }
 #endif

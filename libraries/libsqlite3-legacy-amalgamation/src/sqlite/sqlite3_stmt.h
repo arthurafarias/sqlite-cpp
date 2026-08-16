@@ -6,10 +6,10 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
+#include "sqlite/Vdbe.h"
 #include "sqlite/sqlite3_int64.h"
 #include "sqlite/sqlite3_uint64.h"
 #include "sqlite/sqlite3_value.h"
-#include "sqlite/Vdbe.h"
 
   typedef struct sqlite3 sqlite3;
   typedef struct Vdbe sqlite3_stmt;
@@ -73,6 +73,12 @@ extern C {
   void sqlite3_stmt_scanstatus_reset(sqlite3_stmt *);
   int sqlite3_carray_bind_v2(sqlite3_stmt * pStmt, int i, void *aData, int nData, int mFlags, void (*xDel)(void *), void *pDel);
   int sqlite3_carray_bind(sqlite3_stmt * pStmt, int i, void *aData, int nData, int mFlags, void (*xDel)(void *));
+
+  int sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
+  Mem *columnMem(sqlite3_stmt * pStmt, int i);
+  void columnMallocFailure(sqlite3_stmt * pStmt);
+  const void *columnName(sqlite3_stmt * pStmt, int N, int useUtf16, int useType);
+  int bindText(sqlite3_stmt * pStmt, int i, const void *zData, i64 nData, void (*xDel)(void *), u8 encoding);
 
 #ifdef __cplusplus
 }

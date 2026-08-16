@@ -6,18 +6,17 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct SubrtnSig SubrtnSig;
+  typedef struct SubrtnSig SubrtnSig;
 
-struct SubrtnSig {
-  int selId;
-  u8 bComplete;
-  char *zAff;
-  int iTable;
-  int iAddr;
-  int regReturn;
-};
+  struct SubrtnSig {
+    int selId;
+    u8 bComplete;
+    char *zAff;
+    int iTable;
+    int iAddr;
+    int regReturn;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

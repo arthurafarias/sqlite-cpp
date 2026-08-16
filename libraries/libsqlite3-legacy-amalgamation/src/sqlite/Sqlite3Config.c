@@ -1,6 +1,6 @@
-#include "sqlite/Sqlite3Config.h"
+#include "sqlite/_All.h"
 
-Sqlite3Config sqlite3Config = {
+struct Sqlite3Config sqlite3Config = {
     1,
     1,
     1 == 1,
@@ -39,6 +39,7 @@ Sqlite3Config sqlite3Config = {
     0,
     0,
     0,
+
     1073741824,
 
     0,

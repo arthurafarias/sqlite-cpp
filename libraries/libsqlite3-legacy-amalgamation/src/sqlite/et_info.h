@@ -1,0 +1,23 @@
+
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "sqlite/_TypeIndex.h"
+
+typedef struct et_info et_info;
+
+struct et_info {
+  char fmttype;
+  etByte base;
+  etByte flags;
+  etByte type;
+  etByte charset;
+  etByte prefix;
+  char iNxt;
+};
+
+#ifdef __cplusplus
+}
+#endif

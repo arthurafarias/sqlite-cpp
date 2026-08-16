@@ -1,2 +1,2 @@
-#include "sqlite/KeyClass.h"
+#include "sqlite/_All.h"
 KeyClass KeyClass_stub;

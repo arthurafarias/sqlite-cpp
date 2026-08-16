@@ -6,11 +6,11 @@ extern C {
 #endif
 
 #include "sqlite/ExprList.h"
+#include "sqlite/With.h"
 #include "sqlite/u32.h"
 #include "sqlite/u8.h"
-#include "sqlite/With.h"
 
-typedef i16 LogEst;
+  typedef i16 LogEst;
   typedef struct Select Select;
 
   struct Select {
@@ -33,6 +33,18 @@ typedef i16 LogEst;
     Window *pWin;
     Window *pWinDefn;
   };
+
+  const char *sqlite3SelectOpName(int);
+  int sqlite3SelectExprHeight(const Select *);
+  void windowRemoveExprFromSelect(Select * pSelect, Expr * pExpr);
+  void heightOfSelect(const Select *pSelect, int *pnHeight);
+  void gatherSelectWindows(Select * p);
+  Select *findRightmost(Select * p);
+  int hasAnchor(Select * p);
+  void recomputeColumnsUsed(Select * pSelect, SrcItem * pSrcItem);
+  ExprList *findLeftmostExprlist(Select * pSel);
+  int compoundHasDifferentAffinities(Select * p);
+  Table *isSimpleCount(Select * p, AggInfo * pAggInfo);
 
 #ifdef __cplusplus
 }

@@ -24,6 +24,12 @@ extern C {
     const Token *pName;
   };
 
+  void sqlite3FixInit(DbFixer *, Parse *, int, const char *, const Token *);
+  int sqlite3FixSrcList(DbFixer *, SrcList *);
+  int sqlite3FixSelect(DbFixer *, Select *);
+  int sqlite3FixExpr(DbFixer *, Expr *);
+  int sqlite3FixTriggerStep(DbFixer *, TriggerStep *);
+
 #ifdef __cplusplus
 }
 #endif

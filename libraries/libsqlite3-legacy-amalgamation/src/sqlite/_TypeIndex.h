@@ -3,18 +3,18 @@
 #ifdef __cplusplus
 #endif
 
-#include "sqlite/i8.h"
 #include "sqlite/i16.h"
 #include "sqlite/i32.h"
 #include "sqlite/i64.h"
+#include "sqlite/i8.h"
 
-#include "sqlite/u8.h"
 #include "sqlite/u16.h"
 #include "sqlite/u32.h"
 #include "sqlite/u64.h"
+#include "sqlite/u8.h"
 
-#include "sqlite/sqlite3_uint64.h"
 #include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_uint64.h"
 
 typedef struct sqlite3_api_routines sqlite3_api_routines;
 typedef __builtin_va_list __gnuc_va_list;
@@ -70,6 +70,7 @@ typedef struct Fts5Tokenizer Fts5Tokenizer;
 typedef struct FuncDef FuncDef;
 typedef struct FuncDefHash FuncDefHash;
 typedef struct FuncDestructor FuncDestructor;
+typedef struct FrameBound FrameBound;
 typedef struct Hash Hash;
 typedef struct HashElem HashElem;
 typedef struct HiddenIndexInfo HiddenIndexInfo;
@@ -94,7 +95,9 @@ typedef struct KeyClass KeyClass;
 typedef struct KeyInfo KeyInfo;
 typedef struct Lookaside Lookaside;
 typedef struct LookasideSlot LookasideSlot;
+typedef struct sqlite3_value Mem;
 typedef struct MemFile MemFile;
+typedef struct MemFS MemFS;
 typedef struct MemJournal MemJournal;
 typedef struct MemPage MemPage;
 typedef struct MemStore MemStore;
@@ -110,7 +113,11 @@ typedef struct PCache PCache;
 typedef struct PCache1 PCache1;
 typedef struct PgFreeslot PgFreeslot;
 typedef struct PgHdr PgHdr;
+typedef struct PgHdr DbPage;
 typedef struct PgHdr1 PgHdr1;
+typedef struct sqlite3_pcache sqlite3_pcache;
+typedef struct VdbeOp Op;
+typedef struct PragmaName PragmaName;
 typedef struct PGroup PGroup;
 typedef struct PmaReader PmaReader;
 typedef struct PmaWriter PmaWriter;
@@ -155,10 +162,12 @@ typedef struct sqlite3_snapshot sqlite3_snapshot;
 typedef struct sqlite3_soft_heap sqlite3_soft_heap;
 typedef struct Vdbe sqlite3_stmt;
 typedef struct sqlite3_str sqlite3_str;
+typedef struct sqlite3_value sqlite3_value;
 typedef struct sqlite3_vfs MemVfs;
 typedef struct sqlite3_vfs sqlite3_vfs;
 typedef struct sqlite3_vtab sqlite3_vtab;
 typedef struct sqlite3_vtab_cursor sqlite3_vtab_cursor;
+typedef struct sqlite3_file sqlite3_file;
 typedef struct sqlite3AutoExtList sqlite3AutoExtList;
 typedef struct Sqlite3Config Sqlite3Config;
 typedef struct sqlite3StatType sqlite3StatType;
@@ -178,7 +187,9 @@ typedef struct TreeView TreeView;
 typedef struct Trigger Trigger;
 typedef struct TriggerPrg TriggerPrg;
 typedef struct TriggerStep TriggerStep;
+typedef struct TrigEvent TrigEvent;
 typedef struct unixFile unixFile;
+typedef struct unixFileId unixFileId;
 typedef struct unixInodeInfo unixInodeInfo;
 typedef struct unixShm unixShm;
 typedef struct unixShmNode unixShmNode;
@@ -193,7 +204,6 @@ typedef struct VdbeOp VdbeOp;
 typedef struct VdbeOpList VdbeOpList;
 typedef struct VdbeSorter VdbeSorter;
 typedef struct VdbeTxtBlbCache VdbeTxtBlbCache;
-typedef struct VList VList;
 typedef struct VtabCtx VtabCtx;
 typedef struct VTable VTable;
 typedef struct Wal Wal;
@@ -242,6 +252,37 @@ typedef int (*SorterCompare)(SortSubtask *, int *, const void *, int, const void
 typedef int (*sqlite3_loadext_entry)(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pThunk);
 typedef int (*sqlite3FaultFuncType)(int);
 typedef int (*sqlite3LocaltimeType)(const void *, void *);
+
+/*
+ * Small structs that only ever appeared inline in the original amalgamation
+ * (never split into their own container by the earlier struct-extraction
+ * pass) still need a file-scope tag here. Otherwise the first header that
+ * mentions them via a bare `struct Foo *` parameter -- rather than through
+ * their container's own typedef -- creates its own incompatible
+ * prototype-scope tag (C99 6.7.2.3p8), which then conflicts with the real
+ * definition once both are pulled into the same translation unit.
+ */
+typedef struct Mem0Global Mem0Global;
+typedef struct et_info et_info;
+typedef struct unix_syscall unix_syscall;
+typedef struct vxworksFileId vxworksFileId;
+typedef struct PCacheGlobal PCacheGlobal;
+typedef struct RowSetEntry RowSetEntry;
+typedef struct RowSetChunk RowSetChunk;
+typedef struct ValueNewStat4Ctx ValueNewStat4Ctx;
+typedef struct ReusableSpace ReusableSpace;
+typedef struct IdxCover IdxCover;
+typedef struct RefSrcList RefSrcList;
+typedef struct compareInfo compareInfo;
+typedef struct TabResult TabResult;
+typedef struct CallCount CallCount;
+typedef struct NthValueCtx NthValueCtx;
+typedef struct NtileCtx NtileCtx;
+typedef struct LastValueCtx LastValueCtx;
+typedef struct NanInfName NanInfName;
+typedef struct WalWriter WalWriter;
+typedef struct Percentile Percentile;
+typedef struct SubstContext SubstContext;
 
 #ifdef __cplusplus
 }

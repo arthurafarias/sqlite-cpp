@@ -6,25 +6,24 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct unixShmNode unixShmNode;
+  typedef struct unixShmNode unixShmNode;
 
-struct unixShmNode {
-  unixInodeInfo *pInode;
-  sqlite3_mutex *pShmMutex;
-  char *zFilename;
-  int hShm;
-  int szRegion;
-  u16 nRegion;
-  u8 isReadonly;
-  u8 isUnlocked;
-  char **apRegion;
-  int nRef;
-  unixShm *pFirst;
+  struct unixShmNode {
+    unixInodeInfo *pInode;
+    sqlite3_mutex *pShmMutex;
+    char *zFilename;
+    int hShm;
+    int szRegion;
+    u16 nRegion;
+    u8 isReadonly;
+    u8 isUnlocked;
+    char **apRegion;
+    int nRef;
+    unixShm *pFirst;
 
-  int aLock[8];
-};
+    int aLock[8];
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

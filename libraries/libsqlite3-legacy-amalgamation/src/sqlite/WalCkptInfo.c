@@ -1,2 +1,2 @@
-#include "sqlite/WalCkptInfo.h"
+#include "sqlite/_All.h"
 WalCkptInfo WalCkptInfo_stub;

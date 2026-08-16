@@ -8,25 +8,24 @@ extern C {
 
 #include "sqlite/unixFileId.h"
 
-typedef struct unixInodeInfo unixInodeInfo;
+  typedef struct unixInodeInfo unixInodeInfo;
 
-struct unixInodeInfo {
-  struct unixFileId fileId;
-  sqlite3_mutex *pLockMutex;
-  int nShared;
-  int nLock;
-  unsigned char eFileLock;
-  unsigned char bProcessLock;
-  UnixUnusedFd *pUnused;
-  int nRef;
-  unixShmNode *pShmNode;
-  unixInodeInfo *pNext;
-  unixInodeInfo *pPrev;
-};
+  struct unixInodeInfo {
+    struct unixFileId fileId;
+    sqlite3_mutex *pLockMutex;
+    int nShared;
+    int nLock;
+    unsigned char eFileLock;
+    unsigned char bProcessLock;
+    UnixUnusedFd *pUnused;
+    int nRef;
+    unixShmNode *pShmNode;
+    unixInodeInfo *pNext;
+    unixInodeInfo *pPrev;
+  };
 
-unixInodeInfo *inodeList = 0;
+  extern unixInodeInfo *inodeList;
 
 #ifdef __cplusplus
 }
 #endif
-

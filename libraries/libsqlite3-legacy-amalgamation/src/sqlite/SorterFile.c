@@ -1,2 +1,2 @@
-#include "sqlite/SorterFile.h"
+#include "sqlite/_All.h"
 SorterFile SorterFile_stub;

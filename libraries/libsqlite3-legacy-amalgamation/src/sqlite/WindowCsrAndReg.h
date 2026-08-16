@@ -6,15 +6,13 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct WindowCsrAndReg WindowCsrAndReg;
+  typedef struct WindowCsrAndReg WindowCsrAndReg;
 
-struct WindowCsrAndReg {
-  int csr;
-  int reg;
-};
-
+  struct WindowCsrAndReg {
+    int csr;
+    int reg;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

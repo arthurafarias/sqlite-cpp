@@ -67,6 +67,40 @@ int sqlite3BtreeOpen(sqlite3_vfs *pVfs, const char *zFilename, sqlite3 *db, Btre
 int sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int);
 int sqlite3JournalSize(sqlite3_vfs *);
 
+int sqlite3IsMemdb(const sqlite3_vfs *);
+extern sqlite3_vfs *vfsList;
+void vfsUnlink(sqlite3_vfs *pVfs);
+int unixSetSystemCall(sqlite3_vfs *pNotUsed, const char *zName, sqlite3_syscall_ptr pNewFunc);
+sqlite3_syscall_ptr unixGetSystemCall(sqlite3_vfs *pNotUsed, const char *zName);
+const char *unixNextSystemCall(sqlite3_vfs *p, const char *zName);
+int unixSleep(sqlite3_vfs *, int);
+int fillInUnixFile(sqlite3_vfs *pVfs, int h, sqlite3_file *pId, const char *zFilename, int ctrlFlags);
+int unixOpen(sqlite3_vfs *pVfs, const char *zPath, sqlite3_file *pFile, int flags, int *pOutFlags);
+int unixDelete(sqlite3_vfs *NotUsed, const char *zPath, int dirSync);
+int unixAccess(sqlite3_vfs *NotUsed, const char *zPath, int flags, int *pResOut);
+int unixFullPathname(sqlite3_vfs *pVfs, const char *zPath, int nOut, char *zOut);
+void *unixDlOpen(sqlite3_vfs *NotUsed, const char *zFilename);
+void unixDlError(sqlite3_vfs *NotUsed, int nBuf, char *zBufOut);
+void (*unixDlSym(sqlite3_vfs *NotUsed, void *p, const char *zSym))(void);
+void unixDlClose(sqlite3_vfs *NotUsed, void *pHandle);
+int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf);
+int unixCurrentTimeInt64(sqlite3_vfs *NotUsed, sqlite3_int64 *piNow);
+int unixCurrentTime(sqlite3_vfs *NotUsed, double *prNow);
+int unixGetLastError(sqlite3_vfs *NotUsed, int NotUsed2, char *NotUsed3);
+int memdbOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int *);
+int memdbAccess(sqlite3_vfs *, const char *zName, int flags, int *);
+int memdbFullPathname(sqlite3_vfs *, const char *zName, int, char *zOut);
+void *memdbDlOpen(sqlite3_vfs *, const char *zFilename);
+void memdbDlError(sqlite3_vfs *, int nByte, char *zErrMsg);
+void (*memdbDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void);
+void memdbDlClose(sqlite3_vfs *, void *);
+int memdbRandomness(sqlite3_vfs *, int nByte, char *zOut);
+int memdbSleep(sqlite3_vfs *, int microseconds);
+int memdbGetLastError(sqlite3_vfs *, int, char *);
+int memdbCurrentTimeInt64(sqlite3_vfs *, sqlite3_int64 *);
+extern sqlite3_vfs memdb_vfs;
+int sqlite3WalOpen(sqlite3_vfs *, sqlite3_file *, const char *, int, i64, Wal **);
+
 #ifdef __cplusplus
 }
 #endif

@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-typedef unsigned long long int u64;
+  typedef unsigned long long int u64;
 #ifdef __cplusplus
 }
 #endif
-

@@ -4,9 +4,8 @@
 extern C {
 #endif
 
-typedef unsigned int u32;
+  typedef unsigned int u32;
 
 #ifdef __cplusplus
 }
 #endif
-

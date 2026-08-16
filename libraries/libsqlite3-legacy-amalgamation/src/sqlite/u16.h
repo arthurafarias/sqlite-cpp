@@ -4,8 +4,7 @@
 extern C {
 #endif
 
-typedef unsigned short u16;
+  typedef unsigned short u16;
 #ifdef __cplusplus
 }
 #endif
-

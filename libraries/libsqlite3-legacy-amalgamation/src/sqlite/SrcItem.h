@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/_TypeIndex.h"
 #include "sqlite/BitMask.h"
+#include "sqlite/_TypeIndex.h"
 
   typedef struct SrcItem SrcItem;
 
@@ -56,6 +56,10 @@ extern C {
       Subquery *pSubq;
     } u4;
   };
+
+  void sqlite3SrcItemColumnUsed(SrcItem *, int);
+  int disableUnusedSubqueryResultColumns(SrcItem * pItem);
+  int sameSrcAlias(SrcItem * p0, SrcList * pSrc);
 
 #ifdef __cplusplus
 }

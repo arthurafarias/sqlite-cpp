@@ -47,6 +47,9 @@ extern C {
     int (*xIntegrity)(sqlite3_vtab *pVTab, const char *zSchema, const char *zTabName, int mFlags, char **pzErr);
   };
 
+  extern const sqlite3_module pragmaVtabModule;
+  extern sqlite3_module jsonEachModule;
+
 #ifdef __cplusplus
 }
 #endif

@@ -6,17 +6,18 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct IdList IdList;
+  typedef struct IdList IdList;
 
+  struct IdList {
+    int nId;
+    struct IdList_item {
+      char *zName;
+    } a[];
+  };
 
-struct IdList {
-  int nId;
-  struct IdList_item {
-    char *zName;
-  } a[];
-};
+  int sqlite3IdListIndex(IdList *, const char *);
+  int checkColumnOverlap(IdList * pIdList, ExprList * pEList);
 
 #ifdef __cplusplus
 }
 #endif
-

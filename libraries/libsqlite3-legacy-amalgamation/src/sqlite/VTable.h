@@ -4,8 +4,8 @@
 extern C {
 #endif
 
-#include "sqlite/u8.h"
 #include "sqlite/_TypeIndex.h"
+#include "sqlite/u8.h"
 
   typedef struct VTable VTable;
 
@@ -21,7 +21,9 @@ extern C {
     VTable *pNext;
   };
 
+  void sqlite3VtabLock(VTable *);
+  void sqlite3VtabUnlock(VTable *);
+
 #ifdef __cplusplus
 }
 #endif
-

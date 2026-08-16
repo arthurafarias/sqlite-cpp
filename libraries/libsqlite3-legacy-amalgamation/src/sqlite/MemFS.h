@@ -1,4 +1,4 @@
-#include "sqlite/MemStore.h"
+#include "sqlite/_All.h"
 
 typedef struct sqlite3_vfs MemVfs;
 typedef struct MemFile MemFile;
@@ -11,4 +11,3 @@ struct MemFS {
 };
 
 extern MemFS memdb_g;
-

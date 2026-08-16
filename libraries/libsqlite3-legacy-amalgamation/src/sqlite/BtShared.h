@@ -58,6 +58,35 @@ extern C {
     int nPreformatSize;
   };
 
+  extern BtShared *sqlite3SharedCacheList;
+  void invalidateAllOverflowCache(BtShared * pBt);
+  int btreeSetHasContent(BtShared * pBt, Pgno pgno);
+  int btreeGetHasContent(BtShared * pBt, Pgno pgno);
+  void btreeClearHasContent(BtShared * pBt);
+  int saveAllCursors(BtShared * pBt, Pgno iRoot, BtCursor * pExcept);
+  Pgno ptrmapPageno(BtShared * pBt, Pgno pgno);
+  void ptrmapPut(BtShared * pBt, Pgno key, u8 eType, Pgno parent, int *pRC);
+  int ptrmapGet(BtShared * pBt, Pgno key, u8 * pEType, Pgno * pPgno);
+  int btreeGetPage(BtShared * pBt, Pgno pgno, MemPage * *ppPage, int flags);
+  MemPage *btreePageLookup(BtShared * pBt, Pgno pgno);
+  Pgno btreePagecount(BtShared * pBt);
+  int getAndInitPage(BtShared * pBt, Pgno pgno, MemPage * *ppPage, int bReadOnly);
+  int btreeGetUnusedPage(BtShared * pBt, Pgno pgno, MemPage * *ppPage, int flags);
+  int removeFromSharingList(BtShared * pBt);
+  __attribute__((noinline)) int allocateTempSpace(BtShared * pBt);
+  void freeTempSpace(BtShared * pBt);
+  int newDatabase(BtShared *);
+  int lockBtree(BtShared * pBt);
+  void unlockBtreeIfUnused(BtShared * pBt);
+  int relocatePage(BtShared * pBt, MemPage * pDbPage, u8 eType, Pgno iPtrPage, Pgno iFreePage, int isCommit);
+  int allocateBtreePage(BtShared *, MemPage **, Pgno *, Pgno, u8);
+  int incrVacuumStep(BtShared * pBt, Pgno nFin, Pgno iLastPg, int bCommit);
+  Pgno finalDbSize(BtShared * pBt, Pgno nOrig, Pgno nFree);
+  void btreeSetNPage(BtShared * pBt, MemPage * pPage1);
+  int getOverflowPage(BtShared * pBt, Pgno ovfl, MemPage * *ppPage, Pgno * pPgnoNext);
+  int freePage2(BtShared * pBt, MemPage * pMemPage, Pgno iPage);
+  int clearDatabasePage(BtShared * pBt, Pgno pgno, int freePageFlag, i64 *pnChange);
+
 #ifdef __cplusplus
 }
 #endif

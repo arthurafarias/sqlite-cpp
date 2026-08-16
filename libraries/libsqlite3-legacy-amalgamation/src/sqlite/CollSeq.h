@@ -18,6 +18,8 @@ extern C {
     void (*xDel)(void *);
   };
 
+  int sqlite3IsBinary(const CollSeq *);
+
 #ifdef __cplusplus
 }
 #endif

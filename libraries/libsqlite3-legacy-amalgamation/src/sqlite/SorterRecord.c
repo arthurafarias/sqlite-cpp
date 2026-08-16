@@ -1,2 +1,2 @@
-#include "sqlite/SorterRecord.h"
+#include "sqlite/_All.h"
 SorterRecord SorterRecord_stub;

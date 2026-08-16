@@ -1,2 +1,2 @@
-#include "sqlite/IndexSample.h"
+#include "sqlite/_All.h"
 IndexSample IndexSample_stub;

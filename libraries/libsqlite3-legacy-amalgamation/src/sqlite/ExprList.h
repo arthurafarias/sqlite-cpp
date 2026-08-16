@@ -44,6 +44,13 @@ extern C {
   u32 sqlite3ExprListFlags(const ExprList *);
   int sqlite3ExprListCompare(const ExprList *, const ExprList *, int);
 
+  __attribute__((noinline)) void resolveSetExprSubtypeArg(ExprList * pList);
+  void heightOfExprList(const ExprList *p, int *pnHeight);
+  void renameSetENames(ExprList * pEList, int val);
+  int sqlite3CopySortOrder(ExprList * p1, ExprList * p2);
+  void sqlite3ProcessReturningSubqueries(ExprList * pEList, Table * pTab);
+  void adjustOrderByCol(ExprList * pOrderBy, ExprList * pEList);
+
 #ifdef __cplusplus
 }
 #endif

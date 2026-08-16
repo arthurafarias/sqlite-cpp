@@ -1,2 +1,2 @@
-#include "sqlite/DblquoteStr.h"
+#include "sqlite/_All.h"
 DblquoteStr DblquoteStr_stub;

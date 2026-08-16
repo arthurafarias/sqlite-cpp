@@ -6,15 +6,18 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct MergeEngine MergeEngine;
-struct MergeEngine {
-  int nTree;
-  SortSubtask *pTask;
-  int *aTree;
-  PmaReader *aReadr;
-};
+  typedef struct MergeEngine MergeEngine;
+  struct MergeEngine {
+    int nTree;
+    SortSubtask *pTask;
+    int *aTree;
+    PmaReader *aReadr;
+  };
+
+  void vdbeMergeEngineFree(MergeEngine * pMerger);
+  int vdbeMergeEngineStep(MergeEngine * pMerger, int *pbEof);
+  void vdbeMergeEngineCompare(MergeEngine * pMerger, int iOut);
 
 #ifdef __cplusplus
 }
 #endif
-

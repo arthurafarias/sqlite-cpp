@@ -6,16 +6,14 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct UnixUnusedFd UnixUnusedFd;
+  typedef struct UnixUnusedFd UnixUnusedFd;
 
-struct UnixUnusedFd {
-  int fd;
-  int flags;
-  UnixUnusedFd *pNext;
-};
-
+  struct UnixUnusedFd {
+    int fd;
+    int flags;
+    UnixUnusedFd *pNext;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

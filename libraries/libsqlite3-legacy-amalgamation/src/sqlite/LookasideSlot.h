@@ -6,14 +6,14 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct LookasideSlot LookasideSlot;
+  typedef struct LookasideSlot LookasideSlot;
 
+  struct LookasideSlot {
+    LookasideSlot *pNext;
+  };
 
-struct LookasideSlot {
-  LookasideSlot *pNext;
-};
+  u32 countLookasideSlots(LookasideSlot * p);
 
 #ifdef __cplusplus
 }
 #endif
-

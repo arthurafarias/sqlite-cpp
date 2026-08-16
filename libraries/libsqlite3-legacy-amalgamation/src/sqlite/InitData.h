@@ -20,6 +20,8 @@ struct InitData {
   Pgno mxPage;
 };
 
+void corruptSchema(InitData *pData, char **azObj, const char *zExtra);
+
 #ifdef __cplusplus
 }
 #endif

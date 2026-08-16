@@ -6,7 +6,7 @@ extern C {
 
 #include "sqlite/u64.h"
   typedef u64 sqlite3_uint64;
-  
+
 #ifdef __cplusplus
 }
 #endif

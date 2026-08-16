@@ -1,2 +1,2 @@
-#include "sqlite/Module.h"
+#include "sqlite/_All.h"
 Module Module_stub;

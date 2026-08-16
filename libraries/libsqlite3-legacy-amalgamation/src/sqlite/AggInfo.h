@@ -47,6 +47,9 @@ extern C {
     u32 selId;
   };
 
+  void analyzeAggFuncArgs(AggInfo * pAggInfo, NameContext * pNC);
+  void aggregateConvertIndexedExprRefToColumn(AggInfo * pAggInfo);
+
 #ifdef __cplusplus
 }
 #endif

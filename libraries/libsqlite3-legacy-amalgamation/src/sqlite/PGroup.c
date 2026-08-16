@@ -1,2 +1,2 @@
-#include "sqlite/PGroup.h"
+#include "sqlite/_All.h"
 PGroup PGroup_stub;

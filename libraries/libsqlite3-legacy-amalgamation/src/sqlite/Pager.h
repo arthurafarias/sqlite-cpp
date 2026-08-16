@@ -139,6 +139,59 @@ extern C {
   const char *sqlite3PagerFilename(const Pager *, int);
   void sqlite3PagerTruncateImage(Pager *, Pgno);
 
+  int getPageNormal(Pager *, Pgno, DbPage **, int);
+  int getPageError(Pager *, Pgno, DbPage **, int);
+  int getPageMMap(Pager *, Pgno, DbPage **, int);
+  void setGetterMethod(Pager * pPager);
+  int pagerUnlockDb(Pager * pPager, int eLock);
+  int pagerLockDb(Pager * pPager, int eLock);
+  int jrnlBufferSize(Pager * pPager);
+  i64 journalHdrOffset(Pager * pPager);
+  int zeroJournalHdr(Pager * pPager, int doTruncate);
+  int writeJournalHdr(Pager * pPager);
+  int readJournalHdr(Pager * pPager, int isHot, i64 journalSize, u32 *pNRec, u32 *pDbSize);
+  int writeSuperJournal(Pager * pPager, const char *zSuper);
+  void pager_reset(Pager * pPager);
+  void releaseAllSavepoints(Pager * pPager);
+  int addToSavepointBitvecs(Pager * pPager, Pgno pgno);
+  void pager_unlock(Pager * pPager);
+  int pager_error(Pager * pPager, int rc);
+  int pager_truncate(Pager * pPager, Pgno nPage);
+  int pagerFlushOnCommit(Pager * pPager, int bCommit);
+  int pager_end_transaction(Pager * pPager, int hasSuper, int bCommit);
+  int pager_playback(Pager * pPager, int isHot);
+  void pagerUnlockAndRollback(Pager * pPager);
+  u32 pager_cksum(Pager * pPager, const u8 *aData);
+  int pager_playback_one_page(Pager * pPager, i64 * pOffset, Bitvec * pDone, int isMainJrnl, int isSavepnt);
+  int pagerIsSuperJrnlName(const char *zSuper);
+  int pager_delsuper(Pager * pPager, const char *zSuper);
+  void setSectorSize(Pager * pPager);
+  int pagerUndoCallback(void *pCtx, Pgno iPg);
+  int pagerRollbackWal(Pager * pPager);
+  int pagerWalFrames(Pager * pPager, PgHdr * pList, Pgno nTruncate, int isCommit);
+  int pagerBeginReadTransaction(Pager * pPager);
+  int pagerPagecount(Pager * pPager, Pgno * pnPage);
+  int pagerOpenWalIfPresent(Pager * pPager);
+  int pagerPlaybackSavepoint(Pager * pPager, PagerSavepoint * pSavepoint);
+  void pagerFixMaplimit(Pager * pPager);
+  int pagerOpentemp(Pager * pPager, sqlite3_file * pFile, int vfsFlags);
+  int pager_wait_on_lock(Pager * pPager, int locktype);
+  int pagerSyncHotJournal(Pager * pPager);
+  int pagerAcquireMapPage(Pager * pPager, Pgno pgno, void *pData, PgHdr **ppPage);
+  void pagerFreeMapHdrs(Pager * pPager);
+  int databaseIsUnmoved(Pager * pPager);
+  int syncJournal(Pager * pPager, int newHdr);
+  int pager_write_pagelist(Pager * pPager, PgHdr * pList);
+  int openSubJournal(Pager * pPager);
+  int pagerStress(void *p, PgHdr *pPg);
+  int hasHotJournal(Pager * pPager, int *pExists);
+  void pagerUnlockIfUnused(Pager * pPager);
+  int pager_open_journal(Pager * pPager);
+  int pager_incr_changecounter(Pager * pPager, int isDirectMode);
+  __attribute__((noinline)) int pagerOpenSavepoint(Pager * pPager, int nSavepoint);
+  int pagerExclusiveLock(Pager * pPager);
+  int pagerOpenWal(Pager * pPager);
+
 #ifdef __cplusplus
 }
 #endif

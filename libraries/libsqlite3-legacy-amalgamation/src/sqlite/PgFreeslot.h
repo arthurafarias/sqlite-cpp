@@ -6,13 +6,11 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct PgFreeslot PgFreeslot;
-struct PgFreeslot {
-  PgFreeslot *pNext;
-};
-
+  typedef struct PgFreeslot PgFreeslot;
+  struct PgFreeslot {
+    PgFreeslot *pNext;
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

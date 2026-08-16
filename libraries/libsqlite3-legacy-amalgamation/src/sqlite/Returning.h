@@ -6,22 +6,21 @@ extern C {
 
 #include "sqlite/_TypeIndex.h"
 
-typedef struct Returning Returning;
+  typedef struct Returning Returning;
 
 #include "sqlite/Trigger.h"
 
-struct Returning {
-  Parse *pParse;
-  ExprList *pReturnEL;
-  Trigger retTrig;
-  TriggerStep retTStep;
-  int iRetCur;
-  int nRetCol;
-  int iRetReg;
-  char zName[40];
-};
+  struct Returning {
+    Parse *pParse;
+    ExprList *pReturnEL;
+    Trigger retTrig;
+    TriggerStep retTStep;
+    int iRetCur;
+    int nRetCol;
+    int iRetReg;
+    char zName[40];
+  };
 
 #ifdef __cplusplus
 }
 #endif
-

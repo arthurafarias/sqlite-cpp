@@ -7,17 +7,19 @@ extern C {
 #include "sqlite/_TypeIndex.h"
 #include <pthread.h>
 
-typedef struct SQLiteThread SQLiteThread;
+  typedef struct SQLiteThread SQLiteThread;
 
-struct SQLiteThread {
-  pthread_t tid;
-  int done;
-  void *pOut;
-  void *(*xTask)(void *);
-  void *pIn;
-};
+  struct SQLiteThread {
+    pthread_t tid;
+    int done;
+    void *pOut;
+    void *(*xTask)(void *);
+    void *pIn;
+  };
+
+  int sqlite3ThreadCreate(SQLiteThread **, void *(*)(void *), void *);
+  int sqlite3ThreadJoin(SQLiteThread *, void **);
 
 #ifdef __cplusplus
 }
 #endif
-
