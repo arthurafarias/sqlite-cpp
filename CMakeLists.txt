@@ -1,11 +1,4 @@
 cmake_minimum_required(VERSION 3.24)
-# C is needed here (not just in the per-target subdirectories) because
-# cmake/SqliteCodegen.cmake's host tools (lemon, mksourceid, mkkeywordhash) are
-# add_executable()'d from this scope, before any subdirectory's own project() runs.
-# CXX is enabled for the first four converted dependency leaves, through
-# `sqlite-backend-tree`. C remains enabled for the six split libraries still
-# at the SRS 001 stage, plus the legacy
-# amalgamation, generators, and fixture.
 project(sqlite3-workspace LANGUAGES C CXX)
 
 option(SQLITE_BUILD_SHELL "Build the sqlite3-shell-legacy CLI shell" ON)
@@ -15,15 +8,18 @@ option(SQLITE_BUILD_APPLICATIONS "Build sqldiff-legacy and sqlite3-rsync-legacy"
 
 enable_testing()
 
+include(cmake/SqliteCppLibrary.cmake)
+
 add_subdirectory(libraries/sqlite3-legacy)
 add_subdirectory(libraries/sqlite3-legacy-alternate)
 
-# SRS 001 FR-4: each library builds as its own SHARED object over the
-# csrc/ FR-3 populated, with no target_link_libraries() between siblings
+# SRS 005: each of the ten SRS-001 sec.1.3 subsystem libraries builds as its
+# own SHARED object over the csrc/ this document's FR-1 populated from
+# sqlite3-legacy-alternate, with no target_link_libraries() between siblings
 # (see cmake/SqliteCppLibrary.cmake for why -- the real C symbol graph is
 # cyclic, and CMake refuses target-level cycles between SHARED libraries).
-
-add_subdirectory(libraries/sqlite3)
+# libraries/sqlite3 (below) is the umbrella that links the whole set together
+# and resolves what each leaves unresolved.
 add_subdirectory(libraries/sqlite3-utils)
 add_subdirectory(libraries/sqlite3-backend-os)
 add_subdirectory(libraries/sqlite3-backend-pager)
@@ -35,9 +31,13 @@ add_subdirectory(libraries/sqlite3-compiler-tokenizer)
 add_subdirectory(libraries/sqlite3-compiler-parser)
 add_subdirectory(libraries/sqlite3-compiler-code-generator)
 
+# SRS 005: the umbrella library -- links all ten subsystem libraries above
+# and exposes the sqlite3_state public interface (struct sqlite3 renamed at
+# the API boundary; see srs/005-*.md).
+add_subdirectory(libraries/sqlite3)
+
 # SRS 001 FR-5: each sqlite3-dependent application links against the split
-# above (cmake/SqliteCppLibrary.cmake's sqlite_cpp_link_full_split()) instead
-# of embedding the amalgamation or linking libsqlite3-legacy.
+# above instead of embedding the amalgamation or linking libsqlite3-legacy.
 if(SQLITE_BUILD_SHELL)
     # add_subdirectory(applications/sqlite3-shell-legacy)
 endif()

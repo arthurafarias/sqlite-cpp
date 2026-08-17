@@ -1,0 +1,6332 @@
+[
+  {
+    "symbol": "AggInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        24
+      ],
+      [
+        "expr.c",
+        14
+      ],
+      [
+        "sqliteInt.h",
+        12
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "AuthContext",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "auth.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        5
+      ],
+      [
+        "auth.c",
+        2
+      ],
+      [
+        "update.c",
+        1
+      ],
+      [
+        "delete.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "AutoincInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "insert.c"
+    ],
+    "top_files": [
+      [
+        "insert.c",
+        7
+      ],
+      [
+        "sqliteInt.h",
+        5
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "AuxData",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeInt.h"
+    ],
+    "top_files": [
+      [
+        "vdbeInt.h",
+        7
+      ],
+      [
+        "vdbeapi.c",
+        3
+      ],
+      [
+        "vdbeaux.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "BenignMallocHooks",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "fault.c"
+    ],
+    "top_files": [
+      [
+        "fault.c",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "BitMask",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-command-processor",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Bitvec",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "bitvec.c"
+    ],
+    "top_files": [
+      [
+        "bitvec.c",
+        40
+      ],
+      [
+        "sqliteInt.h",
+        10
+      ],
+      [
+        "pager.c",
+        6
+      ],
+      [
+        "test_journal.c",
+        3
+      ],
+      [
+        "btreeInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Bool",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "BtCursor",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        108
+      ],
+      [
+        "btree.h",
+        44
+      ],
+      [
+        "vdbe.c",
+        12
+      ],
+      [
+        "test3.c",
+        9
+      ],
+      [
+        "btreeInt.h",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "BtLock",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        13
+      ],
+      [
+        "btreeInt.h",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "BtShared",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        129
+      ],
+      [
+        "btreeInt.h",
+        30
+      ],
+      [
+        "btmutex.c",
+        10
+      ],
+      [
+        "vdbeaux.c",
+        5
+      ],
+      [
+        "test_btree.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Btree",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        102
+      ],
+      [
+        "btree.h",
+        58
+      ],
+      [
+        "btmutex.c",
+        23
+      ],
+      [
+        "btreeInt.h",
+        17
+      ],
+      [
+        "backup.c",
+        15
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "BtreePayload",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        6
+      ],
+      [
+        "btree.h",
+        5
+      ],
+      [
+        "vdbe.c",
+        2
+      ],
+      [
+        "test3.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "BusyHandler",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "main.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "CallCount",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        21
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "CellArray",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        14
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "CellInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        29
+      ],
+      [
+        "btreeInt.h",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "CheckOnCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        12
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "CollSeq",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "callback.c"
+    ],
+    "top_files": [
+      [
+        "callback.c",
+        18
+      ],
+      [
+        "sqliteInt.h",
+        17
+      ],
+      [
+        "expr.c",
+        15
+      ],
+      [
+        "select.c",
+        11
+      ],
+      [
+        "where.c",
+        10
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Column",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        26
+      ],
+      [
+        "build.c",
+        20
+      ],
+      [
+        "select.c",
+        17
+      ],
+      [
+        "insert.c",
+        9
+      ],
+      [
+        "alter.c",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "CountCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "CoveringIndexCheck",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        5
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "Cte",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        9
+      ],
+      [
+        "build.c",
+        6
+      ],
+      [
+        "select.c",
+        2
+      ],
+      [
+        "parse.y",
+        1
+      ],
+      [
+        "treeview.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "CteUse",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "select.c",
+        4
+      ],
+      [
+        "treeview.c",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "DateTime",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "date.c"
+    ],
+    "top_files": [
+      [
+        "date.c",
+        45
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Db",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "build.c",
+        10
+      ],
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "attach.c",
+        5
+      ],
+      [
+        "vdbe.c",
+        4
+      ],
+      [
+        "prepare.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "DbClientData",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        7
+      ],
+      [
+        "main.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "DbFixer",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "attach.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        9
+      ],
+      [
+        "attach.c",
+        8
+      ],
+      [
+        "build.c",
+        2
+      ],
+      [
+        "trigger.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "DbPage",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pager.c"
+    ],
+    "top_files": [
+      [
+        "pager.c",
+        22
+      ],
+      [
+        "pager.h",
+        17
+      ],
+      [
+        "btree.c",
+        14
+      ],
+      [
+        "test2.c",
+        10
+      ],
+      [
+        "dbpage.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "DbPath",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "DblquoteStr",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeInt.h"
+    ],
+    "top_files": [
+      [
+        "vdbeInt.h",
+        6
+      ],
+      [
+        "vdbeaux.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "DistinctCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        5
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "EdupBuf",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "expr.c",
+        6
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "Expr",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "expr.c",
+        311
+      ],
+      [
+        "sqliteInt.h",
+        235
+      ],
+      [
+        "select.c",
+        81
+      ],
+      [
+        "whereexpr.c",
+        65
+      ],
+      [
+        "resolve.c",
+        48
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "ExprList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        92
+      ],
+      [
+        "expr.c",
+        56
+      ],
+      [
+        "select.c",
+        55
+      ],
+      [
+        "parse.y",
+        28
+      ],
+      [
+        "resolve.c",
+        21
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "FKey",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "fkey.c"
+    ],
+    "top_files": [
+      [
+        "fkey.c",
+        23
+      ],
+      [
+        "sqliteInt.h",
+        12
+      ],
+      [
+        "build.c",
+        5
+      ],
+      [
+        "pragma.c",
+        2
+      ],
+      [
+        "alter.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "FileChunk",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "memjournal.c"
+    ],
+    "top_files": [
+      [
+        "memjournal.c",
+        19
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "FilePoint",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "memjournal.c"
+    ],
+    "top_files": [
+      [
+        "memjournal.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "FpDecode",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        4
+      ],
+      [
+        "func.c",
+        1
+      ],
+      [
+        "util.c",
+        1
+      ],
+      [
+        "printf.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "FrameBound",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-command-processor",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Fts5Context",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Fts5ExtensionApi",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Fts5PhraseIter",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Fts5Tokenizer",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "FuncDef",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "callback.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        25
+      ],
+      [
+        "callback.c",
+        16
+      ],
+      [
+        "vdbeaux.c",
+        10
+      ],
+      [
+        "window.c",
+        8
+      ],
+      [
+        "vdbe.c",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "FuncDefHash",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "callback.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        5
+      ],
+      [
+        "callback.c",
+        2
+      ],
+      [
+        "global.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "FuncDestructor",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        8
+      ],
+      [
+        "main.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "GroupConcatCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        10
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Hash",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "hash.h"
+    ],
+    "top_files": [
+      [
+        "hash.h",
+        13
+      ],
+      [
+        "sqliteInt.h",
+        11
+      ],
+      [
+        "hash.c",
+        9
+      ],
+      [
+        "wal.c",
+        8
+      ],
+      [
+        "printf.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "HashElem",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "hash.c"
+    ],
+    "top_files": [
+      [
+        "hash.c",
+        14
+      ],
+      [
+        "pragma.c",
+        8
+      ],
+      [
+        "hash.h",
+        7
+      ],
+      [
+        "build.c",
+        4
+      ],
+      [
+        "analyze.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "HiddenIndexInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        19
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "IdList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        30
+      ],
+      [
+        "build.c",
+        9
+      ],
+      [
+        "parse.y",
+        5
+      ],
+      [
+        "expr.c",
+        4
+      ],
+      [
+        "treeview.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "IdxCover",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "expr.c",
+        4
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "IncrMerger",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        36
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Incrblob",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeblob.c"
+    ],
+    "top_files": [
+      [
+        "vdbeblob.c",
+        18
+      ],
+      [
+        "btreeInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Index",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "build.c",
+        64
+      ],
+      [
+        "where.c",
+        58
+      ],
+      [
+        "sqliteInt.h",
+        44
+      ],
+      [
+        "analyze.c",
+        37
+      ],
+      [
+        "insert.c",
+        28
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "IndexIterator",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "insert.c"
+    ],
+    "top_files": [
+      [
+        "insert.c",
+        8
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "IndexListTerm",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "insert.c"
+    ],
+    "top_files": [
+      [
+        "insert.c",
+        9
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "IndexSample",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "analyze.c"
+    ],
+    "top_files": [
+      [
+        "analyze.c",
+        6
+      ],
+      [
+        "sqliteInt.h",
+        5
+      ],
+      [
+        "where.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "IndexedExpr",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        12
+      ],
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "expr.c",
+        3
+      ],
+      [
+        "select.c",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "InitData",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "prepare.c"
+    ],
+    "top_files": [
+      [
+        "prepare.c",
+        5
+      ],
+      [
+        "vdbe.c",
+        1
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "IntegrityCk",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        12
+      ],
+      [
+        "btreeInt.h",
+        3
+      ],
+      [
+        "vdbe.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "JsonCache",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "JsonEachConnection",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "JsonEachCursor",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        22
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "JsonParent",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "JsonParse",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        85
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "JsonPretty",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "JsonString",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        57
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "KeyClass",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-command-processor",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "KeyInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        38
+      ],
+      [
+        "sqliteInt.h",
+        19
+      ],
+      [
+        "vdbeaux.c",
+        13
+      ],
+      [
+        "vdbe.c",
+        12
+      ],
+      [
+        "build.c",
+        6
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "LOGFUNC_t",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "LastValueCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Lmid_t",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "LogEst",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Lookaside",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "printf.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        10
+      ],
+      [
+        "printf.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "LookasideSlot",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "malloc.c"
+    ],
+    "top_files": [
+      [
+        "malloc.c",
+        9
+      ],
+      [
+        "sqliteInt.h",
+        9
+      ],
+      [
+        "main.c",
+        6
+      ],
+      [
+        "status.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Mem",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbemem.c"
+    ],
+    "top_files": [
+      [
+        "vdbemem.c",
+        122
+      ],
+      [
+        "vdbeInt.h",
+        98
+      ],
+      [
+        "vdbe.c",
+        66
+      ],
+      [
+        "vdbeaux.c",
+        61
+      ],
+      [
+        "vdbeapi.c",
+        39
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Mem0Global",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "malloc.c"
+    ],
+    "top_files": [
+      [
+        "malloc.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "MemFS",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "memdb.c"
+    ],
+    "top_files": [
+      [
+        "memdb.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "MemFile",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "memdb.c"
+    ],
+    "top_files": [
+      [
+        "memdb.c",
+        25
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "MemJournal",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "memjournal.c"
+    ],
+    "top_files": [
+      [
+        "memjournal.c",
+        26
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "MemPage",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "btree.c"
+    ],
+    "top_files": [
+      [
+        "btree.c",
+        164
+      ],
+      [
+        "btreeInt.h",
+        11
+      ],
+      [
+        "pcache1.c",
+        6
+      ],
+      [
+        "backup.c",
+        2
+      ],
+      [
+        "pcache.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "MemStore",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "memdb.c"
+    ],
+    "top_files": [
+      [
+        "memdb.c",
+        31
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "MergeEngine",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        45
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Module",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "vtab.c"
+    ],
+    "top_files": [
+      [
+        "vtab.c",
+        21
+      ],
+      [
+        "sqliteInt.h",
+        12
+      ],
+      [
+        "build.c",
+        8
+      ],
+      [
+        "pragma.c",
+        4
+      ],
+      [
+        "main.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "NameContext",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "resolve.c"
+    ],
+    "top_files": [
+      [
+        "resolve.c",
+        18
+      ],
+      [
+        "sqliteInt.h",
+        16
+      ],
+      [
+        "select.c",
+        10
+      ],
+      [
+        "alter.c",
+        4
+      ],
+      [
+        "expr.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "NanInfName",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "json.c"
+    ],
+    "top_files": [
+      [
+        "json.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "NthValueCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "NtileCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "OnOrUsing",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "expr.c",
+        2
+      ],
+      [
+        "build.c",
+        1
+      ],
+      [
+        "parse.y",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "Op",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeaux.c"
+    ],
+    "top_files": [
+      [
+        "vdbeaux.c",
+        26
+      ],
+      [
+        "vdbe.c",
+        7
+      ],
+      [
+        "vdbeInt.h",
+        6
+      ],
+      [
+        "vdbevtab.c",
+        3
+      ],
+      [
+        "vdbeapi.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PCache",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache.c"
+    ],
+    "top_files": [
+      [
+        "pcache.c",
+        39
+      ],
+      [
+        "pcache.h",
+        28
+      ],
+      [
+        "pcache1.c",
+        10
+      ],
+      [
+        "pager.c",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PCache1",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache1.c"
+    ],
+    "top_files": [
+      [
+        "pcache1.c",
+        41
+      ],
+      [
+        "pcache.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PCacheGlobal",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache1.c"
+    ],
+    "top_files": [
+      [
+        "pcache1.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PGroup",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache1.c"
+    ],
+    "top_files": [
+      [
+        "pcache1.c",
+        37
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Pager",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pager.c"
+    ],
+    "top_files": [
+      [
+        "pager.c",
+        261
+      ],
+      [
+        "pager.h",
+        68
+      ],
+      [
+        "test2.c",
+        12
+      ],
+      [
+        "main.c",
+        7
+      ],
+      [
+        "btree.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PagerSavepoint",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pager.c"
+    ],
+    "top_files": [
+      [
+        "pager.c",
+        29
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Parse",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        264
+      ],
+      [
+        "expr.c",
+        97
+      ],
+      [
+        "build.c",
+        73
+      ],
+      [
+        "select.c",
+        71
+      ],
+      [
+        "alter.c",
+        54
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "ParseCleanup",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "prepare.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "prepare.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Percentile",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        11
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PgFreeslot",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache1.c"
+    ],
+    "top_files": [
+      [
+        "pcache1.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PgHdr",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache.c"
+    ],
+    "top_files": [
+      [
+        "pcache.c",
+        55
+      ],
+      [
+        "pager.c",
+        50
+      ],
+      [
+        "pcache.h",
+        21
+      ],
+      [
+        "pcache1.c",
+        7
+      ],
+      [
+        "wal.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PgHdr1",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache1.c"
+    ],
+    "top_files": [
+      [
+        "pcache1.c",
+        56
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Pgno",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PmaReader",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        77
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PmaWriter",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        12
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PragmaName",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "pragma.c"
+    ],
+    "top_files": [
+      [
+        "pragma.c",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PragmaVtab",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "pragma.c"
+    ],
+    "top_files": [
+      [
+        "pragma.c",
+        15
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PragmaVtabCursor",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "pragma.c"
+    ],
+    "top_files": [
+      [
+        "pragma.c",
+        19
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PreUpdate",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeapi.c"
+    ],
+    "top_files": [
+      [
+        "vdbeapi.c",
+        5
+      ],
+      [
+        "sqliteInt.h",
+        3
+      ],
+      [
+        "vdbeaux.c",
+        2
+      ],
+      [
+        "vdbeInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "PrintfArguments",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "printf.c"
+    ],
+    "top_files": [
+      [
+        "printf.c",
+        6
+      ],
+      [
+        "sqliteInt.h",
+        3
+      ],
+      [
+        "func.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "RCStr",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "printf.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        9
+      ],
+      [
+        "printf.c",
+        9
+      ],
+      [
+        "json.c",
+        4
+      ],
+      [
+        "vdbe.c",
+        1
+      ],
+      [
+        "vdbeInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "RecordCompare",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-virtual-machine",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "RefSrcList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "expr.c",
+        8
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "RenameCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "alter.c"
+    ],
+    "top_files": [
+      [
+        "alter.c",
+        22
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "RenameToken",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "alter.c"
+    ],
+    "top_files": [
+      [
+        "alter.c",
+        36
+      ],
+      [
+        "sqliteInt.h",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Returning",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "build.c",
+        5
+      ],
+      [
+        "sqliteInt.h",
+        4
+      ],
+      [
+        "expr.c",
+        2
+      ],
+      [
+        "vdbeaux.c",
+        1
+      ],
+      [
+        "trigger.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "ReusableSpace",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeaux.c"
+    ],
+    "top_files": [
+      [
+        "vdbeaux.c",
+        8
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "RowLoadInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        6
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "RowSet",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "rowset.c"
+    ],
+    "top_files": [
+      [
+        "rowset.c",
+        40
+      ],
+      [
+        "vdbe.c",
+        12
+      ],
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "wherecode.c",
+        3
+      ],
+      [
+        "delete.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "RowSetChunk",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "rowset.c"
+    ],
+    "top_files": [
+      [
+        "rowset.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "RowSetEntry",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "rowset.c"
+    ],
+    "top_files": [
+      [
+        "rowset.c",
+        44
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SQLiteThread",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "threads.c"
+    ],
+    "top_files": [
+      [
+        "threads.c",
+        15
+      ],
+      [
+        "sqliteInt.h",
+        4
+      ],
+      [
+        "vdbesort.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Savepoint",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbe.c"
+    ],
+    "top_files": [
+      [
+        "vdbe.c",
+        6
+      ],
+      [
+        "sqliteInt.h",
+        6
+      ],
+      [
+        "main.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "ScanStatus",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeaux.c"
+    ],
+    "top_files": [
+      [
+        "vdbeaux.c",
+        7
+      ],
+      [
+        "vdbeInt.h",
+        6
+      ],
+      [
+        "vdbeapi.c",
+        3
+      ],
+      [
+        "test1.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Schema",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "callback.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        28
+      ],
+      [
+        "callback.c",
+        10
+      ],
+      [
+        "build.c",
+        3
+      ],
+      [
+        "analyze.c",
+        3
+      ],
+      [
+        "btree.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Select",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        105
+      ],
+      [
+        "sqliteInt.h",
+        71
+      ],
+      [
+        "expr.c",
+        34
+      ],
+      [
+        "parse.y",
+        19
+      ],
+      [
+        "insert.c",
+        16
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "SelectDest",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        19
+      ],
+      [
+        "sqliteInt.h",
+        5
+      ],
+      [
+        "insert.c",
+        2
+      ],
+      [
+        "expr.c",
+        2
+      ],
+      [
+        "build.c",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "SortCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        11
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "SortSubtask",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        44
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SorterCompare",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-virtual-machine",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SorterFile",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        11
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SorterList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SorterRecord",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        33
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Sqlite3Config",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "global.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        3
+      ],
+      [
+        "global.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteAccessFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteAuthorizerActionCode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteAuthorizerReturnCode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteCheckpointMode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteConfigOption",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteConflictResolution",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteDbConfigOption",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteDbStatusParameter",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteDeserializeFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteDestructorType",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteExtendedResultCode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteFileControlOpcode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteFunctionFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteFundamentalDatatype",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteIndexConstraintOp",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteIndexScanFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteIoCap",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteLimitCategory",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteLockLevel",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteMutexType",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteOpenFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqlitePrepareFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteResultCode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteScanStatusFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteScanStatusOpcode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteSerializeFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteSetlkTimeoutFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteShmFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteStatusParameter",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteStmtStatusParameter",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteSyncFlags",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteTestCtrlOpcode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteTextEncoding",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteTraceEventCode",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteTxnState",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteUnixSyscallIndex",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteVersion",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteVtabConfigOption",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SqliteWin32DirectoryType",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SrcItem",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        42
+      ],
+      [
+        "where.c",
+        29
+      ],
+      [
+        "sqliteInt.h",
+        18
+      ],
+      [
+        "build.c",
+        15
+      ],
+      [
+        "wherecode.c",
+        8
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "SrcList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        67
+      ],
+      [
+        "build.c",
+        48
+      ],
+      [
+        "select.c",
+        29
+      ],
+      [
+        "alter.c",
+        13
+      ],
+      [
+        "expr.c",
+        12
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "StatAccum",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "analyze.c"
+    ],
+    "top_files": [
+      [
+        "analyze.c",
+        33
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "StatSample",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "analyze.c"
+    ],
+    "top_files": [
+      [
+        "analyze.c",
+        28
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "StrAccum",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "printf.c"
+    ],
+    "top_files": [
+      [
+        "printf.c",
+        25
+      ],
+      [
+        "sqliteInt.h",
+        8
+      ],
+      [
+        "func.c",
+        4
+      ],
+      [
+        "wherecode.c",
+        4
+      ],
+      [
+        "treeview.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SubProgram",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeaux.c"
+    ],
+    "top_files": [
+      [
+        "vdbeaux.c",
+        10
+      ],
+      [
+        "vdbe.h",
+        7
+      ],
+      [
+        "vdbe.c",
+        6
+      ],
+      [
+        "trigger.c",
+        3
+      ],
+      [
+        "vdbeInt.h",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Subquery",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "build.c",
+        7
+      ],
+      [
+        "sqliteInt.h",
+        5
+      ],
+      [
+        "insert.c",
+        3
+      ],
+      [
+        "select.c",
+        2
+      ],
+      [
+        "expr.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SubrtnSig",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbe.h"
+    ],
+    "top_files": [
+      [
+        "vdbe.h",
+        5
+      ],
+      [
+        "vdbeaux.c",
+        3
+      ],
+      [
+        "expr.c",
+        3
+      ],
+      [
+        "wherecode.c",
+        1
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "SubstContext",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        10
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "SumCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        11
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "TabResult",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "table.c"
+    ],
+    "top_files": [
+      [
+        "table.c",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Table",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        105
+      ],
+      [
+        "build.c",
+        74
+      ],
+      [
+        "select.c",
+        47
+      ],
+      [
+        "alter.c",
+        39
+      ],
+      [
+        "vtab.c",
+        28
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "TableLock",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "build.c",
+        5
+      ],
+      [
+        "sqliteInt.h",
+        3
+      ],
+      [
+        "vdbe.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Token",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "build.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        83
+      ],
+      [
+        "build.c",
+        41
+      ],
+      [
+        "parse.y",
+        21
+      ],
+      [
+        "alter.c",
+        15
+      ],
+      [
+        "expr.c",
+        8
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "TreeView",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "treeview.c"
+    ],
+    "top_files": [
+      [
+        "treeview.c",
+        26
+      ],
+      [
+        "sqliteInt.h",
+        19
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "TrigEvent",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Trigger",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "trigger.c"
+    ],
+    "top_files": [
+      [
+        "trigger.c",
+        40
+      ],
+      [
+        "sqliteInt.h",
+        32
+      ],
+      [
+        "fkey.c",
+        13
+      ],
+      [
+        "treeview.c",
+        7
+      ],
+      [
+        "delete.c",
+        3
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "TriggerPrg",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "trigger.c"
+    ],
+    "top_files": [
+      [
+        "trigger.c",
+        13
+      ],
+      [
+        "sqliteInt.h",
+        10
+      ],
+      [
+        "prepare.c",
+        2
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "TriggerStep",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "trigger.c"
+    ],
+    "top_files": [
+      [
+        "trigger.c",
+        22
+      ],
+      [
+        "sqliteInt.h",
+        19
+      ],
+      [
+        "fkey.c",
+        4
+      ],
+      [
+        "treeview.c",
+        4
+      ],
+      [
+        "alter.c",
+        4
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "UnixUnusedFd",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        17
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "UnpackedRecord",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeaux.c"
+    ],
+    "top_files": [
+      [
+        "vdbeaux.c",
+        21
+      ],
+      [
+        "vdbemem.c",
+        14
+      ],
+      [
+        "vdbesort.c",
+        7
+      ],
+      [
+        "vdbe.c",
+        7
+      ],
+      [
+        "vdbe.h",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Upsert",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "upsert.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        33
+      ],
+      [
+        "upsert.c",
+        21
+      ],
+      [
+        "insert.c",
+        5
+      ],
+      [
+        "treeview.c",
+        5
+      ],
+      [
+        "alter.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "util.c"
+    ],
+    "top_files": [
+      [
+        "util.c",
+        18
+      ],
+      [
+        "sqliteInt.h",
+        8
+      ],
+      [
+        "vdbeInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VTable",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "vtab.c"
+    ],
+    "top_files": [
+      [
+        "vtab.c",
+        33
+      ],
+      [
+        "sqliteInt.h",
+        18
+      ],
+      [
+        "vdbeaux.c",
+        2
+      ],
+      [
+        "vdbe.c",
+        1
+      ],
+      [
+        "insert.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "ValueList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbe.c"
+    ],
+    "top_files": [
+      [
+        "vdbe.c",
+        6
+      ],
+      [
+        "vdbeapi.c",
+        6
+      ],
+      [
+        "vdbeInt.h",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "ValueNewStat4Ctx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbemem.c"
+    ],
+    "top_files": [
+      [
+        "vdbemem.c",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Vdbe",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeaux.c"
+    ],
+    "top_files": [
+      [
+        "vdbeaux.c",
+        149
+      ],
+      [
+        "vdbeapi.c",
+        76
+      ],
+      [
+        "vdbe.h",
+        71
+      ],
+      [
+        "vdbeInt.h",
+        44
+      ],
+      [
+        "expr.c",
+        23
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VdbeCursor",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbe.c"
+    ],
+    "top_files": [
+      [
+        "vdbe.c",
+        64
+      ],
+      [
+        "vdbeInt.h",
+        30
+      ],
+      [
+        "vdbeaux.c",
+        15
+      ],
+      [
+        "vdbesort.c",
+        8
+      ],
+      [
+        "build.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VdbeFrame",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeInt.h"
+    ],
+    "top_files": [
+      [
+        "vdbeInt.h",
+        16
+      ],
+      [
+        "vdbeaux.c",
+        12
+      ],
+      [
+        "vdbe.c",
+        9
+      ],
+      [
+        "vdbeapi.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VdbeOp",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeaux.c"
+    ],
+    "top_files": [
+      [
+        "vdbeaux.c",
+        23
+      ],
+      [
+        "vdbe.h",
+        12
+      ],
+      [
+        "pragma.c",
+        6
+      ],
+      [
+        "insert.c",
+        6
+      ],
+      [
+        "expr.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VdbeOpList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "pragma.c"
+    ],
+    "top_files": [
+      [
+        "pragma.c",
+        5
+      ],
+      [
+        "vdbe.h",
+        4
+      ],
+      [
+        "insert.c",
+        2
+      ],
+      [
+        "vdbeaux.c",
+        1
+      ],
+      [
+        "vdbeblob.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VdbeSorter",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbesort.c"
+    ],
+    "top_files": [
+      [
+        "vdbesort.c",
+        35
+      ],
+      [
+        "vdbeInt.h",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VdbeTxtBlbCache",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeInt.h"
+    ],
+    "top_files": [
+      [
+        "vdbeInt.h",
+        4
+      ],
+      [
+        "vdbe.c",
+        2
+      ],
+      [
+        "vdbeaux.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "VtabCtx",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "vtab.c"
+    ],
+    "top_files": [
+      [
+        "vtab.c",
+        6
+      ],
+      [
+        "sqliteInt.h",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Wal",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "wal.c"
+    ],
+    "top_files": [
+      [
+        "wal.c",
+        105
+      ],
+      [
+        "wal.h",
+        30
+      ],
+      [
+        "pager.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WalCkptInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "wal.c"
+    ],
+    "top_files": [
+      [
+        "wal.c",
+        20
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WalHashLoc",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "wal.c"
+    ],
+    "top_files": [
+      [
+        "wal.c",
+        10
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WalIndexHdr",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "wal.c"
+    ],
+    "top_files": [
+      [
+        "wal.c",
+        54
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WalIterator",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "wal.c"
+    ],
+    "top_files": [
+      [
+        "wal.c",
+        14
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WalWriter",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "wal.c"
+    ],
+    "top_files": [
+      [
+        "wal.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "Walker",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "expr.c"
+    ],
+    "top_files": [
+      [
+        "expr.c",
+        36
+      ],
+      [
+        "select.c",
+        30
+      ],
+      [
+        "alter.c",
+        27
+      ],
+      [
+        "sqliteInt.h",
+        23
+      ],
+      [
+        "walker.c",
+        17
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereAndInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "whereInt.h"
+    ],
+    "top_files": [
+      [
+        "whereInt.h",
+        4
+      ],
+      [
+        "whereexpr.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WhereClause",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        28
+      ],
+      [
+        "whereInt.h",
+        27
+      ],
+      [
+        "whereexpr.c",
+        26
+      ],
+      [
+        "wherecode.c",
+        5
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereConst",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "select.c",
+        9
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        46
+      ],
+      [
+        "sqliteInt.h",
+        16
+      ],
+      [
+        "whereInt.h",
+        15
+      ],
+      [
+        "wherecode.c",
+        8
+      ],
+      [
+        "whereexpr.c",
+        3
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereLevel",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "wherecode.c"
+    ],
+    "top_files": [
+      [
+        "wherecode.c",
+        15
+      ],
+      [
+        "whereInt.h",
+        13
+      ],
+      [
+        "where.c",
+        10
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereLoop",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        126
+      ],
+      [
+        "whereInt.h",
+        34
+      ],
+      [
+        "wherecode.c",
+        16
+      ],
+      [
+        "sqliteInt.h",
+        2
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereLoopBuilder",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        14
+      ],
+      [
+        "whereInt.h",
+        4
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereMaskSet",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "whereInt.h"
+    ],
+    "top_files": [
+      [
+        "whereInt.h",
+        12
+      ],
+      [
+        "whereexpr.c",
+        6
+      ],
+      [
+        "where.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WhereMemBlock",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "whereInt.h"
+    ],
+    "top_files": [
+      [
+        "whereInt.h",
+        5
+      ],
+      [
+        "where.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WhereOrCost",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "whereInt.h"
+    ],
+    "top_files": [
+      [
+        "whereInt.h",
+        4
+      ],
+      [
+        "where.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WhereOrInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "whereInt.h"
+    ],
+    "top_files": [
+      [
+        "whereInt.h",
+        4
+      ],
+      [
+        "whereexpr.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WhereOrSet",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        7
+      ],
+      [
+        "whereInt.h",
+        6
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WherePath",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        11
+      ],
+      [
+        "whereInt.h",
+        7
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereRightJoin",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "whereInt.h"
+    ],
+    "top_files": [
+      [
+        "whereInt.h",
+        4
+      ],
+      [
+        "wherecode.c",
+        3
+      ],
+      [
+        "where.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WhereScan",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        7
+      ],
+      [
+        "whereInt.h",
+        4
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "WhereTerm",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        50
+      ],
+      [
+        "whereexpr.c",
+        34
+      ],
+      [
+        "whereInt.h",
+        28
+      ],
+      [
+        "wherecode.c",
+        18
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "Window",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        79
+      ],
+      [
+        "sqliteInt.h",
+        39
+      ],
+      [
+        "parse.y",
+        11
+      ],
+      [
+        "treeview.c",
+        9
+      ],
+      [
+        "resolve.c",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WindowCodeArg",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        16
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WindowCsrAndReg",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WindowFunctionNames",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-command-processor",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "WindowRewrite",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "window.c"
+    ],
+    "top_files": [
+      [
+        "window.c",
+        7
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "With",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "select.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        21
+      ],
+      [
+        "select.c",
+        12
+      ],
+      [
+        "build.c",
+        6
+      ],
+      [
+        "os_unix.c",
+        5
+      ],
+      [
+        "treeview.c",
+        5
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "YYMINORTYPE",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-compiler-parser",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "YyAction",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-compiler-parser",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "aXformType_t",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "analysisInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "analyze.c"
+    ],
+    "top_files": [
+      [
+        "analyze.c",
+        6
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "bft",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeInt.h"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        10
+      ],
+      [
+        "vdbeInt.h",
+        7
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "compareInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        12
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "etByte",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "et_info",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "printf.c"
+    ],
+    "top_files": [
+      [
+        "printf.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "finder_type",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "fts5_api",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "fts5_extension_function",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "fts5_tokenizer",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "fts5_tokenizer_v2",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "ht_slot",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "i16",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "i32",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "i64",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "i8",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "long_double_t",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "sqliteInt.h",
+        189
+      ],
+      [
+        "test1.c",
+        139
+      ],
+      [
+        "main.c",
+        123
+      ],
+      [
+        "sqlite3ext.h",
+        94
+      ],
+      [
+        "build.c",
+        70
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3AutoExtList",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "loadext.c"
+    ],
+    "top_files": [
+      [
+        "loadext.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3FaultFuncType",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3LocaltimeType",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-command-processor",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3StatType",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "status.c"
+    ],
+    "top_files": [
+      [
+        "status.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3StatValueType",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-backend-tree",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_api_routines",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "sqlite3ext.h"
+    ],
+    "top_files": [
+      [
+        "test1.c",
+        25
+      ],
+      [
+        "sqlite3ext.h",
+        5
+      ],
+      [
+        "test_autoext.c",
+        3
+      ],
+      [
+        "loadext.c",
+        3
+      ],
+      [
+        "test_func.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_backup",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "backup.c"
+    ],
+    "top_files": [
+      [
+        "backup.c",
+        29
+      ],
+      [
+        "test_backup.c",
+        8
+      ],
+      [
+        "sqlite3ext.h",
+        5
+      ],
+      [
+        "main.c",
+        5
+      ],
+      [
+        "pager.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_blob",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeblob.c"
+    ],
+    "top_files": [
+      [
+        "test_blob.c",
+        10
+      ],
+      [
+        "vdbeblob.c",
+        9
+      ],
+      [
+        "sqlite3ext.h",
+        6
+      ],
+      [
+        "test1.c",
+        3
+      ],
+      [
+        "tclsqlite.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_callback",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "sqlite3ext.h"
+    ],
+    "top_files": [
+      [
+        "sqlite3ext.h",
+        1
+      ],
+      [
+        "legacy.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_context",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        73
+      ],
+      [
+        "sqlite3ext.h",
+        41
+      ],
+      [
+        "json.c",
+        40
+      ],
+      [
+        "vdbeapi.c",
+        35
+      ],
+      [
+        "main.c",
+        27
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_destructor_type",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_file",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        78
+      ],
+      [
+        "test_onefile.c",
+        59
+      ],
+      [
+        "test_vfs.c",
+        49
+      ],
+      [
+        "test_multiplex.c",
+        49
+      ],
+      [
+        "test_quota.c",
+        48
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_filename",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_hard_heap",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_index_info",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "where.c"
+    ],
+    "top_files": [
+      [
+        "where.c",
+        27
+      ],
+      [
+        "test_bestindex.c",
+        7
+      ],
+      [
+        "test8.c",
+        5
+      ],
+      [
+        "sqlite3ext.h",
+        4
+      ],
+      [
+        "test_fs.c",
+        3
+      ]
+    ],
+    "also_code_generator": true
+  },
+  {
+    "symbol": "sqlite3_int64",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_io_methods",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        29
+      ],
+      [
+        "test_vfs.c",
+        5
+      ],
+      [
+        "os_win.c",
+        5
+      ],
+      [
+        "os_kv.c",
+        5
+      ],
+      [
+        "memjournal.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_libversion",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        2
+      ],
+      [
+        "tclsqlite.c",
+        2
+      ],
+      [
+        "main.c",
+        2
+      ],
+      [
+        "sqlite3ext.h",
+        1
+      ],
+      [
+        "loadext.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_libversion_number",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "loadext.c"
+    ],
+    "top_files": [
+      [
+        "test1.c",
+        3
+      ],
+      [
+        "loadext.c",
+        3
+      ],
+      [
+        "main.c",
+        2
+      ],
+      [
+        "sqlite3ext.h",
+        1
+      ],
+      [
+        "test8.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_loadext_entry",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_mem_methods",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "test_malloc.c",
+        6
+      ],
+      [
+        "main.c",
+        5
+      ],
+      [
+        "os_win.c",
+        4
+      ],
+      [
+        "mem5.c",
+        3
+      ],
+      [
+        "sqliteInt.h",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_module",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "vtab.c"
+    ],
+    "top_files": [
+      [
+        "vtab.c",
+        12
+      ],
+      [
+        "vdbe.c",
+        7
+      ],
+      [
+        "test_bestindex.c",
+        3
+      ],
+      [
+        "test_fs.c",
+        3
+      ],
+      [
+        "sqlite3ext.h",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_mutex",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "mutex.c"
+    ],
+    "top_files": [
+      [
+        "test_mutex.c",
+        19
+      ],
+      [
+        "mutex.c",
+        18
+      ],
+      [
+        "mutex_noop.c",
+        14
+      ],
+      [
+        "mutex_unix.c",
+        13
+      ],
+      [
+        "mutex_w32.c",
+        11
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_mutex_methods",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "mutex_noop.c"
+    ],
+    "top_files": [
+      [
+        "mutex_noop.c",
+        5
+      ],
+      [
+        "mutex.c",
+        5
+      ],
+      [
+        "test_mutex.c",
+        3
+      ],
+      [
+        "sqliteInt.h",
+        3
+      ],
+      [
+        "test_init.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_pcache",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache1.c"
+    ],
+    "top_files": [
+      [
+        "pcache1.c",
+        28
+      ],
+      [
+        "test_pcache.c",
+        9
+      ],
+      [
+        "test_init.c",
+        8
+      ],
+      [
+        "pcache.c",
+        2
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_pcache_methods",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "main.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_pcache_methods2",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "main.c",
+        4
+      ],
+      [
+        "test_init.c",
+        2
+      ],
+      [
+        "test_pcache.c",
+        2
+      ],
+      [
+        "pcache1.c",
+        1
+      ],
+      [
+        "sqliteInt.h",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_pcache_page",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "pcache.c"
+    ],
+    "top_files": [
+      [
+        "pcache.c",
+        12
+      ],
+      [
+        "pcache1.c",
+        9
+      ],
+      [
+        "pcache.h",
+        4
+      ],
+      [
+        "test_pcache.c",
+        4
+      ],
+      [
+        "test_init.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_rtree_dbl",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_rtree_geometry",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_rtree_query_info",
+    "has_c": true,
+    "has_h": true,
+    "decision": "skip-extension",
+    "lib": null,
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_snapshot",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-pager",
+    "origin_files": [
+      "wal.c"
+    ],
+    "top_files": [
+      [
+        "test1.c",
+        16
+      ],
+      [
+        "wal.c",
+        6
+      ],
+      [
+        "main.c",
+        4
+      ],
+      [
+        "pager.c",
+        3
+      ],
+      [
+        "pager.h",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_soft_heap",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-core-interface",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_sourceid",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "main.c",
+        3
+      ],
+      [
+        "func.c",
+        2
+      ],
+      [
+        "sqlite3ext.h",
+        1
+      ],
+      [
+        "tclsqlite.c",
+        1
+      ],
+      [
+        "loadext.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_stmt",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-virtual-machine",
+    "origin_files": [
+      "vdbeapi.c"
+    ],
+    "top_files": [
+      [
+        "vdbeapi.c",
+        70
+      ],
+      [
+        "test1.c",
+        67
+      ],
+      [
+        "sqlite3ext.h",
+        64
+      ],
+      [
+        "prepare.c",
+        16
+      ],
+      [
+        "tclsqlite.c",
+        14
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_str",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-utils",
+    "origin_files": [
+      "printf.c"
+    ],
+    "top_files": [
+      [
+        "printf.c",
+        17
+      ],
+      [
+        "sqlite3ext.h",
+        13
+      ],
+      [
+        "json.c",
+        4
+      ],
+      [
+        "os_unix.c",
+        4
+      ],
+      [
+        "func.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_syscall_ptr",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        49
+      ],
+      [
+        "test_syscall.c",
+        23
+      ],
+      [
+        "os_win.c",
+        5
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_uint64",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_value",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "func.c"
+    ],
+    "top_files": [
+      [
+        "func.c",
+        63
+      ],
+      [
+        "vdbeapi.c",
+        45
+      ],
+      [
+        "sqlite3ext.h",
+        36
+      ],
+      [
+        "vdbemem.c",
+        34
+      ],
+      [
+        "test1.c",
+        32
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_version",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "main.c"
+    ],
+    "top_files": [
+      [
+        "main.c",
+        4
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_vfs",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "test_osinst.c",
+        41
+      ],
+      [
+        "test6.c",
+        39
+      ],
+      [
+        "test_vfs.c",
+        35
+      ],
+      [
+        "test_onefile.c",
+        34
+      ],
+      [
+        "os_unix.c",
+        32
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_vtab",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-interface",
+    "origin_files": [
+      "vtab.c"
+    ],
+    "top_files": [
+      [
+        "test8.c",
+        25
+      ],
+      [
+        "vtab.c",
+        16
+      ],
+      [
+        "test_fs.c",
+        15
+      ],
+      [
+        "vdbe.c",
+        13
+      ],
+      [
+        "dbpage.c",
+        10
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_vtab_cursor",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-tree",
+    "origin_files": [
+      "dbstat.c"
+    ],
+    "top_files": [
+      [
+        "test_fs.c",
+        24
+      ],
+      [
+        "dbstat.c",
+        10
+      ],
+      [
+        "test8.c",
+        9
+      ],
+      [
+        "dbpage.c",
+        9
+      ],
+      [
+        "test_schema.c",
+        9
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite3_xauth",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-core-command-processor",
+    "origin_files": [
+      "alter.c"
+    ],
+    "top_files": [
+      [
+        "alter.c",
+        5
+      ],
+      [
+        "sqliteInt.h",
+        2
+      ],
+      [
+        "build.c",
+        1
+      ],
+      [
+        "vdbe.c",
+        1
+      ],
+      [
+        "prepare.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite_int64",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "sqlite_uint64",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "tRowcnt",
+    "has_c": false,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "u16",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "u32",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "u64",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "u8",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "unixFile",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        194
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "unixFileId",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        3
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "unixInodeInfo",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        41
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "unixShm",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        24
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "unixShmNode",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        30
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "unix_syscall",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        1
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "uptr",
+    "has_c": false,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "void_function",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "vxworksFileId",
+    "has_c": true,
+    "has_h": true,
+    "decision": "matched-by-usage",
+    "lib": "sqlite3-backend-os",
+    "origin_files": [
+      "os_unix.c"
+    ],
+    "top_files": [
+      [
+        "os_unix.c",
+        14
+      ]
+    ],
+    "also_code_generator": false
+  },
+  {
+    "symbol": "yDbMask",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "ynVar",
+    "has_c": true,
+    "has_h": true,
+    "decision": "fallback-primitive",
+    "lib": "sqlite3-utils",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "yyParser",
+    "has_c": true,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-compiler-parser",
+    "also_code_generator": false
+  },
+  {
+    "symbol": "yyStackEntry",
+    "has_c": false,
+    "has_h": true,
+    "decision": "manual-override",
+    "lib": "sqlite3-compiler-parser",
+    "also_code_generator": false
+  }
+]

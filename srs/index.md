@@ -12,17 +12,24 @@ adopted, and how they relate to one another.
 | 2 | [SRS 002 — C to C++ Conversion](002-cpp-conversion.md) | **In progress** (first four dependency leaves, through `sqlite-backend-tree`, complete) | Converts each split library from plain C to namespaced C++17 in dependency-leaf order. |
 | 3 | [SRS 003 — File Organization Based on C++ Namespacing](003-file-organization-based-on-cpp-namespacing.md) | Draft v0.1 — requirements capture, not yet reviewed or approved | Reorganizes a library's already-converted (SRS 002) files one-state-container-per-file across a directory tree mirroring its namespace, and removes remaining preprocessor conditionals, C-linkage artifacts, and free `static` functions. |
 | 4 | [SRS 004 — STL-Based Architecture Conversion](004-stl-based-architecture.md) | Draft v0.1 — requirements capture, not yet reviewed or approved | Rebuilds a library's state containers, once reorganized per SRS 003, on the C++ Standard Library — STL containers, RAII ownership, STL algorithms — in place of SQLite's hand-rolled data structures and manual memory management. |
+| 5 | [SRS 005 — Subsystem Population from `sqlite3-legacy-alternate` & the `sqlite3_state` Umbrella](005-subsystem-population-from-legacy-alternate.md) | Draft v0.1 — implemented and verified against a clean build; not yet formally reviewed | Replaces SRS 001 FR-3's whole-file population of the ten subsystem libraries with one sourced from `sqlite3-legacy-alternate`'s one-symbol-per-file decomposition, and adds `libraries/sqlite3` as a real umbrella linking all ten behind a `sqlite3_state`-renamed public interface. |
 
 ## How the documents relate
 
-Unlike this project's previous SRS set (three independent, additive documents), these
-four form a **strict linear pipeline applied per library**: a library starts as part of
-the original SQLite C source, is populated and dynamically linked per SRS 001, then
+Unlike this project's previous SRS set (three independent, additive documents), SRS
+001–004 form a **strict linear pipeline applied per library**: a library starts as part
+of the original SQLite C source, is populated and dynamically linked per SRS 001, then
 converted to namespaced C++ per SRS 002, then reorganized one-state-container-per-file
 per SRS 003, then rebuilt on the STL per SRS 004. Different libraries may sit at
 different stages of this pipeline at the same time — there is no requirement that the
 whole workspace advance through a stage together — but a given library must finish each
 stage before the next one starts on it.
+
+SRS 005 sits alongside this pipeline rather than inside it: it revisits *how* SRS 001's
+own FR-3 population step is done for the ten subsystem libraries (sourcing them from
+`sqlite3-legacy-alternate`'s finer decomposition instead of whole legacy files) and adds
+the umbrella-linking piece SRS 001 never reached, but does not touch SRS 002–004's later
+pipeline stages or their per-library sequencing.
 
 This SRS set supersedes an earlier one entirely: a prior `srs/001-sqlite-cpp-modularization.md`
 specified a header-only, fully-inlined C++ rewrite done in a single pass; a prior
