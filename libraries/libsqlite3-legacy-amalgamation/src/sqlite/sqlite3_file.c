@@ -12,6 +12,7 @@
 
 #include "sqlite/sqlite3_file.h"
 
+#include "sqlite/SqliteUnixSyscallIndex.h"
 #include "sqlite/FileChunk.h"
 #include "sqlite/FilePoint.h"
 #include "sqlite/MemFS.h"
@@ -208,7 +209,7 @@ int unixCheckReservedLock(sqlite3_file *id, int *pResOut) {
         1
 
         ;
-    if (((int (*)(int, int, ...))aSyscall[7].pCurrent)(pFile->h,
+    if (((int (*)(int, int, ...))aSyscall[SQLITE_SYSCALL_FCNTL].pCurrent)(pFile->h,
 
                                                        5
 
@@ -612,7 +613,7 @@ int dotlockCheckReservedLock(sqlite3_file *id, int *pResOut) {
   if (pFile->eFileLock >= 1) {
     *pResOut = 0;
   } else {
-    *pResOut = ((int (*)(const char *, int))aSyscall[2].pCurrent)((const char *)pFile->lockingContext, 0) == 0;
+    *pResOut = ((int (*)(const char *, int))aSyscall[SQLITE_SYSCALL_ACCESS].pCurrent)((const char *)pFile->lockingContext, 0) == 0;
   };
   return 0;
 }
@@ -634,7 +635,7 @@ int dotlockLock(sqlite3_file *id, int eFileLock) {
     return 0;
   }
 
-  rc = ((int (*)(const char *, mode_t))aSyscall[18].pCurrent)(zLockFile, 0777);
+  rc = ((int (*)(const char *, mode_t))aSyscall[SQLITE_SYSCALL_MKDIR].pCurrent)(zLockFile, 0777);
   if (rc < 0) {
 
     int tErrno =
@@ -677,7 +678,7 @@ int dotlockUnlock(sqlite3_file *id, int eFileLock) {
     return 0;
   }
 
-  rc = ((int (*)(const char *))aSyscall[19].pCurrent)(zLockFile);
+  rc = ((int (*)(const char *))aSyscall[SQLITE_SYSCALL_RMDIR].pCurrent)(zLockFile);
   if (rc < 0) {
     int tErrno =
 
@@ -812,7 +813,7 @@ int unixSync(sqlite3_file *id, int flags) {
     int dirfd;
 
     ;
-    rc = ((int (*)(const char *, int *))aSyscall[17].pCurrent)(pFile->zPath, &dirfd);
+    rc = ((int (*)(const char *, int *))aSyscall[SQLITE_SYSCALL_OPENDIRECTORY].pCurrent)(pFile->zPath, &dirfd);
     if (rc == 0) {
       full_fsync(dirfd, 0, 0);
       robust_close(pFile, dirfd, 44145);
@@ -860,7 +861,7 @@ int unixFileSize(sqlite3_file *id, i64 *pSize) {
   int rc;
   struct stat buf;
 
-  rc = ((int (*)(int, struct stat *))aSyscall[5].pCurrent)(((unixFile *)id)->h, &buf);
+  rc = ((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(((unixFile *)id)->h, &buf);
   ;
   if (rc != 0) {
     storeLastErrno((unixFile *)id,
@@ -883,7 +884,7 @@ int unixFileControl(sqlite3_file *id, int op, void *pArg) {
   switch (op) {
 
   case 43: {
-    ((int (*)(int))aSyscall[1].pCurrent)(pFile->h);
+    ((int (*)(int))aSyscall[SQLITE_SYSCALL_CLOSE].pCurrent)(pFile->h);
     pFile->h = -1;
     return 0;
   }
@@ -1008,7 +1009,7 @@ int unixShmMap(sqlite3_file *fd, int iRegion, int szRegion, int bExtend, void vo
 
     if (pShmNode->hShm >= 0) {
 
-      if (((int (*)(int, struct stat *))aSyscall[5].pCurrent)(pShmNode->hShm, &sStat)) {
+      if (((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(pShmNode->hShm, &sStat)) {
         rc = (10 | (19 << 8));
         goto shmpage_out;
       }
@@ -1049,7 +1050,7 @@ int unixShmMap(sqlite3_file *fd, int iRegion, int szRegion, int bExtend, void vo
       i64 i;
       void *pMem;
       if (pShmNode->hShm >= 0) {
-        pMem = ((void *(*)(void *, size_t, int, int, int, off_t))aSyscall[22].pCurrent)(0, nMap,
+        pMem = ((void *(*)(void *, size_t, int, int, int, off_t))aSyscall[SQLITE_SYSCALL_MMAP].pCurrent)(0, nMap,
                                                                                         pShmNode->isReadonly ?
 
                                                                                                              0x1
@@ -1273,7 +1274,7 @@ int unixShmUnmap(sqlite3_file *fd, int deleteFlag) {
   pShmNode->nRef--;
   if (pShmNode->nRef == 0) {
     if (deleteFlag && pShmNode->hShm >= 0) {
-      ((int (*)(const char *))aSyscall[16].pCurrent)(pShmNode->zFilename);
+      ((int (*)(const char *))aSyscall[SQLITE_SYSCALL_UNLINK].pCurrent)(pShmNode->zFilename);
     }
     unixShmPurge(pDbFd);
   }

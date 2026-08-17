@@ -13,6 +13,7 @@
 
 #include "sqlite/unix_syscall.h"
 
+#include "sqlite/SqliteUnixSyscallIndex.h"
 #include "sqlite/i64.h"
 #include "sqlite/sqlite3.h"
 #include "sqlite/sqlite3_int64.h"
@@ -92,72 +93,36 @@ unix_syscall aSyscall[] = {
 
 };
 
-int robustFchown(int fd, uid_t uid, gid_t gid) { return ((uid_t (*)(void))aSyscall[21].pCurrent)() ? 0 : ((int (*)(int, uid_t, gid_t))aSyscall[20].pCurrent)(fd, uid, gid); }
+int robustFchown(int fd, uid_t uid, gid_t gid) { return ((uid_t (*)(void))aSyscall[SQLITE_SYSCALL_GETEUID].pCurrent)() ? 0 : ((int (*)(int, uid_t, gid_t))aSyscall[SQLITE_SYSCALL_FCHOWN].pCurrent)(fd, uid, gid); }
 
 int robust_open(const char *z, int f, mode_t m) {
   int fd;
   mode_t m2 = m ? m : 0644;
   while (1) {
 
-    fd = ((int (*)(const char *, int, int))aSyscall[0].pCurrent)(z,
-                                                                 f |
-
-                                                                     02000000
-
-                                                                 ,
-                                                                 m2);
+    fd = ((int (*)(const char *, int, int))aSyscall[SQLITE_SYSCALL_OPEN].pCurrent)(z, f | O_CLOEXEC, m2);
 
     if (fd < 0) {
-      if (
-
-          (*__errno_location())
-
-          ==
-
-          4
-
-      )
+      if (errno == EINTR)
         continue;
       break;
     }
     if (fd >= 3)
       break;
-    if ((f & (
-
-                 0200
-
-                 |
-
-                 0100
-
-                 )) ==
-        (
-
-            0200
-
-            |
-
-            0100
-
-            )) {
-      (void)((int (*)(const char *))aSyscall[16].pCurrent)(z);
+    if ((f & (O_EXCL | O_CREAT)) == (O_EXCL | O_CREAT)) {
+      (void)((int (*)(const char *))aSyscall[SQLITE_SYSCALL_UNLINK].pCurrent)(z);
     }
-    ((int (*)(int))aSyscall[1].pCurrent)(fd);
-    sqlite3_log(28, "attempt to open \"%s\" as file descriptor %d", z, fd);
+    ((int (*)(int))aSyscall[SQLITE_SYSCALL_CLOSE].pCurrent)(fd);
+    sqlite3_log(SQLITE_WARNING, "attempt to open \"%s\" as file descriptor %d", z, fd);
     fd = -1;
-    if (((int (*)(const char *, int, int))aSyscall[0].pCurrent)("/dev/null",
-
-                                                                00
-
-                                                                ,
-                                                                m) < 0)
+    if (((int (*)(const char *, int, int))aSyscall[SQLITE_SYSCALL_OPEN].pCurrent)("/dev/null", O_RDONLY, m) < 0)
       break;
   }
   if (fd >= 0) {
     if (m != 0) {
       struct stat statbuf;
-      if (((int (*)(int, struct stat *))aSyscall[5].pCurrent)(fd, &statbuf) == 0 && statbuf.st_size == 0 && (statbuf.st_mode & 0777) != m) {
-        ((int (*)(int, mode_t))aSyscall[14].pCurrent)(fd, m);
+      if (((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(fd, &statbuf) == 0 && statbuf.st_size == 0 && (statbuf.st_mode & 0777) != m) {
+        ((int (*)(int, mode_t))aSyscall[SQLITE_SYSCALL_FCHMOD].pCurrent)(fd, m);
       }
     }
   }
@@ -172,26 +137,14 @@ int robust_ftruncate(int h, sqlite3_int64 sz) {
   int rc;
 
   do {
-    rc = ((int (*)(int, off_t))aSyscall[6].pCurrent)(h, sz);
-  } while (rc < 0 &&
-
-           (*__errno_location())
-
-               ==
-
-               4
-
-  );
+    rc = ((int (*)(int, off_t))aSyscall[SQLITE_SYSCALL_FTRUNCATE].pCurrent)(h, sz);
+  } while (rc < 0 && errno == EINTR);
   return rc;
 }
 
 int unixLogErrorAtLine(int errcode, const char *zFunc, const char *zPath, int iLine) {
   char *zErr;
-  int iErrno =
-
-      (*__errno_location())
-
-      ;
+  int iErrno = errno;
 
   zErr = "";
 
@@ -209,26 +162,11 @@ int seekAndWriteFd(int fd, i64 iOff, const void *pBuf, int nBuf, int *piErrno) {
   ;
 
   do {
-    rc = (int)((ssize_t (*)(int, const void *, size_t, off64_t))aSyscall[13].pCurrent)(fd, pBuf, nBuf, iOff);
-  } while (rc < 0 &&
-
-           (*__errno_location())
-
-               ==
-
-               4
-
-  );
-
-  ;
-  ;
+    rc = (int)((ssize_t (*)(int, const void *, size_t, off64_t))aSyscall[SQLITE_SYSCALL_PWRITE64].pCurrent)(fd, pBuf, nBuf, iOff);
+  } while (rc < 0 && errno == EINTR);
 
   if (rc < 0)
-    *piErrno =
-
-        (*__errno_location())
-
-        ;
+    *piErrno = errno;
   return rc;
 }
 
@@ -261,18 +199,13 @@ static int openDirectory(const char *zFilename, int *pFd) {
       zDirname[0] = '.';
     zDirname[1] = 0;
   }
-  fd = robust_open(zDirname,
-
-                   00
-
-                       | 0,
-                   0);
+  fd = robust_open(zDirname, O_RDONLY, 0);
   if (fd >= 0) {
     ;
   }
   *pFd = fd;
   if (fd >= 0)
-    return 0;
+    return SQLITE_OK;
   return unixLogErrorAtLine(sqlite3CantopenError(44090), "openDirectory", zDirname, 44090);
 }
 
@@ -293,16 +226,11 @@ static const char *unixTempFileDir(void) {
   while (1) {
     if (zDir != 0
 
-        && ((int (*)(const char *, struct stat *))aSyscall[4].pCurrent)(zDir, &buf) == 0 &&
+        && ((int (*)(const char *, struct stat *))aSyscall[SQLITE_SYSCALL_STAT].pCurrent)(zDir, &buf) == 0 &&
 
-        ((((
+        S_ISDIR(buf.st_mode)
 
-              buf.st_mode
-
-              )) &
-          0170000) == (0040000))
-
-        && ((int (*)(const char *, int))aSyscall[2].pCurrent)(zDir, 03) == 0) {
+        && ((int (*)(const char *, int))aSyscall[SQLITE_SYSCALL_ACCESS].pCurrent)(zDir, 03) == 0) {
       return zDir;
     }
     if (i >= sizeof(azTempDirs) / sizeof(azTempDirs[0]))
@@ -320,10 +248,10 @@ int unixGetTempname(int nBuf, char *zBuf) {
   zBuf[0] = 0;
   ;
 
-  sqlite3_mutex_enter(sqlite3MutexAlloc(11));
+  sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
   zDir = unixTempFileDir();
   if (zDir == 0) {
-    rc = (10 | (25 << 8));
+    rc = SQLITE_IOERR_GETTEMPPATH;
   } else {
     do {
       u64 r;
@@ -339,12 +267,12 @@ int unixGetTempname(int nBuf, char *zBuf) {
                        "%llx%c",
                        zDir, r, 0);
       if (zBuf[nBuf - 2] != 0 || (iLimit++) > 10) {
-        rc = 1;
+        rc = SQLITE_ERROR;
         break;
       }
-    } while (((int (*)(const char *, int))aSyscall[2].pCurrent)(zBuf, 0) == 0);
+    } while (((int (*)(const char *, int))aSyscall[SQLITE_SYSCALL_ACCESS].pCurrent)(zBuf, 0) == 0);
   }
-  sqlite3_mutex_leave(sqlite3MutexAlloc(11));
+  sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
   return rc;
 }
 

@@ -11,6 +11,7 @@
 
 #include "sqlite/unixFile.h"
 
+#include "sqlite/SqliteUnixSyscallIndex.h"
 #include "sqlite/Sqlite3Config.h"
 #include "sqlite/UnixUnusedFd.h"
 #include "sqlite/i64.h"
@@ -29,7 +30,7 @@
 #include "sqlite/unixShmNode.h"
 #include "sqlite/unix_syscall.h"
 void robust_close(unixFile *pFile, int h, int lineno) {
-  if (((int (*)(int))aSyscall[1].pCurrent)(h)) {
+  if (((int (*)(int))aSyscall[SQLITE_SYSCALL_CLOSE].pCurrent)(h)) {
     unixLogErrorAtLine((10 | (16 << 8)), "close", pFile ? pFile->zPath : 0, lineno);
   }
 }
@@ -96,7 +97,7 @@ int findInodeInfo(unixFile *pFile, unixInodeInfo **ppInode) {
   unixInodeInfo *pInode = 0;
 
   fd = pFile->h;
-  rc = ((int (*)(int, struct stat *))aSyscall[5].pCurrent)(fd, &statbuf);
+  rc = ((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(fd, &statbuf);
   if (rc != 0) {
     storeLastErrno(pFile,
 
@@ -150,7 +151,7 @@ int findInodeInfo(unixFile *pFile, unixInodeInfo **ppInode) {
 int fileHasMoved(unixFile *pFile) {
 
   struct stat buf;
-  return pFile->pInode != 0 && (((int (*)(const char *, struct stat *))aSyscall[4].pCurrent)(pFile->zPath, &buf) != 0 || (u64)buf.st_ino != pFile->pInode->fileId.ino);
+  return pFile->pInode != 0 && (((int (*)(const char *, struct stat *))aSyscall[SQLITE_SYSCALL_STAT].pCurrent)(pFile->zPath, &buf) != 0 || (u64)buf.st_ino != pFile->pInode->fileId.ino);
 }
 
 void verifyDbFile(unixFile *pFile) {
@@ -160,7 +161,7 @@ void verifyDbFile(unixFile *pFile) {
   if (pFile->ctrlFlags & 0x80)
     return;
 
-  rc = ((int (*)(int, struct stat *))aSyscall[5].pCurrent)(pFile->h, &buf);
+  rc = ((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(pFile->h, &buf);
   if (rc != 0) {
     sqlite3_log(28, "cannot fstat db file %s", pFile->zPath);
     return;
@@ -199,7 +200,7 @@ int unixFileLock(unixFile *pFile, struct flock *pLock) {
           1
 
           ;
-      rc = ((int (*)(int, int, ...))aSyscall[7].pCurrent)(pFile->h,
+      rc = ((int (*)(int, int, ...))aSyscall[SQLITE_SYSCALL_FCNTL].pCurrent)(pFile->h,
 
                                                           6
 
@@ -214,7 +215,7 @@ int unixFileLock(unixFile *pFile, struct flock *pLock) {
     }
   } else {
 
-    rc = ((int (*)(int, int, ...))aSyscall[7].pCurrent)(pFile->h,
+    rc = ((int (*)(int, int, ...))aSyscall[SQLITE_SYSCALL_FCNTL].pCurrent)(pFile->h,
 
                                                         6
 
@@ -242,7 +243,7 @@ int seekAndRead(unixFile *id, sqlite3_int64 offset, void *pBuf, int cnt) {
 
   do {
 
-    got = ((ssize_t (*)(int, void *, size_t, off64_t))aSyscall[10].pCurrent)(id->h, pBuf, cnt, offset);
+    got = ((ssize_t (*)(int, void *, size_t, off64_t))aSyscall[SQLITE_SYSCALL_PREAD64].pCurrent)(id->h, pBuf, cnt, offset);
     ;
 
     if (got == cnt)
@@ -287,7 +288,7 @@ int fcntlSizeHint(unixFile *pFile, i64 nByte) {
     i64 nSize;
     struct stat buf;
 
-    if (((int (*)(int, struct stat *))aSyscall[5].pCurrent)(pFile->h, &buf)) {
+    if (((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(pFile->h, &buf)) {
       return (10 | (7 << 8));
     }
 
@@ -382,7 +383,7 @@ int unixFcntlExternalReader(unixFile *pFile, int *piOut) {
     f.l_len = 8 - 3;
 
     sqlite3_mutex_enter(pShmNode->pShmMutex);
-    if (((int (*)(int, int, ...))aSyscall[7].pCurrent)(pShmNode->hShm,
+    if (((int (*)(int, int, ...))aSyscall[SQLITE_SYSCALL_FCNTL].pCurrent)(pShmNode->hShm,
 
                                                        5
 
@@ -424,7 +425,7 @@ int unixIsSharingShmNode(unixFile *pFile) {
       1
 
       ;
-  ((int (*)(int, int, ...))aSyscall[7].pCurrent)(pShmNode->hShm,
+  ((int (*)(int, int, ...))aSyscall[SQLITE_SYSCALL_FCNTL].pCurrent)(pShmNode->hShm,
 
                                                  5
 
@@ -475,7 +476,7 @@ int unixShmSystemLock(unixFile *pFile, int lockType, int ofst, int n) {
         ;
     f.l_start = ofst;
     f.l_len = n;
-    res = ((int (*)(int, int, ...))aSyscall[7].pCurrent)(pShmNode->hShm,
+    res = ((int (*)(int, int, ...))aSyscall[SQLITE_SYSCALL_FCNTL].pCurrent)(pShmNode->hShm,
 
                                                          6
 
@@ -504,7 +505,7 @@ void unixShmPurge(unixFile *pFd) {
 
     for (i = 0; i < p->nRegion; i += nShmPerMap) {
       if (p->hShm >= 0) {
-        ((int (*)(void *, size_t))aSyscall[23].pCurrent)(p->apRegion[i], p->szRegion);
+        ((int (*)(void *, size_t))aSyscall[SQLITE_SYSCALL_MUNMAP].pCurrent)(p->apRegion[i], p->szRegion);
       } else {
         sqlite3_free(p->apRegion[i]);
       }
@@ -535,7 +536,7 @@ int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode) {
       1
 
       ;
-  if (((int (*)(int, int, ...))aSyscall[7].pCurrent)(pShmNode->hShm,
+  if (((int (*)(int, int, ...))aSyscall[SQLITE_SYSCALL_FCNTL].pCurrent)(pShmNode->hShm,
 
                                                      5
 
@@ -607,7 +608,7 @@ int unixOpenSharedMemory(unixFile *pDbFd) {
 
     const char *zBasePath = pDbFd->zPath;
 
-    if (((int (*)(int, struct stat *))aSyscall[5].pCurrent)(pDbFd->h, &sStat)) {
+    if (((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(pDbFd->h, &sStat)) {
       rc = (10 | (7 << 8));
       goto shm_open_err;
     }
@@ -701,7 +702,7 @@ shm_open_err:
 void unixUnmapfile(unixFile *pFd) {
 
   if (pFd->pMapRegion) {
-    ((int (*)(void *, size_t))aSyscall[23].pCurrent)(pFd->pMapRegion, pFd->mmapSizeActual);
+    ((int (*)(void *, size_t))aSyscall[SQLITE_SYSCALL_MUNMAP].pCurrent)(pFd->pMapRegion, pFd->mmapSizeActual);
     pFd->pMapRegion = 0;
     pFd->mmapSize = 0;
     pFd->mmapSizeActual = 0;
@@ -727,10 +728,10 @@ void unixRemapfile(unixFile *pFd, i64 nNew) {
     u8 *pReq = &pOrig[nReuse];
 
     if (nReuse != nOrig) {
-      ((int (*)(void *, size_t))aSyscall[23].pCurrent)(pReq, nOrig - nReuse);
+      ((int (*)(void *, size_t))aSyscall[SQLITE_SYSCALL_MUNMAP].pCurrent)(pReq, nOrig - nReuse);
     }
 
-    pNew = ((void *(*)(void *, size_t, size_t, int, ...))aSyscall[24].pCurrent)(pOrig, nReuse, nNew,
+    pNew = ((void *(*)(void *, size_t, size_t, int, ...))aSyscall[SQLITE_SYSCALL_MREMAP].pCurrent)(pOrig, nReuse, nNew,
 
                                                                                 1
 
@@ -742,12 +743,12 @@ void unixRemapfile(unixFile *pFd, i64 nNew) {
             ((void *)-1)
 
         || pNew == 0) {
-      ((int (*)(void *, size_t))aSyscall[23].pCurrent)(pOrig, nReuse);
+      ((int (*)(void *, size_t))aSyscall[SQLITE_SYSCALL_MUNMAP].pCurrent)(pOrig, nReuse);
     }
   }
 
   if (pNew == 0) {
-    pNew = ((void *(*)(void *, size_t, int, int, int, off_t))aSyscall[22].pCurrent)(0, nNew, flags,
+    pNew = ((void *(*)(void *, size_t, int, int, int, off_t))aSyscall[SQLITE_SYSCALL_MMAP].pCurrent)(0, nNew, flags,
 
                                                                                     0x01
 
@@ -777,7 +778,7 @@ int unixMapfile(unixFile *pFd, i64 nMap) {
 
   if (nMap < 0) {
     struct stat statbuf;
-    if (((int (*)(int, struct stat *))aSyscall[5].pCurrent)(pFd->h, &statbuf)) {
+    if (((int (*)(int, struct stat *))aSyscall[SQLITE_SYSCALL_FSTAT].pCurrent)(pFd->h, &statbuf)) {
       return (10 | (7 << 8));
     }
     nMap = statbuf.st_size;

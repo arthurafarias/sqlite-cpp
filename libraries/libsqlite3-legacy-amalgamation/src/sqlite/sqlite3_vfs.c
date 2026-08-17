@@ -14,6 +14,7 @@
 
 #include "sqlite/sqlite3_vfs.h"
 
+#include "sqlite/SqliteUnixSyscallIndex.h"
 #include "sqlite/BtCursor.h"
 #include "sqlite/BtLock.h"
 #include "sqlite/BtShared.h"
@@ -69,7 +70,7 @@ static UnixUnusedFd *findReusableFd(const char *zPath, int flags) {
 
   unixEnterMutex();
 
-  if (inodeList != 0 && 0 == ((int (*)(const char *, struct stat *))aSyscall[4].pCurrent)(zPath, &sStat)) {
+  if (inodeList != 0 && 0 == ((int (*)(const char *, struct stat *))aSyscall[SQLITE_SYSCALL_STAT].pCurrent)(zPath, &sStat)) {
     unixInodeInfo *pInode;
 
     pInode = inodeList;
@@ -101,7 +102,7 @@ static UnixUnusedFd *findReusableFd(const char *zPath, int flags) {
 static int getFileMode(const char *zFile, mode_t *pMode, uid_t *pUid, gid_t *pGid) {
   struct stat sStat;
   int rc = 0;
-  if (0 == ((int (*)(const char *, struct stat *))aSyscall[4].pCurrent)(zFile, &sStat)) {
+  if (0 == ((int (*)(const char *, struct stat *))aSyscall[SQLITE_SYSCALL_STAT].pCurrent)(zFile, &sStat)) {
     *pMode = sStat.st_mode & 0777;
     *pUid = sStat.st_uid;
     *pGid = sStat.st_gid;
@@ -311,14 +312,14 @@ int unixSetSystemCall(sqlite3_vfs *pNotUsed, const char *zName, sqlite3_syscall_
   if (zName == 0) {
 
     rc = 0;
-    for (i = 0; i < sizeof(aSyscall) / sizeof(aSyscall[0]); i++) {
+    for (i = 0; i < sizeof(aSyscall) / sizeof(aSyscall[SQLITE_SYSCALL_OPEN]); i++) {
       if (aSyscall[i].pDefault) {
         aSyscall[i].pCurrent = aSyscall[i].pDefault;
       }
     }
   } else {
 
-    for (i = 0; i < sizeof(aSyscall) / sizeof(aSyscall[0]); i++) {
+    for (i = 0; i < sizeof(aSyscall) / sizeof(aSyscall[SQLITE_SYSCALL_OPEN]); i++) {
       if (strcmp(zName, aSyscall[i].zName) == 0) {
         if (aSyscall[i].pDefault == 0) {
           aSyscall[i].pDefault = aSyscall[i].pCurrent;
@@ -338,7 +339,7 @@ sqlite3_syscall_ptr unixGetSystemCall(sqlite3_vfs *pNotUsed, const char *zName) 
   unsigned int i;
 
   (void)(pNotUsed);
-  for (i = 0; i < sizeof(aSyscall) / sizeof(aSyscall[0]); i++) {
+  for (i = 0; i < sizeof(aSyscall) / sizeof(aSyscall[SQLITE_SYSCALL_OPEN]); i++) {
     if (strcmp(zName, aSyscall[i].zName) == 0)
       return aSyscall[i].pCurrent;
   }
@@ -350,12 +351,12 @@ const char *unixNextSystemCall(sqlite3_vfs *p, const char *zName) {
 
   (void)(p);
   if (zName) {
-    for (i = 0; i < ((int)(sizeof(aSyscall) / sizeof(aSyscall[0]))) - 1; i++) {
+    for (i = 0; i < ((int)(sizeof(aSyscall) / sizeof(aSyscall[SQLITE_SYSCALL_OPEN]))) - 1; i++) {
       if (strcmp(zName, aSyscall[i].zName) == 0)
         break;
     }
   }
-  for (i++; i < ((int)(sizeof(aSyscall) / sizeof(aSyscall[0]))); i++) {
+  for (i++; i < ((int)(sizeof(aSyscall) / sizeof(aSyscall[SQLITE_SYSCALL_OPEN]))); i++) {
     if (aSyscall[i].pCurrent != 0)
       return aSyscall[i].zName;
   }
@@ -563,7 +564,7 @@ int unixOpen(sqlite3_vfs *pVfs, const char *zPath, sqlite3_file *pFile, int flag
 
               13
 
-          && ((int (*)(const char *, int))aSyscall[2].pCurrent)(zName,
+          && ((int (*)(const char *, int))aSyscall[SQLITE_SYSCALL_ACCESS].pCurrent)(zName,
 
                                                                 0
 
@@ -630,7 +631,7 @@ int unixOpen(sqlite3_vfs *pVfs, const char *zPath, sqlite3_file *pFile, int flag
 
   if (isDelete) {
 
-    ((int (*)(const char *))aSyscall[16].pCurrent)(zName);
+    ((int (*)(const char *))aSyscall[SQLITE_SYSCALL_UNLINK].pCurrent)(zName);
   }
 
   if (isDelete)
@@ -658,7 +659,7 @@ int unixDelete(sqlite3_vfs *NotUsed, const char *zPath, int dirSync) {
   int rc = 0;
   (void)(NotUsed);
   ;
-  if (((int (*)(const char *))aSyscall[16].pCurrent)(zPath) == (-1)) {
+  if (((int (*)(const char *))aSyscall[SQLITE_SYSCALL_UNLINK].pCurrent)(zPath) == (-1)) {
     if (
 
         (*__errno_location())
@@ -677,7 +678,7 @@ int unixDelete(sqlite3_vfs *NotUsed, const char *zPath, int dirSync) {
 
   if ((dirSync & 1) != 0) {
     int fd;
-    rc = ((int (*)(const char *, int *))aSyscall[17].pCurrent)(zPath, &fd);
+    rc = ((int (*)(const char *, int *))aSyscall[SQLITE_SYSCALL_OPENDIRECTORY].pCurrent)(zPath, &fd);
     if (rc == 0) {
       if (full_fsync(fd, 0, 0)) {
         rc = unixLogErrorAtLine((10 | (5 << 8)), "fsync", zPath, 47056);
@@ -701,7 +702,7 @@ int unixAccess(sqlite3_vfs *NotUsed, const char *zPath, int flags, int *pResOut)
 
   if (flags == 0) {
     struct stat buf;
-    *pResOut = 0 == ((int (*)(const char *, struct stat *))aSyscall[4].pCurrent)(zPath, &buf) && (!
+    *pResOut = 0 == ((int (*)(const char *, struct stat *))aSyscall[SQLITE_SYSCALL_STAT].pCurrent)(zPath, &buf) && (!
 
                                                                                                   ((((
 
@@ -712,7 +713,7 @@ int unixAccess(sqlite3_vfs *NotUsed, const char *zPath, int flags, int *pResOut)
 
                                                                                                   || buf.st_size > 0);
   } else {
-    *pResOut = ((int (*)(const char *, int))aSyscall[2].pCurrent)(zPath,
+    *pResOut = ((int (*)(const char *, int))aSyscall[SQLITE_SYSCALL_ACCESS].pCurrent)(zPath,
 
                                                                   2
 
@@ -739,7 +740,7 @@ int unixFullPathname(sqlite3_vfs *pVfs, const char *zPath, int nOut, char *zOut)
         4096
 
         + 2];
-    if (((char *(*)(char *, size_t))aSyscall[3].pCurrent)(zPwd, sizeof(zPwd) - 2) == 0) {
+    if (((char *(*)(char *, size_t))aSyscall[SQLITE_SYSCALL_GETCWD].pCurrent)(zPwd, sizeof(zPwd) - 2) == 0) {
       return unixLogErrorAtLine(sqlite3CantopenError(47221), "getcwd", zPath, 47221);
     }
     appendAllPathElements(&path, zPwd);
@@ -816,7 +817,7 @@ int unixRandomness(sqlite3_vfs *NotUsed, int nBuf, char *zBuf) {
       nBuf = sizeof(t) + sizeof(randomnessPid);
     } else {
       do {
-        got = ((ssize_t (*)(int, void *, size_t))aSyscall[8].pCurrent)(fd, zBuf, nBuf);
+        got = ((ssize_t (*)(int, void *, size_t))aSyscall[SQLITE_SYSCALL_READ].pCurrent)(fd, zBuf, nBuf);
       } while (got < 0 &&
 
                (*__errno_location())

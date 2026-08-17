@@ -9,6 +9,7 @@
 
 #include "sqlite/DbPath.h"
 
+#include "sqlite/SqliteUnixSyscallIndex.h"
 #include "sqlite/sqlite3.h"
 #include "sqlite/sqlite3_syscall_ptr.h"
 #include "sqlite/unix_syscall.h"
@@ -42,7 +43,7 @@ void appendOnePathElement(DbPath *pPath, const char *zName, int nName) {
     struct stat buf;
     pPath->zOut[pPath->nUsed] = 0;
     zIn = pPath->zOut;
-    if (((int (*)(const char *, struct stat *))aSyscall[27].pCurrent)(zIn, &buf) != 0) {
+    if (((int (*)(const char *, struct stat *))aSyscall[SQLITE_SYSCALL_LSTAT].pCurrent)(zIn, &buf) != 0) {
       if (
 
           (*__errno_location())
@@ -74,7 +75,7 @@ void appendOnePathElement(DbPath *pPath, const char *zName, int nName) {
         pPath->rc = sqlite3CantopenError(47158);
         return;
       }
-      got = ((ssize_t (*)(const char *, char *, size_t))aSyscall[26].pCurrent)(zIn, zLnk, sizeof(zLnk) - 2);
+      got = ((ssize_t (*)(const char *, char *, size_t))aSyscall[SQLITE_SYSCALL_READLINK].pCurrent)(zIn, zLnk, sizeof(zLnk) - 2);
       if (got <= 0 || got >= (ssize_t)sizeof(zLnk) - 2) {
         pPath->rc = unixLogErrorAtLine(sqlite3CantopenError(47163), "readlink", zIn, 47163);
         return;
