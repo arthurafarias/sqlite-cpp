@@ -1,5 +1,10 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/RowSetEntry.h"
+
+#include "sqlite/i64.h"
 struct RowSetEntry *rowSetEntryMerge(struct RowSetEntry *pA, struct RowSetEntry *pB) {
   struct RowSetEntry head;
   struct RowSetEntry *pTail;

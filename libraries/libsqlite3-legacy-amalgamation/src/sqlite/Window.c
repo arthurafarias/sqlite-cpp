@@ -1,5 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/Window.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FuncDef.h"
+#include "sqlite/WindowFunctionNames.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/u32.h"
 static const char last_valueName[] = "last_value";
 
 

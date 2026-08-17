@@ -1,4 +1,41 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/yyParser.h"
+
+#include "sqlite/Cte.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FrameBound.h"
+#include "sqlite/IdList.h"
+#include "sqlite/Index.h"
+#include "sqlite/OnOrUsing.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Select.h"
+#include "sqlite/SelectDest.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Token.h"
+#include "sqlite/TrigEvent.h"
+#include "sqlite/TriggerStep.h"
+#include "sqlite/Upsert.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/Window.h"
+#include "sqlite/With.h"
+#include "sqlite/YYMINORTYPE.h"
+#include "sqlite/YyAction.h"
+#include "sqlite/bft.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/yyStackEntry.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static void *parserStackRealloc(void *pOld, sqlite3_uint64 newSize, Parse *pParse);
+static unsigned short int yy_find_reduce_action(unsigned short int stateno, unsigned short int iLookAhead);
 
 static void *parserStackRealloc(void *pOld, sqlite3_uint64 newSize, Parse *pParse) {
   void *p = sqlite3FaultSim(700) ? 0 : sqlite3_realloc(pOld, newSize);

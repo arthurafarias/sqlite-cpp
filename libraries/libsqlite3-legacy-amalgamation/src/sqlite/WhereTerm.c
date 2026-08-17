@@ -1,5 +1,17 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WhereTerm.h"
+
+#include "sqlite/Column.h"
+#include "sqlite/Expr.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/Table.h"
+#include "sqlite/WhereAndInfo.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N) {
   if (pTerm->eOperator != 0x0400) {
     return N == 0 ? pTerm : 0;

@@ -1,5 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/RowSet.h"
+
+#include "sqlite/RowSetChunk.h"
+#include "sqlite/RowSetEntry.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u64.h"
 void sqlite3RowSetClear(void *pArg) {
   RowSet *p = (RowSet *)pArg;
   struct RowSetChunk *pChunk, *pNextChunk;

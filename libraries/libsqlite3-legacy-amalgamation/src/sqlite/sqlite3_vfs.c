@@ -1,6 +1,66 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
-static pid_t randomnessPid = 0;
+#include <dlfcn.h>
+#include <errno.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+
+#include "sqlite/sqlite3_vfs.h"
+
+#include "sqlite/BtCursor.h"
+#include "sqlite/BtLock.h"
+#include "sqlite/BtShared.h"
+#include "sqlite/Btree.h"
+#include "sqlite/Db.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/DbPath.h"
+#include "sqlite/FileChunk.h"
+#include "sqlite/MemFS.h"
+#include "sqlite/MemFile.h"
+#include "sqlite/MemJournal.h"
+#include "sqlite/MemPage.h"
+#include "sqlite/MemStore.h"
+#include "sqlite/PCache.h"
+#include "sqlite/Pager.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/UnixUnusedFd.h"
+#include "sqlite/Wal.h"
+#include "sqlite/finder_type.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_filename.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_io_methods.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_syscall_ptr.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/unixFile.h"
+#include "sqlite/unixFileId.h"
+#include "sqlite/unixInodeInfo.h"
+#include "sqlite/unix_syscall.h"
+#include "sqlite/uptr.h"
+
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int findCreateFileMode(const char *zPath, int flags, mode_t *pMode, uid_t *pUid, gid_t *pGid);
+static UnixUnusedFd *findReusableFd(const char *zPath, int flags);
+static int getFileMode(const char *zFile, mode_t *pMode, uid_t *pUid, gid_t *pGid);
+
+extern pid_t randomnessPid;
+pid_t randomnessPid = 0;
 
 static UnixUnusedFd *findReusableFd(const char *zPath, int flags) {
   UnixUnusedFd *pUnused = 0;

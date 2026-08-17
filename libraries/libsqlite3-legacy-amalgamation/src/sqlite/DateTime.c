@@ -1,4 +1,20 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#include "sqlite/DateTime.h"
+
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/u16.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int osLocaltime(time_t *t, struct tm *pTm);
 
 int getDigits(const char *zDate, const char *zFormat, ...) {
 

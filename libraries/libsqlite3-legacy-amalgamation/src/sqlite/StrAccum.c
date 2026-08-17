@@ -1,5 +1,21 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdio.h>
+#include <string.h>
+
+#include "sqlite/StrAccum.h"
+
+#include "sqlite/Index.h"
+#include "sqlite/WhereLoop.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_str.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 const char hexdigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 

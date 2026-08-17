@@ -1,5 +1,12 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/FpDecode.h"
+
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u64.h"
 int countLeadingZeros(u64 m) { return __builtin_clzll(m); }
 
 

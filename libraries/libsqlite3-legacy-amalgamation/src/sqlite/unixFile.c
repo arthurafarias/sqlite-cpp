@@ -1,5 +1,33 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <errno.h>
+#include <fcntl.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+
+#include "sqlite/unixFile.h"
+
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/UnixUnusedFd.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_filename.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_syscall_ptr.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/unixFileId.h"
+#include "sqlite/unixInodeInfo.h"
+#include "sqlite/unixShm.h"
+#include "sqlite/unixShmNode.h"
+#include "sqlite/unix_syscall.h"
 void robust_close(unixFile *pFile, int h, int lineno) {
   if (((int (*)(int))aSyscall[1].pCurrent)(h)) {
     unixLogErrorAtLine((10 | (16 << 8)), "close", pFile ? pFile->zPath : 0, lineno);

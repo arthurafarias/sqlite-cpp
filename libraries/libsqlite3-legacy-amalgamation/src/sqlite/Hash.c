@@ -1,4 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/Hash.h"
+
+#include "sqlite/HashElem.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u64.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static unsigned int strHash(const char *z);
 
 static unsigned int strHash(const char *z) {
   unsigned int h = 0;

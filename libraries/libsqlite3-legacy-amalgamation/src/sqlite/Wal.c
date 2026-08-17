@@ -1,5 +1,30 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdint.h>
+#include <string.h>
+
+#include "sqlite/Wal.h"
+
+#include "sqlite/PgHdr.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/WalCkptInfo.h"
+#include "sqlite/WalHashLoc.h"
+#include "sqlite/WalIndexHdr.h"
+#include "sqlite/WalIterator.h"
+#include "sqlite/WalWriter.h"
+#include "sqlite/ht_slot.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_io_methods.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/sqlite3_vfs.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 __attribute__((noinline)) int walIndexPageRealloc(Wal *pWal, int iPage, volatile u32 **ppPage) {
   int rc = 0;
 

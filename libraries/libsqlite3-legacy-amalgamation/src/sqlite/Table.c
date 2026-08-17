@@ -1,5 +1,21 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/Table.h"
+
+#include "sqlite/Column.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FKey.h"
+#include "sqlite/Hash.h"
+#include "sqlite/Index.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/Schema.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 char sqlite3TableColumnAffinity(const Table *pTab, int iCol) {
   if (iCol < 0 || (iCol >= pTab->nCol))
     return 0x44;

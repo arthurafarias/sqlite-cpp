@@ -1,4 +1,40 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/BtCursor.h"
+
+#include "sqlite/BtShared.h"
+#include "sqlite/Btree.h"
+#include "sqlite/BtreePayload.h"
+#include "sqlite/CellInfo.h"
+#include "sqlite/CollSeq.h"
+#include "sqlite/Column.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/Index.h"
+#include "sqlite/KeyInfo.h"
+#include "sqlite/Mem.h"
+#include "sqlite/MemPage.h"
+#include "sqlite/Pager.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/RecordCompare.h"
+#include "sqlite/Table.h"
+#include "sqlite/UnpackedRecord.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/i8.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/uptr.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int copyPayload(void *pPayload, void *pBuf, int nByte, int eOp, DbPage *pDbPage);
 
 static int copyPayload(void *pPayload, void *pBuf, int nByte, int eOp, DbPage *pDbPage) {
   if (eOp) {

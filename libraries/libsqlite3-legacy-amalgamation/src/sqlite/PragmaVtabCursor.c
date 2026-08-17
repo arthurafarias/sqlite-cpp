@@ -1,5 +1,10 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/PragmaVtabCursor.h"
+
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_stmt.h"
+#include "sqlite/sqlite_int64.h"
 void pragmaVtabCursorClear(PragmaVtabCursor *pCsr) {
   int i;
   sqlite3_finalize(pCsr->pPragma);

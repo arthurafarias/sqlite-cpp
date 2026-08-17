@@ -1,5 +1,21 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/PmaReader.h"
+
+#include "sqlite/IncrMerger.h"
+#include "sqlite/MergeEngine.h"
+#include "sqlite/SortSubtask.h"
+#include "sqlite/SorterFile.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeSorter.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 void vdbePmaReaderClear(PmaReader *pReadr) {
   sqlite3_free(pReadr->aAlloc);
   sqlite3_free(pReadr->aBuffer);

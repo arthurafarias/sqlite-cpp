@@ -1,5 +1,22 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WindowCodeArg.h"
+
+#include "sqlite/CollSeq.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FuncDef.h"
+#include "sqlite/KeyInfo.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeOp.h"
+#include "sqlite/Window.h"
+#include "sqlite/WindowCsrAndReg.h"
+#include "sqlite/WindowFunctionNames.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void windowReadPeerValues(WindowCodeArg *p, int csr, int reg) {
   Window *pMWin = p->pMWin;
   ExprList *pOrderBy = pMWin->pOrderBy;

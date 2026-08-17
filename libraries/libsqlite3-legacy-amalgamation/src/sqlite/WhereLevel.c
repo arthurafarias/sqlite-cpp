@@ -1,5 +1,13 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WhereLevel.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void disableTerm(WhereLevel *pLevel, WhereTerm *pTerm) {
   int nLoop = 0;
 

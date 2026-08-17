@@ -1,5 +1,17 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/Incrblob.h"
+
+#include "sqlite/BtCursor.h"
+#include "sqlite/Mem.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeCursor.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_stmt.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
 int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr) {
   int rc;
   char *zErr = 0;

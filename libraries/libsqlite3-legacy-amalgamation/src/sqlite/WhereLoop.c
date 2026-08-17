@@ -1,5 +1,13 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WhereLoop.h"
+
+#include "sqlite/Index.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 int whereLoopIsOneRow(WhereLoop *pLoop) {
   if (pLoop->u.btree.pIndex->onError && pLoop->nSkip == 0 && pLoop->u.btree.nEq == pLoop->u.btree.pIndex->nKeyCol) {
     int ii;

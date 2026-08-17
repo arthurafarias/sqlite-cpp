@@ -1,5 +1,30 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/Pager.h"
+
+#include "sqlite/Bitvec.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/PCache.h"
+#include "sqlite/PagerSavepoint.h"
+#include "sqlite/PgHdr.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/Wal.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_backup.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_io_methods.h"
+#include "sqlite/sqlite3_pcache_page.h"
+#include "sqlite/sqlite3_vfs.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 const unsigned char aJournalMagic[] = {
     0xd9, 0xd5, 0x05, 0xf9, 0x20, 0xa1, 0x63, 0xd7,
 };

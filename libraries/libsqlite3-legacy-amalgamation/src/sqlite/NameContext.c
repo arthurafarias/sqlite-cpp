@@ -1,5 +1,21 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/NameContext.h"
+
+#include "sqlite/Column.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Table.h"
+#include "sqlite/Walker.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
 int resolveOrderGroupBy(NameContext *pNC, Select *pSelect, ExprList *pOrderBy, const char *zType) {
   int i, j;
   int iCol;

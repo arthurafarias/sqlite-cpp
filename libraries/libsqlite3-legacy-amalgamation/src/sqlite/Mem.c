@@ -1,5 +1,28 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdlib.h>
+#include <string.h>
+
+#include "sqlite/Mem.h"
+
+#include "sqlite/CollSeq.h"
+#include "sqlite/FuncDef.h"
+#include "sqlite/Op.h"
+#include "sqlite/RCStr.h"
+#include "sqlite/RowSet.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeOp.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/sqlite3_destructor_type.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_mem_methods.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int isAllZero(const char *z, int n) {
   int i;
   for (i = 0; i < n; i++) {

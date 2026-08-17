@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/sqlite3_blob.h"
+
+#include "sqlite/BtCursor.h"
+#include "sqlite/Incrblob.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_stmt.h"
+#include "sqlite/u32.h"
 int sqlite3_blob_close(sqlite3_blob *pBlob) {
   Incrblob *p = (Incrblob *)pBlob;
   int rc;

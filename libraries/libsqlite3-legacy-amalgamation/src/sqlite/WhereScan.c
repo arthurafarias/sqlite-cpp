@@ -1,5 +1,23 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WhereScan.h"
+
+#include "sqlite/CollSeq.h"
+#include "sqlite/Column.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Index.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Table.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/WhereInfo.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
 WhereTerm *whereScanNext(WhereScan *pScan) {
   int iCur;
   i16 iColumn;

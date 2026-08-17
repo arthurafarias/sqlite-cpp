@@ -1,5 +1,10 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/Upsert.h"
+
+#include "sqlite/ExprList.h"
+#include "sqlite/Index.h"
+#include "sqlite/u8.h"
 int sqlite3UpsertNextIsIPK(Upsert *pUpsert) {
   Upsert *pNext;
   if ((pUpsert == 0))

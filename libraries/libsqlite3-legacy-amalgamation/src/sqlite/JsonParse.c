@@ -1,4 +1,37 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "sqlite/JsonParse.h"
+
+#include "sqlite/JsonString.h"
+#include "sqlite/NanInfName.h"
+#include "sqlite/RCStr.h"
+#include "sqlite/RowSet.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/sqlite3_destructor_type.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int json5Whitespace(const char *zIn);
+static int jsonBlobOverwrite(u8 *aOut, const u8 *aIns, u32 nIns, u32 d);
+static u32 jsonBytesToBypass(const char *z, u32 n);
+static u8 jsonHexToInt(int h);
+static u32 jsonHexToInt4(const char *z);
+static int jsonIs2Hex(const char *z);
+static int jsonIs4Hex(const char *z);
+static int jsonIs4HexB(const char *z, int *pOp);
+static int jsonLabelCompare(const char *zLeft, u32 nLeft, int rawLeft, const char *zRight, u32 nRight, int rawRight);
+static __attribute__((noinline)) int jsonLabelCompareEscaped(const char *zLeft, u32 nLeft, int rawLeft, const char *zRight, u32 nRight, int rawRight);
+static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut);
 
 const char *const jsonbType[] = {"null", "true", "false", "integer", "integer", "real", "real", "text", "text", "text", "text", "array", "object", "", "", "", ""};
 

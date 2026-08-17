@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/DbPage.h"
+
+#include "sqlite/BtShared.h"
+#include "sqlite/MemPage.h"
+#include "sqlite/Pager.h"
+#include "sqlite/PgHdr.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/i64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
 void sqlite3PagerRef(DbPage *pPg) { sqlite3PcacheRef(pPg); }
 
 void sqlite3PagerUnrefNotNull(DbPage *pPg) {

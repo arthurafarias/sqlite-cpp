@@ -1,4 +1,30 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/PCache.h"
+
+#include "sqlite/PCache1.h"
+#include "sqlite/PCacheGlobal.h"
+#include "sqlite/PGroup.h"
+#include "sqlite/PgFreeslot.h"
+#include "sqlite/PgHdr.h"
+#include "sqlite/PgHdr1.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_pcache.h"
+#include "sqlite/sqlite3_pcache_methods2.h"
+#include "sqlite/sqlite3_pcache_page.h"
+#include "sqlite/u16.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static sqlite3_pcache *pcache1Create(int szPage, int szExtra, int bPurgeable);
+static int pcache1Init(void *NotUsed);
+static void pcache1Shutdown(void *NotUsed);
 
 static int pcache1Init(void *NotUsed) {
   (void)(NotUsed);

@@ -1,5 +1,27 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdio.h>
+#include <string.h>
+
+#include "sqlite/sqlite3_str.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/FpDecode.h"
+#include "sqlite/PrintfArguments.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/StrAccum.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Token.h"
+#include "sqlite/etByte.h"
+#include "sqlite/et_info.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite_uint64.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 static const char aDigits[] = "0123456789ABCDEF0123456789abcdef";
 
 static const char aPrefix[] = "-x0\000X0";

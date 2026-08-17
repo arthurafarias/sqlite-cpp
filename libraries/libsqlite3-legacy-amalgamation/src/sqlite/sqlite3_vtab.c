@@ -1,5 +1,20 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/sqlite3_vtab.h"
+
+#include "sqlite/JsonEachConnection.h"
+#include "sqlite/JsonEachCursor.h"
+#include "sqlite/JsonString.h"
+#include "sqlite/PragmaVtab.h"
+#include "sqlite/PragmaVtabCursor.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_index_info.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_vtab_cursor.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int pragmaVtabDisconnect(sqlite3_vtab *pVtab) {
   PragmaVtab *pTab = (PragmaVtab *)pVtab;
   sqlite3_free(pTab);

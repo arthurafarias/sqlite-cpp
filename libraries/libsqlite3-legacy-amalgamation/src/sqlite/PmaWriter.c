@@ -1,5 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/PmaWriter.h"
+
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 void vdbePmaWriteBlob(PmaWriter *p, u8 *pData, int nData) {
   int nRem = nData;
   while (nRem > 0 && p->eFWErr == 0) {

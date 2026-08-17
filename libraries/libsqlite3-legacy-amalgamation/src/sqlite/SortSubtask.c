@@ -1,5 +1,31 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdint.h>
+#include <string.h>
+
+#include "sqlite/SortSubtask.h"
+
+#include "sqlite/IncrMerger.h"
+#include "sqlite/KeyInfo.h"
+#include "sqlite/MergeEngine.h"
+#include "sqlite/PmaReader.h"
+#include "sqlite/PmaWriter.h"
+#include "sqlite/SQLiteThread.h"
+#include "sqlite/SorterCompare.h"
+#include "sqlite/SorterFile.h"
+#include "sqlite/SorterList.h"
+#include "sqlite/SorterRecord.h"
+#include "sqlite/UnpackedRecord.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeSorter.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_io_methods.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int vdbeSorterMapFile(SortSubtask *pTask, SorterFile *pFile, u8 **pp) {
   int rc = 0;
   if (pFile->iEof <= (i64)(pTask->pSorter->db->nMaxSorterMmap)) {

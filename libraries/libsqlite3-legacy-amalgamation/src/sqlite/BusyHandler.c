@@ -1,5 +1,6 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/BusyHandler.h"
 int sqlite3InvokeBusyHandler(BusyHandler *p) {
   int rc;
   if (p->xBusyHandler == 0 || p->nBusy < 0)

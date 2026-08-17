@@ -1,5 +1,11 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/VTable.h"
+
+#include "sqlite/Module.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_module.h"
+#include "sqlite/sqlite3_vtab.h"
 void sqlite3VtabLock(VTable *pVTab) { pVTab->nRef++; }
 
 void sqlite3VtabUnlock(VTable *pVTab) {

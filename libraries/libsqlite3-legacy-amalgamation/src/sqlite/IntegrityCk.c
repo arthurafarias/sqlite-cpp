@@ -1,5 +1,23 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdio.h>
+
+#include "sqlite/IntegrityCk.h"
+
+#include "sqlite/BtShared.h"
+#include "sqlite/Btree.h"
+#include "sqlite/CellInfo.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/MemPage.h"
+#include "sqlite/Pager.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/StrAccum.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_str.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void checkOom(IntegrityCk *pCheck) {
   pCheck->rc = 7;
   pCheck->mxErr = 0;

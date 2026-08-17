@@ -1,4 +1,29 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <errno.h>
+#include <fcntl.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include "sqlite/unix_syscall.h"
+
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_syscall_ptr.h"
+#include "sqlite/u64.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int openDirectory(const char *zFilename, int *pFd);
+static int posixOpen(const char *zFile, int flags, int mode);
+static int unixGetpagesize(void);
+static const char *unixTempFileDir(void);
 
 static int posixOpen(const char *zFile, int flags, int mode);
 static int openDirectory(const char *, int *);

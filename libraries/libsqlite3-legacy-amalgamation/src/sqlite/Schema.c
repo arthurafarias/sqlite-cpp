@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/Schema.h"
+
+#include "sqlite/Hash.h"
+#include "sqlite/HashElem.h"
+#include "sqlite/Table.h"
+#include "sqlite/Trigger.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
 void sqlite3SchemaClear(void *p) {
   Hash temp1;
   Hash temp2;

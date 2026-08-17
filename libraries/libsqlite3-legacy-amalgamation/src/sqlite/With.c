@@ -1,5 +1,10 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/With.h"
+
+#include "sqlite/Cte.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/sqlite3.h"
 struct Cte *searchWith(With *pWith, SrcItem *pItem, With **ppContext) {
   const char *zName = pItem->zName;
   With *p;

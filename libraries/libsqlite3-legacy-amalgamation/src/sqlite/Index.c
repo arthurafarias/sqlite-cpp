@@ -1,5 +1,21 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/Index.h"
+
+#include "sqlite/Column.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/Table.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int sqlite3TableColumnToIndex(Index *pIdx, int iCol) {
   int i;
   i16 iCol16;

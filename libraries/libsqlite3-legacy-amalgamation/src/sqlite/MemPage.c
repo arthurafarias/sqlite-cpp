@@ -1,5 +1,28 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdint.h>
+#include <string.h>
+
+#include "sqlite/MemPage.h"
+
+#include "sqlite/BtShared.h"
+#include "sqlite/BtreePayload.h"
+#include "sqlite/CellArray.h"
+#include "sqlite/CellInfo.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/Pager.h"
+#include "sqlite/PgHdr.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/RecordCompare.h"
+#include "sqlite/UnpackedRecord.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/uptr.h"
 __attribute__((noinline)) void btreeParseCellAdjustSizeForOverflow(MemPage *pPage, u8 *pCell, CellInfo *pInfo) {
 
   int minLocal;

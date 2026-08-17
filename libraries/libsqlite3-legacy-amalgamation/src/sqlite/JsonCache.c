@@ -1,5 +1,9 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/JsonCache.h"
+
+#include "sqlite/JsonParse.h"
+#include "sqlite/sqlite3.h"
 void jsonCacheDelete(JsonCache *p) {
   int i;
   for (i = 0; i < p->nUsed; i++) {

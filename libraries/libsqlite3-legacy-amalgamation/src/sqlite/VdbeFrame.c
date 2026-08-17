@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/VdbeFrame.h"
+
+#include "sqlite/AuxData.h"
+#include "sqlite/Mem.h"
+#include "sqlite/Op.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeCursor.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u8.h"
 void sqlite3VdbeFrameMemDel(void *pArg) {
   VdbeFrame *pFrame = (VdbeFrame *)pArg;
 

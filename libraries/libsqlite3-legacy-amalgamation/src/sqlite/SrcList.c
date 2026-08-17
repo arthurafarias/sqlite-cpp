@@ -1,4 +1,38 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/SrcList.h"
+
+#include "sqlite/Column.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Index.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Schema.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Table.h"
+#include "sqlite/Token.h"
+#include "sqlite/WhereAndInfo.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/WhereInfo.h"
+#include "sqlite/WhereMaskSet.h"
+#include "sqlite/WhereOrInfo.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/Window.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int allowedOp(int op);
+static u16 operatorMask(int op);
 
 static int allowedOp(int op) {
 

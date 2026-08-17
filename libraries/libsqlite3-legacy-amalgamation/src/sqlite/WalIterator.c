@@ -1,5 +1,10 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WalIterator.h"
+
+#include "sqlite/ht_slot.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u32.h"
 int walIteratorNext(WalIterator *p, u32 *piPage, u32 *piFrame) {
   u32 iMin;
   u32 iRet = 0xFFFFFFFF;

@@ -1,5 +1,31 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/sqlite3_vtab_cursor.h"
+
+#include "sqlite/JsonEachCursor.h"
+#include "sqlite/JsonParent.h"
+#include "sqlite/JsonParse.h"
+#include "sqlite/JsonString.h"
+#include "sqlite/PragmaName.h"
+#include "sqlite/PragmaVtab.h"
+#include "sqlite/PragmaVtabCursor.h"
+#include "sqlite/StrAccum.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/sqlite3_destructor_type.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_stmt.h"
+#include "sqlite/sqlite3_str.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/sqlite3_vtab.h"
+#include "sqlite/sqlite_int64.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int pragmaVtabClose(sqlite3_vtab_cursor *cur) {
   PragmaVtabCursor *pCsr = (PragmaVtabCursor *)cur;
   pragmaVtabCursorClear(pCsr);

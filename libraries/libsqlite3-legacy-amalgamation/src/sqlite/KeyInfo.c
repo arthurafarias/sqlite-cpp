@@ -1,5 +1,13 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/KeyInfo.h"
+
+#include "sqlite/Mem.h"
+#include "sqlite/UnpackedRecord.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
 UnpackedRecord *sqlite3VdbeAllocUnpackedRecord(KeyInfo *pKeyInfo) {
   UnpackedRecord *p;
   u64 nByte;

@@ -1,5 +1,22 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/sqlite3_api_routines.h"
+
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_backup.h"
+#include "sqlite/sqlite3_blob.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/sqlite3_filename.h"
+#include "sqlite/sqlite3_index_info.h"
+#include "sqlite/sqlite3_libversion.h"
+#include "sqlite/sqlite3_libversion_number.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_soft_heap.h"
+#include "sqlite/sqlite3_sourceid.h"
+#include "sqlite/sqlite3_stmt.h"
+#include "sqlite/sqlite3_str.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/sqlite3_vfs.h"
 const sqlite3_api_routines sqlite3Apis = {sqlite3_aggregate_context,
 
                                           sqlite3_aggregate_count,

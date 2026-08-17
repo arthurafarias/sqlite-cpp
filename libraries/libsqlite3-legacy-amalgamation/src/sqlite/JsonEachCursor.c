@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/JsonEachCursor.h"
+
+#include "sqlite/JsonParent.h"
+#include "sqlite/JsonParse.h"
+#include "sqlite/JsonString.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 void jsonEachCursorReset(JsonEachCursor *p) {
   jsonParseReset(&p->sParse);
   jsonStringReset(&p->path);

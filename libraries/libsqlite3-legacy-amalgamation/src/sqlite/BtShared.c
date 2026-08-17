@@ -1,5 +1,24 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/BtShared.h"
+
+#include "sqlite/Bitvec.h"
+#include "sqlite/BtCursor.h"
+#include "sqlite/CellInfo.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/MemPage.h"
+#include "sqlite/Pager.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/Bitvec.h"
 static const char zMagicHeader[] = "SQLite format 3";
 
 

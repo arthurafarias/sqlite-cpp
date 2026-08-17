@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WhereConst.h"
+
+#include "sqlite/CollSeq.h"
+#include "sqlite/Expr.h"
+#include "sqlite/Parse.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
 void constInsert(WhereConst *pConst, Expr *pColumn, Expr *pValue, Expr *pExpr) {
   int i;
 

@@ -1,5 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/Column.h"
+
+#include "sqlite/Mem.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 char *sqlite3ColumnType(Column *pCol, char *zDflt) {
   if (pCol->colFlags & 0x0004) {
     return pCol->zCnName + strlen(pCol->zCnName) + 1;

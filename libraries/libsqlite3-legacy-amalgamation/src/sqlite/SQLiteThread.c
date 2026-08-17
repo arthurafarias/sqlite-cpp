@@ -1,5 +1,13 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <pthread.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "sqlite/SQLiteThread.h"
+
+#include "sqlite/sqlite3.h"
+#include "sqlite/u64.h"
 int sqlite3ThreadCreate(SQLiteThread **ppThread, void *(*xTask)(void *), void *pIn) {
   SQLiteThread *p;
   int rc;

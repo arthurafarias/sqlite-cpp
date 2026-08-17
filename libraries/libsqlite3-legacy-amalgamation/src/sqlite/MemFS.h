@@ -1,4 +1,8 @@
-#include "sqlite/_All.h"
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct MemStore MemStore;
 
 typedef struct sqlite3_vfs MemVfs;
@@ -12,3 +16,7 @@ struct MemFS {
 };
 
 extern MemFS memdb_g;
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,5 +1,12 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/JsonPretty.h"
+
+#include "sqlite/JsonParse.h"
+#include "sqlite/JsonString.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void jsonPrettyIndent(JsonPretty *pPretty) {
   u32 jj;
   for (jj = 0; jj < pPretty->nIndent; jj++) {

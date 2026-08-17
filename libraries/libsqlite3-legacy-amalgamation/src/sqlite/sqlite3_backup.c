@@ -1,4 +1,23 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/sqlite3_backup.h"
+
+#include "sqlite/BtShared.h"
+#include "sqlite/Btree.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/Pager.h"
+#include "sqlite/PgHdr.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int isFatalError(int rc);
 
 static int isFatalError(int rc) { return (rc != 0 && rc != 5 && (rc != 6)); }
 

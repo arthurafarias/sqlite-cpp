@@ -1,5 +1,8 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/VList.h"
 const char *sqlite3VListNumToName(VList *pIn, int iVal) {
   int i, mx;
   if (pIn == 0)

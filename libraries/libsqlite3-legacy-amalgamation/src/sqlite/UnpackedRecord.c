@@ -1,5 +1,17 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/UnpackedRecord.h"
+
+#include "sqlite/CollSeq.h"
+#include "sqlite/KeyInfo.h"
+#include "sqlite/Mem.h"
+#include "sqlite/RecordCompare.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/i64.h"
+#include "sqlite/i8.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
 RecordCompare sqlite3VdbeFindCompare(UnpackedRecord *p) {
 
   if (p->pKeyInfo->nAllField <= 13) {

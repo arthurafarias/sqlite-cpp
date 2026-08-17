@@ -1,5 +1,17 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/CellArray.h"
+
+#include "sqlite/BtShared.h"
+#include "sqlite/MemPage.h"
+#include "sqlite/Pager.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+#include "sqlite/uptr.h"
 void populateCellCache(CellArray *p, int idx, int N) {
   MemPage *pRef = p->pRef;
   u16 *szCell = p->szCell;

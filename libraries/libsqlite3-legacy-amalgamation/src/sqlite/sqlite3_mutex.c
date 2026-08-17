@@ -1,5 +1,13 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <pthread.h>
+#include <stdlib.h>
+
+#include "sqlite/sqlite3_mutex.h"
+
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_mutex_methods.h"
 sqlite3_mutex *sqlite3_mutex_alloc(int id) {
 
   if (id <= 1 && sqlite3_initialize())

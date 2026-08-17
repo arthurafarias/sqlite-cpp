@@ -1,5 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/Sqlite3Config.h"
+
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_mem_methods.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_mutex_methods.h"
+#include "sqlite/sqlite3_pcache_methods2.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 struct Sqlite3Config sqlite3Config = {
     1,
     1,

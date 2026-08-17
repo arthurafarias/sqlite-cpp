@@ -1,5 +1,29 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/VdbeCursor.h"
+
+#include "sqlite/Bool.h"
+#include "sqlite/BtCursor.h"
+#include "sqlite/KeyInfo.h"
+#include "sqlite/Mem.h"
+#include "sqlite/RCStr.h"
+#include "sqlite/SortSubtask.h"
+#include "sqlite/SorterList.h"
+#include "sqlite/SorterRecord.h"
+#include "sqlite/UnpackedRecord.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeSorter.h"
+#include "sqlite/VdbeTxtBlbCache.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int __attribute__((noinline)) sqlite3VdbeFinishMoveto(VdbeCursor *p) {
   int res, rc;
 

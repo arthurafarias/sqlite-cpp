@@ -1,5 +1,11 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/MemStore.h"
+
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/u64.h"
 void memdbEnter(MemStore *p) { sqlite3_mutex_enter(p->pMutex); }
 
 void memdbLeave(MemStore *p) { sqlite3_mutex_leave(p->pMutex); }

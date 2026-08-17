@@ -1,5 +1,19 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/SrcItem.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Table.h"
+#include "sqlite/Window.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol) {
 
   if (pItem->fg.isNestedFrom) {

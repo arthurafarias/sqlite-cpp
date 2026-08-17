@@ -1,5 +1,17 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/sqlite3_index_info.h"
+
+#include "sqlite/CollSeq.h"
+#include "sqlite/Expr.h"
+#include "sqlite/HiddenIndexInfo.h"
+#include "sqlite/Parse.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void freeIdxStr(sqlite3_index_info *pIdxInfo) {
   if (pIdxInfo->needToFreeIdxStr) {
     sqlite3_free(pIdxInfo->idxStr);

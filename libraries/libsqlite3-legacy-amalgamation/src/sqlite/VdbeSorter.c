@@ -1,5 +1,22 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdint.h>
+
+#include "sqlite/VdbeSorter.h"
+
+#include "sqlite/IncrMerger.h"
+#include "sqlite/MergeEngine.h"
+#include "sqlite/PmaReader.h"
+#include "sqlite/SQLiteThread.h"
+#include "sqlite/SortSubtask.h"
+#include "sqlite/SorterCompare.h"
+#include "sqlite/SorterList.h"
+#include "sqlite/SorterRecord.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int vdbeSorterJoinAll(VdbeSorter *pSorter, int rcin) {
   int rc = rcin;
   int i;

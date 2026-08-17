@@ -1,5 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WalWriter.h"
+
+#include "sqlite/PgHdr.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/Wal.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 int walWriteToLog(WalWriter *p, void *pContent, int iAmt, sqlite3_int64 iOffset) {
   int rc;
   if (iOffset < p->iSyncPoint && iOffset + iAmt >= p->iSyncPoint) {

@@ -1,5 +1,22 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/SubstContext.h"
+
+#include "sqlite/CollSeq.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Window.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
 Expr *substExpr(SubstContext *pSubst, Expr *pExpr) {
   if (pExpr == 0)
     return 0;

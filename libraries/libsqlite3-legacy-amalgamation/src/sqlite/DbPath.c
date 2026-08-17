@@ -1,5 +1,17 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <errno.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+
+#include "sqlite/DbPath.h"
+
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_syscall_ptr.h"
+#include "sqlite/unix_syscall.h"
 void appendOnePathElement(DbPath *pPath, const char *zName, int nName) {
 
   if (zName[0] == '.') {

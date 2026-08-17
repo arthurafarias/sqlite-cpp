@@ -1,5 +1,16 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/MemJournal.h"
+
+#include "sqlite/FileChunk.h"
+#include "sqlite/FilePoint.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_vfs.h"
+#include "sqlite/u8.h"
 int memjrnlCreateFile(MemJournal *p) {
   int rc;
   sqlite3_file *pReal = (sqlite3_file *)p;

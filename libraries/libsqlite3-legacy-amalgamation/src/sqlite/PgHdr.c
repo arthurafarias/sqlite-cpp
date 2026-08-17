@@ -1,5 +1,26 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/PgHdr.h"
+
+#include "sqlite/Bitvec.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/PCache.h"
+#include "sqlite/Pager.h"
+#include "sqlite/PagerSavepoint.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/Wal.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_pcache.h"
+#include "sqlite/sqlite3_pcache_methods2.h"
+#include "sqlite/sqlite3_pcache_page.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void pcacheManageDirtyList(PgHdr *pPage, u8 addRemove) {
   PCache *p = pPage->pCache;
 

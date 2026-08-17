@@ -1,4 +1,47 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <errno.h>
+#include <fcntl.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <utime.h>
+
+#include "sqlite/sqlite3_file.h"
+
+#include "sqlite/FileChunk.h"
+#include "sqlite/FilePoint.h"
+#include "sqlite/MemFS.h"
+#include "sqlite/MemFile.h"
+#include "sqlite/MemJournal.h"
+#include "sqlite/MemStore.h"
+#include "sqlite/Pager.h"
+#include "sqlite/PmaWriter.h"
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/UnixUnusedFd.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_io_methods.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_syscall_ptr.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/sqlite3_vfs.h"
+#include "sqlite/sqlite_int64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/unixFile.h"
+#include "sqlite/unixInodeInfo.h"
+#include "sqlite/unixShm.h"
+#include "sqlite/unixShmNode.h"
+#include "sqlite/unix_syscall.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int sqliteErrorFromPosixError(int posixError, int sqliteIOErr);
 
 static int sqliteErrorFromPosixError(int posixError, int sqliteIOErr) {
 

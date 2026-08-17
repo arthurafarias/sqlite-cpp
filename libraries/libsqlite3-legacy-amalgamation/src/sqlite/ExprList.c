@@ -1,5 +1,17 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/ExprList.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Select.h"
+#include "sqlite/Table.h"
+#include "sqlite/Walker.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 __attribute__((noinline)) void resolveSetExprSubtypeArg(ExprList *pList) {
   int nn, ii;
   nn = pList ? pList->nExpr : 0;

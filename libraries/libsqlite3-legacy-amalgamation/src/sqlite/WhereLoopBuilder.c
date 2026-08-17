@@ -1,4 +1,45 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/WhereLoopBuilder.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/HiddenIndexInfo.h"
+#include "sqlite/Index.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Select.h"
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Table.h"
+#include "sqlite/WhereAndInfo.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/WhereInfo.h"
+#include "sqlite/WhereLevel.h"
+#include "sqlite/WhereLoop.h"
+#include "sqlite/WhereMaskSet.h"
+#include "sqlite/WhereOrCost.h"
+#include "sqlite/WhereOrInfo.h"
+#include "sqlite/WhereOrSet.h"
+#include "sqlite/WhereScan.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/i16.h"
+#include "sqlite/i8.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_index_info.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int allConstraintsUsed(struct sqlite3_index_constraint_usage *aUsage, int nCons);
+static int whereUsablePartialIndex(int iTab, u8 jointype, WhereClause *pWC, Expr *pWhere);
 
 static int whereUsablePartialIndex(int iTab, u8 jointype, WhereClause *pWC, Expr *pWhere) {
   int i;

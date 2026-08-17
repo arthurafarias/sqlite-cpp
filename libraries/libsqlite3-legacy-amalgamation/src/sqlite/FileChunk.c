@@ -1,5 +1,8 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/FileChunk.h"
+
+#include "sqlite/sqlite3.h"
 void memjrnlFreeChunks(FileChunk *pFirst) {
   FileChunk *pIter;
   FileChunk *pNext;

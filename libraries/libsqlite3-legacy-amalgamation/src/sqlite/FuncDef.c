@@ -1,5 +1,13 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/FuncDef.h"
+
+#include "sqlite/FuncDefHash.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 const FuncDef statInitFuncdef = {4, 1, 0, 0, statInit, 0, 0, 0, "stat_init", {0}};
 
 const FuncDef statPushFuncdef = {2 + 0, 1, 0, 0, statPush, 0, 0, 0, "stat_push", {0}};

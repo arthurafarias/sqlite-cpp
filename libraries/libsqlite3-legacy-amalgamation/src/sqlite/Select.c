@@ -1,5 +1,21 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/Select.h"
+
+#include "sqlite/AggInfo.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FuncDef.h"
+#include "sqlite/Parse.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Table.h"
+#include "sqlite/Walker.h"
+#include "sqlite/Window.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void windowRemoveExprFromSelect(Select *pSelect, Expr *pExpr) {
   if (pSelect->pWin) {
     Walker sWalker;

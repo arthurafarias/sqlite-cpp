@@ -1,5 +1,21 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
+#include "sqlite/JsonString.h"
+
+#include "sqlite/JsonParse.h"
+#include "sqlite/RCStr.h"
+#include "sqlite/RowSet.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/sqlite3_destructor_type.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 void jsonStringZero(JsonString *p) {
   p->zBuf = p->zSpace;
   p->nAlloc = sizeof(p->zSpace);

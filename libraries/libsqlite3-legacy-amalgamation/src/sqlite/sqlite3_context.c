@@ -1,11 +1,99 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
-static const struct aXformType_t {
-  u8 nName;
-  char zName[7];
-  float rLimit;
-  float rXform;
-} aXformType[] = {
+#include <math.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "sqlite/sqlite3_context.h"
+
+#include "sqlite/AuxData.h"
+#include "sqlite/Btree.h"
+#include "sqlite/CallCount.h"
+#include "sqlite/CollSeq.h"
+#include "sqlite/Column.h"
+#include "sqlite/CountCtx.h"
+#include "sqlite/DateTime.h"
+#include "sqlite/Db.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FKey.h"
+#include "sqlite/FuncDef.h"
+#include "sqlite/GroupConcatCtx.h"
+#include "sqlite/Hash.h"
+#include "sqlite/HashElem.h"
+#include "sqlite/IdList.h"
+#include "sqlite/Index.h"
+#include "sqlite/JsonCache.h"
+#include "sqlite/JsonParse.h"
+#include "sqlite/JsonPretty.h"
+#include "sqlite/JsonString.h"
+#include "sqlite/LastValueCtx.h"
+#include "sqlite/Mem.h"
+#include "sqlite/NameContext.h"
+#include "sqlite/NthValueCtx.h"
+#include "sqlite/NtileCtx.h"
+#include "sqlite/Op.h"
+#include "sqlite/Pager.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Percentile.h"
+#include "sqlite/PrintfArguments.h"
+#include "sqlite/RCStr.h"
+#include "sqlite/RenameCtx.h"
+#include "sqlite/RenameToken.h"
+#include "sqlite/RowSet.h"
+#include "sqlite/Schema.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/StatAccum.h"
+#include "sqlite/StatSample.h"
+#include "sqlite/StrAccum.h"
+#include "sqlite/SumCtx.h"
+#include "sqlite/Table.h"
+#include "sqlite/Token.h"
+#include "sqlite/Trigger.h"
+#include "sqlite/TriggerStep.h"
+#include "sqlite/Upsert.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeOp.h"
+#include "sqlite/Walker.h"
+#include "sqlite/compareInfo.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_destructor_type.h"
+#include "sqlite/sqlite3_filename.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_libversion.h"
+#include "sqlite/sqlite3_sourceid.h"
+#include "sqlite/sqlite3_str.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/sqlite3_vfs.h"
+#include "sqlite/sqlite3_xauth.h"
+#include "sqlite/sqlite_int64.h"
+#include "sqlite/tRowcnt.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/aXformType_t.h"
+
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int getConstraint(const u8 *z);
+static int getConstraintToken(const u8 *z, int *piToken);
+static int getWhitespace(const u8 *z);
+static int invokeValueDestructor(const void *p, void (*xDel)(void *), sqlite3_context *pCtx);
+static int isNHex(const char *z, int N, u32 *pVal);
+static int jsonAllAlphanum(const char *z, int n);
+static int percentIsInfinity(double r);
+static int percentSameValue(double a, double b);
+static void percentSort(double *a, unsigned int n);
+static int strContainsChar(const u8 *zStr, int nStr, u32 ch);
+
+static const aXformType_t aXformType[] = {
     {6, "second", 4.6427e+14, 1.0}, {6, "minute", 7.7379e+12, 60.0}, {4, "hour", 1.2897e+11, 3600.0}, {3, "day", 5373485.0, 86400.0}, {5, "month", 176546.0, 2592000.0}, {4, "year", 14713.0, 31536000.0},
 };
 

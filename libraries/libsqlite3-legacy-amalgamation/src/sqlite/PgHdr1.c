@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/PgHdr1.h"
+
+#include "sqlite/PCache1.h"
+#include "sqlite/PCacheGlobal.h"
+#include "sqlite/PgFreeslot.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_pcache_page.h"
+#include "sqlite/u16.h"
+#include "sqlite/uptr.h"
 void pcache1Free(void *p) {
   if (p == 0)
     return;

@@ -36,6 +36,7 @@ typedef struct DbClientData DbClientData;
 typedef struct EdupBuf EdupBuf;
 typedef struct Expr Expr;
 typedef struct ExprList ExprList;
+struct ExprList_item;
 typedef struct FuncDef FuncDef;
 typedef struct FuncDestructor FuncDestructor;
 typedef struct IdList IdList;

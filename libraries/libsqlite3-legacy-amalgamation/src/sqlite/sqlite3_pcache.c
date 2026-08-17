@@ -1,5 +1,13 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/sqlite3_pcache.h"
+
+#include "sqlite/PCache1.h"
+#include "sqlite/PGroup.h"
+#include "sqlite/PgHdr1.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_pcache_page.h"
+#include "sqlite/u32.h"
 void pcache1Cachesize(sqlite3_pcache *p, int nMax) {
   PCache1 *pCache = (PCache1 *)p;
   u32 n;

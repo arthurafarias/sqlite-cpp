@@ -1,5 +1,22 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <stdint.h>
+#include <string.h>
+
+#include "sqlite/sqlite3_value.h"
+
+#include "sqlite/BtCursor.h"
+#include "sqlite/JsonParse.h"
+#include "sqlite/Mem.h"
+#include "sqlite/ValueList.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite_int64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 void sqlite3ValueSetNull(sqlite3_value *p) { sqlite3VdbeMemSetNull((Mem *)p); }
 
 void sqlite3MemSetArrayInt64(sqlite3_value *aMem, int iIdx, i64 val) { sqlite3VdbeMemSetInt64(&aMem[iIdx], val); }

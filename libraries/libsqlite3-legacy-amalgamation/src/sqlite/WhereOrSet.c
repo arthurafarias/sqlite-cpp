@@ -1,5 +1,12 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/WhereOrSet.h"
+
+#include "sqlite/LogEst.h"
+#include "sqlite/WhereOrCost.h"
+#include "sqlite/u16.h"
 void whereOrMove(WhereOrSet *pDest, WhereOrSet *pSrc) {
   pDest->n = pSrc->n;
   memcpy(pDest->a, pSrc->a, pDest->n * sizeof(pDest->a[0]));

@@ -1,5 +1,23 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/DbFixer.h"
+
+#include "sqlite/Db.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Schema.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Token.h"
+#include "sqlite/TriggerStep.h"
+#include "sqlite/Upsert.h"
+#include "sqlite/Walker.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u8.h"
 void sqlite3FixInit(DbFixer *pFix, Parse *pParse, int iDb, const char *zType, const Token *pName) {
   sqlite3 *db = pParse->db;
 

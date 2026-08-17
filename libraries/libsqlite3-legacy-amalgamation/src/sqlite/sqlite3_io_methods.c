@@ -1,5 +1,8 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/sqlite3_io_methods.h"
+
+#include "sqlite/sqlite3_file.h"
 const sqlite3_io_methods posixIoMethods = {
     3, unixClose, unixRead, unixWrite, unixTruncate, unixSync, unixFileSize, unixLock, unixUnlock, unixCheckReservedLock, unixFileControl, unixSectorSize, unixDeviceCharacteristics, unixShmMap, unixShmLock, unixShmBarrier, unixShmUnmap, unixFetch, unixUnfetch,
 };

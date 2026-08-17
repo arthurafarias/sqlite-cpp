@@ -1,6 +1,27 @@
 #include "sqlite/Vdbe.h"
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/sqlite3_stmt.h"
+
+#include "sqlite/Column.h"
+#include "sqlite/Lookaside.h"
+#include "sqlite/Mem.h"
+#include "sqlite/VList.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/bft.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_destructor_type.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/sqlite_int64.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
 static const char *const azExplainColNames8[] = {"addr", "opcode", "p1", "p2", "p3", "p4", "p5", "comment", "id", "parent", "notused", "detail"};
 
 static const u16 azExplainColNames16data[] = {'a', 'd', 'd', 'r', 0, 'o', 'p', 'c', 'o', 'd', 'e', 0, 'p', '1', 0, 'p', '2', 0, 'p', '3', 0, 'p', '4', 0, 'p', '5', 0, 'c', 'o', 'm', 'm', 'e', 'n', 't', 0, 'i', 'd', 0, 'p', 'a', 'r', 'e', 'n', 't', 0, 'n', 'o', 't', 'u', 's', 'e', 'd', 0, 'd', 'e', 't', 'a', 'i', 'l', 0};

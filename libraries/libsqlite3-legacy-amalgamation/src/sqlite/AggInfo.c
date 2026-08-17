@@ -1,5 +1,15 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/AggInfo.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/NameContext.h"
+#include "sqlite/Walker.h"
+#include "sqlite/Window.h"
+#include "sqlite/u32.h"
 void analyzeAggFuncArgs(AggInfo *pAggInfo, NameContext *pNC) {
   int i;
 

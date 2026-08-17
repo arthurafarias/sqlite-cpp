@@ -1,4 +1,56 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <string.h>
+
+#include "sqlite/Walker.h"
+
+#include "sqlite/AggInfo.h"
+#include "sqlite/CheckOnCtx.h"
+#include "sqlite/CollSeq.h"
+#include "sqlite/Column.h"
+#include "sqlite/CoveringIndexCheck.h"
+#include "sqlite/Cte.h"
+#include "sqlite/Db.h"
+#include "sqlite/DbFixer.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FuncDef.h"
+#include "sqlite/IdList.h"
+#include "sqlite/IdxCover.h"
+#include "sqlite/Index.h"
+#include "sqlite/IndexedExpr.h"
+#include "sqlite/NameContext.h"
+#include "sqlite/OnOrUsing.h"
+#include "sqlite/Parse.h"
+#include "sqlite/RefSrcList.h"
+#include "sqlite/RenameCtx.h"
+#include "sqlite/RenameToken.h"
+#include "sqlite/Schema.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Table.h"
+#include "sqlite/Token.h"
+#include "sqlite/Trigger.h"
+#include "sqlite/TriggerStep.h"
+#include "sqlite/Upsert.h"
+#include "sqlite/VTable.h"
+#include "sqlite/WhereConst.h"
+#include "sqlite/Window.h"
+#include "sqlite/WindowRewrite.h"
+#include "sqlite/With.h"
+#include "sqlite/bft.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int inAnyUsingClause(const char *zName, SrcItem *pBase, int N);
 
 static int inAnyUsingClause(const char *zName, SrcItem *pBase, int N) {
   while (N > 0) {

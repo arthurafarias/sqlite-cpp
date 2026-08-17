@@ -1,4 +1,207 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
+
+#include <math.h>
+#include <pthread.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "sqlite/sqlite3.h"
+
+#include "sqlite/AggInfo.h"
+#include "sqlite/AuxData.h"
+#include "sqlite/BenignMallocHooks.h"
+#include "sqlite/Bitvec.h"
+#include "sqlite/BtCursor.h"
+#include "sqlite/BtShared.h"
+#include "sqlite/Btree.h"
+#include "sqlite/BusyHandler.h"
+#include "sqlite/CollSeq.h"
+#include "sqlite/Column.h"
+#include "sqlite/Cte.h"
+#include "sqlite/CteUse.h"
+#include "sqlite/Db.h"
+#include "sqlite/DbClientData.h"
+#include "sqlite/DbPage.h"
+#include "sqlite/EdupBuf.h"
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/FKey.h"
+#include "sqlite/FpDecode.h"
+#include "sqlite/FuncDef.h"
+#include "sqlite/FuncDefHash.h"
+#include "sqlite/FuncDestructor.h"
+#include "sqlite/Hash.h"
+#include "sqlite/HashElem.h"
+#include "sqlite/HiddenIndexInfo.h"
+#include "sqlite/IdList.h"
+#include "sqlite/Incrblob.h"
+#include "sqlite/Index.h"
+#include "sqlite/IndexedExpr.h"
+#include "sqlite/InitData.h"
+#include "sqlite/IntegrityCk.h"
+#include "sqlite/JsonEachConnection.h"
+#include "sqlite/KeyInfo.h"
+#include "sqlite/LOGFUNC_t.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/Lookaside.h"
+#include "sqlite/LookasideSlot.h"
+#include "sqlite/Mem.h"
+#include "sqlite/Mem0Global.h"
+#include "sqlite/MemFile.h"
+#include "sqlite/MemPage.h"
+#include "sqlite/MemStore.h"
+#include "sqlite/MergeEngine.h"
+#include "sqlite/Module.h"
+#include "sqlite/NameContext.h"
+#include "sqlite/OnOrUsing.h"
+#include "sqlite/Op.h"
+#include "sqlite/PCache.h"
+#include "sqlite/PCache1.h"
+#include "sqlite/PCacheGlobal.h"
+#include "sqlite/Pager.h"
+#include "sqlite/Parse.h"
+#include "sqlite/PgHdr.h"
+#include "sqlite/PgHdr1.h"
+#include "sqlite/Pgno.h"
+#include "sqlite/PmaReader.h"
+#include "sqlite/PragmaName.h"
+#include "sqlite/PragmaVtab.h"
+#include "sqlite/RenameToken.h"
+#include "sqlite/Returning.h"
+#include "sqlite/RowSet.h"
+#include "sqlite/RowSetChunk.h"
+#include "sqlite/RowSetEntry.h"
+#include "sqlite/Savepoint.h"
+#include "sqlite/Schema.h"
+#include "sqlite/Select.h"
+#include "sqlite/SortSubtask.h"
+#include "sqlite/SorterFile.h"
+#include "sqlite/SorterList.h"
+#include "sqlite/SorterRecord.h"
+#include "sqlite/Sqlite3Config.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/StrAccum.h"
+#include "sqlite/SubProgram.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/SubrtnSig.h"
+#include "sqlite/TabResult.h"
+#include "sqlite/Table.h"
+#include "sqlite/Token.h"
+#include "sqlite/Trigger.h"
+#include "sqlite/TriggerPrg.h"
+#include "sqlite/TriggerStep.h"
+#include "sqlite/UnpackedRecord.h"
+#include "sqlite/Upsert.h"
+#include "sqlite/VList.h"
+#include "sqlite/VTable.h"
+#include "sqlite/ValueNewStat4Ctx.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/VdbeCursor.h"
+#include "sqlite/VdbeOp.h"
+#include "sqlite/VdbeOpList.h"
+#include "sqlite/VdbeSorter.h"
+#include "sqlite/VtabCtx.h"
+#include "sqlite/Wal.h"
+#include "sqlite/WhereAndInfo.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/WhereInfo.h"
+#include "sqlite/WhereLoop.h"
+#include "sqlite/WhereMemBlock.h"
+#include "sqlite/WhereOrInfo.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/Window.h"
+#include "sqlite/With.h"
+#include "sqlite/YYMINORTYPE.h"
+#include "sqlite/YyAction.h"
+#include "sqlite/analysisInfo.h"
+#include "sqlite/bft.h"
+#include "sqlite/compareInfo.h"
+#include "sqlite/i16.h"
+#include "sqlite/i64.h"
+#include "sqlite/i8.h"
+#include "sqlite/sqlite3AutoExtList.h"
+#include "sqlite/sqlite3FaultFuncType.h"
+#include "sqlite/sqlite3LocaltimeType.h"
+#include "sqlite/sqlite3StatType.h"
+#include "sqlite/sqlite3StatValueType.h"
+#include "sqlite/sqlite3_api_routines.h"
+#include "sqlite/sqlite3_backup.h"
+#include "sqlite/sqlite3_blob.h"
+#include "sqlite/sqlite3_callback.h"
+#include "sqlite/sqlite3_context.h"
+#include "sqlite/sqlite3_destructor_type.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/sqlite3_filename.h"
+#include "sqlite/sqlite3_index_info.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_io_methods.h"
+#include "sqlite/sqlite3_loadext_entry.h"
+#include "sqlite/sqlite3_mem_methods.h"
+#include "sqlite/sqlite3_module.h"
+#include "sqlite/sqlite3_mutex.h"
+#include "sqlite/sqlite3_mutex_methods.h"
+#include "sqlite/sqlite3_pcache_methods2.h"
+#include "sqlite/sqlite3_sourceid.h"
+#include "sqlite/sqlite3_stmt.h"
+#include "sqlite/sqlite3_str.h"
+#include "sqlite/sqlite3_uint64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/sqlite3_version.h"
+#include "sqlite/sqlite3_vfs.h"
+#include "sqlite/sqlite3_vtab.h"
+#include "sqlite/sqlite3_xauth.h"
+#include "sqlite/sqlite_int64.h"
+#include "sqlite/sqlite_uint64.h"
+#include "sqlite/tRowcnt.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/unixFile.h"
+#include "sqlite/uptr.h"
+#include "sqlite/void_function.h"
+#include "sqlite/ynVar.h"
+#include "sqlite/yyParser.h"
+#include "sqlite/yyStackEntry.h"
+/* Private helpers, formerly declared in _Uncategorized.h. */
+static int analysisLoader(void *pData, int argc, char **argv, char **NotUsed);
+static char *appendText(char *p, const char *z);
+static void chacha_block(u32 *out, const u32 *in);
+static int compare2pow63(const char *zNum, int incr);
+static const char *databaseName(const char *zName);
+static void decodeIntArray(char *zIntArray, int nOut, tRowcnt *aOut, LogEst *aLog, Index *pIndex);
+static double degToRad(double x);
+static i64 identLength(const char *z);
+static void identPut(char *z, int *pIdx, char *zSignedIdent);
+static i64 keywordCode(const char *z, i64 n, int *pType);
+static void logBadConnection(const char *zType);
+static void mallocWithAlarm(int n, void **pp);
+static int nocaseCollatingFunc(void *NotUsed, int nKey1, const void *pKey1, int nKey2, const void *pKey2);
+static sqlite3_mutex *noopMutexAlloc(int id);
+static int noopMutexEnd(void);
+static int noopMutexInit(void);
+static int openDatabase(const char *zFilename, sqlite3 **ppDb, unsigned int flags, const char *zVfs);
+static void parserStackFree(void *pOld, Parse *pParse);
+static u64 powerOfTen(int p, u32 *pLo);
+static sqlite3_mutex *pthreadMutexAlloc(int iType);
+static int pthreadMutexEnd(void);
+static int pthreadMutexInit(void);
+static int __attribute__((noinline)) putVarint64(unsigned char *p, u64 v);
+static int pwr10to2(int p);
+static int pwr2to10(int p);
+static double radToDeg(double x);
+static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap);
+static int rtrimCollFunc(void *pUser, int nKey1, const void *pKey1, int nKey2, const void *pKey2);
+static int sqliteDefaultBusyCallback(void *ptr, int count);
+static void unixTempFileInit(void);
+static const char *uriParameter(const char *zFilename, const char *zParam);
+static double xCeil(double x);
+static double xFloor(double x);
+static unsigned short int yy_find_shift_action(unsigned short int iLookAhead, unsigned short int stateno);
 
 static const char *const sqlite3azCompileOpt[] = {
     "ATOMIC_INTRINSICS=" "1",

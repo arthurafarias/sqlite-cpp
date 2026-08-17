@@ -1,5 +1,14 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/MergeEngine.h"
+
+#include "sqlite/PmaReader.h"
+#include "sqlite/SortSubtask.h"
+#include "sqlite/SorterCompare.h"
+#include "sqlite/UnpackedRecord.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_file.h"
+#include "sqlite/u8.h"
 void vdbeMergeEngineFree(MergeEngine *pMerger) {
   int i;
   if (pMerger) {

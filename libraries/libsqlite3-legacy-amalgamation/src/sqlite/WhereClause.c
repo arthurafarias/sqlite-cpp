@@ -1,5 +1,30 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/WhereClause.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Index.h"
+#include "sqlite/LogEst.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Table.h"
+#include "sqlite/Token.h"
+#include "sqlite/WhereAndInfo.h"
+#include "sqlite/WhereInfo.h"
+#include "sqlite/WhereLoop.h"
+#include "sqlite/WhereOrInfo.h"
+#include "sqlite/WhereScan.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags) {
   WhereTerm *pTerm;
   int idx;

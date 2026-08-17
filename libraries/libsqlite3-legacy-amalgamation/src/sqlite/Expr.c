@@ -1,5 +1,31 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include <string.h>
+
+#include "sqlite/Expr.h"
+
+#include "sqlite/Column.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/IdxCover.h"
+#include "sqlite/Index.h"
+#include "sqlite/Parse.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Table.h"
+#include "sqlite/Vdbe.h"
+#include "sqlite/Walker.h"
+#include "sqlite/WhereClause.h"
+#include "sqlite/WhereTerm.h"
+#include "sqlite/i16.h"
+#include "sqlite/sqlite3.h"
+#include "sqlite/sqlite3_int64.h"
+#include "sqlite/sqlite3_value.h"
+#include "sqlite/u16.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
+#include "sqlite/ynVar.h"
 void sqlite3DequoteExpr(Expr *p) {
 
   p->flags |= p->u.zToken[0] == '"' ? 0x4000000 | 0x000080 : 0x4000000;

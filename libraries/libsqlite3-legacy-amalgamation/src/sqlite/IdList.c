@@ -1,5 +1,9 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/IdList.h"
+
+#include "sqlite/ExprList.h"
+#include "sqlite/sqlite3.h"
 int sqlite3IdListIndex(IdList *pList, const char *zName) {
   int i;
 

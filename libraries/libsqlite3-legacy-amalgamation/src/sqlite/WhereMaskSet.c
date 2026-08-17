@@ -1,5 +1,16 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/WhereMaskSet.h"
+
+#include "sqlite/Expr.h"
+#include "sqlite/ExprList.h"
+#include "sqlite/Select.h"
+#include "sqlite/SrcItem.h"
+#include "sqlite/SrcList.h"
+#include "sqlite/Subquery.h"
+#include "sqlite/Window.h"
+#include "sqlite/u32.h"
+#include "sqlite/u8.h"
 Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS) {
   Bitmask mask = 0;
   while (pS) {

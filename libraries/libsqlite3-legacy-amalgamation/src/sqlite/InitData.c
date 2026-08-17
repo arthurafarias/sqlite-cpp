@@ -1,5 +1,11 @@
-#include "sqlite/_All.h"
+#define _GNU_SOURCE 1
 
+#include "sqlite/InitData.h"
+
+#include "sqlite/sqlite3.h"
+#include "sqlite/u32.h"
+#include "sqlite/u64.h"
+#include "sqlite/u8.h"
 void corruptSchema(InitData *pData, char **azObj, const char *zExtra) {
   sqlite3 *db = pData->db;
   if (db->mallocFailed) {
