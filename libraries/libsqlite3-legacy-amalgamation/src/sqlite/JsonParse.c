@@ -1,5 +1,421 @@
 #include "sqlite/_All.h"
 
+const char *const jsonbType[] = {"null", "true", "false", "integer", "integer", "real", "real", "text", "text", "text", "text", "array", "object", "", "", "", ""};
+
+static const char jsonIsSpace[] = {
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+};
+
+static const char jsonSpaces[] = "\011\012\015\040";
+
+const char jsonIsOk[256] = {
+
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+};
+
+void jsonPrintf(int N, JsonString *p, const char *zFormat, ...) {
+  va_list ap;
+  if ((p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N))
+    return;
+
+  va_start(
+
+      ap, zFormat
+
+  )
+
+      ;
+  sqlite3_vsnprintf(N, p->zBuf + p->nUsed, zFormat, ap);
+
+  va_end(
+
+      ap
+
+  )
+
+      ;
+  p->nUsed += (int)strlen(p->zBuf + p->nUsed);
+}
+
+static u8 jsonHexToInt(int h) {
+
+  h += 9 * (1 & (h >> 6));
+
+  return (u8)(h & 0xf);
+}
+
+static u32 jsonHexToInt4(const char *z) {
+  u32 v;
+  v = (jsonHexToInt(z[0]) << 12) + (jsonHexToInt(z[1]) << 8) + (jsonHexToInt(z[2]) << 4) + jsonHexToInt(z[3]);
+  return v;
+}
+
+static int jsonIs2Hex(const char *z) { return (sqlite3CtypeMap[(unsigned char)(z[0])] & 0x08) && (sqlite3CtypeMap[(unsigned char)(z[1])] & 0x08); }
+
+static int jsonIs4Hex(const char *z) { return jsonIs2Hex(z) && jsonIs2Hex(&z[2]); }
+
+static int json5Whitespace(const char *zIn) {
+  int n = 0;
+  const u8 *z = (u8 *)zIn;
+  while (1) {
+    switch (z[n]) {
+    case 0x09:
+    case 0x0a:
+    case 0x0b:
+    case 0x0c:
+    case 0x0d:
+    case 0x20: {
+      n++;
+      break;
+    }
+    case '/': {
+      if (z[n + 1] == '*' && z[n + 2] != 0) {
+        int j;
+        for (j = n + 3; z[j] != '/' || z[j - 1] != '*'; j++) {
+          if (z[j] == 0)
+            goto whitespace_done;
+        }
+        n = j + 1;
+        break;
+      } else if (z[n + 1] == '/') {
+        int j;
+        char c;
+        for (j = n + 2; (c = z[j]) != 0; j++) {
+          if (c == '\n' || c == '\r')
+            break;
+          if (0xe2 == (u8)c && 0x80 == (u8)z[j + 1] && (0xa8 == (u8)z[j + 2] || 0xa9 == (u8)z[j + 2])) {
+            j += 2;
+            break;
+          }
+        }
+        n = j;
+        if (z[n])
+          n++;
+        break;
+      }
+      goto whitespace_done;
+    }
+    case 0xc2: {
+      if (z[n + 1] == 0xa0) {
+        n += 2;
+        break;
+      }
+      goto whitespace_done;
+    }
+    case 0xe1: {
+      if (z[n + 1] == 0x9a && z[n + 2] == 0x80) {
+        n += 3;
+        break;
+      }
+      goto whitespace_done;
+    }
+    case 0xe2: {
+      if (z[n + 1] == 0x80) {
+        u8 c = z[n + 2];
+        if (c < 0x80)
+          goto whitespace_done;
+        if (c <= 0x8a || c == 0xa8 || c == 0xa9 || c == 0xaf) {
+          n += 3;
+          break;
+        }
+      } else if (z[n + 1] == 0x81 && z[n + 2] == 0x9f) {
+        n += 3;
+        break;
+      }
+      goto whitespace_done;
+    }
+    case 0xe3: {
+      if (z[n + 1] == 0x80 && z[n + 2] == 0x80) {
+        n += 3;
+        break;
+      }
+      goto whitespace_done;
+    }
+    case 0xef: {
+      if (z[n + 1] == 0xbb && z[n + 2] == 0xbf) {
+        n += 3;
+        break;
+      }
+      goto whitespace_done;
+    }
+    default: {
+      goto whitespace_done;
+    }
+    }
+  }
+whitespace_done:
+  return n;
+}
+
+static const struct NanInfName {
+  char c1;
+  char c2;
+  char n;
+  char eType;
+  char nRepl;
+  char *zMatch;
+  char *zRepl;
+} aNanInfName[] = {
+    {'i', 'I', 3, 5, 7, "inf", "9.0e999"}, {'i', 'I', 8, 5, 7, "infinity", "9.0e999"}, {'n', 'N', 3, 0, 4, "NaN", "null"}, {'q', 'Q', 4, 0, 4, "QNaN", "null"}, {'s', 'S', 4, 0, 4, "SNaN", "null"},
+};
+
+static int jsonIs4HexB(const char *z, int *pOp) {
+  if (z[0] != 'u')
+    return 0;
+  if (!jsonIs4Hex(&z[1]))
+    return 0;
+  *pOp = 8;
+  return 1;
+}
+
+static int jsonBlobOverwrite(u8 *aOut, const u8 *aIns, u32 nIns, u32 d) {
+  u32 szPayload;
+  u32 i;
+  u8 szHdr;
+
+  static const u8 aType[] = {0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0};
+
+  if ((aIns[0] & 0x0f) <= 2)
+    return 0;
+  switch (aIns[0] >> 4) {
+  default: {
+    if (((1 << d) & 0x116) == 0)
+      return 0;
+    i = d + 1;
+    szHdr = 1;
+    break;
+  }
+  case 12: {
+    if (((1 << d) & 0x8a) == 0)
+      return 0;
+    i = d + 2;
+    szHdr = 2;
+    break;
+  }
+  case 13: {
+    if (d != 2 && d != 6)
+      return 0;
+    i = d + 3;
+    szHdr = 3;
+    break;
+  }
+  case 14: {
+    if (d != 4)
+      return 0;
+    i = 9;
+    szHdr = 5;
+    break;
+  }
+  case 15: {
+    return 0;
+  }
+  }
+
+  aOut[0] = (aIns[0] & 0x0f) | aType[i - 2];
+  memcpy(&aOut[i], &aIns[szHdr], nIns - szHdr);
+  szPayload = nIns - szHdr;
+  while (1) {
+    i--;
+    aOut[i] = szPayload & 0xff;
+    if (i == 1)
+      break;
+    szPayload >>= 8;
+  }
+
+  return 1;
+}
+
+static u32 jsonBytesToBypass(const char *z, u32 n) {
+  u32 i = 0;
+  while (i + 1 < n) {
+    if (z[i] != '\\')
+      return i;
+    if (z[i + 1] == '\n') {
+      i += 2;
+      continue;
+    }
+    if (z[i + 1] == '\r') {
+      if (i + 2 < n && z[i + 2] == '\n') {
+        i += 3;
+      } else {
+        i += 2;
+      }
+      continue;
+    }
+    if (0xe2 == (u8)z[i + 1] && i + 3 < n && 0x80 == (u8)z[i + 2] && (0xa8 == (u8)z[i + 3] || 0xa9 == (u8)z[i + 3])) {
+      i += 4;
+      continue;
+    }
+    break;
+  }
+  return i;
+}
+
+static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut) {
+
+  if (n < 2) {
+    *piOut = 0x99999;
+    return n;
+  }
+  switch ((u8)z[1]) {
+  case 'u': {
+    u32 v, vlo;
+    if (n < 6) {
+      *piOut = 0x99999;
+      return n;
+    }
+    v = jsonHexToInt4(&z[2]);
+    if ((v & 0xfc00) == 0xd800 && n >= 12 && z[6] == '\\' && z[7] == 'u' && ((vlo = jsonHexToInt4(&z[8])) & 0xfc00) == 0xdc00) {
+      *piOut = ((v & 0x3ff) << 10) + (vlo & 0x3ff) + 0x10000;
+      return 12;
+    } else {
+      *piOut = v;
+      return 6;
+    }
+  }
+  case 'b': {
+    *piOut = '\b';
+    return 2;
+  }
+  case 'f': {
+    *piOut = '\f';
+    return 2;
+  }
+  case 'n': {
+    *piOut = '\n';
+    return 2;
+  }
+  case 'r': {
+    *piOut = '\r';
+    return 2;
+  }
+  case 't': {
+    *piOut = '\t';
+    return 2;
+  }
+  case 'v': {
+    *piOut = '\v';
+    return 2;
+  }
+  case '0': {
+
+    *piOut = (n > 2 && (sqlite3CtypeMap[(unsigned char)(z[2])] & 0x04)) ? 0x99999 : 0;
+
+    return 2;
+  }
+  case '\'':
+  case '"':
+  case '/':
+  case '\\': {
+    *piOut = z[1];
+    return 2;
+  }
+  case 'x': {
+    if (n < 4) {
+      *piOut = 0x99999;
+      return n;
+    }
+    *piOut = (jsonHexToInt(z[2]) << 4) | jsonHexToInt(z[3]);
+    return 4;
+  }
+  case 0xe2:
+  case '\r':
+  case '\n': {
+    u32 nSkip = jsonBytesToBypass(z, n);
+    if (nSkip == 0) {
+      *piOut = 0x99999;
+      return n;
+    } else if (nSkip == n) {
+      *piOut = 0;
+      return n;
+    } else if (z[nSkip] == '\\') {
+      return nSkip + jsonUnescapeOneChar(&z[nSkip], n - nSkip, piOut);
+    } else {
+      int sz = sqlite3Utf8ReadLimited((u8 *)&z[nSkip], n - nSkip, piOut);
+      return nSkip + sz;
+    }
+  }
+  default: {
+    *piOut = 0x99999;
+    return 2;
+  }
+  }
+}
+
+static __attribute__((noinline)) int jsonLabelCompareEscaped(const char *zLeft, u32 nLeft, int rawLeft, const char *zRight, u32 nRight, int rawRight) {
+  u32 cLeft, cRight;
+
+  while (1) {
+    if (nLeft == 0) {
+      cLeft = 0;
+    } else if (rawLeft || zLeft[0] != '\\') {
+      cLeft = ((u8 *)zLeft)[0];
+      if (cLeft >= 0xc0) {
+        int sz = sqlite3Utf8ReadLimited((u8 *)zLeft, nLeft, &cLeft);
+        zLeft += sz;
+        nLeft -= sz;
+      } else {
+        zLeft++;
+        nLeft--;
+      }
+    } else {
+      u32 n = jsonUnescapeOneChar(zLeft, nLeft, &cLeft);
+      zLeft += n;
+
+      ((void)(0))
+
+          ;
+      nLeft -= n;
+    }
+    if (nRight == 0) {
+      cRight = 0;
+    } else if (rawRight || zRight[0] != '\\') {
+      cRight = ((u8 *)zRight)[0];
+      if (cRight >= 0xc0) {
+        int sz = sqlite3Utf8ReadLimited((u8 *)zRight, nRight, &cRight);
+        zRight += sz;
+        nRight -= sz;
+      } else {
+        zRight++;
+        nRight--;
+      }
+    } else {
+      u32 n = jsonUnescapeOneChar(zRight, nRight, &cRight);
+      zRight += n;
+
+      ((void)(0))
+
+          ;
+      nRight -= n;
+    }
+    if (cLeft != cRight)
+      return 0;
+    if (cLeft == 0)
+      return 1;
+  }
+}
+
+static int jsonLabelCompare(const char *zLeft, u32 nLeft, int rawLeft, const char *zRight, u32 nRight, int rawRight) {
+  if (rawLeft && rawRight) {
+
+    if (nLeft != nRight)
+      return 0;
+    return memcmp(zLeft, zRight, nLeft) == 0;
+  } else {
+    return jsonLabelCompareEscaped(zLeft, nLeft, rawLeft, zRight, nRight, rawRight);
+  }
+}
+
+
 void jsonParseReset(JsonParse *pParse) {
 
   if (pParse->bJsonIsRCStr) {

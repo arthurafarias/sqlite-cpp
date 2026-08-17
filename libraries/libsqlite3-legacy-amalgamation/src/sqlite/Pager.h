@@ -199,6 +199,9 @@ extern C {
   int pagerExclusiveLock(Pager * pPager);
   int pagerOpenWal(Pager * pPager);
 
+  extern const unsigned char aJournalMagic[8];
+  void freeSuperJournal(char *zSuper);
+
 #ifdef __cplusplus
 }
 #endif

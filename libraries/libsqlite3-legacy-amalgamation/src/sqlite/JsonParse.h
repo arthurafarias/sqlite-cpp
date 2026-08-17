@@ -58,6 +58,10 @@ extern C {
   void jsonReturnFromBlob(JsonParse * pParse, u32 i, sqlite3_context * pCtx, int eMode);
   int jsonMergePatch(JsonParse * pTarget, u32 iTarget, const JsonParse *pPatch, u32 iPatch, u32 iDepth);
 
+  extern const char *const jsonbType[17];
+  extern const char jsonIsOk[256];
+  void jsonPrintf(int N, JsonString *p, const char *zFormat, ...);
+
 #ifdef __cplusplus
 }
 #endif

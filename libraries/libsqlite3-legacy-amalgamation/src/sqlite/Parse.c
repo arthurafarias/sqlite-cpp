@@ -1,5 +1,316 @@
 #include "sqlite/_All.h"
 
+static __attribute__((noinline)) int isValidSchemaTableName(const char *zTab, Table *pTab, const char *zDb) {
+  const char *zLegacy;
+
+  if (sqlite3_strnicmp(zTab, "sqlite_", 7) != 0)
+    return 0;
+  zLegacy = pTab->zName;
+  if (strcmp(zLegacy + 7, &"sqlite_temp_master"[7]) == 0) {
+    if (sqlite3StrICmp(zTab + 7, &"sqlite_temp_schema"[7]) == 0) {
+      return 1;
+    }
+    if (zDb == 0)
+      return 0;
+    if (sqlite3StrICmp(zTab + 7, &"sqlite_master"[7]) == 0)
+      return 1;
+    if (sqlite3StrICmp(zTab + 7, &"sqlite_schema"[7]) == 0)
+      return 1;
+  } else {
+    if (sqlite3StrICmp(zTab + 7, &"sqlite_schema"[7]) == 0)
+      return 1;
+  }
+  return 0;
+}
+
+const struct ExprList_item zeroItem = {0};
+
+static int hasColumn(const i16 *aiCol, int nCol, int x) {
+  while (nCol-- > 0) {
+    if (x == *(aiCol++)) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int collationMatch(const char *zColl, Index *pIndex) {
+  int i;
+
+  for (i = 0; i < pIndex->nColumn; i++) {
+    const char *z = pIndex->azColl[i];
+
+    ((void)(0))
+
+        ;
+    if (0 == sqlite3StrICmp(z, zColl)) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static const PragmaName aPragmaName[] = {
+
+    {"analysis_limit", 1, 0x10, 0, 0, 0},
+
+    {"application_id", 2, 0x04 | 0x10, 0, 0, 8},
+
+    {"auto_vacuum", 3, 0x01 | 0x10 | 0x80 | 0x04, 0, 0, 0},
+
+    {"automatic_index", 4, 0x10 | 0x04, 0, 0, 0x00008000},
+
+    {"busy_timeout", 5, 0x10, 56, 1, 0},
+
+    {"cache_size", 6, 0x01 | 0x10 | 0x80 | 0x04, 0, 0, 0},
+
+    {"cache_spill", 7, 0x10 | 0x80 | 0x04, 0, 0, 0},
+
+    {"case_sensitive_like", 8, 0x02, 0, 0, 0},
+
+    {"cell_size_check", 4, 0x10 | 0x04, 0, 0, 0x00200000},
+
+    {"checkpoint_fullfsync", 4, 0x10 | 0x04, 0, 0, 0x00000010},
+
+    {"collation_list", 9, 0x10, 33, 2, 0},
+
+    {"compile_options", 10, 0x10, 0, 0, 0},
+
+    {"count_changes", 4, 0x10 | 0x04, 0, 0, ((u64)(0x00001) << 32)},
+
+    {"data_version", 2, 0x08 | 0x10, 0, 0, 15},
+
+    {"database_list", 12, 0x10, 50, 3, 0},
+
+    {"default_cache_size", 13, 0x01 | 0x10 | 0x80 | 0x04, 55, 1, 0},
+
+    {"defer_foreign_keys", 4, 0x10 | 0x04, 0, 0, 0x00080000},
+
+    {"empty_result_callbacks", 4, 0x10 | 0x04, 0, 0, 0x00000100},
+
+    {"encoding", 14, 0x10 | 0x04, 0, 0, 0},
+
+    {"foreign_key_check", 15, 0x01 | 0x10 | 0x20 | 0x40, 43, 4, 0},
+
+    {"foreign_key_list", 16, 0x01 | 0x20 | 0x40, 0, 8, 0},
+
+    {"foreign_keys", 4, 0x10 | 0x04, 0, 0, 0x00004000},
+
+    {"freelist_count", 2, 0x08 | 0x10, 0, 0, 0},
+
+    {"full_column_names", 4, 0x10 | 0x04, 0, 0, 0x00000004},
+    {"fullfsync", 4, 0x10 | 0x04, 0, 0, 0x00000008},
+
+    {"function_list", 17, 0x10, 15, 6, 0},
+
+    {"hard_heap_limit", 18, 0x10, 0, 0, 0},
+
+    {"ignore_check_constraints", 4, 0x10 | 0x04, 0, 0, 0x00000200},
+
+    {"incremental_vacuum", 19, 0x01 | 0x02, 0, 0, 0},
+
+    {"index_info", 20, 0x01 | 0x20 | 0x40, 27, 3, 0},
+    {"index_list", 21, 0x01 | 0x20 | 0x40, 33, 5, 0},
+    {"index_xinfo", 20, 0x01 | 0x20 | 0x40, 27, 6, 1},
+
+    {"integrity_check", 22, 0x01 | 0x10 | 0x20 | 0x40, 0, 0, 0},
+
+    {"journal_mode", 23, 0x01 | 0x10 | 0x80, 0, 0, 0},
+    {"journal_size_limit", 24, 0x10 | 0x80, 0, 0, 0},
+
+    {"legacy_alter_table", 4, 0x10 | 0x04, 0, 0, 0x04000000},
+
+    {"locking_mode", 26, 0x10 | 0x80, 0, 0, 0},
+    {"max_page_count", 27, 0x01 | 0x10 | 0x80, 0, 0, 0},
+    {"mmap_size", 28, 0, 0, 0, 0},
+
+    {"module_list", 29, 0x10, 9, 1, 0},
+
+    {"optimize", 30, 0x20 | 0x01, 0, 0, 0},
+
+    {"page_count", 27, 0x01 | 0x10 | 0x80, 0, 0, 0},
+    {"page_size", 31, 0x10 | 0x80 | 0x04, 0, 0, 0},
+
+    {"pragma_list", 32, 0x10, 9, 1, 0},
+
+    {"query_only", 4, 0x10 | 0x04, 0, 0, 0x00100000},
+
+    {"quick_check", 22, 0x01 | 0x10 | 0x20 | 0x40, 0, 0, 0},
+
+    {"read_uncommitted", 4, 0x10 | 0x04, 0, 0, ((u64)(0x00004) << 32)},
+    {"recursive_triggers", 4, 0x10 | 0x04, 0, 0, 0x00002000},
+    {"reverse_unordered_selects", 4, 0x10 | 0x04, 0, 0, 0x00001000},
+
+    {"schema_version", 2, 0x04 | 0x10, 0, 0, 1},
+
+    {"secure_delete", 33, 0x10, 0, 0, 0},
+
+    {"short_column_names", 4, 0x10 | 0x04, 0, 0, 0x00000040},
+
+    {"shrink_memory", 34, 0x02, 0, 0, 0},
+    {"soft_heap_limit", 35, 0x10, 0, 0, 0},
+
+    {"synchronous", 36, 0x01 | 0x10 | 0x80 | 0x04, 0, 0, 0},
+
+    {"table_info", 37, 0x01 | 0x20 | 0x40, 8, 6, 0},
+    {"table_list", 38, 0x01 | 0x20, 21, 6, 0},
+    {"table_xinfo", 37, 0x01 | 0x20 | 0x40, 8, 7, 1},
+
+    {"temp_store", 39, 0x10 | 0x04, 0, 0, 0},
+    {"temp_store_directory", 40, 0x04, 0, 0, 0},
+
+    {"threads", 41, 0x10, 0, 0, 0},
+
+    {"trusted_schema", 4, 0x10 | 0x04, 0, 0, 0x00000080},
+
+    {"user_version", 2, 0x04 | 0x10, 0, 0, 6},
+
+    {"wal_autocheckpoint", 42, 0, 0, 0, 0},
+    {"wal_checkpoint", 43, 0x01, 47, 3, 0},
+
+    {"writable_schema", 4, 0x10 | 0x04, 0, 0, 0x00000001 | 0x08000000},
+
+};
+
+u8 getSafetyLevel(const char *z, int omitFull, u8 dflt) {
+
+  static const char zText[] = "onoffalseyestruextrafull";
+  static const u8 iOffset[] = {0, 1, 2, 4, 9, 12, 15, 20};
+  static const u8 iLength[] = {2, 2, 3, 5, 3, 4, 5, 4};
+  static const u8 iValue[] = {1, 0, 0, 0, 1, 1, 3, 2};
+
+  int i, n;
+  if ((sqlite3CtypeMap[(unsigned char)(*z)] & 0x04)) {
+    return (u8)sqlite3Atoi(z);
+  }
+  n = sqlite3Strlen30(z);
+  for (i = 0; i < ((int)(sizeof(iLength) / sizeof(iLength[0]))); i++) {
+    if (iLength[i] == n && sqlite3_strnicmp(&zText[iOffset[i]], z, n) == 0 && (!omitFull || iValue[i] <= 1)) {
+      return iValue[i];
+    }
+  }
+  return dflt;
+}
+
+static int getLockingMode(const char *z) {
+  if (z) {
+    if (0 == sqlite3StrICmp(z, "exclusive"))
+      return 1;
+    if (0 == sqlite3StrICmp(z, "normal"))
+      return 0;
+  }
+  return -1;
+}
+
+static int getAutoVacuum(const char *z) {
+  int i;
+  if (0 == sqlite3StrICmp(z, "none"))
+    return 0;
+  if (0 == sqlite3StrICmp(z, "full"))
+    return 1;
+  if (0 == sqlite3StrICmp(z, "incremental"))
+    return 2;
+  i = sqlite3Atoi(z);
+  return (u8)((i >= 0 && i <= 2) ? i : 0);
+}
+
+static int getTempStore(const char *z) {
+  if (z[0] >= '0' && z[0] <= '2') {
+    return z[0] - '0';
+  } else if (sqlite3StrICmp(z, "file") == 0) {
+    return 1;
+  } else if (sqlite3StrICmp(z, "memory") == 0) {
+    return 2;
+  } else {
+    return 0;
+  }
+}
+
+static const char *actionName(u8 action) {
+  const char *zName;
+  switch (action) {
+  case 8:
+    zName = "SET NULL";
+    break;
+  case 9:
+    zName = "SET DEFAULT";
+    break;
+  case 10:
+    zName = "CASCADE";
+    break;
+  case 7:
+    zName = "RESTRICT";
+    break;
+  default:
+    zName = "NO ACTION";
+
+    ((void)(0))
+
+        ;
+    break;
+  }
+  return zName;
+}
+
+const PragmaName *pragmaLocate(const char *zName) {
+  int upr, lwr, mid = 0, rc;
+  lwr = 0;
+  upr = ((int)(sizeof(aPragmaName) / sizeof(aPragmaName[0]))) - 1;
+  while (lwr <= upr) {
+    mid = (lwr + upr) / 2;
+    rc = sqlite3_stricmp(zName, aPragmaName[mid].zName);
+    if (rc == 0)
+      break;
+    if (rc < 0) {
+      upr = mid - 1;
+    } else {
+      lwr = mid + 1;
+    }
+  }
+  return lwr > upr ? 0 : &aPragmaName[mid];
+}
+
+static int getToken(const unsigned char **pz) {
+  const unsigned char *z = *pz;
+  int t;
+  do {
+    z += sqlite3GetToken(z, &t);
+  } while (t == 184 || t == 185);
+  if (t == 60 || t == 118 || t == 119 || t == 165 || t == 166 || sqlite3ParserFallback(t) == 60) {
+    t = 60;
+  }
+  *pz = z;
+  return t;
+}
+
+static int analyzeWindowKeyword(const unsigned char *z) {
+  int t;
+  t = getToken(&z);
+  if (t != 60)
+    return 60;
+  t = getToken(&z);
+  if (t != 24)
+    return 60;
+  return 165;
+}
+
+static int analyzeOverKeyword(const unsigned char *z, int lastToken) {
+  if (lastToken == 23) {
+    int t = getToken(&z);
+    if (t == 22 || t == 60)
+      return 166;
+  }
+  return 60;
+}
+
+static int analyzeFilterKeyword(const unsigned char *z, int lastToken) {
+  if (lastToken == 23 && getToken(&z) == 22) {
+    return 167;
+  }
+  return 60;
+}
+
+
 int parseTimezone(const char *zDate, DateTime *p) {
   int sgn = 0;
   int nHr, nMn;

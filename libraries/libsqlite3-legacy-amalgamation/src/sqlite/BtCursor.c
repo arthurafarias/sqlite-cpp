@@ -1,5 +1,21 @@
 #include "sqlite/_All.h"
 
+static int copyPayload(void *pPayload, void *pBuf, int nByte, int eOp, DbPage *pDbPage) {
+  if (eOp) {
+
+    int rc = sqlite3PagerWrite(pDbPage);
+    if (rc != 0) {
+      return rc;
+    }
+    memcpy(pPayload, pBuf, nByte);
+  } else {
+
+    memcpy(pBuf, pPayload, nByte);
+  }
+  return 0;
+}
+
+
 void sqlite3BtreeEnterCursor(BtCursor *pCur) { sqlite3BtreeEnter(pCur->pBtree); }
 
 void sqlite3BtreeLeaveCursor(BtCursor *pCur) { sqlite3BtreeLeave(pCur->pBtree); }

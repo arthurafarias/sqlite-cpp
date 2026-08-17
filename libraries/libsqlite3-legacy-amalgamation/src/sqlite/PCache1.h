@@ -37,6 +37,8 @@ extern C {
   void pcache1TruncateUnsafe(PCache1 * pCache, unsigned int iLimit);
   __attribute__((noinline)) PgHdr1 *pcache1FetchStage2(PCache1 * pCache, unsigned int iKey, int createFlag);
 
+  void *pcache1Alloc(int nByte);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,8 @@
 #include "sqlite/_All.h"
 
+int countLeadingZeros(u64 m) { return __builtin_clzll(m); }
+
+
 void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound) {
   int i;
   int n;

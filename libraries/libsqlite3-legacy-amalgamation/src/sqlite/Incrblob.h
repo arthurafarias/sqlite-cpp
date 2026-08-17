@@ -9,7 +9,7 @@ extern C {
   typedef struct BtCursor BtCursor;
   typedef struct Table Table;
   typedef struct sqlite3 sqlite3;
-  typedef struct Vdbe sqlite3_stmt;
+  typedef struct sqlite3_stmt sqlite3_stmt;
   typedef struct Incrblob Incrblob;
   struct Incrblob {
     int nByte;

@@ -39,6 +39,9 @@ extern C {
   int daysAfterMonday(DateTime * pDate);
   int daysAfterSunday(DateTime * pDate);
 
+  int getDigits(const char *zDate, const char *zFormat, ...);
+  int validJulianDay(sqlite3_int64 iJD);
+
 #ifdef __cplusplus
 }
 #endif

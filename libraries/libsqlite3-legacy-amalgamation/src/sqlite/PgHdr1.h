@@ -24,6 +24,8 @@ extern C {
   PgHdr1 *pcache1PinPage(PgHdr1 * pPage);
   void pcache1RemoveFromHash(PgHdr1 * pPage, int freeFlag);
 
+  void pcache1Free(void *p);
+
 #ifdef __cplusplus
 }
 #endif

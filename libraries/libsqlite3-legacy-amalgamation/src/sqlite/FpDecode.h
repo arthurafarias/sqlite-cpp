@@ -15,6 +15,7 @@ extern C {
 #include "sqlite/sqlite3_sourceid.h"
 #include "sqlite/yDbMask.h"
 #include "sqlite/ynVar.h"
+#include "sqlite/u64.h"
 
   typedef struct FpDecode FpDecode;
 
@@ -28,6 +29,8 @@ extern C {
   };
 
   void sqlite3FpDecode(FpDecode *, double, int, int);
+
+  int countLeadingZeros(u64 m);
 
 #ifdef __cplusplus
 }

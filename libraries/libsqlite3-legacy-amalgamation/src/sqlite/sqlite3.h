@@ -85,7 +85,7 @@ typedef struct sqlite3_index_info sqlite3_index_info;
 typedef struct sqlite3_module sqlite3_module;
 typedef struct sqlite3_mutex sqlite3_mutex;
 typedef struct sqlite3_mutex_methods sqlite3_mutex_methods;
-typedef struct Vdbe sqlite3_stmt;
+typedef struct sqlite3_stmt sqlite3_stmt;
 typedef struct sqlite3_str sqlite3_str;
 typedef struct sqlite3_vfs sqlite3_vfs;
 typedef struct sqlite3_vtab sqlite3_vtab;

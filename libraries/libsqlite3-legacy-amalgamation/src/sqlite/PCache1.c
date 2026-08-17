@@ -1,5 +1,42 @@
 #include "sqlite/_All.h"
 
+void *pcache1Alloc(int nByte) {
+  void *p = 0;
+
+  if (nByte <= (pcache1_g).szSlot) {
+    sqlite3_mutex_enter((pcache1_g).mutex);
+    p = (PgHdr1 *)(pcache1_g).pFree;
+    if (p) {
+      (pcache1_g).pFree = (pcache1_g).pFree->pNext;
+      (pcache1_g).nFreeSlot--;
+      __atomic_store_n((&(pcache1_g).bUnderPressure), ((pcache1_g).nFreeSlot < (pcache1_g).nReserve), 0);
+
+      ((void)(0))
+
+          ;
+      sqlite3StatusHighwater(7, nByte);
+      sqlite3StatusUp(1, 1);
+    }
+    sqlite3_mutex_leave((pcache1_g).mutex);
+  }
+  if (p == 0) {
+
+    p = sqlite3Malloc(nByte);
+
+    if (p) {
+      int sz = sqlite3MallocSize(p);
+      sqlite3_mutex_enter((pcache1_g).mutex);
+      sqlite3StatusHighwater(7, nByte);
+      sqlite3StatusUp(2, sz);
+      sqlite3_mutex_leave((pcache1_g).mutex);
+    }
+
+    ;
+  }
+  return p;
+}
+
+
 int pcache1InitBulk(PCache1 *pCache) {
   i64 szBulk;
   char *zBulk;

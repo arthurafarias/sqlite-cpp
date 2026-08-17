@@ -1,5 +1,38 @@
 #include "sqlite/_All.h"
 
+static int whereUsablePartialIndex(int iTab, u8 jointype, WhereClause *pWC, Expr *pWhere) {
+  int i;
+  WhereTerm *pTerm;
+  Parse *pParse;
+
+  if (jointype & 0x40)
+    return 0;
+  pParse = pWC->pWInfo->pParse;
+  while (pWhere->op == 44) {
+    if (!whereUsablePartialIndex(iTab, jointype, pWC, pWhere->pLeft))
+      return 0;
+    pWhere = pWhere->pRight;
+  }
+  for (i = 0, pTerm = pWC->a; i < pWC->nTerm; i++, pTerm++) {
+    Expr *pExpr;
+    pExpr = pTerm->pExpr;
+    if ((!(((pExpr)->flags & (u32)(0x000001)) != 0) || pExpr->w.iJoin == iTab) && ((jointype & 0x20) == 0 || (((pExpr)->flags & (u32)(0x000001)) != 0)) && sqlite3ExprImpliesExpr(pParse, pExpr, pWhere, iTab) && !sqlite3ExprImpliesExpr(pParse, pExpr, pWhere, -1) && (pTerm->wtFlags & 0x0080) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int allConstraintsUsed(struct sqlite3_index_constraint_usage *aUsage, int nCons) {
+  int ii;
+  for (ii = 0; ii < nCons; ii++) {
+    if (aUsage[ii].argvIndex <= 0)
+      return 0;
+  }
+  return 1;
+}
+
+
 int whereLoopInsert(WhereLoopBuilder *pBuilder, WhereLoop *pTemplate) {
   WhereLoop **ppPrev, *p;
   WhereInfo *pWInfo = pBuilder->pWInfo;

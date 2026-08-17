@@ -13,7 +13,7 @@ extern C {
   typedef struct sqlite3_value Mem;
 
   typedef struct sqlite3 sqlite3;
-  typedef struct Vdbe sqlite3_stmt;
+  typedef struct sqlite3_stmt sqlite3_stmt;
 
   const char *sqlite3_sql(sqlite3_stmt * pStmt);
   char *sqlite3_expanded_sql(sqlite3_stmt * pStmt);

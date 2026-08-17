@@ -1,5 +1,8 @@
 #include "sqlite/_All.h"
 
+static int isFatalError(int rc) { return (rc != 0 && rc != 5 && (rc != 6)); }
+
+
 int backupOnePage(sqlite3_backup *p, Pgno iSrcPg, const u8 *zSrcData, int bUpdate) {
   Pager *const pDestPager = sqlite3BtreePager(p->pDest);
   const int nSrcPgsz = sqlite3BtreeGetPageSize(p->pSrc);

@@ -270,6 +270,7 @@ extern "C" {
 #include "sqlite/WindowCsrAndReg.h"
 #include "sqlite/WindowCodeArg.h"
 #include "sqlite/WindowRewrite.h"
+#include "sqlite/WindowFunctionNames.h"
 #include "sqlite/YYMINORTYPE.h"
 #include "sqlite/analysisInfo.h"
 #include "sqlite/compareInfo.h"
@@ -315,7 +316,7 @@ extern "C" {
 #include "sqlite/vxworksFileId.h"
 #include "sqlite/yyStackEntry.h"
 #include "sqlite/yyParser.h"
-#include "sqlite/_Uncategorized.h"
+#include "sqlite/YyAction.h"
 // clang-format on
 
 #ifdef __cplusplus

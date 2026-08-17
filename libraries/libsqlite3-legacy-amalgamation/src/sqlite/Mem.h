@@ -85,6 +85,8 @@ __attribute__((noinline)) Mem *out2PrereleaseWithClear(Mem *pOut);
 u64 filterHash(const Mem *aMem, const Op *pOp);
 const char *vdbeMemTypeName(Mem *pMem);
 
+  int isAllZero(const char *z, int n);
+
 #ifdef __cplusplus
 }
 #endif

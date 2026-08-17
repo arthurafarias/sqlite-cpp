@@ -28,6 +28,8 @@ extern C {
   unsigned short int yy_reduce(yyParser * yypParser, unsigned int yyruleno, int yyLookahead, Token yyLookaheadToken, Parse *pParse);
   void yy_syntax_error(yyParser * yypParser, int yymajor, Token yyminor);
 
+  extern const signed char yyRuleInfoNRhs[412];
+
 #ifdef __cplusplus
 }
 #endif

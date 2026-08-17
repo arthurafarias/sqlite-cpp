@@ -215,6 +215,8 @@ extern C {
   void codeOffset(Vdbe * v, int iOffset, int iContinue);
   void whereLikeOptimizationStringFixup(Vdbe * v, WhereLevel * pLevel, WhereTerm * pTerm);
 
+  extern const char *const pragCName[57];
+
 #ifdef __cplusplus
 }
 #endif

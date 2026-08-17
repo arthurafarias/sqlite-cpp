@@ -22,6 +22,7 @@ extern C {
 #include "sqlite/u16.h"
 #include "sqlite/yDbMask.h"
 #include "sqlite/ynVar.h"
+#include "sqlite/PragmaName.h"
   typedef struct AggInfo AggInfo;
   typedef struct AuthContext AuthContext;
   typedef struct CollSeq CollSeq;
@@ -577,6 +578,10 @@ extern C {
   Expr *sqlite3PExprIsNull(Parse * pParse, int op, Expr *pLeft);
   Expr *sqlite3PExprIs(Parse * pParse, int op, Expr *pLeft, Expr *pRight);
   ExprList *parserAddExprIdListTerm(Parse * pParse, ExprList * pPrior, Token * pIdToken, int hasCollate, int sortOrder);
+
+  extern const struct ExprList_item zeroItem;
+  u8 getSafetyLevel(const char *z, int omitFull, u8 dflt);
+  const PragmaName *pragmaLocate(const char *zName);
 
 #ifdef __cplusplus
 }

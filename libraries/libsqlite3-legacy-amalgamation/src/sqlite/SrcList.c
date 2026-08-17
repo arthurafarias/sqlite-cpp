@@ -1,5 +1,39 @@
 #include "sqlite/_All.h"
 
+static int allowedOp(int op) {
+
+  if (op > 58)
+    return 0;
+  if (op >= 54)
+    return 1;
+  return op == 50 || op == 51 || op == 45;
+}
+
+static u16 operatorMask(int op) {
+  u16 c;
+
+  if (op >= 54) {
+
+    ((void)(0))
+
+        ;
+    c = (u16)(0x0002 << (op - 54));
+  } else if (op == 50) {
+    c = 0x0001;
+  } else if (op == 51) {
+    c = 0x0100;
+  } else {
+
+    ((void)(0))
+
+        ;
+    c = 0x0080;
+  }
+
+  return c;
+}
+
+
 int tableAndColumnIndex(SrcList *pSrc, int iStart, int iEnd, const char *zCol, int *piTab, int *piCol, int bIgnoreHidden) {
   int i;
   int iCol;

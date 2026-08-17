@@ -6,6 +6,7 @@ extern C {
 
 #include "sqlite/Mem.h"
 
+#include "sqlite/compareInfo.h"
 #include "sqlite/i64.h"
 #include "sqlite/sqlite3_destructor_type.h"
 #include "sqlite/sqlite3_int64.h"
@@ -233,6 +234,8 @@ extern C {
   void jsonObjectCompute(sqlite3_context * ctx, int isFinal);
   void jsonObjectValue(sqlite3_context * ctx);
   void jsonObjectFinal(sqlite3_context * ctx);
+
+  int patternCompare(const u8 *zPattern, const u8 *zString, const struct compareInfo *pInfo, u32 matchOther);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,16 @@
 #include "sqlite/_All.h"
 
+const unsigned char aJournalMagic[] = {
+    0xd9, 0xd5, 0x05, 0xf9, 0x20, 0xa1, 0x63, 0xd7,
+};
+
+void freeSuperJournal(char *zSuper) {
+  if (zSuper) {
+    sqlite3_free(&zSuper[-4]);
+  }
+}
+
+
 int sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno) {
 
   if (pPager->fd->pMethods == 0)

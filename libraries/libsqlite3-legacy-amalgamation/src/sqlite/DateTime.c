@@ -1,5 +1,89 @@
 #include "sqlite/_All.h"
 
+int getDigits(const char *zDate, const char *zFormat, ...) {
+
+  static const u16 aMx[] = {12, 14, 24, 31, 59, 14712};
+  va_list ap;
+  int cnt = 0;
+  char nextC;
+
+  va_start(
+
+      ap, zFormat
+
+  )
+
+      ;
+  do {
+    char N = zFormat[0] - '0';
+    char min = zFormat[1] - '0';
+    int val = 0;
+    u16 max;
+
+    ((void)(0))
+
+        ;
+    max = aMx[zFormat[2] - 'a'];
+    nextC = zFormat[3];
+    val = 0;
+    while (N--) {
+      if (!(sqlite3CtypeMap[(unsigned char)(*zDate)] & 0x04)) {
+        goto end_getDigits;
+      }
+      val = val * 10 + *zDate - '0';
+      zDate++;
+    }
+    if (val < (int)min || val > (int)max || (nextC != 0 && nextC != *zDate)) {
+      goto end_getDigits;
+    }
+    *
+
+        va_arg(
+
+            ap
+
+            ,
+
+            int *
+
+            )
+
+        = val;
+    zDate++;
+    cnt++;
+    zFormat += 4;
+  } while (nextC);
+end_getDigits:
+
+  va_end(
+
+      ap
+
+  )
+
+      ;
+  return cnt;
+}
+
+int validJulianDay(sqlite3_int64 iJD) { return iJD >= 0 && iJD <= ((((i64)0x1a640) << 32) | 0x1072fdff); }
+
+static int osLocaltime(time_t *t, struct tm *pTm) {
+  int rc;
+
+  if (sqlite3Config.bLocaltimeFault) {
+    if (sqlite3Config.xAltLocaltime != 0) {
+      return sqlite3Config.xAltLocaltime((const void *)t, (void *)pTm);
+    } else {
+      return 1;
+    }
+  }
+
+  rc = localtime_r(t, pTm) == 0;
+
+  return rc;
+}
+
+
 void datetimeError(DateTime *p) {
   memset(p, 0, sizeof(*p));
   p->isError = 1;

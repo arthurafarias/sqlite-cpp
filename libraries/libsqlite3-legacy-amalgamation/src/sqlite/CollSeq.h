@@ -18,6 +18,8 @@ extern C {
 
   int sqlite3IsBinary(const CollSeq *);
 
+  int binCollFunc(void *NotUsed, int nKey1, const void *pKey1, int nKey2, const void *pKey2);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,54 @@
 #include "sqlite/_All.h"
 
+static int sqliteErrorFromPosixError(int posixError, int sqliteIOErr) {
+
+  switch (posixError) {
+  case
+
+      13
+
+      :
+  case
+
+      11
+
+      :
+  case
+
+      110
+
+      :
+  case
+
+      16
+
+      :
+  case
+
+      4
+
+      :
+  case
+
+      37
+
+      :
+
+    return 5;
+
+  case
+
+      1
+
+      :
+    return 3;
+
+  default:
+    return sqliteIOErr;
+  }
+}
+
+
 void sqlite3OsClose(sqlite3_file *pId) {
   if (pId->pMethods) {
     pId->pMethods->xClose(pId);

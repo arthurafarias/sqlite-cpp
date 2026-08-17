@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "sqlite3.h"
-// #include "sqlite/_All.h"
+#include "sqlite/sqlite3_stmt.h"
 
 int main(void) {
   sqlite3 *db;

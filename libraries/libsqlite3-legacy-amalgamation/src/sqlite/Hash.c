@@ -1,5 +1,17 @@
 #include "sqlite/_All.h"
 
+static unsigned int strHash(const char *z) {
+  unsigned int h = 0;
+  while (z[0]) {
+
+    h += 0xdf & (unsigned char)*(z++);
+
+    h *= 0x9e3779b1;
+  }
+  return h;
+}
+
+
 void sqlite3HashInit(Hash *pNew) {
 
   pNew->first = 0;

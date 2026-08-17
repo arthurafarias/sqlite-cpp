@@ -1,5 +1,328 @@
 #include "sqlite/_All.h"
 
+static const struct aXformType_t {
+  u8 nName;
+  char zName[7];
+  float rLimit;
+  float rXform;
+} aXformType[] = {
+    {6, "second", 4.6427e+14, 1.0}, {6, "minute", 7.7379e+12, 60.0}, {4, "hour", 1.2897e+11, 3600.0}, {3, "day", 5373485.0, 86400.0}, {5, "month", 176546.0, 2592000.0}, {4, "year", 14713.0, 31536000.0},
+};
+
+static int invokeValueDestructor(const void *p, void (*xDel)(void *), sqlite3_context *pCtx) {
+
+  if (xDel == 0) {
+
+  } else if (xDel == ((sqlite3_destructor_type)-1)) {
+
+  } else {
+    xDel((void *)p);
+  }
+
+  sqlite3_result_error_toobig(pCtx);
+
+  return 18;
+}
+
+static int getConstraintToken(const u8 *z, int *piToken) {
+  int iOff = 0;
+  int t = 0;
+  do {
+    iOff += sqlite3GetToken(&z[iOff], &t);
+  } while (t == 184 || t == 185);
+
+  *piToken = t;
+
+  if (t == 22) {
+    int nNest = 1;
+    while (nNest > 0) {
+      iOff += sqlite3GetToken(&z[iOff], &t);
+      if (t == 22) {
+        nNest++;
+      } else if (t == 23) {
+        t = 22;
+        nNest--;
+      } else if (t == 186) {
+        break;
+      }
+    }
+  }
+
+  *piToken = t;
+  return iOff;
+}
+
+static int getWhitespace(const u8 *z) {
+  int nRet = 0;
+  while (1) {
+    int t = 0;
+    int n = sqlite3GetToken(&z[nRet], &t);
+    if (t != 184 && t != 185)
+      break;
+    nRet += n;
+  }
+  return nRet;
+}
+
+static int getConstraint(const u8 *z) {
+  int iOff = 0;
+  int t = 0;
+
+  while (1) {
+    int n = getConstraintToken(&z[iOff], &t);
+    if (t == 120 || t == 123 || t == 19 || t == 124 || t == 125 || t == 121 || t == 114 || t == 126 || t == 133 || t == 23 || t == 25 || t == 186 || t == 24 || t == 96) {
+      break;
+    }
+    iOff += n;
+  }
+
+  return iOff;
+}
+
+int patternCompare(const u8 *zPattern, const u8 *zString, const struct compareInfo *pInfo, u32 matchOther) {
+  u32 c, c2;
+  u32 matchOne = pInfo->matchOne;
+  u32 matchAll = pInfo->matchAll;
+  u8 noCase = pInfo->noCase;
+  const u8 *zEscaped = 0;
+
+  while ((c = (zPattern[0] < 0x80 ? *(zPattern++) : sqlite3Utf8Read(&zPattern))) != 0) {
+    if (c == matchAll) {
+
+      while ((c = (zPattern[0] < 0x80 ? *(zPattern++) : sqlite3Utf8Read(&zPattern))) == matchAll || (c == matchOne && matchOne != 0)) {
+        if (c == matchOne && sqlite3Utf8Read(&zString) == 0) {
+          return 2;
+        }
+      }
+      if (c == 0) {
+        return 0;
+      } else if (c == matchOther) {
+        if (pInfo->matchSet == 0) {
+          c = sqlite3Utf8Read(&zPattern);
+          if (c == 0)
+            return 2;
+        } else {
+
+          ((void)(0))
+
+              ;
+          while (*zString) {
+            int bMatch = patternCompare(&zPattern[-1], zString, pInfo, matchOther);
+            if (bMatch != 1)
+              return bMatch;
+            {
+              if ((*(zString++)) >= 0xc0) {
+                while ((*zString & 0xc0) == 0x80) {
+                  zString++;
+                }
+              }
+            };
+          }
+          return 2;
+        }
+      }
+
+      if (c < 0x80) {
+        char zStop[3];
+        int bMatch;
+        if (noCase) {
+          zStop[0] = ((c) & ~(sqlite3CtypeMap[(unsigned char)(c)] & 0x20));
+          zStop[1] = (sqlite3UpperToLower[(unsigned char)(c)]);
+          zStop[2] = 0;
+        } else {
+          zStop[0] = c;
+          zStop[1] = 0;
+        }
+        while (1) {
+          zString += strcspn((const char *)zString, zStop);
+          if (zString[0] == 0)
+            break;
+          zString++;
+          bMatch = patternCompare(zPattern, zString, pInfo, matchOther);
+          if (bMatch != 1)
+            return bMatch;
+        }
+      } else {
+        int bMatch;
+        while ((c2 = (zString[0] < 0x80 ? *(zString++) : sqlite3Utf8Read(&zString))) != 0) {
+          if (c2 != c)
+            continue;
+          bMatch = patternCompare(zPattern, zString, pInfo, matchOther);
+          if (bMatch != 1)
+            return bMatch;
+        }
+      }
+      return 2;
+    }
+    if (c == matchOther) {
+      if (pInfo->matchSet == 0) {
+        c = sqlite3Utf8Read(&zPattern);
+        if (c == 0)
+          return 1;
+        zEscaped = zPattern;
+      } else {
+        u32 prior_c = 0;
+        int seen = 0;
+        int invert = 0;
+        c = sqlite3Utf8Read(&zString);
+        if (c == 0)
+          return 1;
+        c2 = sqlite3Utf8Read(&zPattern);
+        if (c2 == '^') {
+          invert = 1;
+          c2 = sqlite3Utf8Read(&zPattern);
+        }
+        if (c2 == ']') {
+          if (c == ']')
+            seen = 1;
+          c2 = sqlite3Utf8Read(&zPattern);
+        }
+        while (c2 && c2 != ']') {
+          if (c2 == '-' && zPattern[0] != ']' && zPattern[0] != 0 && prior_c > 0) {
+            c2 = sqlite3Utf8Read(&zPattern);
+            if (c >= prior_c && c <= c2)
+              seen = 1;
+            prior_c = 0;
+          } else {
+            if (c == c2) {
+              seen = 1;
+            }
+            prior_c = c2;
+          }
+          c2 = sqlite3Utf8Read(&zPattern);
+        }
+        if (c2 == 0 || (seen ^ invert) == 0) {
+          return 1;
+        }
+        continue;
+      }
+    }
+    c2 = (zString[0] < 0x80 ? *(zString++) : sqlite3Utf8Read(&zString));
+    if (c == c2)
+      continue;
+    if (noCase && (sqlite3UpperToLower[(unsigned char)(c)]) == (sqlite3UpperToLower[(unsigned char)(c2)]) && c < 0x80 && c2 < 0x80) {
+      continue;
+    }
+    if (c == matchOne && zPattern != zEscaped && c2 != 0)
+      continue;
+    return 1;
+  }
+  return *zString == 0 ? 0 : 1;
+}
+
+static int isNHex(const char *z, int N, u32 *pVal) {
+  int i;
+  u32 v = 0;
+  for (i = 0; i < N; i++) {
+    if (!(sqlite3CtypeMap[(unsigned char)(z[i])] & 0x08))
+      return 0;
+    v = (v << 4) + sqlite3HexToInt(z[i]);
+  }
+  *pVal = v;
+  return 1;
+}
+
+static int strContainsChar(const u8 *zStr, int nStr, u32 ch) {
+  const u8 *zEnd = &zStr[nStr];
+  const u8 *z = zStr;
+  while (z < zEnd) {
+    u32 tst = (z[0] < 0x80 ? *(z++) : sqlite3Utf8Read(&z));
+    if (tst == ch)
+      return 1;
+  }
+  return 0;
+}
+
+static int percentIsInfinity(double r) {
+  sqlite3_uint64 u;
+
+  memcpy(&u, &r, sizeof(u));
+  return ((u >> 52) & 0x7ff) == 0x7ff;
+}
+
+static int percentSameValue(double a, double b) {
+  a -= b;
+  return a >= -0.001 && a <= 0.001;
+}
+
+static void percentSort(double *a, unsigned int n) {
+  int iLt;
+  int iGt;
+  int i;
+  double rPivot;
+
+  while (n >= 2) {
+    if (a[0] > a[n - 1]) {
+      {
+        double ttt = (a[0]);
+        (a[0]) = (a[n - 1]);
+        (a[n - 1]) = ttt;
+      }
+    }
+    if (n == 2)
+      return;
+    iGt = n - 1;
+    i = n / 2;
+    if (a[0] > a[i]) {
+      {
+        double ttt = (a[0]);
+        (a[0]) = (a[i]);
+        (a[i]) = ttt;
+      }
+    } else if (a[i] > a[iGt]) {
+      {
+        double ttt = (a[i]);
+        (a[i]) = (a[iGt]);
+        (a[iGt]) = ttt;
+      }
+    }
+    if (n == 3)
+      return;
+    rPivot = a[i];
+    iLt = i = 1;
+    do {
+      if (a[i] < rPivot) {
+        if (i > iLt) {
+          double ttt = (a[i]);
+          (a[i]) = (a[iLt]);
+          (a[iLt]) = ttt;
+        }
+        iLt++;
+        i++;
+      } else if (a[i] > rPivot) {
+        do {
+          iGt--;
+        } while (iGt > i && a[iGt] > rPivot);
+        {
+          double ttt = (a[i]);
+          (a[i]) = (a[iGt]);
+          (a[iGt]) = ttt;
+        }
+      } else {
+        i++;
+      }
+    } while (i < iGt);
+    if (iLt > (int)(n / 2)) {
+      if (n - iGt >= 2)
+        percentSort(a + iGt, n - iGt);
+      n = iLt;
+    } else {
+      if (iLt >= 2)
+        percentSort(a, iLt);
+      a += iGt;
+      n -= iGt;
+    }
+  }
+}
+
+static int jsonAllAlphanum(const char *z, int n) {
+  int i;
+  for (i = 0; i < n && ((sqlite3CtypeMap[(unsigned char)(z[i])] & 0x06) || z[i] == '_'); i++) {
+  }
+  return i == n;
+}
+
+
 int setDateTimeToCurrent(sqlite3_context *context, DateTime *p) {
   p->iJD = sqlite3StmtCurrentTime(context);
   if (p->iJD > 0) {

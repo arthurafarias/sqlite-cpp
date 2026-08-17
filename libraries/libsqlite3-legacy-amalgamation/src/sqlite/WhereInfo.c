@@ -1,5 +1,8 @@
 #include "sqlite/_All.h"
 
+LogEst estLog(LogEst N) { return N <= 10 ? 0 : sqlite3LogEst(N) - 33; }
+
+
 void codeDeferredSeek(WhereInfo *pWInfo, Index *pIdx, int iCur, int iIdxCur) {
   Parse *pParse = pWInfo->pParse;
   Vdbe *v = pParse->pVdbe;

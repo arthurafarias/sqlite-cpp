@@ -1,4 +1,28 @@
+#include "sqlite/Vdbe.h"
 #include "sqlite/_All.h"
+
+static const char *const azExplainColNames8[] = {"addr", "opcode", "p1", "p2", "p3", "p4", "p5", "comment", "id", "parent", "notused", "detail"};
+
+static const u16 azExplainColNames16data[] = {'a', 'd', 'd', 'r', 0, 'o', 'p', 'c', 'o', 'd', 'e', 0, 'p', '1', 0, 'p', '2', 0, 'p', '3', 0, 'p', '4', 0, 'p', '5', 0, 'c', 'o', 'm', 'm', 'e', 'n', 't', 0, 'i', 'd', 0, 'p', 'a', 'r', 'e', 'n', 't', 0, 'n', 'o', 't', 'u', 's', 'e', 'd', 0, 'd', 'e', 't', 'a', 'i', 'l', 0};
+
+static const u8 iExplainColNames16[] = {0, 5, 12, 15, 18, 21, 24, 27, 35, 38, 45, 53};
+
+
+/** NOTES: this is a safety issue over sqlite3 for avoid people trying
+to inspect it's code. C offers the possibility of stealing their
+code, I think. But it is just a supperficial obfuscation. The real
+step on completely obfuscation is to hold a pointer to a data running
+into a VM. for that use void* and things are going to become interesting.
+Because the statement should be valid for the vm and only valid for it.
+No reference to a statement field outside the VM. I think this is the
+necessary step to protect the engine instead of pointing to a Vdbe to
+an opaque type. Really unsafe! hahahaha C is awesome! */
+
+struct sqlite3_stmt {
+  union data {
+    Vdbe vdbe;
+  } udata;
+};
 
 int sqlite3_expired(sqlite3_stmt *pStmt) {
   int iRet = 1;

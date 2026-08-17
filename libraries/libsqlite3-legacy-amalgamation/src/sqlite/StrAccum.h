@@ -24,6 +24,8 @@ __attribute__((noinline)) char *strAccumFinishRealloc(StrAccum *p);
 void explainAppendTerm(StrAccum *pStr, Index *pIdx, int nTerm, int iTerm, int bAnd, const char *zOp);
 void explainIndexRange(StrAccum *pStr, WhereLoop *pLoop);
 
+  extern const char hexdigits[16];
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,81 @@
 #include "sqlite/_All.h"
 
+static const unsigned char *sqlite3aLTb = &sqlite3UpperToLower[256 - 53];
+
+static const unsigned char *sqlite3aEQb = &sqlite3UpperToLower[256 + 6 - 53];
+
+static const unsigned char *sqlite3aGTb = &sqlite3UpperToLower[256 + 12 - 53];
+
+static void serialGet(const unsigned char *buf, u32 serial_type, Mem *pMem) {
+  u64 x = (((u32)(buf)[0] << 24) | ((buf)[1] << 16) | ((buf)[2] << 8) | (buf)[3]);
+  u32 y = (((u32)(buf + 4)[0] << 24) | ((buf + 4)[1] << 16) | ((buf + 4)[2] << 8) | (buf + 4)[3]);
+  x = (x << 32) + y;
+  if (serial_type == 6) {
+
+    pMem->u.i = *(i64 *)&x;
+    pMem->flags = 0x0004;
+    ;
+  } else {
+
+    ((void)(0))
+
+        ;
+    ;
+    memcpy(&pMem->u.r, &x, sizeof(x));
+    pMem->flags = (((x) & (((u64)0x7ff) << 52)) == (((u64)0x7ff) << 52) && ((x) & ((((u64)1) << 52) - 1)) != 0) ? 0x0001 : 0x0008;
+  }
+}
+
+static int serialGet7(const unsigned char *buf, Mem *pMem) {
+  u64 x = (((u32)(buf)[0] << 24) | ((buf)[1] << 16) | ((buf)[2] << 8) | (buf)[3]);
+  u32 y = (((u32)(buf + 4)[0] << 24) | ((buf + 4)[1] << 16) | ((buf + 4)[2] << 8) | (buf + 4)[3]);
+  x = (x << 32) + y;
+
+  ;
+  memcpy(&pMem->u.r, &x, sizeof(x));
+  if ((((x) & (((u64)0x7ff) << 52)) == (((u64)0x7ff) << 52) && ((x) & ((((u64)1) << 52) - 1)) != 0)) {
+    pMem->flags = 0x0001;
+    return 1;
+  }
+  pMem->flags = 0x0008;
+  return 0;
+}
+
+static i64 findNextHostParameter(const char *zSql, i64 *pnToken) {
+  int tokenType;
+  i64 nTotal = 0;
+  i64 n;
+
+  *pnToken = 0;
+  while (zSql[0]) {
+    n = sqlite3GetToken((u8 *)zSql, &tokenType);
+
+    ((void)(0))
+
+        ;
+    if (tokenType == 157) {
+      *pnToken = n;
+      break;
+    }
+    nTotal += n;
+    zSql += n;
+  }
+  return nTotal;
+}
+
+const char *const pragCName[] = {
+    "id",         "seq",     "table", "from", "to",   "on_update", "on_delete", "match", "cid",  "name", "type", "notnull", "dflt_value", "pk",  "hidden",
+
+    "name",       "builtin", "type",  "enc",  "narg", "flags",     "schema",    "name",  "type", "ncol", "wr",   "strict",  "seqno",      "cid", "name",   "desc", "coll", "key", "seq", "name", "unique", "origin", "partial", "tbl", "idx", "wdth", "hght", "flgs", "table", "rowid", "parent", "fkid", "busy", "log", "checkpointed", "seq", "name", "file",
+
+    "database",   "status",
+
+    "cache_size",
+
+    "timeout",
+};
+
+
 void vdbeMemRenderNum(int sz, char *zBuf, Mem *p) {
   StrAccum acc;
 

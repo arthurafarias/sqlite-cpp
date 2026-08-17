@@ -89,6 +89,8 @@ extern C {
   __attribute__((noinline)) void whereCheckIfBloomFilterIsUseful(const WhereInfo *pWInfo);
   __attribute__((noinline)) void whereReverseScanOrder(WhereInfo * pWInfo);
 
+  LogEst estLog(LogEst N);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,5 +1,42 @@
 #include "sqlite/_All.h"
 
+void pcache1Free(void *p) {
+  if (p == 0)
+    return;
+  if ((((uptr)(p) >= (uptr)((pcache1_g).pStart)) && ((uptr)(p) < (uptr)((pcache1_g).pEnd)))) {
+    PgFreeslot *pSlot;
+    sqlite3_mutex_enter((pcache1_g).mutex);
+    sqlite3StatusDown(1, 1);
+    pSlot = (PgFreeslot *)p;
+    pSlot->pNext = (pcache1_g).pFree;
+    (pcache1_g).pFree = pSlot;
+    (pcache1_g).nFreeSlot++;
+    __atomic_store_n((&(pcache1_g).bUnderPressure), ((pcache1_g).nFreeSlot < (pcache1_g).nReserve), 0);
+
+    ((void)(0))
+
+        ;
+    sqlite3_mutex_leave((pcache1_g).mutex);
+  } else {
+
+    ((void)(0))
+
+        ;
+    ;
+
+    {
+      int nFreed = 0;
+      nFreed = sqlite3MallocSize(p);
+      sqlite3_mutex_enter((pcache1_g).mutex);
+      sqlite3StatusDown(2, nFreed);
+      sqlite3_mutex_leave((pcache1_g).mutex);
+    }
+
+    sqlite3_free(p);
+  }
+}
+
+
 void pcache1FreePage(PgHdr1 *p) {
   PCache1 *pCache;
 

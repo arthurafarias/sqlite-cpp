@@ -1,5 +1,82 @@
 #include "sqlite/_All.h"
 
+static int pcache1Init(void *NotUsed) {
+  (void)(NotUsed);
+
+  memset(&(pcache1_g), 0, sizeof((pcache1_g)));
+
+  (pcache1_g).separateCache = sqlite3Config.pPage == 0 || sqlite3Config.bCoreMutex > 0;
+
+  if (sqlite3Config.bCoreMutex) {
+    (pcache1_g).grp.mutex = sqlite3MutexAlloc(6);
+    (pcache1_g).mutex = sqlite3MutexAlloc(7);
+  }
+
+  if ((pcache1_g).separateCache && sqlite3Config.nPage != 0 && sqlite3Config.pPage == 0) {
+    (pcache1_g).nInitPage = sqlite3Config.nPage;
+  } else {
+    (pcache1_g).nInitPage = 0;
+  }
+  (pcache1_g).grp.mxPinned = 10;
+  (pcache1_g).isInit = 1;
+  return 0;
+}
+
+static void pcache1Shutdown(void *NotUsed) {
+  (void)(NotUsed);
+
+  memset(&(pcache1_g), 0, sizeof((pcache1_g)));
+}
+
+static sqlite3_pcache *pcache1Create(int szPage, int szExtra, int bPurgeable) {
+  PCache1 *pCache;
+  PGroup *pGroup;
+  i64 sz;
+
+  sz = sizeof(PCache1) + sizeof(PGroup) * (pcache1_g).separateCache;
+  pCache = (PCache1 *)sqlite3MallocZero(sz);
+  if (pCache) {
+    if ((pcache1_g).separateCache) {
+      pGroup = (PGroup *)&pCache[1];
+      pGroup->mxPinned = 10;
+    } else {
+      pGroup = &(pcache1_g).grp;
+    }
+
+    ((void)(0))
+
+        ;
+    if (pGroup->lru.isAnchor == 0) {
+      pGroup->lru.isAnchor = 1;
+      pGroup->lru.pLruPrev = pGroup->lru.pLruNext = &pGroup->lru;
+    }
+    pCache->pGroup = pGroup;
+    pCache->szPage = szPage;
+    pCache->szExtra = szExtra;
+    pCache->szAlloc = szPage + szExtra + (((sizeof(PgHdr1)) + 7) & ~7);
+    pCache->bPurgeable = (bPurgeable ? 1 : 0);
+    pcache1ResizeHash(pCache);
+    if (bPurgeable) {
+      pCache->nMin = 10;
+      pGroup->nMinPage += pCache->nMin;
+      pGroup->mxPinned = pGroup->nMaxPage + 10 - pGroup->nMinPage;
+      pCache->pnPurgeable = &pGroup->nPurgeable;
+    } else {
+      pCache->pnPurgeable = &pCache->nPurgeableDummy;
+    }
+
+    ((void)(0))
+
+        ;
+    if (pCache->nHash == 0) {
+      pcache1Destroy((sqlite3_pcache *)pCache);
+      pCache = 0;
+    }
+  }
+  return (sqlite3_pcache *)pCache;
+}
+
+
 int numberOfCachePages(PCache *p) {
   if (p->szCache >= 0) {
 

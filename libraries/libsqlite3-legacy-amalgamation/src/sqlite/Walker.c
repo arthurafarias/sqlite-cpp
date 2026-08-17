@@ -1,5 +1,20 @@
 #include "sqlite/_All.h"
 
+static int inAnyUsingClause(const char *zName, SrcItem *pBase, int N) {
+  while (N > 0) {
+    N--;
+    pBase++;
+    if (pBase->fg.isUsing == 0)
+      continue;
+    if ((pBase->u3.pUsing == 0))
+      continue;
+    if (sqlite3IdListIndex(pBase->u3.pUsing, zName) >= 0)
+      return 1;
+  }
+  return 0;
+}
+
+
 int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly) {
   Window *pWin;
   for (pWin = pList; pWin; pWin = pWin->pNextWin) {

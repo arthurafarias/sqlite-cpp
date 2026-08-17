@@ -1,5 +1,8 @@
 #include "sqlite/_All.h"
 
+static const char zMagicHeader[] = "SQLite format 3";
+
+
 BtShared *sqlite3SharedCacheList = 0;
 
 void invalidateAllOverflowCache(BtShared *pBt) {

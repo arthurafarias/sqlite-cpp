@@ -1,5 +1,88 @@
 #include "sqlite/_All.h"
 
+static pid_t randomnessPid = 0;
+
+static UnixUnusedFd *findReusableFd(const char *zPath, int flags) {
+  UnixUnusedFd *pUnused = 0;
+
+  struct stat sStat;
+
+  unixEnterMutex();
+
+  if (inodeList != 0 && 0 == ((int (*)(const char *, struct stat *))aSyscall[4].pCurrent)(zPath, &sStat)) {
+    unixInodeInfo *pInode;
+
+    pInode = inodeList;
+    while (pInode && (pInode->fileId.dev != sStat.st_dev || pInode->fileId.ino != (u64)sStat.st_ino)) {
+      pInode = pInode->pNext;
+    }
+    if (pInode) {
+      UnixUnusedFd **pp;
+
+      ((void)(0))
+
+          ;
+      sqlite3_mutex_enter(pInode->pLockMutex);
+      flags &= (0x00000001 | 0x00000002);
+      for (pp = &pInode->pUnused; *pp && (*pp)->flags != flags; pp = &((*pp)->pNext))
+        ;
+      pUnused = *pp;
+      if (pUnused) {
+        *pp = pUnused->pNext;
+      }
+      sqlite3_mutex_leave(pInode->pLockMutex);
+    }
+  }
+  unixLeaveMutex();
+
+  return pUnused;
+}
+
+static int getFileMode(const char *zFile, mode_t *pMode, uid_t *pUid, gid_t *pGid) {
+  struct stat sStat;
+  int rc = 0;
+  if (0 == ((int (*)(const char *, struct stat *))aSyscall[4].pCurrent)(zFile, &sStat)) {
+    *pMode = sStat.st_mode & 0777;
+    *pUid = sStat.st_uid;
+    *pGid = sStat.st_gid;
+  } else {
+    rc = (10 | (7 << 8));
+  }
+  return rc;
+}
+
+static int findCreateFileMode(const char *zPath, int flags, mode_t *pMode, uid_t *pUid, gid_t *pGid) {
+  int rc = 0;
+  *pMode = 0;
+  *pUid = 0;
+  *pGid = 0;
+  if (flags & (0x00080000 | 0x00000800)) {
+    char zDb[512 + 1];
+    int nDb;
+
+    nDb = sqlite3Strlen30(zPath) - 1;
+    while (nDb > 0 && zPath[nDb] != '.') {
+      if (zPath[nDb] == '-') {
+        memcpy(zDb, zPath, nDb);
+        zDb[nDb] = '\0';
+        rc = getFileMode(zDb, pMode, pUid, pGid);
+        break;
+      }
+      nDb--;
+    }
+  } else if (flags & 0x00000008) {
+    *pMode = 0600;
+  } else if (flags & 0x00000040) {
+
+    const char *z = sqlite3_uri_parameter(zPath, "modeof");
+    if (z) {
+      rc = getFileMode(z, pMode, pUid, pGid);
+    }
+  }
+  return rc;
+}
+
+
 int sqlite3OsOpen(sqlite3_vfs *pVfs, const char *zPath, sqlite3_file *pFile, int flags, int *pFlagsOut) {
   int rc;
   ;

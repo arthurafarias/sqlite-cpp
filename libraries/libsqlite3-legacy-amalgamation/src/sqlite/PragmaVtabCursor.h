@@ -6,7 +6,7 @@ extern C {
 
 #include "sqlite/sqlite3_vtab_cursor.h"
 #include "sqlite/sqlite_int64.h"
-  typedef struct Vdbe sqlite3_stmt;
+  typedef struct sqlite3_stmt sqlite3_stmt;
 
   typedef struct PragmaVtabCursor PragmaVtabCursor;
   struct PragmaVtabCursor {
